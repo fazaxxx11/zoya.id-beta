@@ -46,13 +46,27 @@ function Auth() {
   const wallet = getWallet()
   const pendingTopups = currentUser ? getPendingTopups().filter(p => p.userEmail === currentUser.email && p.status === 'pending') : []
 
-  // Auto-redirect setelah OAuth callback berhasil
-  // (kalau user kembali dari Google + ada ?redirect= di URL)
+  // Auto-redirect setelah OAuth callback berhasil (return dari Google + ada
+  // ?redirect= di URL). replace=true biar tidak ada history "back to /auth".
+  const isOAuthReturn = !!searchParams.get('redirect')
   useEffect(() => {
-    if (currentUser && redirectTo && redirectTo !== '/' && searchParams.get('redirect')) {
-      navigate(redirectTo, { replace: true })
+    if (currentUser && isOAuthReturn) {
+      const target = redirectTo && redirectTo !== '/' ? redirectTo : '/dashboard'
+      navigate(target, { replace: true })
     }
-  }, [currentUser, redirectTo, navigate, searchParams])
+  }, [currentUser, redirectTo, navigate, isOAuthReturn])
+
+  // Tampilkan loader saat return dari OAuth (sambil tunggu navigate fire)
+  if (currentUser && isOAuthReturn) {
+    return (
+      <div className="min-h-screen bg-pattern flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-gray-500">
+          <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
+          <p className="text-sm">Mengarahkan ke {redirectTo === '/dashboard' ? 'dashboard' : 'tujuan'}…</p>
+        </div>
+      </div>
+    )
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault()

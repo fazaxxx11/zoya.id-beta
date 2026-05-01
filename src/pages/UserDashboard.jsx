@@ -232,52 +232,66 @@ function UserDashboard() {
         {activeTab === 'orders' && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             {orders.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>Belum ada pesanan</p>
-                <Link to="/" className="text-sky-600 hover:underline text-sm mt-2 inline-block">
-                  Pilih layanan →
-                </Link>
+              <div className="p-10 text-center">
+                <div className="w-16 h-16 bg-sky-50 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-sky-400" />
+                </div>
+                <h3 className="font-semibold text-gray-800 mb-1">Belum ada pesanan</h3>
+                <p className="text-sm text-gray-500 mb-4">Mulai jalankan analisis atau penilaian untuk melihat history pesanan di sini.</p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Link to="/statistik" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium">
+                    <BarChart3 className="w-4 h-4" /> Statistik
+                  </Link>
+                  <Link to="/assessment" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium">
+                    <FileText className="w-4 h-4" /> Assessment
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="divide-y">
-                {orders.map(order => (
-                  <div key={order.id} className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-3">
-                        {order.service === 'assessment' ? (
-                          <FileText className="w-5 h-5 text-orange-500" />
-                        ) : (
-                          <BarChart3 className="w-5 h-5 text-sky-500" />
-                        )}
-                        <div>
-                          <p className="font-medium">{order.serviceName}</p>
-                          <p className="text-sm text-gray-500">{order.tierName}</p>
-                          {order.results && (
-                            <p className="text-xs text-orange-600">
-                              {order.results.length} siswa dinilai
-                            </p>
+                {orders.map(order => {
+                  const serviceLabel = order.serviceName || (order.service === 'assessment' ? 'Assessment AI' : order.service === 'statistics' ? 'Analisis Statistik' : order.service)
+                  const tierLabel = order.tierName || order.tier || ''
+                  return (
+                    <div key={order.id} className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-3">
+                          {order.service === 'assessment' ? (
+                            <FileText className="w-5 h-5 text-orange-500" />
+                          ) : (
+                            <BarChart3 className="w-5 h-5 text-sky-500" />
                           )}
+                          <div>
+                            <p className="font-medium">{serviceLabel}</p>
+                            {tierLabel && <p className="text-sm text-gray-500 capitalize">{tierLabel}</p>}
+                            {order.results && (
+                              <p className="text-xs text-orange-600">
+                                {order.results.length} siswa dinilai
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {getStatusBadge(order.status)}
+                      </div>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="text-xs text-gray-400">{order.id}</span>
+                        <div className="flex gap-2 items-center">
+                          {order.status === 'completed' && (
+                            <button
+                              onClick={() => navigate(`/order?id=${order.id}`)}
+                              className="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded"
+                            >
+                              Lihat Hasil
+                            </button>
+                          )}
+                          <span className="font-bold text-sky-600">
+                            {order.amount > 0 ? formatCurrency(order.amount) : <span className="text-emerald-600 text-sm">Gratis</span>}
+                          </span>
                         </div>
                       </div>
-                      {getStatusBadge(order.status)}
                     </div>
-                    <div className="flex justify-between items-center mt-2">
-                      <span className="text-xs text-gray-400">{order.id}</span>
-                      <div className="flex gap-2">
-                        {order.status === 'completed' && (
-                          <button 
-                            onClick={() => navigate(`/order?id=${order.id}`)}
-                            className="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded"
-                          >
-                            Lihat Hasil
-                          </button>
-                        )}
-                        <span className="font-bold text-sky-600">{formatCurrency(order.amount)}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
@@ -287,9 +301,12 @@ function UserDashboard() {
         {activeTab === 'transactions' && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             {wallet.transactions.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <CreditCard className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>Belum ada transaksi</p>
+              <div className="p-10 text-center">
+                <div className="w-16 h-16 bg-emerald-50 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                  <CreditCard className="w-8 h-8 text-emerald-400" />
+                </div>
+                <h3 className="font-semibold text-gray-800 mb-1">Belum ada transaksi</h3>
+                <p className="text-sm text-gray-500">Saat beta, semua tools gratis. Top-up & riwayat saldo akan tampil di sini setelah monetisasi dibuka.</p>
               </div>
             ) : (
               <div className="divide-y">

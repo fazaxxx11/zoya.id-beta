@@ -70,20 +70,34 @@
     }
     </script>
     <script>
-      // Apply theme SEBELUM body render supaya zero flash
+      // Apply theme SEBELUM body render supaya zero flash + set splash bg
       (function() {
+        var t;
         try {
-          var t = localStorage.getItem('zoya_theme') || 'dark';
-          if (t === 'dark') document.documentElement.classList.add('dark');
-          document.documentElement.style.colorScheme = t;
-        } catch (e) {
-          document.documentElement.classList.add('dark');
-        }
+          t = localStorage.getItem('zoya_theme') || 'dark';
+        } catch (e) { t = 'dark'; }
+        if (t === 'dark') document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = t;
+        // Inject splash bg color that matches active theme
+        document.documentElement.style.setProperty('--splash-bg', t === 'dark' ? '#0c071e' : '#f8fafc');
+        document.documentElement.style.setProperty('--splash-fg', t === 'dark' ? '#cbd5e1' : '#475569');
       })();
     </script>
   </head>
   <body class="bg-bg text-fg">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Splash loader: ditampilkan selama bundle JS download + initAuth resolve.
+           Akan ke-replace begitu React mount. CSS inline biar tidak butuh tailwind. -->
+      <div id="initial-splash" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--splash-bg,#0c071e);color:var(--splash-fg,#cbd5e1);font-family:system-ui,-apple-system,sans-serif;">
+        <div style="text-align:center;">
+          <div style="width:48px;height:48px;border:3px solid rgba(56,189,248,0.2);border-top-color:#38bdf8;border-radius:50%;animation:zoya-spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+          <div style="font-size:14px;letter-spacing:0.05em;opacity:0.7;">Memuat zoya.id…</div>
+        </div>
+      </div>
+      <style>
+        @keyframes zoya-spin { to { transform: rotate(360deg); } }
+      </style>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
