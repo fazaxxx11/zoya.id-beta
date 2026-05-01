@@ -9,10 +9,13 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 
 const GROQ_MODEL = 'llama-3.3-70b-versatile'
 const KIMI_MODEL = 'moonshot-v1-8k'
-// OpenRouter: default free model. Override via OPENROUTER_MODEL env.
-// Pilihan free yang bagus: meta-llama/llama-3.3-70b-instruct:free,
-// deepseek/deepseek-chat-v3.1:free, moonshotai/kimi-k2:free
-const OPENROUTER_MODEL_DEFAULT = 'meta-llama/llama-3.3-70b-instruct:free'
+// OpenRouter: default = Auto Router (OpenRouter pilih model terbaik per request).
+// Override via OPENROUTER_MODEL env. Contoh:
+//   openrouter/auto                              → Auto Router (default)
+//   meta-llama/llama-3.3-70b-instruct:free       → free, fixed
+//   deepseek/deepseek-chat-v3.1:free             → free, reasoning
+//   anthropic/claude-3.5-sonnet                  → premium berbayar
+const OPENROUTER_MODEL_DEFAULT = 'openrouter/auto'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

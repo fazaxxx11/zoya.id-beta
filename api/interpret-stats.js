@@ -8,7 +8,8 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 // Cascade: large model first, fall back to small instant model when overloaded.
 const GROQ_MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant']
 const KIMI_MODEL = 'moonshot-v1-8k'
-const OPENROUTER_MODEL_DEFAULT = 'meta-llama/llama-3.3-70b-instruct:free'
+// Default = Auto Router. Override via env OPENROUTER_MODEL kalau mau model spesifik.
+const OPENROUTER_MODEL_DEFAULT = 'openrouter/auto'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
