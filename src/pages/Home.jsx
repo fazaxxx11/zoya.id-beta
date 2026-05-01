@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
 import {
   BarChart3, FileText, History, ChevronRight, Sparkles, Calculator,
   CheckCircle, ArrowRight, User, LogOut, TrendingUp, Zap, Award, ClipboardList, Users,
@@ -7,7 +6,8 @@ import {
   Compass,
 } from 'lucide-react'
 import { BRAND_NAME, BRAND_TAGLINE } from '../lib/brand'
-import { getCurrentUser, logoutUser } from '../lib/auth'
+import { logoutUser } from '../lib/auth'
+import { useCurrentUser } from '../lib/useCurrentUser'
 import ThemeToggle from '../components/ThemeToggle'
 import Logo from '../components/Logo'
 
@@ -88,13 +88,10 @@ const features = [
 
 function Home() {
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
-
-  useEffect(() => { setUser(getCurrentUser()) }, [])
+  const user = useCurrentUser()
 
   const handleLogout = () => {
     logoutUser()
-    setUser(null)
   }
 
   return (

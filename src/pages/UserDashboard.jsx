@@ -5,14 +5,15 @@ import {
   CreditCard, Gift, CheckCircle, Clock, FileText, BarChart3,
   Loader2, ArrowRight, Zap
 } from 'lucide-react'
-import { getCurrentUser, logoutUser } from '../lib/auth'
+import { logoutUser } from '../lib/auth'
+import { useCurrentUser } from '../lib/useCurrentUser'
 import { getWallet } from '../lib/wallet'
 import { getOrders } from '../lib/orders'
 import { listAnalyses, countAnalyses } from '../lib/savedAnalyses'
 
 function UserDashboard() {
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
+  const user = useCurrentUser()
   const [wallet, setWallet] = useState({ balance: 0, bonus: 0, transactions: [] })
   const [orders, setOrders] = useState([])
   const [activeTab, setActiveTab] = useState('orders')
@@ -37,15 +38,13 @@ function UserDashboard() {
   }, [])
 
   useEffect(() => {
-    const currentUser = getCurrentUser()
-    if (!currentUser) {
+    if (!user) {
       navigate('/auth')
       return
     }
-    setUser(currentUser)
     setWallet(getWallet())
-    setOrders(getOrders().filter(o => o.userId === currentUser.email || o.userId === 'guest'))
-  }, [navigate])
+    setOrders(getOrders().filter(o => o.userId === user.email || o.userId === 'guest'))
+  }, [navigate, user])
 
   const handleLogout = () => {
     logoutUser()

@@ -1,109 +1,196 @@
-// Auth helpers — localStorage version (development).
-// Interface ini sengaja dibuat sama dengan auth.supabase.js supaya
-// nanti tinggal swap import path saat migrasi ke Supabase.
+// Auth helpers — Supabase Auth wrapper.
+// Menjaga API sync (getCurrentUser, isAdmin) lewat session cache yang
+// di-update oleh onAuthStateChange listener.
+//
+// Pattern:
+//   1. main.jsx panggil initAuth() sebelum render React.
+//   2. initAuth fetch session → normalize → cache → subscribe.
+//   3. Pages panggil getCurrentUser() sync dari cache.
+//   4. Pages bisa subscribe perubahan via subscribeAuth(cb) atau hook useCurrentUser().
+//
+// Untuk login/register/logout: async (return Promise). Auth.jsx sudah pakai await.
 
+import { supabase, isSupabaseConfigured } from './supabase'
+import { ADMIN_EMAIL } from './brand'
+
+// ─── Module-level cache ─────────────────────────────────────────────
+let _user = null              // normalized user object atau null
+let _initialized = false      // sudah initAuth() pernah dipanggil?
+let _initPromise = null       // promise dari initAuth() pertama
+const _listeners = new Set()  // subscriber callbacks
+
+// ─── Legacy storage keys (kompat utk Admin panel lama) ──────────────
 const USERS_KEY = 'skor_users'
 const CURRENT_USER_KEY = 'skor_current_user'
 const ADMIN_FLAG_KEY = 'admin_logged_in'
 
-// Synthetic admin "user" — dipakai kalau admin login tapi CURRENT_USER_KEY hilang.
-// Email-nya akan di-overwrite dari brand.js ADMIN_EMAIL waktu Admin login,
-// di sini kita cuma fallback static supaya getCurrentUser() ngga pernah return null
-// untuk admin yang sudah login.
-const SYNTHETIC_ADMIN = {
-  email: 'admin@local',
-  name: 'Admin',
-  isAdmin: true,
-  role: 'admin',
-  __synthetic: true,
+/** Normalize Supabase user object ke shape yang dipakai UI lama. */
+function normalizeUser(supaUser) {
+  if (!supaUser) return null
+  const meta = supaUser.user_metadata || {}
+  const email = supaUser.email || ''
+  const isAdminUser = !!email && email.toLowerCase() === (ADMIN_EMAIL || '').toLowerCase()
+  return {
+    id: supaUser.id,
+    email,
+    name: meta.name || meta.full_name || (email ? email.split('@')[0] : ''),
+    phone: meta.phone || '',
+    isAdmin: isAdminUser,
+    role: isAdminUser ? 'admin' : 'user',
+    createdAt: supaUser.created_at ? Date.parse(supaUser.created_at) : Date.now(),
+  }
 }
 
-const safeParse = (raw, fallback) => {
-  try { return JSON.parse(raw ?? '') ?? fallback } catch { return fallback }
-}
-
-export const getUsers = () => safeParse(localStorage.getItem(USERS_KEY), [])
-
-export const saveUser = (user) => {
-  const users = getUsers()
-  const idx = users.findIndex(u => u.email === user.email)
-  if (idx >= 0) users[idx] = user
-  else users.push(user)
-  localStorage.setItem(USERS_KEY, JSON.stringify(users))
-  return users
+function setUser(next) {
+  _user = next
+  for (const cb of _listeners) {
+    try { cb(_user) } catch (e) { console.error('[auth subscriber]', e) }
+  }
 }
 
 /**
- * Get current logged-in user.
- *
- * Penting: kalau `admin_logged_in=true` di localStorage tapi CURRENT_USER_KEY
- * kosong (misal: user accidentally hit logout di menu user), kita tetap
- * mengembalikan synthetic admin object. Tujuannya supaya admin status sticky
- * dan tidak ada page yang salah deteksi "belum login".
+ * Init auth: fetch initial session + subscribe ke perubahan.
+ * Idempotent — aman dipanggil berkali-kali, hanya jalan sekali.
  */
-export const getCurrentUser = () => {
-  const stored = safeParse(localStorage.getItem(CURRENT_USER_KEY), null)
-  if (stored) {
-    // Kalau admin flag aktif tapi user object belum punya isAdmin, paksa upgrade.
-    if (localStorage.getItem(ADMIN_FLAG_KEY) === 'true' && !stored.isAdmin) {
-      return { ...stored, isAdmin: true, role: 'admin' }
+export async function initAuth() {
+  if (_initialized) return _user
+  if (_initPromise) return _initPromise
+
+  _initPromise = (async () => {
+    if (!isSupabaseConfigured) {
+      console.warn('[auth] Supabase belum dikonfigurasi (VITE_SUPABASE_URL/ANON_KEY). Auth dinonaktifkan.')
+      _initialized = true
+      return null
     }
-    return stored
+    try {
+      const { data } = await supabase.auth.getSession()
+      setUser(normalizeUser(data?.session?.user))
+    } catch (e) {
+      console.error('[auth] getSession failed:', e)
+      setUser(null)
+    }
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(normalizeUser(session?.user))
+    })
+
+    _initialized = true
+    return _user
+  })()
+
+  return _initPromise
+}
+
+/** Subscribe ke perubahan auth state. Return unsubscribe fn. */
+export function subscribeAuth(cb) {
+  _listeners.add(cb)
+  // panggil sekali dengan state sekarang biar konsumen langsung sync
+  try { cb(_user) } catch {}
+  return () => _listeners.delete(cb)
+}
+
+// ─── Sync API (dipakai luas di pages) ───────────────────────────────
+
+export function getCurrentUser() {
+  return _user
+}
+
+/** No-op untuk kompat — Supabase yang manage session via cookie/localStorage. */
+export function setCurrentUser(_user) {
+  // intentional no-op
+}
+
+export function isAdmin() {
+  return Boolean(_user?.isAdmin)
+}
+
+export const isAdminLogged = isAdmin
+
+// ─── Async API ──────────────────────────────────────────────────────
+
+/**
+ * Login dengan email + password.
+ * @returns {Promise<{success: boolean, error?: string, user?: object}>}
+ */
+export async function loginUser(email, password) {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Auth backend belum dikonfigurasi.' }
   }
-  // Fallback: admin flag aktif tapi user object hilang → restore synthetic.
-  if (localStorage.getItem(ADMIN_FLAG_KEY) === 'true') {
-    return SYNTHETIC_ADMIN
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) return { success: false, error: translateAuthError(error.message) }
+  const u = normalizeUser(data.user)
+  setUser(u)
+  return { success: true, user: u }
+}
+
+/**
+ * Register user baru. Profile + wallet dibuat otomatis oleh trigger DB.
+ * @returns {Promise<{success: boolean, error?: string, user?: object}>}
+ */
+export async function registerUser({ email, password, name, phone }) {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Auth backend belum dikonfigurasi.' }
   }
-  return null
-}
-
-export const setCurrentUser = (user) => {
-  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user))
-}
-
-export const loginUser = (email, password) => {
-  const users = getUsers()
-  const user = users.find(u => u.email === email && u.password === password)
-  if (!user) return { success: false, error: 'Email atau password salah' }
-  setCurrentUser(user)
-  return { success: true, user }
-}
-
-export const registerUser = ({ email, password, name, phone }) => {
   if (!email || !password || !name) {
     return { success: false, error: 'Mohon isi semua data' }
   }
-  if (getUsers().some(u => u.email === email)) {
-    return { success: false, error: 'Email sudah terdaftar' }
+  if (password.length < 6) {
+    return { success: false, error: 'Password minimal 6 karakter' }
   }
-  const user = { email, password, name, phone, createdAt: Date.now() }
-  saveUser(user)
-  setCurrentUser(user)
-  return { success: true, user }
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { name, phone: phone || null } },
+  })
+  if (error) return { success: false, error: translateAuthError(error.message) }
+  // Note: kalau email confirmation aktif, data.session akan null sampai user verifikasi.
+  if (data.session) {
+    const u = normalizeUser(data.user)
+    setUser(u)
+    return { success: true, user: u }
+  }
+  return {
+    success: true,
+    user: normalizeUser(data.user),
+    needsEmailConfirmation: true,
+  }
 }
 
-/**
- * Logout — clear BOTH user session dan admin flag.
- * Sebelumnya cuma clear CURRENT_USER_KEY → admin flag bisa orphan.
- * Sekarang konsisten: logout = full reset auth state.
- */
-export const logoutUser = () => {
-  localStorage.removeItem(CURRENT_USER_KEY)
-  localStorage.removeItem(ADMIN_FLAG_KEY)
+/** Logout — clear Supabase session. Optimistic: cache di-clear duluan. */
+export async function logoutUser() {
+  // Optimistic: clear cache duluan supaya UI langsung respon
+  setUser(null)
+  try {
+    localStorage.removeItem(CURRENT_USER_KEY)
+    localStorage.removeItem(ADMIN_FLAG_KEY)
+  } catch {}
+  if (isSupabaseConfigured) {
+    try { await supabase.auth.signOut() } catch (e) { console.error('[auth] signOut:', e) }
+  }
 }
 
-/**
- * Cek admin synchronous. Single source of truth — gunakan ini di mana pun
- * daripada baca `localStorage.getItem('admin_logged_in')` langsung.
- */
-export const isAdmin = () => {
-  if (localStorage.getItem(ADMIN_FLAG_KEY) === 'true') return true
-  const u = safeParse(localStorage.getItem(CURRENT_USER_KEY), null)
-  return Boolean(u?.isAdmin || u?.role === 'admin')
+// ─── Legacy stubs (Admin panel & kode lama) ─────────────────────────
+
+/** @deprecated localStorage user list. Return [] di mode Supabase. */
+export function getUsers() {
+  return []
 }
 
-/** Alias eksplisit — supaya code site lebih readable. */
-export const isAdminLogged = isAdmin
+/** @deprecated no-op di mode Supabase. */
+export function saveUser(_user) {
+  // intentional no-op
+}
 
-// Storage keys exposed (dipakai page lain untuk init)
 export { USERS_KEY, CURRENT_USER_KEY, ADMIN_FLAG_KEY }
+
+// ─── Helpers ────────────────────────────────────────────────────────
+
+function translateAuthError(msg) {
+  if (!msg) return 'Terjadi kesalahan'
+  const lower = msg.toLowerCase()
+  if (lower.includes('invalid login credentials')) return 'Email atau password salah'
+  if (lower.includes('user already registered')) return 'Email sudah terdaftar'
+  if (lower.includes('email rate limit')) return 'Terlalu banyak permintaan, coba lagi nanti'
+  if (lower.includes('email not confirmed')) return 'Email belum diverifikasi. Cek inbox kamu.'
+  return msg
+}

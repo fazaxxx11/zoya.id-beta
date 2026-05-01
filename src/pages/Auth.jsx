@@ -5,8 +5,9 @@ import {
   Loader2, CheckCircle, XCircle, Gift, Zap, Sparkles, Clock
 } from 'lucide-react'
 import {
-  getCurrentUser, loginUser, logoutUser, registerUser, setCurrentUser,
+  loginUser, logoutUser, registerUser,
 } from '../lib/auth'
+import { useCurrentUser } from '../lib/useCurrentUser'
 import {
   getWallet, initEmptyWallet, submitPendingTopup, getPendingTopups,
 } from '../lib/wallet'
@@ -36,7 +37,7 @@ function Auth() {
   const [selectedPkg, setSelectedPkg] = useState(null)
   const [showTopupModal, setShowTopupModal] = useState(false)
 
-  const currentUser = getCurrentUser()
+  const currentUser = useCurrentUser()
   const wallet = getWallet()
   const pendingTopups = currentUser ? getPendingTopups().filter(p => p.userEmail === currentUser.email && p.status === 'pending') : []
 
@@ -44,11 +45,8 @@ function Auth() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    
-    // Simulate API delay
-    await new Promise(r => setTimeout(r, 500))
-    
-    const result = loginUser(email, password)
+
+    const result = await loginUser(email, password)
     if (result.success) {
       setSuccess('Login berhasil!')
       setTimeout(() => {
@@ -65,18 +63,21 @@ function Auth() {
     setError('')
     setLoading(true)
 
-    // Simulate API delay
-    await new Promise(r => setTimeout(r, 400))
-
-    const result = registerUser({ email, password, name, phone })
+    const result = await registerUser({ email, password, name, phone })
     if (!result.success) {
       setError(result.error)
       setLoading(false)
       return
     }
 
-    // Init empty wallet (NO welcome bonus per launch policy)
+    // Wallet dibuat otomatis oleh trigger Supabase. Init local cache untuk kompat.
     initEmptyWallet()
+
+    if (result.needsEmailConfirmation) {
+      setSuccess('Registrasi berhasil! Cek email kamu untuk verifikasi sebelum login.')
+      setLoading(false)
+      return
+    }
 
     setSuccess(BETA_FREE ? 'Registrasi berhasil! Semua fitur beta bisa digunakan gratis.' : 'Registrasi berhasil! Silakan top-up untuk mulai gunakan layanan.')
     setTimeout(() => {
