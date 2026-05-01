@@ -156,6 +156,68 @@ export async function registerUser({ email, password, name, phone }) {
   }
 }
 
+/**
+ * Kirim OTP / magic link ke email. Email akan menerima:
+ *  - Magic link (klik untuk auto-login), DAN
+ *  - 6-digit OTP code (untuk verifikasi manual via verifyOtp)
+ * @param {string} email
+ * @param {{shouldCreateUser?: boolean, redirectTo?: string}} [options]
+ */
+export async function sendOtp(email, options = {}) {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Auth backend belum dikonfigurasi.' }
+  }
+  if (!email) return { success: false, error: 'Email wajib diisi' }
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: options.shouldCreateUser !== false, // default true
+      emailRedirectTo: options.redirectTo || `${window.location.origin}/auth`,
+    },
+  })
+  if (error) return { success: false, error: translateAuthError(error.message) }
+  return { success: true }
+}
+
+/**
+ * Verifikasi OTP code (6-digit) yang dikirim via sendOtp.
+ * @param {string} email
+ * @param {string} token
+ */
+export async function verifyOtp(email, token) {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Auth backend belum dikonfigurasi.' }
+  }
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token,
+    type: 'email',
+  })
+  if (error) return { success: false, error: translateAuthError(error.message) }
+  const u = normalizeUser(data.user)
+  setUser(u)
+  return { success: true, user: u }
+}
+
+/**
+ * Login via Google OAuth. User akan di-redirect ke Google → balik ke /auth.
+ * Session otomatis di-detect oleh Supabase client (detectSessionInUrl: true).
+ */
+export async function loginWithGoogle(redirectTo) {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Auth backend belum dikonfigurasi.' }
+  }
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: redirectTo || `${window.location.origin}/auth`,
+    },
+  })
+  if (error) return { success: false, error: translateAuthError(error.message) }
+  // Pada saat ini browser sudah redirect ke Google, jadi return ini jarang dipakai.
+  return { success: true }
+}
+
 /** Logout — clear Supabase session. Optimistic: cache di-clear duluan. */
 export async function logoutUser() {
   // Optimistic: clear cache duluan supaya UI langsung respon

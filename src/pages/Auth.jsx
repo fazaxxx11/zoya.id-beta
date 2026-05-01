@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   ChevronLeft, Mail, Lock, User, Phone, Eye, EyeOff,
-  Loader2, CheckCircle, XCircle, Gift, Zap, Sparkles, Clock
+  Loader2, CheckCircle, XCircle, Gift, Zap, Sparkles, Clock,
+  KeyRound, ArrowLeft,
 } from 'lucide-react'
 import {
-  loginUser, logoutUser, registerUser,
+  loginUser, logoutUser, registerUser, sendOtp, verifyOtp, loginWithGoogle,
 } from '../lib/auth'
 import { useCurrentUser } from '../lib/useCurrentUser'
 import {
@@ -33,6 +34,10 @@ function Auth() {
   const [phone, setPhone] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
+  // OTP states
+  const [otpStep, setOtpStep] = useState('email') // 'email' | 'code'
+  const [otpCode, setOtpCode] = useState('')
+
   // Topup states (manual TF)
   const [selectedPkg, setSelectedPkg] = useState(null)
   const [showTopupModal, setShowTopupModal] = useState(false)
@@ -40,6 +45,14 @@ function Auth() {
   const currentUser = useCurrentUser()
   const wallet = getWallet()
   const pendingTopups = currentUser ? getPendingTopups().filter(p => p.userEmail === currentUser.email && p.status === 'pending') : []
+
+  // Auto-redirect setelah OAuth callback berhasil
+  // (kalau user kembali dari Google + ada ?redirect= di URL)
+  useEffect(() => {
+    if (currentUser && redirectTo && redirectTo !== '/' && searchParams.get('redirect')) {
+      navigate(redirectTo, { replace: true })
+    }
+  }, [currentUser, redirectTo, navigate, searchParams])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -84,6 +97,48 @@ function Auth() {
       navigate(redirectTo && redirectTo !== '/' ? redirectTo : '/dashboard')
     }, 1500)
     setLoading(false)
+  }
+
+  const handleSendOtp = async (e) => {
+    e?.preventDefault?.()
+    setError('')
+    setSuccess('')
+    setLoading(true)
+    const result = await sendOtp(email)
+    setLoading(false)
+    if (!result.success) {
+      setError(result.error)
+      return
+    }
+    setOtpStep('code')
+    setSuccess('Kode 6-digit dikirim ke email kamu. Cek inbox / spam.')
+  }
+
+  const handleVerifyOtp = async (e) => {
+    e?.preventDefault?.()
+    setError('')
+    setLoading(true)
+    const result = await verifyOtp(email, otpCode.trim())
+    setLoading(false)
+    if (!result.success) {
+      setError(result.error)
+      return
+    }
+    setSuccess('Login berhasil!')
+    setTimeout(() => {
+      navigate(redirectTo && redirectTo !== '/' ? redirectTo : '/dashboard')
+    }, 600)
+  }
+
+  const handleGoogleLogin = async () => {
+    setError('')
+    setLoading(true)
+    const result = await loginWithGoogle(`${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo || '/dashboard')}`)
+    if (!result.success) {
+      setError(result.error)
+      setLoading(false)
+    }
+    // Kalau success, browser akan redirect → no need to setLoading(false)
   }
 
   /** User pilih paket → buka modal manual TF */
@@ -327,7 +382,10 @@ function Auth() {
             <Zap className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800">
-            {mode === 'login' ? 'Login' : mode === 'register' ? 'Daftar' : 'Top-up'}
+            {mode === 'login' ? 'Login'
+              : mode === 'register' ? 'Daftar'
+              : mode === 'otp' ? 'Login dengan Kode'
+              : 'Top-up'}
           </h1>
           {mode === 'topup' && (
             <p className="text-sm text-gray-500">{BETA_FREE ? 'Pricing & top-up coming soon' : 'Isi saldo untuk menggunakan layanan'}</p>
@@ -385,7 +443,78 @@ function Auth() {
             <button type="submit" disabled={loading} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Login'}
             </button>
+
+            {/* Alternative login methods */}
+            <AltLoginMethods
+              loading={loading}
+              onGoogle={handleGoogleLogin}
+              onOtp={() => { setMode('otp'); setOtpStep('email'); setError(''); setSuccess(''); }}
+            />
           </form>
+        )}
+
+        {/* OTP Form (passwordless email) */}
+        {mode === 'otp' && (
+          <>
+            {otpStep === 'email' ? (
+              <form onSubmit={handleSendOtp} className="space-y-4">
+                <p className="text-sm text-gray-500 -mt-2 mb-2">
+                  Kami akan kirim kode 6-digit ke email kamu. Tidak perlu password.
+                </p>
+                <div>
+                  <label className="block text-sm text-gray-500 mb-1">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="email@example.com"
+                      required
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-sky-500 outline-none"
+                    />
+                  </div>
+                </div>
+                <button type="submit" disabled={loading || !email} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Kirim Kode <KeyRound className="w-4 h-4" /></>}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <p className="text-sm text-gray-500 -mt-2 mb-2">
+                  Masukkan kode 6-digit yang dikirim ke <strong>{email}</strong>.
+                </p>
+                <div>
+                  <label className="block text-sm text-gray-500 mb-1">Kode OTP</label>
+                  <div className="relative">
+                    <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="\d{6}"
+                      maxLength={6}
+                      autoComplete="one-time-code"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                      placeholder="123456"
+                      required
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-sky-500 outline-none tracking-[0.4em] text-center font-mono text-lg"
+                    />
+                  </div>
+                </div>
+                <button type="submit" disabled={loading || otpCode.length !== 6} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verifikasi & Login'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setOtpStep('email'); setOtpCode(''); setError(''); setSuccess(''); }}
+                  className="w-full text-sm text-gray-500 hover:text-sky-600 flex items-center justify-center gap-1"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Ganti email
+                </button>
+              </form>
+            )}
+          </>
         )}
 
         {/* Register Form */}
@@ -453,6 +582,14 @@ function Auth() {
             <button type="submit" disabled={loading} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Daftar'}
             </button>
+
+            {/* Alternative signup */}
+            <AltLoginMethods
+              loading={loading}
+              onGoogle={handleGoogleLogin}
+              onOtp={() => { setMode('otp'); setOtpStep('email'); setError(''); setSuccess(''); }}
+              variant="signup"
+            />
           </form>
         )}
 
@@ -499,6 +636,14 @@ function Auth() {
               </button>
             </p>
           )}
+          {mode === 'otp' && (
+            <p className="text-gray-500">
+              Pakai password?{' '}
+              <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-sky-600 hover:underline font-medium">
+                Login dengan password
+              </button>
+            </p>
+          )}
           {(mode === 'login' || mode === 'register') && (
             <p className="text-gray-400 text-sm mt-3">
               atau{' '}
@@ -520,6 +665,51 @@ function Auth() {
         </div>
       </div>
     </div>
+  )
+}
+
+/**
+ * Tombol Google + link OTP — dipakai di login form & register form.
+ */
+function AltLoginMethods({ loading, onGoogle, onOtp, variant = 'login' }) {
+  return (
+    <div className="pt-2">
+      <div className="flex items-center gap-3 my-3">
+        <div className="flex-1 h-px bg-gray-200" />
+        <span className="text-xs text-gray-400 uppercase tracking-wider">atau</span>
+        <div className="flex-1 h-px bg-gray-200" />
+      </div>
+      <button
+        type="button"
+        onClick={onGoogle}
+        disabled={loading}
+        className="w-full bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+      >
+        <GoogleIcon className="w-5 h-5" />
+        {variant === 'signup' ? 'Daftar dengan Google' : 'Login dengan Google'}
+      </button>
+      <button
+        type="button"
+        onClick={onOtp}
+        disabled={loading}
+        className="mt-2 w-full bg-white border-2 border-gray-200 hover:border-sky-300 hover:bg-sky-50 text-gray-700 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+      >
+        <KeyRound className="w-5 h-5 text-sky-600" />
+        Login pakai kode OTP (tanpa password)
+      </button>
+    </div>
+  )
+}
+
+/** Inline Google "G" logo. */
+function GoogleIcon({ className = '' }) {
+  return (
+    <svg className={className} viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 5.1 29.3 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.3-.4-3.5z"/>
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 5.1 29.3 3 24 3 16.3 3 9.6 7.6 6.3 14.7z"/>
+      <path fill="#4CAF50" d="M24 45c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-1.9 1.5-4.4 2.4-7.2 2.4-5.2 0-9.6-3.3-11.2-7.9l-6.5 5C9.5 40.4 16.2 45 24 45z"/>
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6h0l6.2 5.2C37 39.6 45 33 45 24c0-1.2-.1-2.3-.4-3.5z"/>
+    </svg>
   )
 }
 
