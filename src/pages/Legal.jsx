@@ -92,15 +92,17 @@ function PrivacyContent() {
 
       <Section title="3. Data yang kami simpan di server (jika Anda login)">
         <ul className="list-disc list-inside space-y-1">
-          <li><strong>Akun:</strong> email, nama, password (di-hash), waktu pendaftaran.</li>
-          <li><strong>Riwayat analisis:</strong> hasil yang Anda klik "Simpan ke Riwayat" — disimpan agar bisa dipakai di Generator Bab IV. Hanya Anda yang bisa akses.</li>
-          <li><strong>Pesanan/transaksi:</strong> jika Anda menggunakan layanan berbayar.</li>
+          <li><strong>Akun:</strong> email, nama, password (di-hash oleh Supabase Auth), nomor HP (opsional), waktu pendaftaran.</li>
+          <li><strong>Login Google (opsional):</strong> jika memilih login dengan Google, kami menerima nama, email, dan ID akun Google Anda. Tidak ada data kontak/Drive/dll yang diambil.</li>
+          <li><strong>Saldo & transaksi:</strong> wallet (saldo & bonus) dan riwayat top-up/payment.</li>
+          <li><strong>Pesanan & hasil:</strong> riwayat order assessment & analisis statistik.</li>
+          <li><strong>Riwayat analisis tersimpan:</strong> hasil yang Anda klik "Simpan ke Riwayat" — agar bisa dipakai di Generator Bab IV.</li>
         </ul>
-        <p className="mt-2">Server kami menggunakan <a href="https://supabase.com" target="_blank" rel="noopener" className="underline">Supabase</a> dengan kebijakan Row-Level Security: data Anda hanya bisa diakses oleh Anda sendiri yang login.</p>
+        <p className="mt-2">Server kami menggunakan <a href="https://supabase.com" target="_blank" rel="noopener" className="underline">Supabase</a> (hosted di Singapura) dengan Row-Level Security: data Anda hanya bisa diakses oleh akun Anda sendiri yang login.</p>
       </Section>
 
       <Section title="4. Data analisis & AI">
-        <p>Saat Anda menggunakan fitur "Generate dengan AI" (interpretasi statistik atau penilaian rubrik), input dikirim ke penyedia model AI (OpenRouter / OpenAI). Mereka memiliki kebijakan retensi sendiri yang umumnya tidak menggunakan input untuk melatih model. <strong>Hindari memasukkan data sensitif/PII</strong> (nama responden lengkap, NIK, dll.) saat menggunakan fitur AI.</p>
+        <p>Saat Anda menggunakan fitur "Generate dengan AI" (interpretasi statistik atau penilaian rubrik), input dikirim ke penyedia model AI <a href="https://groq.com" target="_blank" rel="noopener" className="underline">Groq</a>. Sesuai kebijakan privasi Groq, input <strong>tidak digunakan untuk melatih model</strong>. <strong>Hindari memasukkan data sensitif/PII</strong> (nama lengkap responden, NIK, alamat, dll.) saat menggunakan fitur AI.</p>
       </Section>
 
       <Section title="5. Cookies & analytics">

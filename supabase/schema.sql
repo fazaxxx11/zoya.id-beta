@@ -35,12 +35,11 @@ begin
     new.email,
     coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1))
   );
-  -- Initialize wallet with welcome bonus 5k
+  -- Initialize wallet kosong (NO welcome bonus per kebijakan launch).
+  -- User wajib top-up sebelum pakai paid features. Beta = semua tools gratis,
+  -- tapi tidak via bonus melainkan via flag BETA_FREE di frontend.
   insert into public.wallets (user_id, balance, bonus)
-  values (new.id, 0, 5000);
-
-  insert into public.wallet_transactions (user_id, type, amount, bonus, note)
-  values (new.id, 'welcome', 0, 5000, 'Bonus pendaftaran');
+  values (new.id, 0, 0);
 
   return new;
 end;
