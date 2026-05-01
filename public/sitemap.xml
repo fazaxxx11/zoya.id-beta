@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://zoya.id/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://zoya.id/wizard</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://zoya.id/statistik</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://zoya.id/statistik/report</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://zoya.id/statistik/power</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://zoya.id/kuesioner</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://zoya.id/sampling</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://zoya.id/butir-soal</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://zoya.id/referensi</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://zoya.id/mediasi</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://zoya.id/logistik</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://zoya.id/efa</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://zoya.id/kualitatif</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://zoya.id/assessment</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://zoya.id/pengaturan</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://zoya.id/help</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://zoya.id/feedback</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://zoya.id/privasi</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://zoya.id/syarat</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

@@ -1,0 +1,748 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =====================================================
+   Mobile utilities
+===================================================== */
+@layer utilities {
+  /* Hide scrollbar but keep scrolling — useful untuk horizontal nav di mobile */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Mobile-only bottom padding to clear BottomNav (≈64px + safe-area) */
+  .pb-bottomnav {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 1024px) {
+    .pb-bottomnav { padding-bottom: 0; }
+  }
+}
+
+/* =====================================================
+   Theme tokens (RGB triplets supaya bisa pakai opacity)
+   Default: light. .dark class di <html> override-nya.
+===================================================== */
+:root {
+  --bg:        248 250 252;   /* slate-50 */
+  --fg:        15 23 42;      /* slate-900 */
+  --card:      255 255 255;   /* white */
+  --border:    226 232 240;   /* slate-200 */
+  --muted:     100 116 139;   /* slate-500 */
+  --accent:    14 165 233;    /* sky-500 */
+  --accent-2:  168 85 247;    /* purple-500 */
+}
+
+.dark {
+  /* Purple Galaxy theme — saturasi DINAIKKAN supaya kelihatan jelas purple */
+  --bg:        12 7 30;        /* deep purple void */
+  --fg:        237 230 252;    /* lavender-tinted off-white */
+  --card:      48 26 110;      /* VIBRANT purple, jauh dari grey */
+  --border:    102 65 175;     /* bright purple border */
+  --muted:     200 180 235;    /* lavender muted */
+  --accent:    192 132 252;    /* lavender-purple */
+  --accent-2:  56 189 248;     /* sky cyan accent */
+}
+
+* {
+  border-color: rgb(var(--border));
+}
+
+/* =====================================================
+   Dark Mode Auto-Remap for Legacy Pages
+   =====================================================
+   Banyak page lama pakai `bg-white`, `text-gray-X`, `border-gray-X`
+   yang hardcoded ke warna terang. Override-nya di .dark mode supaya
+   auto pakai theme tokens, tanpa perlu edit setiap page satu-satu.
+
+   New page sebaiknya pakai `style={{ backgroundColor: 'rgb(var(--card))' }}`
+   langsung — tapi rules ini jadi safety net untuk kompatibilitas. */
+.dark .bg-white {
+  background-color: rgb(var(--card));
+}
+.dark .bg-white\/70,
+.dark .bg-white\/60,
+.dark .bg-white\/50 {
+  background-color: rgb(var(--card) / 0.7);
+}
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-slate-50,
+.dark .bg-slate-100 {
+  background-color: rgb(var(--border) / 0.25);
+}
+.dark .bg-gray-200 {
+  background-color: rgb(var(--border) / 0.5);
+}
+
+/* Borders → theme border */
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-300,
+.dark .border-slate-100,
+.dark .border-slate-200 {
+  border-color: rgb(var(--border));
+}
+
+/* Text colors → theme fg/muted */
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-black {
+  color: rgb(var(--fg));
+}
+.dark .text-gray-700,
+.dark .text-gray-600,
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: rgb(var(--fg) / 0.85);
+}
+.dark .text-gray-500,
+.dark .text-gray-400,
+.dark .text-slate-500,
+.dark .text-slate-400 {
+  color: rgb(var(--muted));
+}
+
+/* Hover background untuk row clickable */
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-gray-100:hover,
+.dark .hover\:bg-slate-50:hover {
+  background-color: rgb(var(--border) / 0.4);
+}
+
+/* Pastel-tinted backgrounds (info/success/warning/error)
+   Diturunkan opacity-nya supaya nyatu dengan dark theme.
+   Strong colors (red-600, etc.) tetap stay biar tetap kelihatan. */
+.dark .bg-blue-50      { background-color: rgb(59 130 246 / 0.15); }
+.dark .bg-blue-100     { background-color: rgb(59 130 246 / 0.20); }
+.dark .bg-emerald-50   { background-color: rgb(16 185 129 / 0.15); }
+.dark .bg-emerald-100  { background-color: rgb(16 185 129 / 0.20); }
+.dark .bg-amber-50     { background-color: rgb(245 158 11 / 0.15); }
+.dark .bg-amber-100    { background-color: rgb(245 158 11 / 0.20); }
+.dark .bg-red-50       { background-color: rgb(239 68 68 / 0.15); }
+.dark .bg-red-100      { background-color: rgb(239 68 68 / 0.20); }
+.dark .bg-violet-50    { background-color: rgb(139 92 246 / 0.18); }
+.dark .bg-violet-100   { background-color: rgb(139 92 246 / 0.25); }
+.dark .bg-indigo-50    { background-color: rgb(99 102 241 / 0.18); }
+.dark .bg-indigo-100   { background-color: rgb(99 102 241 / 0.25); }
+.dark .bg-purple-50    { background-color: rgb(168 85 247 / 0.18); }
+.dark .bg-purple-100   { background-color: rgb(168 85 247 / 0.25); }
+.dark .bg-cyan-50      { background-color: rgb(6 182 212 / 0.18); }
+.dark .bg-fuchsia-50   { background-color: rgb(217 70 239 / 0.18); }
+.dark .bg-rose-50      { background-color: rgb(244 63 94 / 0.18); }
+.dark .bg-orange-50    { background-color: rgb(249 115 22 / 0.18); }
+
+/* Pastel borders → softer in dark */
+.dark .border-blue-200    { border-color: rgb(59 130 246 / 0.5); }
+.dark .border-emerald-200 { border-color: rgb(16 185 129 / 0.5); }
+.dark .border-amber-200   { border-color: rgb(245 158 11 / 0.5); }
+.dark .border-red-200     { border-color: rgb(239 68 68 / 0.5); }
+.dark .border-violet-200  { border-color: rgb(139 92 246 / 0.5); }
+.dark .border-indigo-200  { border-color: rgb(99 102 241 / 0.5); }
+.dark .border-purple-200  { border-color: rgb(168 85 247 / 0.5); }
+
+/* Pastel text → brighten in dark for contrast */
+.dark .text-blue-700,
+.dark .text-blue-800,
+.dark .text-blue-900     { color: rgb(147 197 253); }
+.dark .text-emerald-700,
+.dark .text-emerald-800,
+.dark .text-emerald-900  { color: rgb(110 231 183); }
+.dark .text-amber-700,
+.dark .text-amber-800,
+.dark .text-amber-900    { color: rgb(252 211 77); }
+.dark .text-red-700,
+.dark .text-red-800,
+.dark .text-red-900      { color: rgb(252 165 165); }
+.dark .text-violet-700,
+.dark .text-violet-800,
+.dark .text-violet-900   { color: rgb(196 181 253); }
+.dark .text-indigo-700,
+.dark .text-indigo-800,
+.dark .text-indigo-900   { color: rgb(165 180 252); }
+.dark .text-purple-700,
+.dark .text-purple-800,
+.dark .text-purple-900   { color: rgb(216 180 254); }
+
+html, body {
+  background: rgb(var(--bg));
+  color: rgb(var(--fg));
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  transition: background-color 300ms ease, color 300ms ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  position: relative;
+}
+
+/* =====================================================
+   Batik Pattern Background — Indonesian Cultural Touch
+   Layered di atas body dengan opacity rendah supaya subtle.
+   Fixed position, behind everything kecuali aurora.
+
+   Untuk ganti motif, ubah --pattern-active di bawah:
+     'kawung'  → Kawung (default, geometric circles)
+     'parang'  → Parang (diagonal waves, classic royal)
+     'mega'    → Mega Mendung (cloud waves)
+===================================================== */
+:root { --pattern-active: 'kawung'; }
+
+/* Body batik DIHAPUS — user mau batik di page, bukan di background */
+body::before { display: none; }
+
+/* === Pattern: KAWUNG (default) — interlocking circles ===
+   2 versi: dark stroke (untuk light bg) & light/lavender stroke (untuk dark bg) */
+:root {
+  --pattern-kawung-dark: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><g fill='none' stroke='%231e293b' stroke-width='1.2'><ellipse cx='20' cy='20' rx='14' ry='9' transform='rotate(45 20 20)'/><ellipse cx='60' cy='20' rx='14' ry='9' transform='rotate(-45 60 20)'/><ellipse cx='20' cy='60' rx='14' ry='9' transform='rotate(-45 20 60)'/><ellipse cx='60' cy='60' rx='14' ry='9' transform='rotate(45 60 60)'/><circle cx='40' cy='40' r='3' fill='%231e293b'/><circle cx='0' cy='0' r='2' fill='%231e293b'/><circle cx='80' cy='0' r='2' fill='%231e293b'/><circle cx='0' cy='80' r='2' fill='%231e293b'/><circle cx='80' cy='80' r='2' fill='%231e293b'/></g></svg>");
+  /* Lavender untuk dark mode — nyatu dengan purple galaxy */
+  --pattern-kawung-light: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><g fill='none' stroke='%23c4b5fd' stroke-width='1.4'><ellipse cx='20' cy='20' rx='14' ry='9' transform='rotate(45 20 20)'/><ellipse cx='60' cy='20' rx='14' ry='9' transform='rotate(-45 60 20)'/><ellipse cx='20' cy='60' rx='14' ry='9' transform='rotate(-45 20 60)'/><ellipse cx='60' cy='60' rx='14' ry='9' transform='rotate(45 60 60)'/><circle cx='40' cy='40' r='3' fill='%23c4b5fd'/><circle cx='0' cy='0' r='2' fill='%23c4b5fd'/><circle cx='80' cy='0' r='2' fill='%23c4b5fd'/><circle cx='0' cy='80' r='2' fill='%23c4b5fd'/><circle cx='80' cy='80' r='2' fill='%23c4b5fd'/></g></svg>");
+}
+
+/* === Pattern: PARANG — diagonal wave/flame === */
+.pattern-parang body::before {
+  background-size: 60px 60px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><g fill='none' stroke='%231e293b' stroke-width='1.5'><path d='M-5 30 Q15 0 30 30 T65 30' stroke-linecap='round'/><path d='M-5 50 Q15 20 30 50 T65 50' stroke-linecap='round' opacity='0.7'/><circle cx='15' cy='15' r='1.5' fill='%231e293b'/><circle cx='45' cy='45' r='1.5' fill='%231e293b'/></g></svg>");
+}
+.dark.pattern-parang body::before,
+.pattern-parang.dark body::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><g fill='none' stroke='%23c4b5fd' stroke-width='1.6'><path d='M-5 30 Q15 0 30 30 T65 30' stroke-linecap='round'/><path d='M-5 50 Q15 20 30 50 T65 50' stroke-linecap='round' opacity='0.7'/><circle cx='15' cy='15' r='1.5' fill='%23c4b5fd'/><circle cx='45' cy='45' r='1.5' fill='%23c4b5fd'/></g></svg>");
+}
+
+/* === Pattern: MEGA MENDUNG === */
+.pattern-mega body::before {
+  background-size: 100px 100px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><g fill='none' stroke='%231e293b' stroke-width='1.3' stroke-linecap='round'><path d='M10 50 Q25 30 40 50 T70 50 T100 50'/><path d='M0 70 Q15 50 30 70 T60 70 T90 70 T100 70' opacity='0.7'/><path d='M20 30 Q35 10 50 30 T80 30 T100 30' opacity='0.5'/></g></svg>");
+}
+.dark.pattern-mega body::before,
+.pattern-mega.dark body::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><g fill='none' stroke='%23c4b5fd' stroke-width='1.4' stroke-linecap='round'><path d='M10 50 Q25 30 40 50 T70 50 T100 50'/><path d='M0 70 Q15 50 30 70 T60 70 T90 70 T100 70' opacity='0.7'/><path d='M20 30 Q35 10 50 30 T80 30 T100 30' opacity='0.5'/></g></svg>");
+}
+
+/* Selection */
+::selection {
+  background: rgb(var(--accent) / 0.3);
+  color: rgb(var(--fg));
+}
+
+/* Scrollbar styling (webkit) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--border));
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--muted)); background-clip: padding-box; }
+
+/* =====================================================
+   Aurora background blobs (used by <Aurora /> component)
+===================================================== */
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  pointer-events: none;
+  will-change: transform;
+}
+.dark .aurora-blob {
+  opacity: 0.6; /* lebih dramatic di dark mode = galaxy vibe */
+  filter: blur(110px);
+}
+
+/* =====================================================
+   Component utilities
+===================================================== */
+@layer components {
+  /* Inline link utility */
+  .link {
+    color: rgb(var(--accent));
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 150ms ease;
+  }
+  .link:hover { opacity: 0.8; }
+
+  /* Glassmorphism card */
+  .glass {
+    background: rgb(var(--card) / 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgb(var(--border) / 0.6);
+    border-radius: 1rem;
+  }
+  .dark .glass {
+    background: rgb(var(--card) / 0.5);
+    border-color: rgb(255 255 255 / 0.08);
+  }
+
+  /* Glass solid (less transparency, untuk konten penting) */
+  .glass-solid {
+    background: rgb(var(--card));
+    border: 1px solid rgb(var(--border));
+    border-radius: 1rem;
+  }
+  .dark .glass-solid {
+    background: rgb(var(--card) / 0.95);
+    border-color: rgb(255 255 255 / 0.08);
+  }
+
+  /* Card hover with glow */
+  .card-interactive {
+    @apply glass transition-all duration-300;
+  }
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    border-color: rgb(var(--accent) / 0.4);
+    box-shadow: 0 10px 40px -10px rgb(var(--accent) / 0.25);
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    background: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent-2)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply font-semibold px-6 py-3 rounded-xl transition-all duration-200
+           shadow-lg active:scale-95 inline-flex items-center justify-center gap-2;
+    background: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent-2)));
+    color: white;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgb(var(--accent) / 0.4);
+    transform: translateY(-1px);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    @apply font-semibold px-6 py-3 rounded-xl transition-all duration-200
+           inline-flex items-center justify-center gap-2;
+    background: rgb(var(--card));
+    color: rgb(var(--fg));
+    border: 1px solid rgb(var(--border));
+  }
+  .btn-secondary:hover {
+    background: rgb(var(--accent) / 0.1);
+    border-color: rgb(var(--accent) / 0.4);
+  }
+
+  .btn-ghost {
+    @apply font-medium px-4 py-2 rounded-lg transition-colors duration-200
+           inline-flex items-center gap-2;
+    color: rgb(var(--muted));
+  }
+  .btn-ghost:hover {
+    color: rgb(var(--fg));
+    background: rgb(var(--accent) / 0.08);
+  }
+
+  /* Inputs */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl transition-all duration-200 outline-none;
+    background: rgb(var(--card));
+    color: rgb(var(--fg));
+    border: 1px solid rgb(var(--border));
+  }
+  .input-field::placeholder { color: rgb(var(--muted) / 0.7); }
+  .input-field:focus {
+    border-color: rgb(var(--accent));
+    box-shadow: 0 0 0 3px rgb(var(--accent) / 0.15);
+  }
+
+  /* Card hover (legacy alias) */
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px rgb(var(--accent) / 0.2);
+  }
+
+  /* Section heading wrapper */
+  .heading-xl {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1];
+  }
+  .heading-lg {
+    @apply text-2xl md:text-3xl font-bold tracking-tight;
+  }
+
+  /* Subtle divider */
+  .divider {
+    @apply h-px;
+    background: linear-gradient(to right,
+      transparent,
+      rgb(var(--border)) 20%,
+      rgb(var(--border)) 80%,
+      transparent
+    );
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply glass p-6 rounded-2xl transition-all duration-300;
+  }
+  .stat-card:hover {
+    border-color: rgb(var(--accent) / 0.4);
+    box-shadow: 0 0 40px -10px rgb(var(--accent) / 0.3);
+  }
+}
+
+/* =====================================================
+   Page background pattern (legacy class, used in many pages)
+===================================================== */
+/* Page-level pattern overlay — batik subtle "di dalam page" */
+.bg-pattern {
+  background: transparent; /* let body bg & body batik tembus */
+  position: relative;
+}
+.bg-pattern::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: var(--pattern-kawung-dark);
+  background-size: 56px 56px; /* lebih kecil & rapat */
+  background-repeat: repeat;
+}
+.dark .bg-pattern::before {
+  opacity: 0.09; /* samar saja, just hint of texture */
+  background-image: var(--pattern-kawung-light);
+}
+/* Pastikan konten di atas pattern */
+.bg-pattern > * { position: relative; z-index: 1; }
+
+/* Animation utility shortcuts */
+.animate-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+/* Slide-in-from-right (for toast) — simple version */
+.slide-in-from-right {
+  animation: slide-in-from-right 0.3s ease-out;
+}
+@keyframes slide-in-from-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+/* =====================================================
+   Dark mode auto-overrides untuk legacy Tailwind classes.
+   Page-page lama yang masih hardcode bg-white / text-gray-X
+   otomatis ter-translate ke theme tokens saat dark mode aktif.
+===================================================== */
+.dark .bg-white,
+.dark .bg-white\/80,
+.dark .bg-white\/90 {
+  background-color: rgb(var(--card) / 0.75) !important; /* solid purple, batik tetap tembus tipis */
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(var(--border) / 0.45);
+}
+.dark .bg-gray-50  { background-color: rgb(var(--card) / 0.4) !important; }
+.dark .bg-gray-100 { background-color: rgb(var(--card) / 0.6) !important; }
+.dark .bg-gray-200 { background-color: rgb(var(--border) / 0.8) !important; }
+.dark .bg-gray-800 { background-color: rgb(var(--card)) !important; }
+.dark .bg-gray-900 { background-color: rgb(var(--bg)) !important; }
+
+/* Text */
+.dark .text-gray-900,
+.dark .text-gray-800 { color: rgb(var(--fg)) !important; }
+.dark .text-gray-700 { color: rgb(var(--fg) / 0.92) !important; }
+.dark .text-gray-600 { color: rgb(var(--muted)) !important; }
+.dark .text-gray-500 { color: rgb(var(--muted) / 0.85) !important; }
+.dark .text-gray-400 { color: rgb(var(--muted) / 0.7) !important; }
+
+/* Borders */
+.dark .border-gray-100,
+.dark .border-gray-200 { border-color: rgb(var(--border) / 0.8) !important; }
+.dark .border-gray-300 { border-color: rgb(var(--border)) !important; }
+
+/* Tinted backgrounds — soften saat dark, jangan glaring.
+   Pattern: bg-X-50 → 0.08, bg-X-100 → 0.18 (lebih jelas untuk active state),
+   bg-X-200 → 0.25 (border replacement). */
+.dark .bg-sky-50      { background-color: rgb(56 189 248 / 0.08) !important; }
+.dark .bg-sky-100     { background-color: rgb(56 189 248 / 0.20) !important; }
+.dark .bg-sky-200     { background-color: rgb(56 189 248 / 0.30) !important; }
+.dark .bg-blue-50     { background-color: rgb(59 130 246 / 0.08) !important; }
+.dark .bg-blue-100    { background-color: rgb(59 130 246 / 0.20) !important; }
+.dark .bg-orange-50   { background-color: rgb(251 146 60 / 0.08) !important; }
+.dark .bg-orange-100  { background-color: rgb(251 146 60 / 0.18) !important; }
+.dark .bg-red-50      { background-color: rgb(248 113 113 / 0.10) !important; }
+.dark .bg-red-100     { background-color: rgb(248 113 113 / 0.20) !important; }
+.dark .bg-rose-50     { background-color: rgb(251 113 133 / 0.10) !important; }
+.dark .bg-rose-100    { background-color: rgb(251 113 133 / 0.20) !important; }
+.dark .bg-amber-50    { background-color: rgb(251 191 36 / 0.10) !important; }
+.dark .bg-amber-100   { background-color: rgb(251 191 36 / 0.20) !important; }
+.dark .bg-amber-200   { background-color: rgb(251 191 36 / 0.30) !important; }
+.dark .bg-yellow-50   { background-color: rgb(234 179 8 / 0.10) !important; }
+.dark .bg-yellow-100  { background-color: rgb(234 179 8 / 0.20) !important; }
+.dark .bg-green-50    { background-color: rgb(34 197 94 / 0.10) !important; }
+.dark .bg-green-100   { background-color: rgb(34 197 94 / 0.20) !important; }
+.dark .bg-green-200   { background-color: rgb(34 197 94 / 0.30) !important; }
+.dark .bg-emerald-50  { background-color: rgb(16 185 129 / 0.10) !important; }
+.dark .bg-emerald-100 { background-color: rgb(16 185 129 / 0.20) !important; }
+.dark .bg-emerald-200 { background-color: rgb(16 185 129 / 0.30) !important; }
+.dark .bg-teal-50     { background-color: rgb(20 184 166 / 0.10) !important; }
+.dark .bg-teal-100    { background-color: rgb(20 184 166 / 0.20) !important; }
+.dark .bg-purple-50   { background-color: rgb(168 85 247 / 0.10) !important; }
+.dark .bg-purple-100  { background-color: rgb(168 85 247 / 0.22) !important; }
+.dark .bg-pink-50     { background-color: rgb(244 114 182 / 0.10) !important; }
+.dark .bg-pink-100    { background-color: rgb(244 114 182 / 0.20) !important; }
+.dark .bg-indigo-50   { background-color: rgb(129 140 248 / 0.10) !important; }
+.dark .bg-indigo-100  { background-color: rgb(129 140 248 / 0.20) !important; }
+
+/* Border-tints di dark mode — pakai accent color yang lebih hidup */
+.dark .border-sky-100,
+.dark .border-sky-200    { border-color: rgb(56 189 248 / 0.35) !important; }
+.dark .border-sky-300    { border-color: rgb(56 189 248 / 0.50) !important; }
+.dark .border-emerald-100,
+.dark .border-emerald-200 { border-color: rgb(16 185 129 / 0.35) !important; }
+.dark .border-amber-100,
+.dark .border-amber-200  { border-color: rgb(251 191 36 / 0.35) !important; }
+.dark .border-green-100,
+.dark .border-green-200  { border-color: rgb(34 197 94 / 0.35) !important; }
+.dark .border-red-100,
+.dark .border-red-200    { border-color: rgb(248 113 113 / 0.35) !important; }
+.dark .border-purple-100,
+.dark .border-purple-200 { border-color: rgb(168 85 247 / 0.40) !important; }
+.dark .border-pink-100,
+.dark .border-pink-200   { border-color: rgb(244 114 182 / 0.35) !important; }
+
+/* Tinted text — bikin lebih vibrant (bukan dim).
+   Setiap warna pakai shade-300 sebagai default supaya readable di dark bg. */
+.dark .text-sky-600,
+.dark .text-sky-700,
+.dark .text-sky-800    { color: rgb(125 211 252) !important; }
+.dark .text-blue-600,
+.dark .text-blue-700,
+.dark .text-blue-800   { color: rgb(147 197 253) !important; }
+.dark .text-orange-500,
+.dark .text-orange-600,
+.dark .text-orange-700,
+.dark .text-orange-800 { color: rgb(253 186 116) !important; }
+.dark .text-red-600,
+.dark .text-red-700,
+.dark .text-red-800    { color: rgb(252 165 165) !important; }
+.dark .text-rose-600,
+.dark .text-rose-700   { color: rgb(253 164 175) !important; }
+.dark .text-green-600,
+.dark .text-green-700,
+.dark .text-green-800  { color: rgb(134 239 172) !important; }
+.dark .text-emerald-600,
+.dark .text-emerald-700,
+.dark .text-emerald-800,
+.dark .text-emerald-900 { color: rgb(110 231 183) !important; }
+.dark .text-amber-600,
+.dark .text-amber-700,
+.dark .text-amber-800  { color: rgb(252 211 77) !important; }
+.dark .text-yellow-700,
+.dark .text-yellow-800 { color: rgb(252 211 77) !important; }
+.dark .text-purple-600,
+.dark .text-purple-700,
+.dark .text-purple-800 { color: rgb(216 180 254) !important; }
+.dark .text-pink-600,
+.dark .text-pink-700   { color: rgb(249 168 212) !important; }
+.dark .text-indigo-600,
+.dark .text-indigo-700 { color: rgb(165 180 252) !important; }
+.dark .text-teal-600,
+.dark .text-teal-700   { color: rgb(94 234 212) !important; }
+
+/* Solid white backgrounds di card-style (sticky header dll) */
+.dark header.bg-white,
+.dark .bg-white.shadow-sm {
+  background-color: rgb(var(--bg) / 0.7) !important;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgb(var(--border) / 0.5);
+}
+
+/* =====================================================
+   ANIMASI CIAMIK 🎨
+===================================================== */
+
+/* Smooth scale up entrance */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in { animation: scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* Slide from bottom (untuk modal/sheet) */
+@keyframes slide-up-fade {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slide-up-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Slide from left/right untuk step transitions */
+@keyframes slide-from-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-from-right { animation: slide-from-right 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@keyframes slide-from-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-from-left { animation: slide-from-left 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Bouncy entry untuk score badge */
+@keyframes bounce-in {
+  0%   { opacity: 0; transform: scale(0.3); }
+  50%  { opacity: 1; transform: scale(1.08); }
+  70%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+.animate-bounce-in { animation: bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* Smooth float (idle animation) */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+/* Shimmer skeleton loader (lebih ciamik dari plain pulse) */
+@keyframes shimmer-bg {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--card) / 0.4) 0%,
+    rgb(var(--card) / 0.7) 50%,
+    rgb(var(--card) / 0.4) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-bg 1.5s linear infinite;
+}
+
+/* Stagger helper — child akan ter-animasi dengan delay bertahap */
+.stagger > * { animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+.stagger > *:nth-child(1)  { animation-delay: 0.04s; }
+.stagger > *:nth-child(2)  { animation-delay: 0.08s; }
+.stagger > *:nth-child(3)  { animation-delay: 0.12s; }
+.stagger > *:nth-child(4)  { animation-delay: 0.16s; }
+.stagger > *:nth-child(5)  { animation-delay: 0.20s; }
+.stagger > *:nth-child(6)  { animation-delay: 0.24s; }
+.stagger > *:nth-child(7)  { animation-delay: 0.28s; }
+.stagger > *:nth-child(8)  { animation-delay: 0.32s; }
+.stagger > *:nth-child(9)  { animation-delay: 0.36s; }
+.stagger > *:nth-child(10) { animation-delay: 0.40s; }
+
+/* Hover magnetic-like (button) */
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px -10px rgb(var(--accent) / 0.35);
+}
+
+/* Hover glow ring */
+.hover-glow {
+  position: relative;
+  transition: all 0.3s ease;
+}
+.hover-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgb(var(--accent) / 0.5), rgb(var(--accent-2) / 0.5));
+  opacity: 0;
+  z-index: -1;
+  filter: blur(12px);
+  transition: opacity 0.3s ease;
+}
+.hover-glow:hover::before { opacity: 1; }
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob,
+  *[class*="animate-"],
+  .stagger > * {
+    animation: none !important;
+  }
+}
+
+/* =====================================================
+   PRINT STYLES — untuk AssessmentReport / future reports
+   Hilangkan elemen UI non-essential, force light mode,
+   pastikan tabel ngga break aneh.
+===================================================== */
+@media print {
+  /* Hide framework chrome */
+  .aurora-blob,
+  .bg-pattern::before,
+  nav,
+  header.sticky,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Force light bg untuk readability di kertas */
+  html, body {
+    background: white !important;
+    color: black !important;
+  }
+
+  body::before { display: none !important; }
+
+  /* Remove all shadows & borders pada container utama */
+  .report-page {
+    box-shadow: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Tabel: ngga break tengah row */
+  table { page-break-inside: auto; }
+  tr    { page-break-inside: avoid; page-break-after: auto; }
+  thead { display: table-header-group; }   /* repeat header tiap halaman */
+  tfoot { display: table-footer-group; }
+
+  /* Avoid widow/orphan headings */
+  h1, h2, h3 { page-break-after: avoid; }
+  section    { page-break-inside: avoid; }
+
+  /* Default page margin */
+  @page {
+    margin: 1.5cm 1.2cm;
+    size: A4;
+  }
+
+  /* Force colors to print (default browsers strip background colors) */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
