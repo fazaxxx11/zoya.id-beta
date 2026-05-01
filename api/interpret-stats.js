@@ -1,12 +1,14 @@
 // AI Interpretation untuk hasil analisis statistik.
 // Menerima result object → return paragraf interpretasi akademik Bahasa Indonesia.
-// Pakai Groq (cepat, gratis tier), fallback Kimi.
+// Providers (prioritas): OpenRouter → Groq → Kimi.
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const KIMI_URL = 'https://api.moonshot.ai/v1/chat/completions'
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 // Cascade: large model first, fall back to small instant model when overloaded.
 const GROQ_MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant']
 const KIMI_MODEL = 'moonshot-v1-8k'
+const OPENROUTER_MODEL_DEFAULT = 'meta-llama/llama-3.3-70b-instruct:free'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -20,12 +22,30 @@ export default async function handler(req, res) {
 
   const groqKey = process.env.GROQ_API_KEY
   const kimiKey = process.env.KIMI_API_KEY
-  if (!groqKey && !kimiKey) {
+  const orKey = process.env.OPENROUTER_API_KEY
+  const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT
+  if (!groqKey && !kimiKey && !orKey) {
     return res.status(500).json({ error: 'No API key configured' })
   }
 
   const prompt = buildPrompt(result)
   const errors = []
+
+  // Try OpenRouter first (paling fleksibel — pick model via env)
+  if (orKey) {
+    const out = await callWithRetry(OPENROUTER_URL, orModel, orKey, prompt, 2, true)
+    if (out.ok) {
+      return res.status(200).json({
+        success: true,
+        provider: `openrouter:${orModel}`,
+        interpretation: out.text,
+        tokens: out.tokens,
+      })
+    }
+    const errMsg = `openrouter/${orModel}: ${out.error}`
+    console.log('[interpret]', errMsg)
+    errors.push(errMsg)
+  }
 
   // Try Groq with model cascade (large → small instant fallback)
   if (groqKey) {
@@ -71,10 +91,10 @@ export default async function handler(req, res) {
 // =====================================================================
 // Retry wrapper — coba 2x untuk error transient (429, 5xx, network)
 // =====================================================================
-async function callWithRetry(url, model, key, prompt, maxAttempts = 2) {
+async function callWithRetry(url, model, key, prompt, maxAttempts = 2, isOpenRouter = false) {
   let last
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    last = await callLLM(url, model, key, prompt)
+    last = await callLLM(url, model, key, prompt, isOpenRouter)
     if (last.ok) return last
     if (!last.transient) return last
     if (attempt < maxAttempts) {
@@ -294,11 +314,17 @@ function formatFacts(r) {
 // =====================================================================
 // Provider call
 // =====================================================================
-async function callLLM(url, model, key, prompt) {
+async function callLLM(url, model, key, prompt, isOpenRouter = false) {
   try {
+    const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }
+    if (isOpenRouter) {
+      // Optional but recommended for OpenRouter attribution/leaderboard
+      headers['HTTP-Referer'] = 'https://zoya-id-beta.vercel.app'
+      headers['X-Title'] = 'zoya.id'
+    }
     const r = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+      headers,
       body: JSON.stringify({
         model,
         messages: [

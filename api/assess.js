@@ -5,9 +5,14 @@ import { buildAssessPrompt, validateAssessResponse, parseJSONLoose } from './_li
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const KIMI_URL = 'https://api.moonshot.ai/v1/chat/completions'
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 
 const GROQ_MODEL = 'llama-3.3-70b-versatile'
 const KIMI_MODEL = 'moonshot-v1-8k'
+// OpenRouter: default free model. Override via OPENROUTER_MODEL env.
+// Pilihan free yang bagus: meta-llama/llama-3.3-70b-instruct:free,
+// deepseek/deepseek-chat-v3.1:free, moonshotai/kimi-k2:free
+const OPENROUTER_MODEL_DEFAULT = 'meta-llama/llama-3.3-70b-instruct:free'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -16,20 +21,23 @@ export default async function handler(req, res) {
 
   const groqKey = process.env.GROQ_API_KEY
   const kimiKey = process.env.KIMI_API_KEY
-  if (!groqKey && !kimiKey) {
-    return res.status(500).json({ error: 'No API key. Set GROQ_API_KEY or KIMI_API_KEY.' })
+  const orKey = process.env.OPENROUTER_API_KEY
+  const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT
+  if (!groqKey && !kimiKey && !orKey) {
+    return res.status(500).json({ error: 'No API key. Set GROQ_API_KEY, KIMI_API_KEY, or OPENROUTER_API_KEY.' })
   }
 
   const body = req.body || {}
+  const ctx = { groqKey, kimiKey, orKey, orModel, body }
 
   // ── Mode baru: data terstruktur ─────────────────────────────────
   if (body.rubrik && body.jawaban) {
-    return handleStructuredAssess(req, res, { groqKey, kimiKey, body })
+    return handleStructuredAssess(req, res, ctx)
   }
 
   // ── Mode lama: messages array ───────────────────────────────────
   if (body.messages) {
-    return handleLegacyMessages(req, res, { groqKey, kimiKey, body })
+    return handleLegacyMessages(req, res, ctx)
   }
 
   return res.status(400).json({ error: 'Invalid payload. Send {rubrik, jawaban, ...} or {messages}.' })
@@ -38,7 +46,7 @@ export default async function handler(req, res) {
 // =====================================================================
 // MODE BARU: structured assess
 // =====================================================================
-async function handleStructuredAssess(req, res, { groqKey, kimiKey, body }) {
+async function handleStructuredAssess(req, res, { groqKey, kimiKey, orKey, orModel, body }) {
   const { rubrik, jawaban, studentName, title, context } = body
 
   let prompt
@@ -48,7 +56,21 @@ async function handleStructuredAssess(req, res, { groqKey, kimiKey, body }) {
     return res.status(400).json({ error: e.message })
   }
 
-  // Try Groq first (cheaper, supports JSON mode)
+  // Try OpenRouter first (paling fleksibel — bisa pick model apapun via env)
+  if (orKey) {
+    const result = await callOpenRouterJSON({ key: orKey, model: orModel, prompt, rubrik })
+    if (result.ok) {
+      return res.status(200).json({
+        success: true,
+        provider: `openrouter:${orModel}`,
+        scores: result.scores,
+        kesimpulan: result.kesimpulan,
+        tokens: result.tokens,
+      })
+    }
+    console.log('[assess] openrouter failed:', result.error)
+  }
+
   if (groqKey) {
     const result = await callGroqJSON({ key: groqKey, prompt, rubrik })
     if (result.ok) {
@@ -60,7 +82,6 @@ async function handleStructuredAssess(req, res, { groqKey, kimiKey, body }) {
         tokens: result.tokens,
       })
     }
-    // log but don't fail; try Kimi next
     console.log('[assess] groq failed:', result.error)
   }
 
@@ -79,6 +100,61 @@ async function handleStructuredAssess(req, res, { groqKey, kimiKey, body }) {
   }
 
   return res.status(502).json({ error: 'All AI providers failed', success: false })
+}
+
+async function callOpenRouterJSON({ key, model, prompt, rubrik }) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const messages = [
+        { role: 'system', content: prompt.system },
+        { role: 'user', content: prompt.user },
+      ]
+      if (attempt > 0) {
+        messages.push({
+          role: 'user',
+          content: 'Output JSON sebelumnya tidak valid. Return ulang HANYA JSON valid sesuai schema.',
+        })
+      }
+      const res = await fetch(OPENROUTER_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${key}`,
+          // OpenRouter: HTTP-Referer & X-Title optional but good for leaderboard/attribution
+          'HTTP-Referer': 'https://zoya-id-beta.vercel.app',
+          'X-Title': 'zoya.id',
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.3,
+          max_tokens: 1500,
+          // response_format hanya didukung sebagian model di OpenRouter — set via "type":"json_object"
+          response_format: { type: 'json_object' },
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) return { ok: false, error: data.error?.message || `HTTP ${res.status}` }
+
+      const raw = data.choices?.[0]?.message?.content || ''
+      const parsed = parseJSONLoose(raw)
+      const validation = validateAssessResponse(parsed, rubrik)
+      if (validation.valid) {
+        return {
+          ok: true,
+          scores: validation.scores,
+          kesimpulan: validation.kesimpulan,
+          tokens: data.usage?.total_tokens,
+        }
+      }
+      if (attempt === 1) {
+        return { ok: false, error: 'Validation failed: ' + validation.error }
+      }
+    } catch (e) {
+      if (attempt === 1) return { ok: false, error: e.message }
+    }
+  }
+  return { ok: false, error: 'unreachable' }
 }
 
 async function callGroqJSON({ key, prompt, rubrik }) {
