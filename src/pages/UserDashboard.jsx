@@ -7,8 +7,8 @@ import {
 } from 'lucide-react'
 import { logoutUser } from '../lib/auth'
 import { useCurrentUser } from '../lib/useCurrentUser'
-import { getWallet } from '../lib/wallet'
-import { getOrders } from '../lib/orders'
+import { subscribeWallet } from '../lib/wallet'
+import { subscribeOrders } from '../lib/orders'
 import { listAnalyses, countAnalyses } from '../lib/savedAnalyses'
 
 function UserDashboard() {
@@ -42,8 +42,11 @@ function UserDashboard() {
       navigate('/auth')
       return
     }
-    setWallet(getWallet())
-    setOrders(getOrders().filter(o => o.userId === user.email || o.userId === 'guest'))
+    // Subscribe ke cache wallet & orders. Cache di-refresh otomatis dari Supabase
+    // saat auth state berubah (lihat lib/wallet.js initWallet & lib/orders.js initOrders).
+    const unsubW = subscribeWallet(setWallet)
+    const unsubO = subscribeOrders(setOrders)
+    return () => { unsubW(); unsubO() }
   }, [navigate, user])
 
   const handleLogout = () => {

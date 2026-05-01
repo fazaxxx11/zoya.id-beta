@@ -6,24 +6,24 @@ import {
   XCircle, Clock, Search, Eye, EyeOff, Lock
 } from 'lucide-react'
 import { verifyAdminPassword, ADMIN_EMAIL, BRAND_NAME } from '../lib/brand'
-import { CURRENT_USER_KEY, ADMIN_FLAG_KEY, getUsers, isAdminLogged } from '../lib/auth'
-import { getOrders } from '../lib/orders'
+import { CURRENT_USER_KEY, ADMIN_FLAG_KEY, isAdminLogged } from '../lib/auth'
 import {
   getPendingTopups, approvePendingTopup, rejectPendingTopup,
 } from '../lib/wallet'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import { formatIDR } from '../lib/pricing'
 import { toast } from '../lib/toast'
 
 /** Hitung stats dari orders yang sudah completed (paid) saja */
-function computeStats(orders, users) {
+function computeStats(orders, userCount) {
   const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
   let todayRev = 0, totalRev = 0, todayTx = 0
   for (const o of orders) {
     if (!o.amount || o.amount <= 0) continue
-    const isCompleted = o.status === 'completed' || o.status === 'pending_service'
+    const isCompleted = o.status === 'completed' || o.status === 'processing'
     if (!isCompleted) continue
     totalRev += o.amount
-    const orderDate = o.paidAt ? new Date(o.paidAt).toISOString().slice(0, 10) : null
+    const orderDate = o.paid_at ? o.paid_at.slice(0, 10) : null
     if (orderDate === today) {
       todayRev += o.amount
       todayTx += 1
@@ -34,22 +34,22 @@ function computeStats(orders, users) {
     totalRevenue: totalRev,
     todayTransactions: todayTx,
     totalTransactions: orders.filter(o => o.amount > 0).length,
-    activeUsers: users.length,
+    activeUsers: userCount,
   }
 }
 
-/** Normalisasi order ke format tabel admin */
-function normalizeOrders(orders) {
+/** Normalisasi order Supabase + email map ke format tabel admin */
+function normalizeOrders(orders, emailById) {
   return orders.map(o => ({
     id: o.id,
-    user: o.userId || 'guest',
-    service: o.service === 'assessment' ? 'Assessment' : o.service === 'statistics' ? 'Statistik' : o.serviceName || o.service,
-    tier: o.tierName || o.tier || '-',
-    amount: o.amount || 0,
-    method: o.paymentMethod || '-',
-    status: o.status === 'pending_service' ? 'completed' : o.status, // unify untuk filter
+    user: emailById.get(o.user_id) || o.user_id?.slice(0, 8) || 'unknown',
+    service: o.service === 'assessment' ? 'Assessment' : o.service === 'statistics' ? 'Statistik' : o.service,
+    tier: o.tier || '-',
+    amount: Number(o.amount || 0),
+    method: o.payment_method || '-',
+    status: o.status === 'processing' ? 'completed' : o.status,
     rawStatus: o.status,
-    date: o.date || (o.createdAt ? new Date(o.createdAt).toLocaleString('id-ID') : '-'),
+    date: o.created_at ? new Date(o.created_at).toLocaleString('id-ID') : '-',
   }))
 }
 
@@ -66,22 +66,57 @@ function Admin() {
   const [filterStatus, setFilterStatus] = useState('all')
   const [pendingTopups, setPendingTopups] = useState([])
 
-  const refreshData = () => {
-    const orders = getOrders()
-    const users = getUsers()
-    setTransactions(normalizeOrders(orders))
-    setStats(computeStats(orders, users))
-    setPendingTopups(getPendingTopups())
+  const [loadingData, setLoadingData] = useState(false)
+  const [dataError, setDataError] = useState('')
+
+  const refreshData = async () => {
+    setDataError('')
+    if (!isSupabaseConfigured) {
+      setDataError('Supabase belum dikonfigurasi.')
+      setTransactions([])
+      setStats(computeStats([], 0))
+      setPendingTopups(getPendingTopups())
+      return
+    }
+    setLoadingData(true)
+    try {
+      const [profilesRes, ordersRes] = await Promise.all([
+        supabase.from('profiles').select('id, email, name, role, created_at').order('created_at', { ascending: false }),
+        supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(200),
+      ])
+
+      if (profilesRes.error) throw profilesRes.error
+      if (ordersRes.error) throw ordersRes.error
+
+      const profiles = profilesRes.data || []
+      const orders = ordersRes.data || []
+      const emailById = new Map(profiles.map(p => [p.id, p.email]))
+
+      setTransactions(normalizeOrders(orders, emailById))
+      setStats(computeStats(orders, profiles.length))
+      setPendingTopups(getPendingTopups())
+
+      // Warn kalau cuma dapat 1 profile (user current) — RLS mencegah lihat semua
+      if (profiles.length <= 1) {
+        setDataError('Hanya melihat data sendiri. Pastikan akun Supabase kamu sudah role=admin (cek tabel profiles).')
+      }
+    } catch (e) {
+      console.error('[admin] refresh failed:', e)
+      setDataError(e.message || 'Gagal memuat data dari Supabase')
+    } finally {
+      setLoadingData(false)
+    }
   }
 
   // Load real orders & users on mount + saat tab admin diakses
   useEffect(() => {
     if (!isAuthenticated) return
     refreshData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated])
 
-  const handleApproveTopup = (id) => {
-    const r = approvePendingTopup(id)
+  const handleApproveTopup = async (id) => {
+    const r = await approvePendingTopup(id)
     if (r.success) {
       toast.success(`Top-up ${id} disetujui — saldo ditambahkan`)
       refreshData()
@@ -228,6 +263,19 @@ function Admin() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Data status banner */}
+        {dataError && (
+          <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-800 flex items-start gap-2">
+            <Clock className="w-4 h-4 mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <strong>Catatan:</strong> {dataError}
+            </div>
+            <button onClick={refreshData} className="text-xs text-sky-600 hover:underline whitespace-nowrap">
+              {loadingData ? 'Loading…' : 'Retry'}
+            </button>
+          </div>
+        )}
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-sm">
