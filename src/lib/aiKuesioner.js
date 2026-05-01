@@ -41,7 +41,6 @@ export async function generateKuesionerAI(params) {
  */
 export function aiResultToSurvey(data, params = {}) {
   const sc = Number(params.scale) || 5
-  const labels = LIKERT_LABELS[sc] || null
 
   const survey = newSurvey(data.title || 'Kuesioner (AI Generated)')
   survey.description = data.description || ''
@@ -60,8 +59,10 @@ export function aiResultToSurvey(data, params = {}) {
         base.label = String(it.label || it.question || `Item ${ii + 1}`).trim()
         base.required = it.required !== false
         if (type === 'likert') {
+          // Selalu align scale dengan scaleLabels supaya render konsisten.
+          // Kalau AI override scale, regenerate labels yang cocok dengan scale-nya.
           base.scale = Number(it.scale) || sc
-          if (labels && base.scale === sc) base.scaleLabels = labels
+          base.scaleLabels = labelsForScale(base.scale)
           base.reverseCoded = !!it.reverseCoded
         } else if (type === 'rating') {
           base.scale = Number(it.scale) || 5
@@ -72,13 +73,26 @@ export function aiResultToSurvey(data, params = {}) {
       })
       return section
     })
-    .filter(sec => sec.items.length > 0)
+    // Drop section yang BENAR-BENAR kosong (no title + no items). Section
+    // demografi yang AI lupa generate items-nya tetap kita keep biar user
+    // bisa isi manual.
+    .filter(sec => sec.items.length > 0 || (sec.title && sec.title.trim() !== ''))
 
-  // Safety: kalau AI nge-blank, kasih 1 section default
+  // Safety: kalau AI nge-blank total, kasih 1 section default
   if (survey.sections.length === 0) {
     survey.sections = [newSection('Bagian 1')]
   }
   return survey
+}
+
+/**
+ * Generate scale labels yang cocok dengan jumlah poin Likert.
+ * Untuk scale yang tidak ada di LIKERT_LABELS, fallback ke angka 1..N.
+ */
+function labelsForScale(scale) {
+  if (LIKERT_LABELS[scale]) return [...LIKERT_LABELS[scale]]
+  // Fallback: numeric labels supaya tidak ada mismatch panjang
+  return Array.from({ length: scale }, (_, i) => String(i + 1))
 }
 
 function inferType(it) {
