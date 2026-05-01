@@ -272,6 +272,124 @@ export function templateMiniIPIP() {
 }
 
 // =====================================================================
+// 7) THEORY OF PLANNED BEHAVIOR (TPB)
+//    Ajzen (1991, 2002). 3 konstruk inti × 4 item, skala 1-7.
+//    Ganti [PERILAKU] sesuai topik penelitian.
+// =====================================================================
+export function templateTPB() {
+  const s = newSurvey('Theory of Planned Behavior (TPB)')
+  s.description = 'Mengukur niat berperilaku berdasarkan 3 konstruk: Sikap, Norma Subyektif, Persepsi Kontrol Perilaku. Ajzen (1991). 12 item + 3 item niat, skala Likert 7-poin. Ganti [PERILAKU] dengan target perilaku (mis. "berdaur ulang sampah", "menggunakan masker").'
+
+  const sikap = [
+    'Bagi saya, melakukan [PERILAKU] adalah hal yang baik.',
+    'Bagi saya, melakukan [PERILAKU] adalah hal yang menguntungkan.',
+    'Bagi saya, melakukan [PERILAKU] adalah hal yang menyenangkan.',
+    { label: 'Bagi saya, melakukan [PERILAKU] adalah hal yang merepotkan.', reverse: true },
+  ]
+  const norma = [
+    'Kebanyakan orang yang penting bagi saya berpikir saya harus melakukan [PERILAKU].',
+    'Orang-orang yang berpengaruh dalam hidup saya akan menyetujui jika saya melakukan [PERILAKU].',
+    'Lingkungan saya mengharapkan saya melakukan [PERILAKU].',
+    'Teman-teman saya yang melakukan [PERILAKU] memberi pengaruh positif kepada saya.',
+  ]
+  const kontrol = [
+    'Saya yakin dapat melakukan [PERILAKU] jika saya menginginkannya.',
+    'Bagi saya, melakukan [PERILAKU] mudah dilakukan.',
+    'Saya memiliki sumber daya yang dibutuhkan untuk melakukan [PERILAKU].',
+    { label: 'Banyak hal di luar kendali saya yang menghalangi saya melakukan [PERILAKU].', reverse: true },
+  ]
+  const niat = [
+    'Saya berniat melakukan [PERILAKU] dalam waktu dekat.',
+    'Saya berencana melakukan [PERILAKU].',
+    'Saya akan berusaha melakukan [PERILAKU].',
+  ]
+
+  s.sections = [
+    makeLikertSection('Sikap (Attitude)', 'Evaluasi positif/negatif terhadap perilaku', sikap, 7, LIKERT_7_LABELS),
+    makeLikertSection('Norma Subyektif (Subjective Norm)', 'Persepsi tekanan sosial untuk melakukan/tidak melakukan perilaku', norma, 7, LIKERT_7_LABELS),
+    makeLikertSection('Persepsi Kontrol Perilaku (PBC)', 'Persepsi kemudahan/kesulitan melakukan perilaku', kontrol, 7, LIKERT_7_LABELS),
+    makeLikertSection('Niat Berperilaku (Intention)', 'Kesiapan/kecenderungan untuk melakukan perilaku', niat, 7, LIKERT_7_LABELS),
+  ]
+  s._meta = {
+    citation: 'Ajzen, I. (1991). The theory of planned behavior. Organizational Behavior and Human Decision Processes, 50(2), 179–211.',
+    domain: 'Psikologi Sosial / Perilaku',
+    dimensions: 4,
+    items: 15,
+  }
+  return s
+}
+
+// =====================================================================
+// 8) MASLACH BURNOUT INVENTORY (MBI) — versi pendek 9 item
+//    Maslach & Jackson (1981). 3 dimensi × 3 item, skala 0-6.
+// =====================================================================
+export function templateMBI() {
+  const s = newSurvey('Maslach Burnout Inventory (Short Form)')
+  s.description = 'Mengukur burnout pada 3 dimensi: Kelelahan Emosional, Depersonalisasi, Pencapaian Pribadi. Versi pendek dari Maslach & Jackson (1981). 9 item, skala 0-6 (frekuensi).'
+
+  const ee = [
+    'Saya merasa terkuras secara emosional oleh pekerjaan saya.',
+    'Saya merasa lelah saat bangun tidur dan harus menghadapi hari kerja lagi.',
+    'Saya merasa kehabisan tenaga di akhir hari kerja.',
+  ]
+  const dp = [
+    'Saya merasa memperlakukan beberapa orang yang saya layani seolah-olah mereka adalah objek.',
+    'Saya merasa menjadi lebih dingin/acuh terhadap orang-orang sejak menjalani pekerjaan ini.',
+    'Saya merasa khawatir pekerjaan ini membuat saya menjadi keras secara emosional.',
+  ]
+  const pa = [
+    { label: 'Saya merasa berenergi dalam pekerjaan saya.', reverse: true }, // PA tinggi = burnout rendah
+    { label: 'Saya menangani masalah dengan sangat efektif.', reverse: true },
+    { label: 'Saya merasa telah mencapai banyak hal berharga dalam pekerjaan ini.', reverse: true },
+  ]
+  const labels = ['Tidak Pernah', 'Beberapa Kali Setahun', 'Sebulan Sekali', 'Beberapa Kali Sebulan', 'Seminggu Sekali', 'Beberapa Kali Seminggu', 'Setiap Hari']
+
+  s.sections = [
+    makeLikertSection('Emotional Exhaustion (EE)', 'Kelelahan emosional akibat tuntutan kerja', ee, 7, labels),
+    makeLikertSection('Depersonalization (DP)', 'Sikap dingin/sinis terhadap orang yang dilayani', dp, 7, labels),
+    makeLikertSection('Personal Accomplishment (PA)', 'Perasaan kompetensi & pencapaian dalam pekerjaan (reverse: skor tinggi = burnout rendah)', pa, 7, labels),
+  ]
+  s._meta = {
+    citation: 'Maslach, C., & Jackson, S. E. (1981). The measurement of experienced burnout. Journal of Organizational Behavior, 2(2), 99–113.',
+    domain: 'Psikologi Industri-Organisasi',
+    dimensions: 3,
+    items: 9,
+  }
+  return s
+}
+
+// =====================================================================
+// 9) PHQ-9 — Patient Health Questionnaire (Depression Screening)
+//    Kroenke, Spitzer & Williams (2001). 9 item, skala 0-3.
+// =====================================================================
+export function templatePHQ9() {
+  const s = newSurvey('PHQ-9 — Skrining Depresi')
+  s.description = 'Skrining gejala depresi dalam 2 minggu terakhir. Kroenke dkk. (2001). 9 item, skala 0-3 (Tidak sama sekali – Hampir setiap hari). Skor total 0-27. CATATAN: Alat skrining, BUKAN diagnosis. Diagnosis depresi harus oleh profesional.'
+
+  const items = [
+    'Selama 2 minggu terakhir, seberapa sering Anda terganggu oleh: Sedikit minat atau merasa tidak senang dalam mengerjakan sesuatu.',
+    'Merasa sedih, tertekan, atau putus asa.',
+    'Sulit tidur atau tetap tidur, atau terlalu banyak tidur.',
+    'Merasa lelah atau kekurangan energi.',
+    'Nafsu makan menurun atau makan berlebihan.',
+    'Merasa buruk tentang diri sendiri — atau merasa gagal atau telah mengecewakan diri sendiri/keluarga.',
+    'Sulit berkonsentrasi pada sesuatu, seperti membaca koran atau menonton TV.',
+    'Bergerak atau berbicara sangat lambat sehingga orang lain memperhatikan; atau sebaliknya — sangat gelisah sehingga banyak bergerak dari biasanya.',
+    'Berpikir bahwa lebih baik mati atau menyakiti diri sendiri dengan suatu cara.',
+  ]
+  const labels = ['Tidak Pernah', 'Beberapa Hari', 'Lebih Dari Separuh Hari', 'Hampir Setiap Hari']
+
+  s.sections = [makeLikertSection('Gejala Depresi (2 Minggu Terakhir)', 'Skor total: 0-4 minimal · 5-9 ringan · 10-14 sedang · 15-19 sedang-berat · 20-27 berat', items, 4, labels)]
+  s._meta = {
+    citation: 'Kroenke, K., Spitzer, R. L., & Williams, J. B. W. (2001). The PHQ-9: Validity of a Brief Depression Severity Measure. Journal of General Internal Medicine, 16(9), 606–613.',
+    domain: 'Kesehatan Mental / Klinis',
+    dimensions: 1,
+    items: 9,
+  }
+  return s
+}
+
+// =====================================================================
 // Daftar instrumen — untuk dropdown UI
 // =====================================================================
 export const INSTRUMENT_TEMPLATES = [
@@ -334,5 +452,35 @@ export const INSTRUMENT_TEMPLATES = [
     citation: 'Donnellan dkk. (2006)',
     desc: 'E, A, C, N, O — 5 dimensi Big Five.',
     factory: templateMiniIPIP,
+  },
+  {
+    id: 'tpb',
+    name: 'Theory of Planned Behavior (TPB)',
+    domain: 'Psikologi Sosial',
+    items: 15,
+    dimensions: 4,
+    citation: 'Ajzen (1991)',
+    desc: 'Sikap, Norma Subyektif, PBC, Niat. Ganti [PERILAKU].',
+    factory: templateTPB,
+  },
+  {
+    id: 'mbi',
+    name: 'Maslach Burnout Inventory (Short)',
+    domain: 'Psikologi Industri',
+    items: 9,
+    dimensions: 3,
+    citation: 'Maslach & Jackson (1981)',
+    desc: 'EE, DP, PA — burnout di tempat kerja.',
+    factory: templateMBI,
+  },
+  {
+    id: 'phq9',
+    name: 'PHQ-9 — Skrining Depresi',
+    domain: 'Kesehatan Mental',
+    items: 9,
+    dimensions: 1,
+    citation: 'Kroenke dkk. (2001)',
+    desc: 'Skrining depresi 2 minggu. Bukan diagnosis.',
+    factory: templatePHQ9,
   },
 ]

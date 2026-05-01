@@ -484,6 +484,14 @@ function BuilderPanel({ draft, setDraft }) {
             <button onClick={() => deleteSection(sIdx)} className="p-1.5 text-gray-400 hover:text-red-600" title="Hapus bagian"><Trash2 className="w-4 h-4" /></button>
           </div>
 
+          {/* AI Regenerate per-section */}
+          <RegenerateSection
+            surveyTitle={draft.title}
+            section={sec}
+            onApply={(newItems) => updateSection(sIdx, { items: newItems })}
+            onAppend={(newItems) => updateSection(sIdx, { items: [...sec.items, ...newItems] })}
+          />
+
           {/* Items */}
           <div className="space-y-2">
             {sec.items.length === 0 && (
@@ -1536,5 +1544,144 @@ function AIGenerateModal({ open, onClose, onResult }) {
         )}
       </div>
     </Modal>
+  )
+}
+
+// ============================================================
+// Regenerate Section — tombol AI di tiap section builder
+// ============================================================
+function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
+  const [open, setOpen] = useState(false)
+  const [count, setCount] = useState(5)
+  const [scale, setScale] = useState(5)
+  const [loading, setLoading] = useState(false)
+
+  // Detect dominant scale from existing items
+  useEffect(() => {
+    if (open && section.items?.length > 0) {
+      const likertItems = section.items.filter(it => it.type === 'likert')
+      if (likertItems.length > 0 && likertItems[0].scale) {
+        setScale(likertItems[0].scale)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
+  async function generate(mode /* 'replace' | 'append' */) {
+    if (!section.title?.trim()) {
+      toast.warning('Judul bagian masih kosong. Isi dulu sebelum generate.')
+      return
+    }
+    setLoading(true)
+    try {
+      const result = await generateKuesionerAI({
+        mode: 'quick',
+        topic: surveyTitle || section.title,
+        variable: section.title,
+        dimensions: section.title, // 1 dimensi saja
+        scale: Number(scale),
+        itemsPerDimension: Number(count),
+        includeDemografi: false,
+      })
+      // Ambil items dari section pertama (non-demografi)
+      const firstSec = result.survey.sections.find(s =>
+        !/demograf/i.test(s.title) && s.items.length > 0
+      ) || result.survey.sections[0]
+      const newItems = firstSec?.items || []
+      if (newItems.length === 0) {
+        toast.error('AI tidak menghasilkan item. Coba lagi.')
+        return
+      }
+      if (mode === 'replace') {
+        if (section.items.length > 0 &&
+            !confirm(`Ganti ${section.items.length} item lama dengan ${newItems.length} item baru?`)) {
+          return
+        }
+        onApply(newItems)
+        toast.success(`${newItems.length} item baru menggantikan items lama.`)
+      } else {
+        onAppend(newItems)
+        toast.success(`${newItems.length} item baru ditambahkan.`)
+      }
+      setOpen(false)
+    } catch (e) {
+      toast.error(`Generate gagal: ${e.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="mb-3 inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 border border-indigo-200 text-indigo-700 font-medium transition-colors"
+        title={`Generate items pakai AI untuk dimensi "${section.title}"`}
+      >
+        <Wand2 className="w-3.5 h-3.5" /> Regenerate dengan AI
+      </button>
+    )
+  }
+
+  return (
+    <div className="mb-3 rounded-lg border-2 border-indigo-200 bg-indigo-50/50 p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="text-xs font-semibold text-indigo-900 flex items-center gap-1.5">
+          <Wand2 className="w-3.5 h-3.5" /> Generate items AI untuk: <span className="italic">"{section.title || '(belum ada judul)'}"</span>
+        </div>
+        <button
+          onClick={() => setOpen(false)}
+          disabled={loading}
+          className="text-gray-500 hover:text-gray-700 disabled:opacity-50"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="flex flex-wrap items-end gap-2">
+        <div>
+          <label className="block text-[10px] text-gray-600 mb-0.5">Jumlah item</label>
+          <select
+            value={count}
+            onChange={e => setCount(Number(e.target.value))}
+            disabled={loading}
+            className="border border-gray-300 rounded px-2 py-1 text-xs"
+          >
+            {[3, 4, 5, 6, 7, 8, 10].map(n => <option key={n} value={n}>{n}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-[10px] text-gray-600 mb-0.5">Skala</label>
+          <select
+            value={scale}
+            onChange={e => setScale(Number(e.target.value))}
+            disabled={loading}
+            className="border border-gray-300 rounded px-2 py-1 text-xs"
+          >
+            {[4, 5, 6, 7].map(n => <option key={n} value={n}>{n}-poin</option>)}
+          </select>
+        </div>
+        <div className="flex gap-1.5 ml-auto">
+          <button
+            onClick={() => generate('append')}
+            disabled={loading}
+            className="text-xs px-2.5 py-1.5 rounded-md bg-white hover:bg-indigo-100 border border-indigo-300 text-indigo-700 font-medium disabled:opacity-50 flex items-center gap-1"
+          >
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+            Tambah
+          </button>
+          <button
+            onClick={() => generate('replace')}
+            disabled={loading}
+            className="text-xs px-2.5 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold disabled:opacity-50 flex items-center gap-1"
+          >
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
+            Ganti Semua
+          </button>
+        </div>
+      </div>
+      <p className="text-[10px] text-gray-600 leading-relaxed">
+        AI akan generate item Likert berdasarkan judul bagian sebagai dimensi. Konteks topik diambil dari judul kuesioner.
+      </p>
+    </div>
   )
 }
