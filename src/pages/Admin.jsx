@@ -383,9 +383,9 @@ function Admin() {
               </table>
             )}
           </div>
-          <div className="p-3 bg-amber-50 border-t border-amber-200 text-xs text-amber-700">
-            ⚠️ <strong>Catatan:</strong> Fitur approve ini menambah saldo pada device yang sedang login.
-            Untuk multi-device sync, migrasi ke Supabase dulu.
+          <div className="p-3 bg-sky-50 border-t border-sky-200 text-xs text-sky-700">
+            ℹ️ <strong>Info:</strong> Approve menambah saldo user di Supabase via RPC (cross-device).
+            List pending masih lokal — pindah ke Supabase saat tabel <code>pending_topups</code> dibuat.
           </div>
         </div>
 
