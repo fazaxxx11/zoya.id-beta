@@ -66,8 +66,14 @@ export function aiResultToSurvey(data, params = {}) {
           base.reverseCoded = !!it.reverseCoded
         } else if (type === 'rating') {
           base.scale = Number(it.scale) || 5
-        } else if ((type === 'multichoice' || type === 'checkbox') && Array.isArray(it.options)) {
-          base.options = it.options.map(String)
+        } else if (type === 'multichoice' || type === 'checkbox') {
+          // validateSurvey butuh minimal 2 opsi. Override default hanya kalau
+          // AI kasih array dengan ≥ 2 entri non-empty.
+          if (Array.isArray(it.options)) {
+            const cleaned = it.options.map(String).map(s => s.trim()).filter(Boolean)
+            if (cleaned.length >= 2) base.options = cleaned
+          }
+          // else: pertahankan default ['Opsi 1', 'Opsi 2'] dari newItem()
         }
         return base
       })

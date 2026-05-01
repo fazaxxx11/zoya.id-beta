@@ -449,6 +449,12 @@ function BuilderPanel({ draft, setDraft }) {
 
   return (
     <div className="space-y-3">
+      {/* Blueprint card — muncul kalau survey hasil dari AI mode "Blueprint" */}
+      {draft._blueprint && <BlueprintCard blueprint={draft._blueprint} />}
+
+      {/* Citation banner — muncul kalau survey dari instrumen teruji */}
+      {draft._meta?.citation && <CitationBanner meta={draft._meta} />}
+
       <textarea
         value={draft.description || ''}
         onChange={e => setDraft({ ...draft, description: e.target.value })}
@@ -1333,7 +1339,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
         {/* Mode tabs */}
         <div className="grid grid-cols-2 gap-2">
           <button
-            onClick={() => setMode('quick')}
+            onClick={() => { if (mode !== 'quick') { setMode('quick'); setPreview(null) } }}
             disabled={loading}
             className={`p-3 rounded-lg border-2 text-left transition-colors ${
               mode === 'quick'
@@ -1348,7 +1354,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
             <div className="text-xs text-gray-600">Cepat — cukup deskripsi topik, AI buatkan items.</div>
           </button>
           <button
-            onClick={() => setMode('blueprint')}
+            onClick={() => { if (mode !== 'blueprint') { setMode('blueprint'); setPreview(null) } }}
             disabled={loading}
             className={`p-3 rounded-lg border-2 text-left transition-colors ${
               mode === 'blueprint'
@@ -1682,6 +1688,148 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
       <p className="text-[10px] text-gray-600 leading-relaxed">
         AI akan generate item Likert berdasarkan judul bagian sebagai dimensi. Konteks topik diambil dari judul kuesioner.
       </p>
+    </div>
+  )
+}
+
+// ============================================================
+// Blueprint Card — display untuk survey._blueprint (AI mode Blueprint)
+// ============================================================
+function BlueprintCard({ blueprint }) {
+  const [open, setOpen] = useState(true)
+  const hasContent = blueprint && (
+    blueprint.teoriRujukan || blueprint.definisiOperasional ||
+    (Array.isArray(blueprint.dimensions) && blueprint.dimensions.length > 0)
+  )
+  if (!hasContent) return null
+
+  function copyBlueprint() {
+    const lines = []
+    lines.push('=== BLUEPRINT PENELITIAN ===')
+    if (blueprint.teoriRujukan) lines.push(`Teori Rujukan: ${blueprint.teoriRujukan}`)
+    if (blueprint.definisiOperasional) lines.push(`\nDefinisi Operasional:\n${blueprint.definisiOperasional}`)
+    if (blueprint.dimensions?.length > 0) {
+      lines.push('\nDimensi & Indikator:')
+      blueprint.dimensions.forEach((d, i) => {
+        lines.push(`${i + 1}. ${d.name}`)
+        if (d.definition) lines.push(`   Definisi: ${d.definition}`)
+        if (d.indicators?.length > 0) {
+          lines.push(`   Indikator: ${d.indicators.join('; ')}`)
+        }
+      })
+    }
+    const text = lines.join('\n')
+    navigator.clipboard?.writeText(text)
+      .then(() => toast.success('Blueprint disalin ke clipboard'))
+      .catch(() => toast.error('Gagal menyalin'))
+  }
+
+  return (
+    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full px-4 py-3 flex items-center gap-2 hover:bg-white/40 transition-colors text-left"
+      >
+        <div className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center flex-shrink-0">
+          <BookOpen className="w-4 h-4" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-indigo-900 flex items-center gap-2">
+            Blueprint Penelitian
+            <span className="text-[10px] uppercase tracking-wide bg-indigo-200 text-indigo-800 px-1.5 py-0.5 rounded font-bold">AI Generated</span>
+          </div>
+          <div className="text-xs text-indigo-700 truncate">
+            {blueprint.dimensions?.length > 0
+              ? `${blueprint.dimensions.length} dimensi · ${blueprint.dimensions.reduce((n, d) => n + (d.indicators?.length || 0), 0)} indikator`
+              : 'Klik untuk lihat'}
+          </div>
+        </div>
+        <button
+          onClick={(e) => { e.stopPropagation(); copyBlueprint() }}
+          className="p-1.5 rounded hover:bg-white/50 text-indigo-700"
+          title="Copy blueprint ke clipboard"
+        >
+          <Copy className="w-4 h-4" />
+        </button>
+        {open ? <ChevronUp className="w-4 h-4 text-indigo-600" /> : <ChevronDown className="w-4 h-4 text-indigo-600" />}
+      </button>
+      {open && (
+        <div className="px-4 pb-4 space-y-3 text-sm">
+          {blueprint.teoriRujukan && (
+            <div>
+              <div className="text-[10px] uppercase tracking-wide font-bold text-indigo-600 mb-0.5">Teori Rujukan</div>
+              <p className="text-gray-800">{blueprint.teoriRujukan}</p>
+            </div>
+          )}
+          {blueprint.definisiOperasional && (
+            <div>
+              <div className="text-[10px] uppercase tracking-wide font-bold text-indigo-600 mb-0.5">Definisi Operasional</div>
+              <p className="text-gray-800 leading-relaxed">{blueprint.definisiOperasional}</p>
+            </div>
+          )}
+          {blueprint.dimensions?.length > 0 && (
+            <div>
+              <div className="text-[10px] uppercase tracking-wide font-bold text-indigo-600 mb-1">Dimensi & Indikator</div>
+              <div className="space-y-2">
+                {blueprint.dimensions.map((d, i) => (
+                  <div key={i} className="bg-white/70 border border-indigo-100 rounded-lg p-2.5">
+                    <div className="font-semibold text-gray-900">{i + 1}. {d.name}</div>
+                    {d.definition && (
+                      <div className="text-xs text-gray-600 italic mt-0.5">{d.definition}</div>
+                    )}
+                    {d.indicators?.length > 0 && (
+                      <ul className="mt-1.5 ml-4 list-disc text-xs text-gray-700 space-y-0.5">
+                        {d.indicators.map((ind, ii) => <li key={ii}>{ind}</li>)}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <p className="text-[10px] text-indigo-600 italic pt-1 border-t border-indigo-100">
+            💡 Blueprint ini bisa kamu copy-paste langsung ke BAB 3 skripsi (Definisi Operasional, Kisi-kisi Instrumen).
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================
+// Citation Banner — untuk survey dari instrumen teruji
+// ============================================================
+function CitationBanner({ meta }) {
+  function copyCitation() {
+    navigator.clipboard?.writeText(meta.citation)
+      .then(() => toast.success('Sitasi disalin ke clipboard'))
+      .catch(() => toast.error('Gagal menyalin'))
+  }
+  return (
+    <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-3 flex items-start gap-2.5">
+      <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center flex-shrink-0">
+        <BookOpen className="w-4 h-4" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-xs font-bold text-emerald-900 uppercase tracking-wide mb-0.5">
+          Instrumen Teruji — Wajib Cantumkan Sitasi
+        </div>
+        <div className="text-sm text-gray-800 leading-snug">{meta.citation}</div>
+        {(meta.domain || meta.dimensions || meta.items) && (
+          <div className="text-[11px] text-emerald-700 mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+            {meta.domain && <span><strong>Domain:</strong> {meta.domain}</span>}
+            {meta.dimensions && <span><strong>Dimensi:</strong> {meta.dimensions}</span>}
+            {meta.items && <span><strong>Items:</strong> {meta.items}</span>}
+          </div>
+        )}
+      </div>
+      <button
+        onClick={copyCitation}
+        className="p-1.5 rounded hover:bg-emerald-100 text-emerald-700 flex-shrink-0"
+        title="Copy sitasi ke clipboard"
+      >
+        <Copy className="w-4 h-4" />
+      </button>
     </div>
   )
 }
