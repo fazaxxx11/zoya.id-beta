@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
   BarChart3, Upload, FileSpreadsheet, CheckCircle,
   Sparkles, Download, FileType, File as FileIcon, AlertCircle,
-  Layers, Sigma, Clock, FileText, BookOpen,
+  Layers, Sigma, Clock, FileText, BookOpen, X,
 } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf'
@@ -1427,6 +1427,8 @@ function ResultDisplay({ result, onReset }) {
 
         <AIInterpretationPanel result={result} value={aiInterpretation} onChange={setAiInterpretation} />
 
+        <ExplainChatPanel result={result} aiInterpretation={aiInterpretation} />
+
         <MethodologyPanel result={result} />
       </div>
     </div>
@@ -1611,6 +1613,229 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
       )}
     </div>
   )
+}
+
+// ============================================================
+// Explain Chat Panel — pop-up "Belum Paham?" dengan AI bahasa santai.
+// Max 5 pertanyaan per result session (free tier).
+// ============================================================
+function ExplainChatPanel({ result, aiInterpretation }) {
+  const MAX_TURNS = 5
+  const [open, setOpen] = useState(false)
+  const [messages, setMessages] = useState([])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const scrollRef = useRef(null)
+
+  const userTurnsUsed = messages.filter(m => m.role === 'user').length
+  const remaining = Math.max(0, MAX_TURNS - userTurnsUsed)
+  const limitReached = remaining === 0
+
+  useEffect(() => {
+    if (open && scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [messages, loading, open])
+
+  function handleOpen() {
+    if (messages.length === 0) {
+      setMessages([{
+        role: 'assistant',
+        content: `Halo! 👋 Aku siap bantu jelasin hasil **${result.toolName || 'analisis'}**-mu pakai bahasa yang gampang dimengerti. Mau aku jelasin dari mana? Misalnya:\n\n• "Hasilnya artinya gimana sih?"\n• "Apa itu p-value?"\n• "Kesimpulannya untuk skripsi gimana?"\n\nTanya bebas aja — kamu punya jatah ${MAX_TURNS} pertanyaan ya 😊`
+      }])
+    }
+    setOpen(true)
+  }
+
+  async function handleSend() {
+    const text = input.trim()
+    if (!text || loading || limitReached) return
+    const userMsg = { role: 'user', content: text }
+    const newMsgs = [...messages, userMsg]
+    setMessages(newMsgs)
+    setInput('')
+    setLoading(true)
+    setError(null)
+    try {
+      const ctx = buildResultContext(result, aiInterpretation)
+      const r = await fetch('/api/explain-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resultContext: ctx,
+          messages: newMsgs.filter(m => m.role === 'user' || m.role === 'assistant'),
+        }),
+      })
+      const data = await r.json().catch(() => ({}))
+      if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`)
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }])
+    } catch (e) {
+      setError(e.message)
+      setMessages(prev => prev.slice(0, -1))
+      setInput(text)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
+  return (
+    <>
+      <div className="mt-5 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <div className="w-10 h-10 rounded-full bg-purple-500 text-white flex items-center justify-center flex-shrink-0 text-lg">💬</div>
+          <div className="min-w-0">
+            <div className="font-semibold text-purple-900">Belum paham hasilnya?</div>
+            <div className="text-sm text-purple-700">
+              Tanya AI! Bakal dijelasin pakai bahasa santai, kayak ngobrol sama temen. Gratis {MAX_TURNS} pertanyaan per hasil.
+            </div>
+          </div>
+        </div>
+        <button onClick={handleOpen}
+                className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg flex-shrink-0">
+          Tanya AI
+        </button>
+      </div>
+
+      <Modal open={open} onClose={() => setOpen(false)}
+             panelClassName="bg-white rounded-2xl shadow-2xl max-w-2xl w-full h-[80vh] flex flex-col">
+        <div className="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-full bg-purple-500 text-white flex items-center justify-center flex-shrink-0">💬</div>
+            <div className="min-w-0">
+              <div className="font-semibold text-gray-900 truncate">Tanya AI tentang Hasil</div>
+              <div className="text-xs text-gray-500">{result.toolName} · sisa {remaining}/{MAX_TURNS} pertanyaan</div>
+            </div>
+          </div>
+          <button onClick={() => setOpen(false)} className="p-1.5 rounded hover:bg-gray-100 text-gray-500">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-gray-50/50">
+          {messages.map((m, i) => <ChatBubble key={i} role={m.role} content={m.content} />)}
+          {loading && (
+            <div className="flex items-center gap-2 text-sm text-gray-500 pl-2">
+              <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+              <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
+              <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+              <span className="ml-1">AI lagi mikir…</span>
+            </div>
+          )}
+          {error && !loading && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+              Error: {error}. Coba kirim ulang ya.
+            </div>
+          )}
+        </div>
+
+        <div className="flex-shrink-0 border-t border-gray-100 p-3">
+          {limitReached ? (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800 text-center">
+              Kamu sudah pakai {MAX_TURNS}/{MAX_TURNS} pertanyaan untuk hasil ini.<br />
+              <span className="text-xs">Buka analisis baru kalau mau tanya lagi.</span>
+            </div>
+          ) : (
+            <div className="flex items-end gap-2">
+              <textarea
+                value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
+                placeholder={loading ? 'Tunggu AI…' : 'Tanya apa aja tentang hasilmu…'}
+                disabled={loading} rows={1}
+                className="flex-1 resize-none border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 disabled:bg-gray-50 disabled:text-gray-400"
+                style={{ maxHeight: '120px' }}
+              />
+              <button onClick={handleSend} disabled={!input.trim() || loading}
+                      className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2.5 rounded-xl">
+                Kirim
+              </button>
+            </div>
+          )}
+          <div className="text-[10px] text-gray-400 text-center mt-2">Enter untuk kirim · Shift+Enter untuk baris baru</div>
+        </div>
+      </Modal>
+    </>
+  )
+}
+
+function ChatBubble({ role, content }) {
+  if (role === 'user') {
+    return (
+      <div className="flex justify-end">
+        <div className="bg-purple-600 text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed">
+          {content}
+        </div>
+      </div>
+    )
+  }
+  return (
+    <div className="flex justify-start gap-2">
+      <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center flex-shrink-0 text-base">💬</div>
+      <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed text-gray-800">
+        {content}
+      </div>
+    </div>
+  )
+}
+
+// Bangun konteks hasil uji ringkas untuk dikirim ke AI sebagai system context.
+function buildResultContext(r, aiInterpretation) {
+  const lines = []
+  const fmtCtx = (v, d = 3) => typeof v === 'number' ? v.toFixed(d) : (v ?? '—')
+  lines.push(`Tool: ${r.toolName || r.type}`)
+  if (r.sampleSize) lines.push(`Jumlah sampel: ${r.sampleSize}`)
+
+  if (r.type === 'descriptive' && Array.isArray(r.stats)) {
+    r.stats.slice(0, 5).forEach(s => {
+      lines.push(`${s.column}: n=${s.n}, mean=${fmtCtx(s.mean)}, SD=${fmtCtx(s.stdDev)}, median=${fmtCtx(s.median)}`)
+    })
+  } else if (r.type === 'normality' && Array.isArray(r.results)) {
+    r.results.forEach(n => {
+      lines.push(`${n.column} (${n.method}): stat=${fmtCtx(n.W ?? n.D)}, p=${fmtCtx(n.pValue, 4)}, ${n.isNormal ? 'NORMAL' : 'TIDAK normal'}`)
+    })
+  } else if (r.type === 'correlation') {
+    lines.push(`Metode: ${r.method}, n=${r.n}, r=${fmtCtx(r.r ?? r.rho)}, p=${fmtCtx(r.pValue, 4)}, kekuatan=${r.strength}, arah=${r.direction}`)
+  } else if (r.type === 'ttest') {
+    lines.push(`Mode: ${r.mode || r.test}, t=${fmtCtx(r.t)}, df=${fmtCtx(r.df, 2)}, p=${fmtCtx(r.pValue, 4)}, Cohen's d=${fmtCtx(r.cohensD)}, signifikan=${r.significant ? 'YA' : 'TIDAK'}`)
+  } else if (r.type === 'anova') {
+    lines.push(`F=${fmtCtx(r.F)}, df=(${r.dfBetween},${r.dfWithin}), p=${fmtCtx(r.pValue, 4)}, η²=${fmtCtx(r.etaSquared)}, signifikan=${r.significant ? 'YA' : 'TIDAK'}`)
+  } else if (r.type === 'regression_simple') {
+    lines.push(`R²=${fmtCtx(r.rSquared)}, F=${fmtCtx(r.F)}, p=${fmtCtx(r.pF, 4)}, β=${fmtCtx(r.standardizedBeta)}, persamaan: ${r.equation}`)
+  } else if (r.type === 'regression_multiple') {
+    lines.push(`R²=${fmtCtx(r.rSquared)}, Adj R²=${fmtCtx(r.adjustedR2)}, F=${fmtCtx(r.F)}, p=${fmtCtx(r.pF, 4)}, n=${r.n}`)
+  } else if (r.type === 'chisquare') {
+    lines.push(`χ²=${fmtCtx(r.chi2)}, df=${r.df}, p=${fmtCtx(r.pValue, 4)}, Cramér's V=${fmtCtx(r.cramersV)}, signifikan=${r.isSignificant ? 'YA' : 'TIDAK'}`)
+  } else if (r.type === 'mannwhitney') {
+    lines.push(`U=${fmtCtx(r.U)}, z=${fmtCtx(r.z)}, p=${fmtCtx(r.pValue, 4)}, effect r=${fmtCtx(r.effectSize)}, signifikan=${r.isSignificant ? 'YA' : 'TIDAK'}`)
+  } else if (r.type === 'wilcoxon') {
+    lines.push(`W=${fmtCtx(r.W)}, z=${fmtCtx(r.z)}, p=${fmtCtx(r.pValue, 4)}, n=${r.n}`)
+  } else if (r.type === 'kruskal') {
+    lines.push(`H=${fmtCtx(r.H)}, df=${r.df}, p=${fmtCtx(r.pValue, 4)}, η²=${fmtCtx(r.etaSquared)}, signifikan=${r.isSignificant ? 'YA' : 'TIDAK'}`)
+  } else if (r.type === 'validity_reliability' && r.reliability) {
+    lines.push(`Cronbach's α=${fmtCtx(r.reliability.alpha)}, k=${r.reliability.k}, n=${r.reliability.n}, status=${r.reliability.alpha >= 0.7 ? 'reliabel' : 'kurang reliabel'}`)
+  } else if (r.type === 'ngain' && r.summary) {
+    lines.push(`Mean N-Gain=${fmtCtx(r.summary.meanGain)}, kategori dominan=${r.summary.dominantCategory}, n=${r.summary.n}`)
+  } else if (r.type === 'twowayanova') {
+    lines.push(`Faktor A: F=${fmtCtx(r.factorA?.F)}, p=${fmtCtx(r.factorA?.pValue, 4)}`)
+    lines.push(`Faktor B: F=${fmtCtx(r.factorB?.F)}, p=${fmtCtx(r.factorB?.pValue, 4)}`)
+    lines.push(`Interaksi: F=${fmtCtx(r.interaction?.F)}, p=${fmtCtx(r.interaction?.pValue, 4)}`)
+  }
+
+  if (r.interpretation) {
+    lines.push('')
+    lines.push(`Interpretasi default: ${String(r.interpretation).slice(0, 500)}`)
+  }
+  if (aiInterpretation) {
+    lines.push('')
+    lines.push(`Interpretasi akademik (sudah di-generate AI): ${String(aiInterpretation).slice(0, 800)}`)
+  }
+  return lines.join('\n')
 }
 
 // ============================================================
@@ -2587,11 +2812,18 @@ async function exportToPDF(result, containerEl) {
     if (state.y + need > pageH - myBot) { doc.addPage(); state.y = myTop }
   }
   const writeText = (text, opts = {}) => {
-    const { size = 10, style = 'normal', color = [40, 40, 40], indent = 0, leading = 4.6 } = opts
+    const { size = 10, style = 'normal', color = [40, 40, 40], indent = 0, leading = 4.6, align = 'left' } = opts
     setFont(size, style, color)
     const lines = doc.splitTextToSize(String(text ?? '—'), contentW - indent)
     ensureSpace(lines.length * leading)
-    doc.text(lines, mx + indent, state.y)
+    if (align === 'center') {
+      // Render line-by-line agar tiap baris benar-benar center secara horizontal
+      lines.forEach((line, i) => {
+        doc.text(String(line), pageW / 2, state.y + i * leading, { align: 'center' })
+      })
+    } else {
+      doc.text(lines, mx + indent, state.y)
+    }
     state.y += lines.length * leading
   }
   const hr = (gap = 3) => {
@@ -2689,14 +2921,15 @@ async function exportToPDF(result, containerEl) {
   }
 
   // ============================================================
-  // Header
+  // Header (centered branding + title)
   // ============================================================
   setFont(8, 'normal', [150, 150, 150])
-  doc.text('zaaaxx · Modul Statistik', mx, state.y); state.y += 5
+  doc.text('zoya.id · Modul Statistik', pageW / 2, state.y, { align: 'center' }); state.y += 5
   setFont(15, 'bold', [30, 30, 30])
-  doc.text(result.toolName || 'Hasil Analisis', mx, state.y); state.y += 5
+  doc.text(result.toolName || 'Hasil Analisis', pageW / 2, state.y, { align: 'center' }); state.y += 5
   setFont(8, 'normal', [120, 120, 120])
-  doc.text(`${result.sampleSize ?? '—'} sampel · ${result.analyzedAt || new Date().toLocaleString('id-ID')}`, mx, state.y)
+  doc.text(`${result.sampleSize ?? '—'} sampel · ${result.analyzedAt || new Date().toLocaleString('id-ID')}`,
+           pageW / 2, state.y, { align: 'center' })
   state.y += 4
   hr(4)
 
@@ -2711,13 +2944,13 @@ async function exportToPDF(result, containerEl) {
   const interp = result.interpretation || result.reliability?.interpretation
   if (interp) {
     sectionTitle('Interpretasi')
-    writeText(interp, { size: 9.5, leading: 4.7 })
+    writeText(interp, { size: 9.5, leading: 4.7, align: 'center' })
     state.y += 3
   }
 
   if (result.aiInterpretation) {
     sectionTitle('Interpretasi AI (akademik)')
-    writeText(result.aiInterpretation, { size: 9.5, leading: 4.7 })
+    writeText(result.aiInterpretation, { size: 9.5, leading: 4.7, align: 'center' })
     state.y += 3
   }
 
@@ -2725,7 +2958,21 @@ async function exportToPDF(result, containerEl) {
   // Charts (capture SVGs from container)
   // ============================================================
   if (containerEl) {
-    const svgs = Array.from(containerEl.querySelectorAll('svg'))
+    // Filter SVG agar HANYA chart (visualisasi data) yang ke-embed.
+    // Lucide icons biasanya 16-32px → di-skip. Chart biasanya ≥ 200px.
+    const allSvgs = Array.from(containerEl.querySelectorAll('svg'))
+    const svgs = allSvgs.filter(svg => {
+      const rect = svg.getBoundingClientRect()
+      const vbW = svg.viewBox?.baseVal?.width || 0
+      const vbH = svg.viewBox?.baseVal?.height || 0
+      const w = Math.max(rect.width, vbW)
+      const h = Math.max(rect.height, vbH)
+      // Chart minimum 200×100. Skip kalau lebih kecil (likely icon).
+      // Juga skip kalau ada class `lucide` (icon library).
+      if (svg.classList?.contains('lucide')) return false
+      if (Array.from(svg.classList || []).some(c => /icon/i.test(c))) return false
+      return w >= 200 && h >= 100
+    })
     if (svgs.length > 0) {
       sectionTitle('Visualisasi')
       for (const svg of svgs) {
@@ -2753,7 +3000,7 @@ async function exportToPDF(result, containerEl) {
     setFont(7.5, 'normal', [160, 160, 160])
     doc.text(`Halaman ${i} dari ${total}`, pageW / 2, pageH - 8, { align: 'center' })
     doc.text(new Date().toLocaleDateString('id-ID'), pageW - mx, pageH - 8, { align: 'right' })
-    doc.text('zaaaxx', mx, pageH - 8)
+    doc.text('zoya.id', mx, pageH - 8)
   }
 
   doc.save(`${result.tool}_${Date.now()}.pdf`)

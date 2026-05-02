@@ -346,73 +346,107 @@ function OrderStatus() {
                     {/* PDF Download */}
                     <button
                       onClick={() => {
-                        const doc = new jsPDF()
-                        
-                        // Title
-                        doc.setFontSize(18)
-                        doc.text('HASIL ASSESSMENT', 105, 20, { align: 'center' })
-                        
-                        doc.setFontSize(10)
-                        doc.text(`Order ID: ${foundOrder.id}`, 105, 30, { align: 'center' })
-                        doc.text(`Tanggal: ${foundOrder.date}`, 105, 36, { align: 'center' })
-                        
-                        let yPos = 50
-                        
+                        const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+                        const pageW = 210, pageH = 297
+                        const mx = 18
+                        const contentW = pageW - mx * 2
+                        const state = { y: 18 }
+
+                        const ensureSpace = (h) => {
+                          if (state.y + h > pageH - 18) { doc.addPage(); state.y = 18 }
+                        }
+                        const setFont = (size, style = 'normal', color = [40, 40, 40]) => {
+                          doc.setFontSize(size); doc.setFont('helvetica', style); doc.setTextColor(...color)
+                        }
+                        const hr = (gap = 3) => {
+                          ensureSpace(gap + 1)
+                          doc.setDrawColor(220); doc.setLineWidth(0.2)
+                          doc.line(mx, state.y, pageW - mx, state.y); state.y += gap
+                        }
+                        // Paragraph writer with center-align support for narrative text
+                        const writeText = (text, opts = {}) => {
+                          const { size = 10, style = 'normal', color = [40, 40, 40], leading = 5, align = 'left' } = opts
+                          setFont(size, style, color)
+                          const lines = doc.splitTextToSize(String(text ?? ''), contentW)
+                          ensureSpace(lines.length * leading)
+                          if (align === 'center') {
+                            lines.forEach((ln, i) => doc.text(String(ln), pageW / 2, state.y + i * leading, { align: 'center' }))
+                          } else {
+                            doc.text(lines, mx, state.y)
+                          }
+                          state.y += lines.length * leading
+                        }
+
+                        // Header (centered)
+                        setFont(8, 'normal', [150, 150, 150])
+                        doc.text('zoya.id · Hasil Assessment', pageW / 2, state.y, { align: 'center' })
+                        state.y += 5
+                        setFont(16, 'bold', [30, 30, 30])
+                        doc.text('HASIL ASSESSMENT', pageW / 2, state.y, { align: 'center' })
+                        state.y += 6
+                        setFont(9, 'normal', [120, 120, 120])
+                        doc.text(`Order ID: ${foundOrder.id}  ·  Tanggal: ${foundOrder.date}`, pageW / 2, state.y, { align: 'center' })
+                        state.y += 4
+                        hr(4)
+
                         if (foundOrder.service === 'assessment' && foundOrder.results) {
                           foundOrder.results.forEach((student, idx) => {
-                            if (yPos > 250) {
-                              doc.addPage()
-                              yPos = 20
-                            }
-                            
+                            ensureSpace(30)
                             const scores = student.scores || {}
                             const scoreValues = Object.values(scores)
-                            const avg = scoreValues.length > 0 
-                              ? (scoreValues.reduce((a,b) => a + (b.skor || 0), 0) / scoreValues.length).toFixed(1)
+                            const avg = scoreValues.length > 0
+                              ? (scoreValues.reduce((a, b) => a + (b.skor || 0), 0) / scoreValues.length).toFixed(1)
                               : '-'
-                            
-                            // Student name
-                            doc.setFontSize(12)
-                            doc.setFont('helvetica', 'bold')
-                            doc.text(`Siswa ${idx + 1}: ${student.name || 'Tanpa Nama'}`, 15, yPos)
-                            yPos += 7
-                            
-                            // Score
-                            doc.setFontSize(14)
-                            doc.setTextColor(34, 197, 94) // green
-                            doc.text(`Skor: ${avg}/10`, 15, yPos)
-                            yPos += 10
-                            
-                            doc.setTextColor(0, 0, 0) // reset
-                            doc.setFontSize(10)
-                            
-                            // Details
+
+                            // Student name (left)
+                            setFont(12, 'bold', [30, 30, 30])
+                            doc.text(`Siswa ${idx + 1}: ${student.name || 'Tanpa Nama'}`, mx, state.y)
+                            state.y += 6
+                            // Score (left)
+                            setFont(14, 'bold', [34, 197, 94])
+                            doc.text(`Skor: ${avg}/10`, mx, state.y)
+                            state.y += 8
+
+                            // Score details (tabular — left aligned)
+                            setFont(10, 'normal', [40, 40, 40])
                             Object.entries(scores).forEach(([key, val]) => {
-                              if (yPos > 270) {
-                                doc.addPage()
-                                yPos = 20
-                              }
-                              doc.setFont('helvetica', 'normal')
-                              doc.text(`• ${key}: ${val.skor}/10`, 20, yPos)
-                              yPos += 5
+                              ensureSpace(6)
+                              setFont(10, 'bold', [60, 60, 60])
+                              doc.text(`• ${key}: ${val.skor}/10`, mx + 4, state.y)
+                              state.y += 5
                               if (val.komentar) {
-                                doc.text(`  ${val.komentar}`, 20, yPos)
-                                yPos += 5
+                                // Komentar = narrative → center
+                                writeText(val.komentar, { size: 9.5, color: [80, 80, 80], leading: 4.5, align: 'center' })
+                                state.y += 1
                               }
                             })
-                            
+
                             if (student.kesimpulan) {
-                              yPos += 3
-                              doc.text(`Kesimpulan: ${student.kesimpulan}`, 15, yPos)
-                              yPos += 10
+                              state.y += 2
+                              setFont(7.5, 'bold', [120, 120, 120])
+                              doc.text('KESIMPULAN', pageW / 2, state.y, { align: 'center', charSpace: 0.4 })
+                              state.y += 5
+                              writeText(student.kesimpulan, { size: 10, leading: 4.8, align: 'center' })
+                              state.y += 3
                             }
-                            
-                            yPos += 5
+
+                            if (idx < foundOrder.results.length - 1) { hr(5) }
+                            state.y += 3
                           })
                         } else {
-                          doc.text('Hasil analisis tersedia', 15, yPos)
+                          writeText('Hasil analisis tersedia', { align: 'center' })
                         }
-                        
+
+                        // Footer
+                        const total = doc.internal.getNumberOfPages()
+                        for (let i = 1; i <= total; i++) {
+                          doc.setPage(i)
+                          setFont(7.5, 'normal', [160, 160, 160])
+                          doc.text('zoya.id', mx, pageH - 8)
+                          doc.text(`Halaman ${i} dari ${total}`, pageW / 2, pageH - 8, { align: 'center' })
+                          doc.text(new Date().toLocaleDateString('id-ID'), pageW - mx, pageH - 8, { align: 'right' })
+                        }
+
                         doc.save(`hasil-${foundOrder.id}.pdf`)
                       }}
                       className="w-full mt-2 bg-red-500 text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2"
