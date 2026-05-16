@@ -5,7 +5,14 @@
  */
 import * as XLSX from 'xlsx'
 import mammoth from 'mammoth'
-import { PDFDocument } from 'pdf-lib'
+import * as pdfjsLib from 'pdfjs-dist'
+
+// pdf-lib TIDAK punya getTextContent() — itu API milik pdfjs-dist.
+// Worker dimuat dari CDN agar tidak butuh konfigurasi vite tambahan.
+if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+}
 
 /**
  * Parse Excel/CSV - Straightforward
@@ -17,7 +24,10 @@ async function parseExcel(file) {
       try {
         const workbook = XLSX.read(event.target.result, { type: 'binary' })
         const sheetName = workbook.SheetNames[0]
-        const jsonData = XLSX.utils.sheet_to_json(sheetName, { header: 1 }) // Array of arrays
+        const worksheet = workbook.Sheets[sheetName]
+        // FIX: sheet_to_json butuh worksheet OBJECT, bukan string nama sheet.
+        // Bug sebelumnya: jsonData selalu [] → semua Excel jatuh ke fallback.
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' })
         
         if (!jsonData || jsonData.length < 2) {
           resolve([{ id: uid(), name: file.name.replace(/\.[^/.]+$/, ''), answer: 'File kosong atau tidak valid' }])
@@ -120,59 +130,54 @@ async function parseWord(file) {
 }
 
 /**
- * Parse PDF
+ * Parse PDF — pakai pdfjs-dist (bukan pdf-lib).
+ * Bug sebelumnya: pdf-lib tidak punya getTextContent() — semua PDF selalu
+ * salah dideteksi sebagai "scan". Sekarang pakai pdfjs-dist yang memang
+ * dirancang untuk text extraction.
  */
 async function parsePDF(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = async (event) => {
+  const arrayBuffer = await file.arrayBuffer()
+  try {
+    const loadingTask = pdfjsLib.getDocument({
+      data: new Uint8Array(arrayBuffer),
+      // Matikan font warning yang berisik di console
+      verbosity: 0,
+    })
+    const pdfDoc = await loadingTask.promise
+    const numPages = pdfDoc.numPages
+
+    let fullText = ''
+    let hasText = false
+    const maxPages = Math.min(numPages, 50) // safety cap
+
+    for (let i = 1; i <= maxPages; i++) {
       try {
-        const arrayBuffer = event.target.result
-        
-        // Try to extract text
-        const pdfDoc = await PDFDocument.load(arrayBuffer)
-        const numPages = pdfDoc.getPageCount()
-        
-        // Check if it's text-based or scanned
-        let fullText = ''
-        let hasText = false
-        
-        for (let i = 0; i < Math.min(numPages, 3); i++) {
-          const page = pdfDoc.getPage(i)
-          try {
-            const text = await page.getTextContent()
-            const pageText = text.items.map(item => item.str).join(' ')
-            if (pageText.trim().length > 10) {
-              hasText = true
-            }
-            fullText += pageText + '\n\n'
-          } catch (e) {
-            // Page might be scanned
-          }
-        }
-        
-        if (!hasText) {
-          // Likely scanned PDF - return warning
-          resolve([{
-            id: uid(),
-            name: '⚠️ PDF Scan Terdeteksi',
-            answer: 'File ini terlihat seperti PDF hasil scan/gambar. Hasil parsing mungkin tidak akurat. Disarankan convert ke Word dulu untuk hasil terbaik.',
-            isWarning: true
-          }])
-          return
-        }
-        
-        // Run cascade logic
-        const students = runCascadeParsing(fullText)
-        
-        resolve(students)
-      } catch (err) {
-        reject(new Error('Gagal membaca PDF: ' + err.message))
+        const page = await pdfDoc.getPage(i)
+        const content = await page.getTextContent()
+        const pageText = content.items
+          .map(item => (typeof item.str === 'string' ? item.str : ''))
+          .join(' ')
+        if (pageText.trim().length > 10) hasText = true
+        fullText += pageText + '\n\n'
+      } catch (e) {
+        // Lewati halaman yang gagal di-extract (mungkin halaman gambar/scan)
+        console.warn(`[parsePDF] halaman ${i} gagal:`, e.message)
       }
     }
-    reader.onerror = () => reject(new Error('Gagal membaca file'))
-    reader.readAsArrayBuffer(file)
-  })
+
+    if (!hasText) {
+      return [{
+        id: uid(),
+        name: '⚠️ PDF Scan Terdeteksi',
+        answer: 'File ini terlihat seperti PDF hasil scan/gambar (tidak ada layer teks). Disarankan convert ke Word atau gunakan OCR dulu.',
+        isWarning: true,
+      }]
+    }
+
+    return runCascadeParsing(fullText)
+  } catch (err) {
+    throw new Error('Gagal membaca PDF: ' + (err?.message || String(err)))
+  }
 }
 
 /**

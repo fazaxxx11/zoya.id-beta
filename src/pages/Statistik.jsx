@@ -1784,57 +1784,100 @@ function ChatBubble({ role, content }) {
   )
 }
 
-// Bangun konteks hasil uji ringkas untuk dikirim ke AI sebagai system context.
+// Bangun konteks hasil uji untuk dikirim ke AI sebagai system context.
+//
+// Pendekatan baru (generic JSON serializer): apapun tool yang user buka,
+// SELURUH field hasil dirangkum jadi key=value sederhana, kecuali field
+// raw/heavy (residuals, yPred, dataMatrix, dll) yang gak relevan untuk AI.
+//
+// Sebelumnya pakai branch per r.type — banyak tool (mediation, moderation,
+// EFA, CFA, logistic, posthoc, dll) gak ke-cover sehingga AI cuma dapat
+// "Tool: X, n: Y" tanpa angka sama sekali.
 function buildResultContext(r, aiInterpretation) {
   const lines = []
-  const fmtCtx = (v, d = 3) => typeof v === 'number' ? v.toFixed(d) : (v ?? '—')
-  lines.push(`Tool: ${r.toolName || r.type}`)
+  lines.push(`Tool: ${r.toolName || r.type || 'Analisis Statistik'}`)
   if (r.sampleSize) lines.push(`Jumlah sampel: ${r.sampleSize}`)
 
-  if (r.type === 'descriptive' && Array.isArray(r.stats)) {
-    r.stats.slice(0, 5).forEach(s => {
-      lines.push(`${s.column}: n=${s.n}, mean=${fmtCtx(s.mean)}, SD=${fmtCtx(s.stdDev)}, median=${fmtCtx(s.median)}`)
-    })
-  } else if (r.type === 'normality' && Array.isArray(r.results)) {
-    r.results.forEach(n => {
-      lines.push(`${n.column} (${n.method}): stat=${fmtCtx(n.W ?? n.D)}, p=${fmtCtx(n.pValue, 4)}, ${n.isNormal ? 'NORMAL' : 'TIDAK normal'}`)
-    })
-  } else if (r.type === 'correlation') {
-    lines.push(`Metode: ${r.method}, n=${r.n}, r=${fmtCtx(r.r ?? r.rho)}, p=${fmtCtx(r.pValue, 4)}, kekuatan=${r.strength}, arah=${r.direction}`)
-  } else if (r.type === 'ttest') {
-    lines.push(`Mode: ${r.mode || r.test}, t=${fmtCtx(r.t)}, df=${fmtCtx(r.df, 2)}, p=${fmtCtx(r.pValue, 4)}, Cohen's d=${fmtCtx(r.cohensD)}, signifikan=${r.significant ? 'YA' : 'TIDAK'}`)
-  } else if (r.type === 'anova') {
-    lines.push(`F=${fmtCtx(r.F)}, df=(${r.dfBetween},${r.dfWithin}), p=${fmtCtx(r.pValue, 4)}, η²=${fmtCtx(r.etaSquared)}, signifikan=${r.significant ? 'YA' : 'TIDAK'}`)
-  } else if (r.type === 'regression_simple') {
-    lines.push(`R²=${fmtCtx(r.rSquared)}, F=${fmtCtx(r.F)}, p=${fmtCtx(r.pF, 4)}, β=${fmtCtx(r.standardizedBeta)}, persamaan: ${r.equation}`)
-  } else if (r.type === 'regression_multiple') {
-    lines.push(`R²=${fmtCtx(r.rSquared)}, Adj R²=${fmtCtx(r.adjustedR2)}, F=${fmtCtx(r.F)}, p=${fmtCtx(r.pF, 4)}, n=${r.n}`)
-  } else if (r.type === 'chisquare') {
-    lines.push(`χ²=${fmtCtx(r.chi2)}, df=${r.df}, p=${fmtCtx(r.pValue, 4)}, Cramér's V=${fmtCtx(r.cramersV)}, signifikan=${r.isSignificant ? 'YA' : 'TIDAK'}`)
-  } else if (r.type === 'mannwhitney') {
-    lines.push(`U=${fmtCtx(r.U)}, z=${fmtCtx(r.z)}, p=${fmtCtx(r.pValue, 4)}, effect r=${fmtCtx(r.effectSize)}, signifikan=${r.isSignificant ? 'YA' : 'TIDAK'}`)
-  } else if (r.type === 'wilcoxon') {
-    lines.push(`W=${fmtCtx(r.W)}, z=${fmtCtx(r.z)}, p=${fmtCtx(r.pValue, 4)}, n=${r.n}`)
-  } else if (r.type === 'kruskal') {
-    lines.push(`H=${fmtCtx(r.H)}, df=${r.df}, p=${fmtCtx(r.pValue, 4)}, η²=${fmtCtx(r.etaSquared)}, signifikan=${r.isSignificant ? 'YA' : 'TIDAK'}`)
-  } else if (r.type === 'validity_reliability' && r.reliability) {
-    lines.push(`Cronbach's α=${fmtCtx(r.reliability.alpha)}, k=${r.reliability.k}, n=${r.reliability.n}, status=${r.reliability.alpha >= 0.7 ? 'reliabel' : 'kurang reliabel'}`)
-  } else if (r.type === 'ngain' && r.summary) {
-    lines.push(`Mean N-Gain=${fmtCtx(r.summary.meanGain)}, kategori dominan=${r.summary.dominantCategory}, n=${r.summary.n}`)
-  } else if (r.type === 'twowayanova') {
-    lines.push(`Faktor A: F=${fmtCtx(r.factorA?.F)}, p=${fmtCtx(r.factorA?.pValue, 4)}`)
-    lines.push(`Faktor B: F=${fmtCtx(r.factorB?.F)}, p=${fmtCtx(r.factorB?.pValue, 4)}`)
-    lines.push(`Interaksi: F=${fmtCtx(r.interaction?.F)}, p=${fmtCtx(r.interaction?.pValue, 4)}`)
+  // Field yang dilewati: terlalu besar / gak relevan untuk konteks AI
+  const SKIP_KEYS = new Set([
+    'type', 'toolName', 'sampleSize',
+    'residuals', 'yPred', 'predicted', 'fitted',
+    'rawData', 'dataMatrix', 'matrix', 'covariance', 'correlationMatrix',
+    'rotatedLoadings', 'unrotatedLoadings', 'loadings',
+    'eigenvectors', 'scores',
+    'groups', 'groupData', 'rawGroups',
+    'interpretation', // dipisah handling-nya
+    'aiInterpretation',
+    'chart', 'charts', 'plotData',
+  ])
+
+  const fmtNum = (v) => {
+    if (v === null || v === undefined) return '—'
+    if (typeof v !== 'number') return String(v)
+    if (!isFinite(v)) return String(v)
+    const abs = Math.abs(v)
+    if (abs >= 1000 || abs < 0.0001 && v !== 0) return v.toExponential(2)
+    return Number(v.toFixed(4)).toString()
   }
 
+  // Flatten 1 level objek nested (mis. r.student, r.welch, r.levene, r.factorA, ...)
+  const dumpValue = (key, val, indent = '') => {
+    if (val === null || val === undefined) return
+    if (SKIP_KEYS.has(key)) return
+
+    if (typeof val === 'number' || typeof val === 'string' || typeof val === 'boolean') {
+      lines.push(`${indent}${key}: ${typeof val === 'number' ? fmtNum(val) : val}`)
+      return
+    }
+
+    if (Array.isArray(val)) {
+      // Array of primitives → join
+      if (val.every(v => typeof v !== 'object' || v === null)) {
+        const preview = val.slice(0, 10).map(v => typeof v === 'number' ? fmtNum(v) : v).join(', ')
+        lines.push(`${indent}${key}: [${preview}${val.length > 10 ? ', ...' : ''}]`)
+        return
+      }
+      // Array of objects (mis. coefficients, vifs, stats per kolom) → ringkas
+      lines.push(`${indent}${key}:`)
+      val.slice(0, 12).forEach((item, idx) => {
+        if (typeof item === 'object' && item !== null) {
+          const inner = Object.entries(item)
+            .filter(([k]) => !SKIP_KEYS.has(k))
+            .map(([k, v]) => `${k}=${typeof v === 'number' ? fmtNum(v) : v}`)
+            .join(', ')
+          lines.push(`${indent}  [${idx + 1}] ${inner}`)
+        }
+      })
+      if (val.length > 12) lines.push(`${indent}  ...dan ${val.length - 12} lagi`)
+      return
+    }
+
+    if (typeof val === 'object') {
+      // Nested object (mis. r.student, r.levene, r.assumptions, r.reliability)
+      const innerEntries = Object.entries(val).filter(([k]) => !SKIP_KEYS.has(k))
+      if (innerEntries.length === 0) return
+      lines.push(`${indent}${key}:`)
+      innerEntries.forEach(([k, v]) => dumpValue(k, v, indent + '  '))
+    }
+  }
+
+  for (const [k, v] of Object.entries(r)) {
+    dumpValue(k, v)
+  }
+
+  // Interpretasi default (limit dinaikkan: tool kompleks butuh konteks lebih)
   if (r.interpretation) {
     lines.push('')
-    lines.push(`Interpretasi default: ${String(r.interpretation).slice(0, 500)}`)
+    lines.push(`Interpretasi default sistem:`)
+    lines.push(String(r.interpretation).slice(0, 2000))
   }
+  // Interpretasi APA yang sudah di-generate AI (kalau panel sudah dibuka)
   if (aiInterpretation) {
     lines.push('')
-    lines.push(`Interpretasi akademik (sudah di-generate AI): ${String(aiInterpretation).slice(0, 800)}`)
+    lines.push(`Interpretasi akademik (APA, sudah di-generate AI):`)
+    lines.push(String(aiInterpretation).slice(0, 2500))
   }
+
   return lines.join('\n')
 }
 

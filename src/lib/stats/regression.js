@@ -172,21 +172,21 @@ export function multipleLinearRegression(X, y, predictorNames = null, alpha = 0.
     })),
   ]
 
-  // VIF (Variance Inflation Factor) untuk multikolinearitas
+  // VIF (Variance Inflation Factor) untuk multikolinearitas.
+  // FIX: sebelumnya outcome (Xj) dan predictor (otherCols) tidak align — Xj
+  // pakai raw X[j] (mungkin masih ada NaN), sementara otherCols sudah di-clean.
+  // Sekarang dua-duanya konsisten dari `valid` (rows yang sudah complete).
   const vifs = []
   if (p >= 2) {
     for (let j = 0; j < p; j++) {
-      const Xj = X[j].filter((_, i) => valid[i] !== undefined)
-      const others = X.filter((_, k) => k !== j)
-      const otherCols = valid.map(r => r.x.filter((_, k) => k !== j))
+      // Outcome sub-regresi: kolom j, ambil dari rows yang sudah valid
+      const Xj = valid.map(r => r.x[j])
+      // Predictor sub-regresi: semua kolom kecuali j, format [p-1][n]
+      const otherColsByRow = valid.map(r => r.x.filter((_, k) => k !== j))  // [n][p-1]
+      const otherColsByCol = transpose(otherColsByRow)                      // [p-1][n]
       try {
-        const subResult = multipleLinearRegression(
-          transpose(otherCols),
-          Xj.slice(0, n),
-          null,
-          alpha
-        )
-        if (!subResult.error) {
+        const subResult = multipleLinearRegression(otherColsByCol, Xj, null, alpha)
+        if (!subResult.error && isFinite(subResult.rSquared) && subResult.rSquared < 1) {
           vifs.push({ predictor: names[j], vif: 1 / (1 - subResult.rSquared) })
         } else {
           vifs.push({ predictor: names[j], vif: NaN })

@@ -192,6 +192,28 @@ function usePersist(key, defaultValue) {
 
 const uid = () => Math.random().toString(36).slice(2, 8);
 
+// Export hasil parsing ke Excel supaya user bisa edit manual di spreadsheet,
+// lalu upload ulang via tombol "Ganti". Mengatasi friction parsing PDF/Word
+// yang nama/jawaban-nya sering perlu koreksi manual.
+function exportPreviewToExcel(students) {
+  try {
+    const rows = students.map((s, i) => ({
+      'No': i + 1,
+      'Nama Siswa': s.name || '',
+      'Jawaban': s.answer || '',
+    }))
+    const ws = XLSX.utils.json_to_sheet(rows, { header: ['No', 'Nama Siswa', 'Jawaban'] })
+    ws['!cols'] = [{ wch: 5 }, { wch: 28 }, { wch: 90 }]
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Edit Jawaban')
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')
+    XLSX.writeFile(wb, `parsing-edit-${stamp}.xlsx`)
+    toast.success('Excel terdownload. Edit lalu klik "Ganti" untuk upload ulang.')
+  } catch (e) {
+    toast.error('Gagal export Excel: ' + e.message)
+  }
+}
+
 // Rubrik Builder
 function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, setContext }) {
   const [aiOpen, setAiOpen] = useState(false)
@@ -610,12 +632,24 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               ))}
             </div>
             
-            <div className="flex gap-2 mt-3">
-              <button onClick={addStudent} className="btn-secondary text-sm flex-1">+ Tambah Manual</button>
-              <button onClick={handleConfirmPreview} className="btn-primary text-sm flex-1">
-                ✓ Konfirmasi & Lanjut ke Pembayaran
+            <div className="flex flex-col sm:flex-row gap-2 mt-3">
+              <button onClick={addStudent} className="btn-secondary text-sm sm:flex-1">+ Tambah Manual</button>
+              <button
+                onClick={() => exportPreviewToExcel(students)}
+                className="btn-secondary text-sm sm:flex-1 flex items-center justify-center gap-1.5"
+                title="Download Excel untuk dikoreksi manual, lalu upload lagi via tombol Ganti"
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                Edit di Excel
+              </button>
+              <button onClick={handleConfirmPreview} className="btn-primary text-sm sm:flex-1">
+                ✓ Konfirmasi & Lanjut
               </button>
             </div>
+            <p className="text-[11px] text-amber-700 mt-2">
+              Susah koreksi di sini? Klik <b>Edit di Excel</b> — download, betulin di spreadsheet,
+              lalu klik <b>Ganti</b> di atas untuk upload ulang.
+            </p>
           </div>
         )}
 
