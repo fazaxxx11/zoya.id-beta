@@ -579,57 +579,90 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             </div>
           )}
 
-        {/* PREVIEW MODE - Show detected students for correction */}
+        {/* PREVIEW MODE — Excel-like editable grid (semua sel bisa diedit langsung) */}
         {showPreview && (
-          <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 mb-4">
-            <div className="flex items-center gap-2 mb-3">
+          <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-3 sm:p-4 mb-4">
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
               <AlertCircle className="w-5 h-5 text-amber-600" />
               <span className="font-medium text-amber-800">Pratinjau Data</span>
-              <span className="text-xs text-amber-600">(Koreksi jika ada yang salah)</span>
+              <span className="text-xs text-amber-700">— klik sel manapun untuk koreksi langsung</span>
+              <span className="ml-auto text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                {students.length} baris
+              </span>
             </div>
-            
-            <div className="space-y-3 max-h-64 overflow-y-auto">
-              {students.map((s, i) => (
-                <div key={s.id} className="bg-white rounded-lg p-3 border border-amber-100">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">Murid #{i+1}</span>
-                      {s.confidence && (
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                          s.confidence >= 70 ? 'bg-green-100 text-green-700' :
-                          s.confidence >= 50 ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-red-100 text-red-700'
-                        }`}>
-                          {s.confidence}%
-                        </span>
+
+            <div className="overflow-x-auto rounded-lg border border-amber-200 bg-white">
+              <table className="w-full text-sm border-collapse">
+                <thead className="bg-amber-100/80 sticky top-0 z-10">
+                  <tr className="text-left">
+                    <th className="border-b border-r border-amber-200 px-2 py-1.5 w-10 text-center text-[11px] font-semibold text-amber-900">#</th>
+                    <th className="border-b border-r border-amber-200 px-2 py-1.5 w-44 sm:w-52 text-[11px] font-semibold text-amber-900">Nama Siswa</th>
+                    <th className="border-b border-r border-amber-200 px-2 py-1.5 text-[11px] font-semibold text-amber-900">Jawaban</th>
+                    {students.some(s => s.confidence) && (
+                      <th className="border-b border-r border-amber-200 px-2 py-1.5 w-16 text-center text-[11px] font-semibold text-amber-900" title="Confidence parsing">Conf.</th>
+                    )}
+                    <th className="border-b border-amber-200 px-1 py-1.5 w-9 text-[11px]"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map((s, i) => (
+                    <tr key={s.id} className={i % 2 === 0 ? 'bg-white' : 'bg-amber-50/30'}>
+                      <td className="border-b border-r border-amber-100 px-2 py-1 text-center text-[11px] text-gray-400 font-mono align-top pt-2">
+                        {i + 1}
+                      </td>
+                      <td className="border-b border-r border-amber-100 p-0 align-top">
+                        <input
+                          type="text"
+                          value={s.name}
+                          onChange={e => upd(s.id, 'name', e.target.value)}
+                          placeholder="Nama"
+                          className="w-full px-2 py-1.5 text-sm bg-transparent border-0 focus:bg-white focus:ring-2 focus:ring-sky-300 focus:outline-none rounded"
+                        />
+                      </td>
+                      <td className="border-b border-r border-amber-100 p-0 align-top">
+                        <textarea
+                          value={s.answer}
+                          onChange={e => upd(s.id, 'answer', e.target.value)}
+                          placeholder="Jawaban..."
+                          rows={2}
+                          className="w-full px-2 py-1.5 text-xs bg-transparent border-0 focus:bg-white focus:ring-2 focus:ring-sky-300 focus:outline-none rounded resize-y min-h-[2.5rem] leading-snug"
+                        />
+                      </td>
+                      {students.some(st => st.confidence) && (
+                        <td className="border-b border-r border-amber-100 px-1.5 py-1 text-center align-top pt-2">
+                          {s.confidence ? (
+                            <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+                              s.confidence >= 70 ? 'bg-green-100 text-green-700' :
+                              s.confidence >= 50 ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-red-100 text-red-700'
+                            }`} title={s.method ? `Metode: ${s.method}` : undefined}>
+                              {s.confidence}%
+                            </span>
+                          ) : (
+                            <span className="text-gray-300 text-[10px]">—</span>
+                          )}
+                        </td>
                       )}
-                      {s.method && (
-                        <span className="text-xs text-gray-400">({s.method})</span>
-                      )}
-                    </div>
-                    <button onClick={() => del(s.id)} className="text-red-400"><Trash2 className="w-4 h-4"/></button>
-                  </div>
-                  <input 
-                    type="text" 
-                    value={s.name} 
-                    onChange={e => upd(s.id, 'name', e.target.value)} 
-                    placeholder="Nama Siswa" 
-                    className="input-field mb-2 text-sm"
-                  />
-                  <textarea 
-                    value={s.answer} 
-                    onChange={e => upd(s.id, 'answer', e.target.value)} 
-                    placeholder="Jawaban..." 
-                    rows={2} 
-                    className="input-field text-sm resize-none"
-                  />
-                  {s.answer && (
-                    <p className="text-xs text-gray-400 mt-1">
-                      {s.answer.substring(0, 50)}...
-                    </p>
+                      <td className="border-b border-amber-100 px-1 py-1 text-center align-top pt-1.5">
+                        <button
+                          onClick={() => del(s.id)}
+                          className="text-red-400 hover:text-red-600 hover:bg-red-50 rounded p-1"
+                          title="Hapus baris"
+                        >
+                          <Trash2 className="w-3.5 h-3.5"/>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {students.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-3 py-6 text-center text-sm text-gray-400">
+                        Belum ada baris. Klik "+ Tambah Baris" untuk input manual.
+                      </td>
+                    </tr>
                   )}
-                </div>
-              ))}
+                </tbody>
+              </table>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-2 mt-3">

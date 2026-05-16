@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { X, AlertTriangle, CheckCircle2, Sparkles } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { X, AlertTriangle, CheckCircle2, Sparkles, Table2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { analyzeColumns, findDuplicateRows, applyCleaning } from '../lib/dataCleaner'
 import Modal from './Modal'
 
@@ -18,9 +18,25 @@ export default function DataCleanerModal({ open, data, columns, onClose, onApply
 }
 
 function ModalBody({ data, columns, onClose, onApply }) {
-  const analysis = useMemo(() => analyzeColumns(data, columns), [data, columns])
-  const dupes = useMemo(() => findDuplicateRows(data, columns), [data, columns])
-  const totalRows = data[columns[0]]?.length || 0
+  // editedData = mirror of `data` yang bisa di-edit cell-by-cell oleh user
+  // di tabel preview di bawah. Semua analisis (missing/outlier/dupe) di-hitung
+  // dari editedData ini, jadi user lihat live impact dari editannya.
+  const [editedData, setEditedData] = useState(() => {
+    const clone = {}
+    for (const c of columns) clone[c] = Array.isArray(data[c]) ? [...data[c]] : []
+    return clone
+  })
+
+  // Re-sync kalau parent kirim data baru (misalnya user upload ulang file)
+  useEffect(() => {
+    const clone = {}
+    for (const c of columns) clone[c] = Array.isArray(data[c]) ? [...data[c]] : []
+    setEditedData(clone)
+  }, [data, columns])
+
+  const analysis = useMemo(() => analyzeColumns(editedData, columns), [editedData, columns])
+  const dupes = useMemo(() => findDuplicateRows(editedData, columns), [editedData, columns])
+  const totalRows = editedData[columns[0]]?.length || 0
 
   // Per-column op state
   const [colOps, setColOps] = useState(() => {
@@ -30,10 +46,42 @@ function ModalBody({ data, columns, onClose, onApply }) {
   })
   const [dropDuplicates, setDropDuplicates] = useState(dupes.length > 0)
 
-  // Preview
+  // Pagination untuk tabel preview (dataset bisa ribuan baris)
+  const ROWS_PER_PAGE = 25
+  const [page, setPage] = useState(0)
+  const totalPages = Math.max(1, Math.ceil(totalRows / ROWS_PER_PAGE))
+  const startRow = page * ROWS_PER_PAGE
+  const endRow = Math.min(startRow + ROWS_PER_PAGE, totalRows)
+  const [showDataPreview, setShowDataPreview] = useState(true)
+
+  // Track sel mana yang baru di-edit (untuk highlight visual)
+  const [editedCells, setEditedCells] = useState(new Set())
+
+  // Edit satu sel
+  const updateCell = (col, rowIdx, raw) => {
+    setEditedData(prev => {
+      const next = { ...prev, [col]: [...prev[col]] }
+      // Auto-convert ke number kalau kolom-nya numeric & input bisa di-parse
+      const trimmed = String(raw).trim()
+      let val
+      if (trimmed === '') {
+        val = null
+      } else if (analysis[col]?.type === 'numeric') {
+        const n = Number(trimmed.replace(',', '.'))
+        val = isNaN(n) ? trimmed : n
+      } else {
+        val = trimmed
+      }
+      next[col][rowIdx] = val
+      return next
+    })
+    setEditedCells(prev => new Set(prev).add(`${col}|${rowIdx}`))
+  }
+
+  // Preview cleaning (drop missing/clip/dedupe) di atas data yang sudah di-edit
   const preview = useMemo(() => {
-    return applyCleaning(data, columns, { columnOps: colOps, dropDuplicates })
-  }, [data, columns, colOps, dropDuplicates])
+    return applyCleaning(editedData, columns, { columnOps: colOps, dropDuplicates })
+  }, [editedData, columns, colOps, dropDuplicates])
 
   // Quick action: smart-clean (drop missing + clip outliers + drop duplicates)
   const handleSmartClean = () => {
@@ -203,6 +251,119 @@ function ModalBody({ data, columns, onClose, onApply }) {
                   className="w-4 h-4 accent-gray-900" />
                 Drop duplikat
               </label>
+            )}
+          </div>
+
+          {/* === DATA PREVIEW & INLINE EDIT (Excel-like) ===
+              Tabel menampilkan semua kolom × paginated rows. Tiap sel jadi
+              input yang bisa di-edit langsung. Perubahan auto-update analisis
+              & preview cleaning di atas. */}
+          <div className="mt-4 border border-gray-200 rounded-xl overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowDataPreview(v => !v)}
+              className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+            >
+              <div className="flex items-center gap-2">
+                <Table2 className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium text-gray-900">Lihat & Edit Data</span>
+                <span className="text-xs text-gray-500">
+                  {totalRows} baris × {columns.length} kolom
+                </span>
+                {editedCells.size > 0 && (
+                  <span className="text-[10px] uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">
+                    {editedCells.size} sel diubah
+                  </span>
+                )}
+              </div>
+              <span className="text-xs text-gray-500">{showDataPreview ? '▲ Tutup' : '▼ Buka'}</span>
+            </button>
+
+            {showDataPreview && (
+              <>
+                <div className="overflow-auto max-h-[420px] border-t border-gray-200">
+                  <table className="w-full text-sm border-collapse">
+                    <thead className="bg-gray-100 sticky top-0 z-10">
+                      <tr>
+                        <th className="border-b border-r border-gray-200 px-2 py-1.5 w-12 text-center text-[11px] font-semibold text-gray-600 sticky left-0 bg-gray-100 z-20">
+                          #
+                        </th>
+                        {columns.map(col => (
+                          <th key={col} className="border-b border-r border-gray-200 px-2 py-1.5 text-left text-[11px] font-semibold text-gray-700 whitespace-nowrap">
+                            <div className="flex items-center gap-1.5">
+                              {col}
+                              <TypeBadge type={analysis[col]?.type} />
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.from({ length: endRow - startRow }, (_, k) => {
+                        const i = startRow + k
+                        return (
+                          <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}>
+                            <td className="border-b border-r border-gray-100 px-2 py-1 text-center text-[11px] text-gray-400 font-mono sticky left-0 bg-inherit z-10">
+                              {i + 1}
+                            </td>
+                            {columns.map(col => {
+                              const v = editedData[col]?.[i]
+                              const isEmpty = v === null || v === undefined || v === ''
+                              const isEdited = editedCells.has(`${col}|${i}`)
+                              return (
+                                <td key={col} className={`border-b border-r border-gray-100 p-0 ${isEdited ? 'bg-amber-50' : ''}`}>
+                                  <input
+                                    type="text"
+                                    value={isEmpty ? '' : String(v)}
+                                    onChange={e => updateCell(col, i, e.target.value)}
+                                    placeholder={isEmpty ? '(kosong)' : ''}
+                                    className={`w-full px-2 py-1.5 text-xs bg-transparent border-0 focus:bg-white focus:ring-2 focus:ring-sky-300 focus:outline-none ${
+                                      isEmpty ? 'text-red-400 italic' : 'text-gray-800'
+                                    } ${analysis[col]?.type === 'numeric' ? 'font-mono text-right' : ''}`}
+                                  />
+                                </td>
+                              )
+                            })}
+                          </tr>
+                        )
+                      })}
+                      {totalRows === 0 && (
+                        <tr>
+                          <td colSpan={columns.length + 1} className="px-3 py-8 text-center text-sm text-gray-400">
+                            Dataset kosong
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination footer */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
+                    <span>Baris {startRow + 1}–{endRow} dari {totalRows}</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setPage(p => Math.max(0, p - 1))}
+                        disabled={page === 0}
+                        className="p-1 rounded hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="px-2">
+                        Hal. {page + 1} / {totalPages}
+                      </span>
+                      <button
+                        onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                        disabled={page >= totalPages - 1}
+                        className="p-1 rounded hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
