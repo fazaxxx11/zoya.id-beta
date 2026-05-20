@@ -31,7 +31,7 @@
       ]
     },
     {
-      "source": "/(favicon\\.svg|logo\\.png|logo\\.svg|og-image\\.(png|svg))",
+      "source": "/(favicon\\.svg|logo\\.png|logo\\.svg|og-image\\.png|og-image\\.svg)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=604800" }
       ]
