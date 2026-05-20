@@ -109,7 +109,7 @@ export async function topUp(amount, code = 'DIRECT', userId = null) {
   const { error } = await supabase.rpc('top_up_wallet', {
     p_user_id: targetUser,
     p_amount: amount,
-    p_reference: code,
+    p_reference_id: code,
   })
   if (error) return { success: false, error: error.message }
   await refreshWallet()
@@ -119,11 +119,10 @@ export async function topUp(amount, code = 'DIRECT', userId = null) {
 /**
  * Potong saldo. Selama BETA_FREE, paywall short-circuit sebelum panggil ini
  * (semua tool gratis). Untuk post-beta, paywall.chargeForTool perlu di-async-kan
- * supaya bisa await ini.
+ * supaya bisa await RPC `deduct_wallet_and_create_order` di Supabase (atomic).
  *
  * Saat ini sync (untuk kompat dengan paywall sync). Mengembalikan stub error
- * supaya kalau dipanggil tidak hang. Implementasi real ada di
- * deductWalletAndCreateOrder() di wallet.supabase.js (sudah async + atomic via RPC).
+ * supaya kalau dipanggil tidak hang.
  */
 export const deductWallet = (amount) => {
   console.warn('[wallet] deductWallet (sync) dipanggil saat BETA_FREE seharusnya tidak terjadi. Gunakan deductWalletAndCreateOrder (async) untuk post-beta.')
