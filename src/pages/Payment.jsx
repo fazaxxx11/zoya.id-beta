@@ -439,8 +439,9 @@ function Payment() {
           <div className="bg-red-50 border border-red-200 rounded-xl p-4">
             <p className="text-red-700 font-medium mb-2">⚠️ Saldo tidak cukup</p>
             <p className="text-sm text-red-600 mb-3">
-              Saldo Anda: Rp {totalBalance.toLocaleString('id-ID')}\n
-              Needed: Rp {tier?.price?.toLocaleString('id-ID')}
+              Saldo Anda: Rp {totalBalance.toLocaleString('id-ID')}
+              <br />
+              Dibutuhkan: Rp {tier?.price?.toLocaleString('id-ID')}
             </p>
             <div className="flex gap-2">
               <Link to="/auth?mode=topup" className="flex-1 bg-red-500 text-white text-center py-2 rounded-lg text-sm font-medium">

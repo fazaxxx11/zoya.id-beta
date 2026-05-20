@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import assessHandler from './api/assess.js'
 import interpretStatsHandler from './api/interpret-stats.js'
+import explainChatHandler from './api/explain-chat.js'
+import generateKuesionerHandler from './api/generate-kuesioner.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -12,10 +14,12 @@ app.use(cors())
 app.use(express.json({ limit: '2mb' }))
 app.use(express.static(join(__dirname, 'dist')))
 
-// Delegate to the same handler used in production (Vercel function).
+// Delegate to the same handlers used in production (Vercel functions).
 // This keeps dev & prod behavior identical.
 app.post('/api/assess', (req, res) => assessHandler(req, res))
 app.post('/api/interpret-stats', (req, res) => interpretStatsHandler(req, res))
+app.post('/api/explain-chat', (req, res) => explainChatHandler(req, res))
+app.post('/api/generate-kuesioner', (req, res) => generateKuesionerHandler(req, res))
 
 // Handle SPA routing
 app.get('*', (req, res) => {

@@ -21,7 +21,7 @@ export default {
         'accent-2': 'rgb(var(--accent-2) / <alpha-value>)',
       },
       fontFamily: {
-        sans: ['Poppins', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
       },
       keyframes: {
         'aurora-1': {

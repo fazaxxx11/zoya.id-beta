@@ -232,6 +232,10 @@ $$;
 -- =====================================================================
 -- 9. RPC: top_up_wallet — dipanggil dari webhook Midtrans (server only)
 -- =====================================================================
+-- Bonus tier (HARUS sama dengan calcTopUpBonus() di src/lib/wallet.js):
+--   - Top-up < Rp 25.000  → bonus 0
+--   - Top-up ≥ Rp 25.000  → bonus 100% (capped at Rp 250.000)
+-- Sumber kebenaran: TOPUP_PACKAGES di src/lib/pricing.js (label "Bonus 2×").
 create or replace function public.top_up_wallet(
   p_user_id uuid,
   p_amount bigint,
@@ -244,10 +248,9 @@ as $$
 declare
   v_bonus bigint := 0;
 begin
-  -- Bonus tier
-  if p_amount >= 100000 then v_bonus := (p_amount * 20 / 100);
-  elsif p_amount >= 50000 then v_bonus := (p_amount * 10 / 100);
-  elsif p_amount >= 25000 then v_bonus := (p_amount * 5 / 100);
+  -- 100% bonus untuk top-up ≥ Rp 25.000, di-cap Rp 250.000
+  if p_amount >= 25000 then
+    v_bonus := least(p_amount, 250000);
   end if;
 
   update public.wallets

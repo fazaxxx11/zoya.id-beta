@@ -187,7 +187,7 @@ function Home() {
             </span>
             <span className="inline-flex items-center gap-1.5">
               <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-              <strong className="font-semibold text-fg">100%</strong> di browser, data tidak ke server
+              Perhitungan <strong className="font-semibold text-fg">jalan di browser</strong>
             </span>
           </div>
 
