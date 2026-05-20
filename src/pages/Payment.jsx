@@ -400,7 +400,7 @@ function Payment() {
               <div className="flex items-center gap-3">
                 <Wallet className="w-6 h-6" />
                 <div>
-                  <p className="text-sm opacity-80">Saldodompet</p>
+                  <p className="text-sm opacity-80">Saldo dompet</p>
                   <p className="text-xl font-bold">Rp {(wallet.balance + wallet.bonus).toLocaleString('id-ID')}</p>
                 </div>
               </div>
@@ -443,11 +443,11 @@ function Payment() {
               <br />
               Dibutuhkan: Rp {tier?.price?.toLocaleString('id-ID')}
             </p>
-            <div className="flex gap-2">
-              <Link to="/auth?mode=topup" className="flex-1 bg-red-500 text-white text-center py-2 rounded-lg text-sm font-medium">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Link to="/auth?mode=topup" className="w-full sm:flex-1 bg-red-500 text-white text-center py-2 rounded-lg text-sm font-medium">
                 Top-up Sekarang
               </Link>
-              <button onClick={() => setInsufficientBalance(false)} className="px-4 py-2 text-red-600 text-sm">
+              <button onClick={() => setInsufficientBalance(false)} className="w-full sm:w-auto px-4 py-2 text-red-600 text-sm">
                 Tutup
               </button>
             </div>
