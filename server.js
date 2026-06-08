@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import assessHandler from './api/assess.js'
@@ -10,7 +11,8 @@ import generateKuesionerHandler from './api/generate-kuesioner.js'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
 
-app.use(cors())
+app.use(helmet())
+app.use(cors({ origin: ['https://zoya.id', 'https://www.zoya.id', 'https://zoya-id-beta.vercel.app'], credentials: true }))
 app.use(express.json({ limit: '2mb' }))
 app.use(express.static(join(__dirname, 'dist')))
 
