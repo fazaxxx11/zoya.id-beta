@@ -106,6 +106,71 @@ export function isAdmin() {
 
 export const isAdminLogged = isAdmin
 
+// ─── RBAC helpers ──────────────────────────────────────────────────
+
+/**
+ * Get the role of a user object.
+ * @param {object|null} user - normalized user from getCurrentUser() or null
+ * @returns {'admin'|'user'}
+ */
+export function getUserRole(user) {
+  if (!user) return 'user'
+  return user.role === 'admin' ? 'admin' : 'user'
+}
+
+/**
+ * Check if a user has admin role.
+ * @param {object|null} user
+ * @returns {boolean}
+ */
+export function isAdminUser(user) {
+  return getUserRole(user) === 'admin'
+}
+
+/**
+ * Permission map — defines what each role can do.
+ * Extend this as new features are added.
+ */
+const ROLE_PERMISSIONS = {
+  admin: [
+    'view:all_users',
+    'view:all_orders',
+    'view:all_wallets',
+    'approve:topup',
+    'manage:rubric_templates',
+    'view:analytics',
+    'manage:users',
+  ],
+  user: [
+    'view:own_profile',
+    'edit:own_profile',
+    'view:own_orders',
+    'view:own_wallet',
+    'create:order',
+    'save:analysis',
+    'view:own_analyses',
+    'submit:feedback',
+  ],
+}
+
+/**
+ * Check if a user has a specific permission.
+ * Admin role implicitly includes all user permissions.
+ * @param {object|null} user
+ * @param {string} permission - e.g. 'approve:topup', 'view:all_orders'
+ * @returns {boolean}
+ */
+export function hasPermission(user, permission) {
+  const role = getUserRole(user)
+  const perms = ROLE_PERMISSIONS[role] || []
+  if (perms.includes(permission)) return true
+  // Admin gets all user permissions too
+  if (role === 'admin') {
+    return (ROLE_PERMISSIONS.user || []).includes(permission)
+  }
+  return false
+}
+
 // ─── Async API ──────────────────────────────────────────────────────
 
 /**
