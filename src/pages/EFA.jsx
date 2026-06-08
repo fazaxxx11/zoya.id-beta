@@ -11,7 +11,7 @@ import {
 import PageHeader from '../components/PageHeader'
 import SaveAnalysisButton from '../components/SaveAnalysisButton'
 import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
-import { efa } from '../lib/efa'
+import { runEFA } from '../lib/statsWorkerClient'
 import { checkPaywall, chargeForTool } from '../lib/paywall'
 import { getWallet } from '../lib/wallet'
 import { getStatisticsPriceWithDiscount } from '../lib/pricing'
@@ -58,7 +58,7 @@ export default function EFAPage() {
     setShowPayment(true)
   }
 
-  const run = () => {
+  const run = async () => {
     setError(null)
     setRunning(true)
     try {
@@ -67,7 +67,7 @@ export default function EFAPage() {
       const idxs = itemsToUse.map(it => parsed.headers.indexOf(it))
       const X = parsed.rows.map(row => idxs.map(i => Number(row[i])))
       const nF = nFactorsInput === 'auto' ? null : parseInt(nFactorsInput, 10)
-      const r = efa(X, { itemNames: itemsToUse, nFactors: nF, rotate })
+      const r = await runEFA({ X, itemNames: itemsToUse, nFactors: nF, rotate })
       const payment = chargeForTool('efa', parsed.rows.length)
       if (!payment.success) throw new Error(payment.error || 'Pembayaran gagal')
       setResult({ ...r, paid: payment.paid || 0 })

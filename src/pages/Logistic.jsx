@@ -13,8 +13,9 @@ import PageHeader from '../components/PageHeader'
 import SaveAnalysisButton from '../components/SaveAnalysisButton'
 import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
 import {
-  fitLogistic, classificationTable, rocAUC, hosmerLemeshow,
+  classificationTable,
 } from '../lib/logisticRegression'
+import { runLogistic } from '../lib/statsWorkerClient'
 import { checkPaywall, chargeForTool } from '../lib/paywall'
 import { getWallet } from '../lib/wallet'
 import { getStatisticsPriceWithDiscount } from '../lib/pricing'
@@ -58,7 +59,7 @@ export default function LogisticPage() {
     setShowPayment(true)
   }
 
-  const run = () => {
+  const run = async () => {
     setError(null)
     setRunning(true)
     try {
@@ -75,10 +76,9 @@ export default function LogisticPage() {
       const X = parsed.rows.map(r => xIdxs.map(i => Number(r[i])))
       const y = parsed.rows.map(r => Number(r[yIdx]))
 
-      const fit = fitLogistic(X, y, { predictorNames: xColumns })
-      const cm = classificationTable(fit.yObserved, fit.predicted, threshold)
-      const roc = rocAUC(fit.yObserved, fit.predicted)
-      const hl = hosmerLemeshow(fit.yObserved, fit.predicted, 10)
+      const { fit, cm, roc, hl } = await runLogistic({
+        X, y, predictorNames: xColumns, threshold,
+      })
       const payment = chargeForTool('logistic', parsed.rows.length)
       if (!payment.success) throw new Error(payment.error || 'Pembayaran gagal')
 

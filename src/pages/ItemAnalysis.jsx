@@ -12,9 +12,9 @@ import {
 import PageHeader from '../components/PageHeader'
 import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
 import {
-  analyzeItems, scoreResponses,
   categorizeReliability,
 } from '../lib/itemAnalysis'
+import { runItemAnalysis } from '../lib/statsWorkerClient'
 import { checkPaywall, chargeForTool } from '../lib/paywall'
 import { getWallet } from '../lib/wallet'
 import { getStatisticsPriceWithDiscount } from '../lib/pricing'
@@ -46,7 +46,7 @@ export default function ItemAnalysis() {
     setShowPayment(true)
   }
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     setError(null)
     setRunning(true)
     try {
@@ -55,7 +55,7 @@ export default function ItemAnalysis() {
       if (mode === 'scored') {
         const matrix = parseMatrix(scoredText, /* numeric */ true)
         if (matrix.length < 2) throw new Error('Minimal 2 siswa diperlukan')
-        r = analyzeItems({ scoredMatrix: matrix, fraction: fr })
+        r = await runItemAnalysis({ scoredMatrix: matrix, fraction: fr })
       } else {
         const responseMatrix = parseMatrix(responsesText, false)
         const answerKey = keyText.split(/[,\s]+/).map(s => s.trim().toUpperCase()).filter(Boolean)
@@ -63,9 +63,8 @@ export default function ItemAnalysis() {
         if (responseMatrix[0].length !== answerKey.length) {
           throw new Error(`Jumlah butir tidak cocok: ${responseMatrix[0].length} kolom vs ${answerKey.length} kunci`)
         }
-        const scored = scoreResponses(responseMatrix, answerKey)
-        r = analyzeItems({
-          scoredMatrix: scored,
+        r = await runItemAnalysis({
+          mode: 'responses',
           responseMatrix,
           answerKey,
           options,
