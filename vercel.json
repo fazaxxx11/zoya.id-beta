@@ -11,7 +11,8 @@
     "api/assess.js":              { "maxDuration": 30 },
     "api/interpret-stats.js":     { "maxDuration": 30 },
     "api/explain-chat.js":        { "maxDuration": 30 },
-    "api/generate-kuesioner.js":  { "maxDuration": 30 }
+    "api/generate-kuesioner.js":  { "maxDuration": 30 },
+    "api/billing-check.js":       { "maxDuration": 15 }
   },
   "headers": [
     {

@@ -3,6 +3,8 @@
 // Mode lama (backward compat): kirim {messages, max_tokens}.
 import { buildAssessPrompt, validateAssessResponse, parseJSONLoose } from './_lib/assessPrompt.js'
 import { requireAuth, checkRateLimit, getClientIp, checkPayloadSize, sanitize } from './_lib/auth.js'
+import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
+import { supabaseAdmin } from './_lib/auth.js'
 
 const GC_URL = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
@@ -29,6 +31,20 @@ export default async function handler(req, res) {
   const user = await requireAuth(req, res);
   if (!user) return;
 
+  // Billing check
+  const body = req.body || {}
+  const toolId = 'assessment'
+  const sampleSize = Array.isArray(body.jawaban) ? body.jawaban.length : 1
+  const billingCheck = await checkToolAccess(supabaseAdmin, user.id, toolId, sampleSize)
+  if (!billingCheck.allowed) {
+    return res.status(402).json({
+      error: billingCheck.error || 'Billing required',
+      reason: billingCheck.reason,
+      price: billingCheck.price,
+      balance: billingCheck.balance
+    })
+  }
+
   // Security: Rate limiting
   const rl = checkRateLimit('assess:' + user.id, { maxRequests: 20, windowMs: 60000 });
   if (!rl.allowed) {
@@ -50,17 +66,16 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'No API key. Set GENERALCOMPUTE_API_KEY, GROQ_API_KEY, KIMI_API_KEY, or OPENROUTER_API_KEY.' })
   }
 
-  const body = req.body || {}
   const ctx = { gcKey, groqKey, kimiKey, orKey, orModel, body }
 
   // ── Mode baru: data terstruktur ─────────────────────────────────
   if (body.rubrik && body.jawaban) {
-    return handleStructuredAssess(req, res, ctx)
+    return handleStructuredAssess(req, res, ctx, user.id, toolId, billingCheck)
   }
 
   // ── Mode lama: messages array ───────────────────────────────────
   if (body.messages) {
-    return handleLegacyMessages(req, res, ctx)
+    return handleLegacyMessages(req, res, ctx, user.id, toolId, billingCheck)
   }
 
   return res.status(400).json({ error: 'Invalid payload. Send {rubrik, jawaban, ...} or {messages}.' })
@@ -69,7 +84,7 @@ export default async function handler(req, res) {
 // =====================================================================
 // MODE BARU: structured assess
 // =====================================================================
-async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey, orModel, body }) {
+async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey, orModel, body }, userId, toolId, billingCheck) {
   const { rubrik, jawaban, studentName, title, context } = body
 
   let prompt
@@ -79,10 +94,25 @@ async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey
     return res.status(400).json({ error: e.message })
   }
 
+  // Charge wallet if price > 0
+  if (billingCheck.price > 0) {
+    const chargeResult = await chargeForTool(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize)
+    if (!chargeResult.success) {
+      return res.status(402).json({
+        error: chargeResult.error || 'Payment failed',
+        reason: chargeResult.reason,
+        price: billingCheck.price,
+        balance: chargeResult.balance
+      })
+    }
+  }
+
   // Try General Compute first (DeepSeek V3.2 — primary)
   if (gcKey) {
     const result = await callGeneralComputeJSON({ key: gcKey, prompt, rubrik })
     if (result.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'success')
       return res.status(200).json({
         success: true,
         provider: 'generalcompute:deepseek-v3.2',
@@ -98,6 +128,8 @@ async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey
   if (orKey) {
     const result = await callOpenRouterJSON({ key: orKey, model: orModel, prompt, rubrik })
     if (result.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'success')
       return res.status(200).json({
         success: true,
         provider: `openrouter:${orModel}`,
@@ -112,6 +144,8 @@ async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey
   if (groqKey) {
     const result = await callGroqJSON({ key: groqKey, prompt, rubrik })
     if (result.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'success')
       return res.status(200).json({
         success: true,
         provider: 'groq',
@@ -126,6 +160,8 @@ async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey
   if (kimiKey) {
     const result = await callKimiJSON({ key: kimiKey, prompt, rubrik })
     if (result.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'success')
       return res.status(200).json({
         success: true,
         provider: 'kimi',
@@ -137,6 +173,8 @@ async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey
     if (process.env.NODE_ENV !== 'production') console.log('[assess] kimi failed:', result.error)
   }
 
+  // Log failed usage
+  await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'failed')
   return res.status(502).json({ error: 'All AI providers failed', success: false })
 }
 
@@ -340,8 +378,21 @@ async function callKimiJSON({ key, prompt, rubrik }) {
 // =====================================================================
 // MODE LAMA: passthrough messages array (backward compat)
 // =====================================================================
-async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body }) {
+async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body }, userId, toolId, billingCheck) {
   const { messages, max_tokens } = body
+  // Charge wallet if price > 0
+  if (billingCheck.price > 0) {
+    const chargeResult = await chargeForTool(supabaseAdmin, userId, toolId, billingCheck.price, 1)
+    if (!chargeResult.success) {
+      return res.status(402).json({
+        error: chargeResult.error || 'Payment failed',
+        reason: chargeResult.reason,
+        price: billingCheck.price,
+        balance: chargeResult.balance
+      })
+    }
+  }
+
   if (gcKey) {
     try {
       const r = await fetch(GC_URL, {
@@ -351,6 +402,8 @@ async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body })
       })
       const data = await r.json()
       if (r.ok) {
+        // Log usage
+        await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, 1, 'success')
         return res.status(200).json({
           content: [{ type: 'text', text: data.choices?.[0]?.message?.content || '' }],
           provider: 'generalcompute',
@@ -369,6 +422,8 @@ async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body })
       })
       const data = await r.json()
       if (r.ok) {
+        // Log usage
+        await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, 1, 'success')
         return res.status(200).json({
           content: [{ type: 'text', text: data.choices?.[0]?.message?.content || '' }],
           provider: 'groq',
@@ -387,6 +442,8 @@ async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body })
       })
       const data = await r.json()
       if (r.ok) {
+        // Log usage
+        await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, 1, 'success')
         return res.status(200).json({
           content: [{ type: 'text', text: data.choices?.[0]?.message?.content || '' }],
           provider: 'kimi',
@@ -396,5 +453,7 @@ async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body })
       if (process.env.NODE_ENV !== 'production') console.log('[legacy] kimi error:', e.message) 
     }
   }
+  // Log failed usage
+  await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, 1, 'failed')
   return res.status(502).json({ error: 'AI providers failed' })
 }

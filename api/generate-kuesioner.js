@@ -7,6 +7,8 @@
 // Provider chain (sama kayak assess.js): GeneralCompute → OpenRouter → Groq → Kimi.
 
 import { requireAuth, checkRateLimit, checkPayloadSize } from './_lib/auth.js'
+import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
+import { supabaseAdmin } from './_lib/auth.js'
 
 const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
@@ -26,6 +28,16 @@ export default async function handler(req, res) {
   // Authentication
   const user = await requireAuth(req, res);
   if (!user) return;
+
+  // Billing check
+  const billing = await checkToolAccess(supabaseAdmin, user.id, 'kuesioner', 1)
+  if (!billing.allowed) return res.status(402).json({ error: 'Saldo tidak cukup', reason: billing.reason, price: billing.price, balance: billing.balance })
+  let orderId = null
+  if (billing.price > 0) {
+    const charge = await chargeForTool(supabaseAdmin, user.id, 'kuesioner', 1, null)
+    if (!charge.success) return res.status(402).json({ error: charge.error })
+    orderId = charge.orderId
+  }
 
   // Rate limiting
   const rl = checkRateLimit('kuesioner:' + user.id, { maxRequests: 20, windowMs: 60000 });
@@ -67,25 +79,41 @@ export default async function handler(req, res) {
 
   if (gcKey) {
     const out = await callJSON(GC_URL, GC_MODEL, gcKey, prompt, false)
-    if (out.ok) return res.status(200).json({ success: true, provider: `generalcompute:${GC_MODEL}`, ...out.data })
+    if (out.ok) {
+      // Log successful order
+      await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: 'kuesioner', amount: billing.price, status: 'completed' })
+      return res.status(200).json({ success: true, provider: `generalcompute:${GC_MODEL}`, ...out.data })
+    }
     errors.push(`generalcompute/${GC_MODEL}: ${out.error}`)
     if (process.env.NODE_ENV !== 'production') console.log('[gen-kuesioner]', errors.at(-1))
   }
   if (orKey) {
     const out = await callJSON(OPENROUTER_URL, orModel, orKey, prompt, true)
-    if (out.ok) return res.status(200).json({ success: true, provider: `openrouter:${orModel}`, ...out.data })
+    if (out.ok) {
+      // Log successful order
+      await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: 'kuesioner', amount: billing.price, status: 'completed' })
+      return res.status(200).json({ success: true, provider: `openrouter:${orModel}`, ...out.data })
+    }
     errors.push(`openrouter/${orModel}: ${out.error}`)
     if (process.env.NODE_ENV !== 'production') console.log('[gen-kuesioner]', errors.at(-1))
   }
   if (groqKey) {
     const out = await callJSON(GROQ_URL, GROQ_MODEL, groqKey, prompt, false)
-    if (out.ok) return res.status(200).json({ success: true, provider: `groq:${GROQ_MODEL}`, ...out.data })
+    if (out.ok) {
+      // Log successful order
+      await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: 'kuesioner', amount: billing.price, status: 'completed' })
+      return res.status(200).json({ success: true, provider: `groq:${GROQ_MODEL}`, ...out.data })
+    }
     errors.push(`groq: ${out.error}`)
     if (process.env.NODE_ENV !== 'production') console.log('[gen-kuesioner]', errors.at(-1))
   }
   if (kimiKey) {
     const out = await callJSON(KIMI_URL, KIMI_MODEL, kimiKey, prompt, false)
-    if (out.ok) return res.status(200).json({ success: true, provider: 'kimi', ...out.data })
+    if (out.ok) {
+      // Log successful order
+      await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: 'kuesioner', amount: billing.price, status: 'completed' })
+      return res.status(200).json({ success: true, provider: 'kimi', ...out.data })
+    }
     errors.push(`kimi: ${out.error}`)
     if (process.env.NODE_ENV !== 'production') console.log('[gen-kuesioner]', errors.at(-1))
   }

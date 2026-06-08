@@ -12,8 +12,8 @@
 //     setShowConfirm(true)
 //   }
 //
-//   const handleConfirmPay = () => {
-//     const r = chargeForTool('mediation')
+//   const handleConfirmPay = async () => {
+//     const r = await chargeForTool('mediation', sampleSize)
 //     if (!r.success) { toast.error(r.error); return }
 //     setShowConfirm(false)
 //     runActualAnalysis()
@@ -21,7 +21,7 @@
 // ============================================================
 
 import { getCurrentUser, isAdmin } from './auth'
-import { getWallet, deductWallet } from './wallet'
+import { getWallet, deductWalletAndCreateOrder } from './wallet'
 import { getStatisticsPriceWithDiscount } from './pricing'
 import { toast } from './toast'
 
@@ -88,9 +88,9 @@ export function checkPaywall(toolId, sampleSize = 0, navigate = null) {
  * approve modal konfirmasi.
  * @param {string} toolId
  * @param {number} [sampleSize=0]
- * @returns {{ success:boolean, error?:string, paid?:number, pricing?:object }}
+ * @returns {Promise<{ success:boolean, error?:string, paid?:number, pricing?:object, orderId?:string }>}
  */
-export function chargeForTool(toolId, sampleSize = 0) {
+export async function chargeForTool(toolId, sampleSize = 0) {
   // Admin: gratis
   if (isAdmin()) {
     return { success: true, paid: 0, pricing: getStatisticsPriceWithDiscount(toolId, sampleSize) }
@@ -102,10 +102,10 @@ export function chargeForTool(toolId, sampleSize = 0) {
   const user = getCurrentUser()
   if (!user) return { success: false, error: 'Belum login' }
 
-  const r = deductWallet(pricing.price)
+  const r = await deductWalletAndCreateOrder(toolId, sampleSize)
   if (!r.success) return { success: false, error: r.error }
 
-  return { success: true, paid: pricing.price, pricing }
+  return { success: true, paid: r.paid, pricing, orderId: r.orderId }
 }
 
 /**

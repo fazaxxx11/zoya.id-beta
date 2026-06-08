@@ -130,6 +130,27 @@ export const deductWallet = (amount) => {
 }
 
 /**
+ * Async version of deductWallet that calls the backend API.
+ */
+export async function deductWalletAndCreateOrder(toolId, sampleSize = 0) {
+  const user = getCurrentUser()
+  if (!user) return { success: false, error: 'Belum login' }
+  // Get access token from supabase
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.access_token) return { success: false, error: 'No access token' }
+  
+  const res = await fetch('/api/billing-check', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+    body: JSON.stringify({ toolId, sampleSize }),
+  })
+  const data = await res.json()
+  if (!res.ok) return { success: false, error: data.error, reason: data.reason }
+  await refreshWallet()
+  return { success: true, paid: data.price, orderId: data.orderId }
+}
+
+/**
  * Init wallet untuk user baru. Trigger DB di Supabase otomatis bikin row di
  * `wallets` saat auth.users di-insert (lihat schema.sql init_user_wallet).
  * Function ini sekarang no-op — tetap di-export untuk kompat.
@@ -148,10 +169,49 @@ export const initEmptyWallet = () => {
 
 const PENDING_TOPUPS_KEY = 'skor_pending_topups'
 
-export const getPendingTopups = () =>
-  safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+/**
+ * Get pending top-ups from Supabase if configured, otherwise fallback to localStorage.
+ */
+export const getPendingTopups = async () => {
+  if (!isSupabaseConfigured) {
+    return safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('pending_topups')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (error) {
+      console.error('[wallet] Failed to fetch pending top-ups from Supabase:', error)
+      return safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+    }
+    
+    return data.map(entry => ({
+      id: entry.id,
+      userEmail: entry.user_email,
+      amount: Number(entry.amount || 0),
+      bonus: Number(entry.bonus || 0),
+      method: entry.method,
+      note: entry.note || '',
+      status: entry.status,
+      createdAt: new Date(entry.created_at).getTime(),
+      submittedAt: new Date(entry.created_at).toLocaleString('id-ID'),
+      approvedAt: entry.approved_at ? new Date(entry.approved_at).getTime() : undefined,
+      rejectedAt: entry.rejected_at ? new Date(entry.rejected_at).getTime() : undefined,
+      rejectReason: entry.reject_reason || '',
+    }))
+  } catch (e) {
+    console.error('[wallet] Error fetching pending top-ups:', e)
+    return safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+  }
+}
 
-export const savePendingTopups = (list) => {
+/**
+ * Save pending top-ups to Supabase if configured, otherwise fallback to localStorage.
+ */
+const savePendingTopups = (list) => {
   localStorage.setItem(PENDING_TOPUPS_KEY, JSON.stringify(list))
 }
 
@@ -159,64 +219,208 @@ export const savePendingTopups = (list) => {
  * User mengajukan top-up manual. Tidak menambah saldo — cuma catat permintaan.
  * @param {{ userEmail:string, amount:number, method:string, note?:string }} req
  */
-export const submitPendingTopup = ({ userEmail, amount, method = 'transfer', note = '' }) => {
-  const list = getPendingTopups()
+export const submitPendingTopup = async ({ userEmail, amount, method = 'transfer', note = '' }) => {
+  const bonus = calcTopUpBonus(amount)
   const entry = {
     id: 'TOP-' + Date.now().toString(36).slice(-6).toUpperCase(),
     userEmail,
     amount: Number(amount) || 0,
-    bonus: calcTopUpBonus(amount),
+    bonus,
     method,
     note,
-    status: 'pending', // 'pending' | 'approved' | 'rejected'
+    status: 'pending',
     createdAt: Date.now(),
     submittedAt: new Date().toLocaleString('id-ID'),
   }
-  list.unshift(entry)
-  savePendingTopups(list)
+  
+  if (!isSupabaseConfigured) {
+    const list = safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+    list.unshift(entry)
+    savePendingTopups(list)
+    return entry
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('pending_topups')
+      .insert({
+        id: entry.id,
+        user_email: userEmail,
+        amount: entry.amount,
+        bonus: entry.bonus,
+        method: entry.method,
+        note: entry.note,
+        status: entry.status,
+      })
+      .select()
+      .single()
+    
+    if (error) {
+      console.error('[wallet] Failed to insert pending top-up to Supabase:', error)
+      // Fallback to localStorage
+      const list = safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+      list.unshift(entry)
+      savePendingTopups(list)
+    } else {
+      // Return the entry with proper timestamps
+      entry.createdAt = new Date(data.created_at).getTime()
+      entry.submittedAt = new Date(data.created_at).toLocaleString('id-ID')
+    }
+  } catch (e) {
+    console.error('[wallet] Error submitting pending top-up:', e)
+    // Fallback to localStorage
+    const list = safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+    list.unshift(entry)
+    savePendingTopups(list)
+  }
+  
   return entry
 }
 
 /**
  * Admin approve pending top-up → saldo user bertambah via RPC Supabase.
  * Async sekarang — caller perlu await.
- *
- * NOTE: Pending topups masih di localStorage (admin-side), tapi saat approve,
- * saldo benar-benar di-credit ke wallet user di Supabase via RPC.
- * Untuk multi-device admin sync, perlu tabel `pending_topups` di schema.
  */
 export async function approvePendingTopup(id) {
-  const list = getPendingTopups()
-  const idx = list.findIndex(e => e.id === id)
-  if (idx < 0) return { success: false, error: 'Entry tidak ditemukan' }
-  const entry = list[idx]
-  if (entry.status !== 'pending') return { success: false, error: 'Sudah diproses' }
+  if (!isSupabaseConfigured) {
+    // Fallback to localStorage logic
+    const list = safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+    const idx = list.findIndex(e => e.id === id)
+    if (idx < 0) return { success: false, error: 'Entry tidak ditemukan' }
+    const entry = list[idx]
+    if (entry.status !== 'pending') return { success: false, error: 'Sudah diproses' }
 
-  // Cari user_id berdasarkan email — RPC top_up_wallet butuh user_id (uuid).
-  const { data: profile, error: profErr } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('email', entry.userEmail)
-    .maybeSingle()
-  if (profErr || !profile) {
-    return { success: false, error: `User dengan email ${entry.userEmail} tidak ditemukan di Supabase` }
+    // Cari user_id berdasarkan email — RPC top_up_wallet butuh user_id (uuid).
+    const { data: profile, error: profErr } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', entry.userEmail)
+      .maybeSingle()
+    if (profErr || !profile) {
+      return { success: false, error: `User dengan email ${entry.userEmail} tidak ditemukan di Supabase` }
+    }
+
+    const r = await topUp(entry.amount, 'TF-' + entry.id, profile.id)
+    if (!r.success) return r
+
+    list[idx] = { ...entry, status: 'approved', approvedAt: Date.now() }
+    savePendingTopups(list)
+    return { success: true, entry: list[idx] }
   }
-
-  const r = await topUp(entry.amount, 'TF-' + entry.id, profile.id)
-  if (!r.success) return r
-
-  list[idx] = { ...entry, status: 'approved', approvedAt: Date.now() }
-  savePendingTopups(list)
-  return { success: true, entry: list[idx] }
+  
+  try {
+    // Fetch the pending top-up from Supabase
+    const { data: pending, error: fetchError } = await supabase
+      .from('pending_topups')
+      .select('*')
+      .eq('id', id)
+      .eq('status', 'pending')
+      .single()
+    
+    if (fetchError || !pending) {
+      return { success: false, error: 'Entry tidak ditemukan atau sudah diproses' }
+    }
+    
+    // Find user by email
+    const { data: profile, error: profErr } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', pending.user_email)
+      .maybeSingle()
+    
+    if (profErr || !profile) {
+      return { success: false, error: `User dengan email ${pending.user_email} tidak ditemukan di Supabase` }
+    }
+    
+    // Top up the wallet
+    const r = await topUp(pending.amount, 'TF-' + pending.id, profile.id)
+    if (!r.success) return r
+    
+    // Update status in Supabase
+    const { error: updateError } = await supabase
+      .from('pending_topups')
+      .update({
+        status: 'approved',
+        approved_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+    
+    if (updateError) {
+      console.error('[wallet] Failed to update pending top-up status:', updateError)
+      return { success: false, error: 'Gagal mengupdate status top-up' }
+    }
+    
+    // Also update localStorage for backward compatibility
+    const list = safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+    const idx = list.findIndex(e => e.id === id)
+    if (idx >= 0) {
+      list[idx] = {
+        ...list[idx],
+        status: 'approved',
+        approvedAt: Date.now(),
+      }
+      savePendingTopups(list)
+    }
+    
+    return { 
+      success: true, 
+      entry: {
+        id: pending.id,
+        userEmail: pending.user_email,
+        amount: Number(pending.amount || 0),
+        bonus: Number(pending.bonus || 0),
+        method: pending.method,
+        note: pending.note || '',
+        status: 'approved',
+        createdAt: new Date(pending.created_at).getTime(),
+        submittedAt: new Date(pending.created_at).toLocaleString('id-ID'),
+        approvedAt: Date.now(),
+      }
+    }
+  } catch (e) {
+    console.error('[wallet] Error approving pending top-up:', e)
+    return { success: false, error: 'Terjadi kesalahan saat menyetujui top-up' }
+  }
 }
 
-export const rejectPendingTopup = (id, reason = '') => {
-  const list = getPendingTopups()
-  const idx = list.findIndex(e => e.id === id)
-  if (idx < 0) return { success: false, error: 'Entry tidak ditemukan' }
-  list[idx] = { ...list[idx], status: 'rejected', rejectedAt: Date.now(), rejectReason: reason }
-  savePendingTopups(list)
-  return { success: true, entry: list[idx] }
+export const rejectPendingTopup = async (id, reason = '') => {
+  if (!isSupabaseConfigured) {
+    const list = safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+    const idx = list.findIndex(e => e.id === id)
+    if (idx < 0) return { success: false, error: 'Entry tidak ditemukan' }
+    list[idx] = { ...list[idx], status: 'rejected', rejectedAt: Date.now(), rejectReason: reason }
+    savePendingTopups(list)
+    return { success: true, entry: list[idx] }
+  }
+  
+  try {
+    const { error } = await supabase
+      .from('pending_topups')
+      .update({
+        status: 'rejected',
+        rejected_at: new Date().toISOString(),
+        reject_reason: reason,
+      })
+      .eq('id', id)
+    
+    if (error) {
+      console.error('[wallet] Failed to reject pending top-up:', error)
+      return { success: false, error: 'Gagal menolak top-up' }
+    }
+    
+    // Also update localStorage for backward compatibility
+    const list = safeParse(localStorage.getItem(PENDING_TOPUPS_KEY), [])
+    const idx = list.findIndex(e => e.id === id)
+    if (idx >= 0) {
+      list[idx] = { ...list[idx], status: 'rejected', rejectedAt: Date.now(), rejectReason: reason }
+      savePendingTopups(list)
+    }
+    
+    return { success: true }
+  } catch (e) {
+    console.error('[wallet] Error rejecting pending top-up:', e)
+    return { success: false, error: 'Terjadi kesalahan saat menolak top-up' }
+  }
 }
 
 export { WALLET_KEY, PENDING_TOPUPS_KEY }

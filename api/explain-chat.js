@@ -4,6 +4,8 @@
 // Rate limit: max 5 user turns per session (server-side guard + client-side counter).
 
 import { requireAuth, checkRateLimit, getClientIp, checkPayloadSize, sanitize } from './_lib/auth.js'
+import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
+import { supabaseAdmin } from './_lib/auth.js'
 
 const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
@@ -25,6 +27,19 @@ export default async function handler(req, res) {
   // Security checks
   const user = await requireAuth(req, res);
   if (!user) return;
+
+  // Billing check (free tool, but still log usage)
+  const toolId = 'deskriptif'
+  const sampleSize = 1
+  const billingCheck = await checkToolAccess(supabaseAdmin, user.id, toolId, sampleSize)
+  if (!billingCheck.allowed) {
+    return res.status(402).json({
+      error: billingCheck.error || 'Billing required',
+      reason: billingCheck.reason,
+      price: billingCheck.price,
+      balance: billingCheck.balance
+    })
+  }
 
   const rl = checkRateLimit('explain:' + user.id, { maxRequests: 20, windowMs: 60000 });
   if (!rl.allowed) {
@@ -78,31 +93,62 @@ export default async function handler(req, res) {
   const remaining = Math.max(0, MAX_USER_TURNS - userCount)
   const errors = []
 
+  // Charge wallet if price > 0 (though this tool is free, price should be 0)
+  if (billingCheck.price > 0) {
+    const chargeResult = await chargeForTool(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize)
+    if (!chargeResult.success) {
+      return res.status(402).json({
+        error: chargeResult.error || 'Payment failed',
+        reason: chargeResult.reason,
+        price: billingCheck.price,
+        balance: chargeResult.balance
+      })
+    }
+  }
+
   if (gcKey) {
     const out = await callChat(GC_URL, GC_MODEL, gcKey, systemPrompt, cleanMsgs, false)
-    if (out.ok) return res.status(200).json({ reply: out.text, provider: `generalcompute:${GC_MODEL}`, remaining, maxTurns: MAX_USER_TURNS })
+    if (out.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'success')
+      return res.status(200).json({ reply: out.text, provider: `generalcompute:${GC_MODEL}`, remaining, maxTurns: MAX_USER_TURNS })
+    }
     errors.push(`generalcompute/${GC_MODEL}: ${out.error}`)
     if (process.env.NODE_ENV !== 'production') console.log('[explain-chat]', errors.at(-1))
   }
   if (orKey) {
     const out = await callChat(OPENROUTER_URL, orModel, orKey, systemPrompt, cleanMsgs, true)
-    if (out.ok) return res.status(200).json({ reply: out.text, provider: `openrouter:${orModel}`, remaining, maxTurns: MAX_USER_TURNS })
+    if (out.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'success')
+      return res.status(200).json({ reply: out.text, provider: `openrouter:${orModel}`, remaining, maxTurns: MAX_USER_TURNS })
+    }
     errors.push(`openrouter/${orModel}: ${out.error}`)
     if (process.env.NODE_ENV !== 'production') console.log('[explain-chat]', errors.at(-1))
   }
   if (groqKey) {
     const out = await callChat(GROQ_URL, GROQ_MODEL, groqKey, systemPrompt, cleanMsgs, false)
-    if (out.ok) return res.status(200).json({ reply: out.text, provider: `groq:${GROQ_MODEL}`, remaining, maxTurns: MAX_USER_TURNS })
+    if (out.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'success')
+      return res.status(200).json({ reply: out.text, provider: `groq:${GROQ_MODEL}`, remaining, maxTurns: MAX_USER_TURNS })
+    }
     errors.push(`groq: ${out.error}`)
     if (process.env.NODE_ENV !== 'production') console.log('[explain-chat]', errors.at(-1))
   }
   if (kimiKey) {
     const out = await callChat(KIMI_URL, KIMI_MODEL, kimiKey, systemPrompt, cleanMsgs, false)
-    if (out.ok) return res.status(200).json({ reply: out.text, provider: 'kimi', remaining, maxTurns: MAX_USER_TURNS })
+    if (out.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'success')
+      return res.status(200).json({ reply: out.text, provider: 'kimi', remaining, maxTurns: MAX_USER_TURNS })
+    }
     errors.push(`kimi: ${out.error}`)
     if (process.env.NODE_ENV !== 'production') console.log('[explain-chat]', errors.at(-1))
   }
 
+  // Log failed usage
+  await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'failed')
   return res.status(503).json({
     error: 'Semua provider AI sedang sibuk. Coba lagi 30 detik.',
     detail: errors.join(' | '),

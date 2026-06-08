@@ -3,6 +3,8 @@
 // Providers (prioritas): GeneralCompute → OpenRouter → Groq → Kimi.
 
 import { requireAuth, checkRateLimit, getClientIp, checkPayloadSize, sanitize } from './_lib/auth.js'
+import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
+import { supabaseAdmin } from './_lib/auth.js'
 
 const GC_URL = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
@@ -24,6 +26,41 @@ export default async function handler(req, res) {
   const user = await requireAuth(req, res);
   if (!user) return;
 
+  // Billing check
+  const body = req.body || {}
+  const { result } = body
+  if (!result || !result.type) {
+    return res.status(400).json({ error: 'Missing result payload' })
+  }
+  const toolIdMap = {
+    descriptive: 'deskriptif',
+    normality: 'normalitas',
+    correlation: 'korelasi',
+    ttest: 'ttest',
+    anova: 'anova',
+    regression_simple: 'regresi',
+    regression_multiple: 'regresiganda',
+    chisquare: 'chisquare',
+    mannwhitney: 'mannwhitney',
+    wilcoxon: 'wilcoxon',
+    kruskal: 'kruskal',
+    validity_reliability: 'validitas',
+    mediation: 'mediation',
+    logistic: 'logistic',
+    efa: 'efa'
+  }
+  const toolId = toolIdMap[result.type] || 'deskriptif'
+  const sampleSize = 1
+  const billingCheck = await checkToolAccess(supabaseAdmin, user.id, toolId, sampleSize)
+  if (!billingCheck.allowed) {
+    return res.status(402).json({
+      error: billingCheck.error || 'Billing required',
+      reason: billingCheck.reason,
+      price: billingCheck.price,
+      balance: billingCheck.balance
+    })
+  }
+
   const rl = checkRateLimit('interpret:' + user.id, { maxRequests: 20, windowMs: 60000 });
   if (!rl.allowed) {
     return res.status(429).json({
@@ -33,11 +70,6 @@ export default async function handler(req, res) {
   }
 
   if (!checkPayloadSize(req, res, 500 * 1024)) return;
-
-  const { result } = req.body || {}
-  if (!result || !result.type) {
-    return res.status(400).json({ error: 'Missing result payload' })
-  }
 
   // Sanitize input
   const sanitizedResult = sanitize(result);
@@ -51,6 +83,19 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'No API key configured' })
   }
 
+  // Charge wallet if price > 0
+  if (billingCheck.price > 0) {
+    const chargeResult = await chargeForTool(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize)
+    if (!chargeResult.success) {
+      return res.status(402).json({
+        error: chargeResult.error || 'Payment failed',
+        reason: chargeResult.reason,
+        price: billingCheck.price,
+        balance: chargeResult.balance
+      })
+    }
+  }
+
   const prompt = buildPrompt(sanitizedResult)
   const errors = []
 
@@ -58,6 +103,8 @@ export default async function handler(req, res) {
   if (gcKey) {
     const out = await callWithRetry(GC_URL, GC_MODEL, gcKey, prompt)
     if (out.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'success')
       return res.status(200).json({
         success: true,
         provider: `generalcompute:${GC_MODEL}`,
@@ -74,6 +121,8 @@ export default async function handler(req, res) {
   if (orKey) {
     const out = await callWithRetry(OPENROUTER_URL, orModel, orKey, prompt, 2, true)
     if (out.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'success')
       return res.status(200).json({
         success: true,
         provider: `openrouter:${orModel}`,
@@ -91,6 +140,8 @@ export default async function handler(req, res) {
     for (const model of GROQ_MODELS) {
       const out = await callWithRetry(GROQ_URL, model, groqKey, prompt)
       if (out.ok) {
+        // Log usage
+        await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'success')
         return res.status(200).json({
           success: true,
           provider: `groq:${model}`,
@@ -109,6 +160,8 @@ export default async function handler(req, res) {
   if (kimiKey) {
     const out = await callWithRetry(KIMI_URL, KIMI_MODEL, kimiKey, prompt)
     if (out.ok) {
+      // Log usage
+      await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'success')
       return res.status(200).json({
         success: true,
         provider: 'kimi',
@@ -121,6 +174,8 @@ export default async function handler(req, res) {
     errors.push(errMsg)
   }
 
+  // Log failed usage
+  await createOrder(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize, 'failed')
   return res.status(503).json({
     error: 'Semua provider AI sedang sibuk. Coba lagi 30 detik atau tulis interpretasi manual.',
     detail: errors.join(' | '),
@@ -320,85 +375,4 @@ function formatFacts(r) {
       r.groups?.forEach(g => {
         lines.push(`- ${g.name}: n = ${g.n}, M = ${fmt(g.mean)}, SD = ${fmt(g.sd)}, Med = ${fmt(g.median)}`)
       })
-      if (r.type === 'batch_anova') {
-        lines.push(`Hasil ANOVA: F(${r.dfBetween}, ${r.dfWithin}) = ${fmt(r.F)}, p = ${pf(r.pValue)}, η² = ${fmt(r.etaSquared)} (${r.effectSize}), ω² = ${fmt(r.omegaSquared)}, signifikan: ${r.significant ? 'YA' : 'TIDAK'}`)
-        if (r.posthoc?.length) {
-          lines.push('Post-hoc Bonferroni/Tukey:')
-          r.posthoc.forEach(p => {
-            lines.push(`- ${p.group1} vs ${p.group2}: mean diff = ${fmt(p.meanDiff)}, p = ${pf(p.pValue)}, ${p.significant ? 'berbeda nyata' : 'tidak signifikan'}`)
-          })
-        }
-      } else {
-        lines.push(`Hasil Kruskal-Wallis: H(${r.df}) = ${fmt(r.H)}, p = ${pf(r.pValue)}, η²_H = ${fmt(r.etaSquared)} (${r.effectSizeLabel}), N total = ${r.N}, k = ${r.k}, signifikan: ${r.isSignificant ? 'YA' : 'TIDAK'}`)
-      }
-      break
-
-    case 'validity_reliability':
-      lines.push(`Cronbach's α = ${fmt(r.reliability?.alpha)}`)
-      lines.push(`k item = ${r.reliability?.k}, n responden = ${r.reliability?.n}`)
-      lines.push(`Status reliabilitas: ${r.reliability?.alpha >= 0.7 ? 'reliabel' : 'kurang reliabel'} (cutoff α ≥ 0.70)`)
-      lines.push('Validitas item:')
-      r.validity?.items?.forEach((it, i) => {
-        lines.push(`- ${r.items[i]}: r = ${fmt(it.r)}, p = ${pf(it.pValue)}, ${it.verdict}`)
-      })
-      break
-
-    default:
-      lines.push(JSON.stringify(r, null, 2).slice(0, 2000))
-  }
-
-  return lines.join('\n')
-}
-
-// =====================================================================
-// Provider call
-// =====================================================================
-async function callLLM(url, model, key, prompt, isOpenRouter = false) {
-  try {
-    const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }
-    if (isOpenRouter) {
-      // Optional but recommended for OpenRouter attribution/leaderboard
-      headers['HTTP-Referer'] = 'https://zoya-id-beta.vercel.app'
-      headers['X-Title'] = 'zoya.id'
-    }
-    const r = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: prompt.system },
-          { role: 'user', content: prompt.user },
-        ],
-        temperature: 0.4,
-        max_tokens: 900,
-      }),
-    })
-    let data
-    try { data = await r.json() } catch { data = {} }
-    if (!r.ok) {
-      const msg = data.error?.message || `HTTP ${r.status}`
-      const transient = isTransientStatus(r.status) || isTransientMessage(msg)
-      return { ok: false, error: msg, status: r.status, transient }
-    }
-    const text = data.choices?.[0]?.message?.content?.trim() || ''
-    if (!text) return { ok: false, error: 'Empty response', transient: true }
-    return { ok: true, text, tokens: data.usage?.total_tokens }
-  } catch (e) {
-    // Network errors are transient
-    return { ok: false, error: e.message, transient: true }
-  }
-}
-
-function isTransientStatus(status) {
-  // 408 timeout, 425 too early, 429 rate limit, 500/502/503/504 server errors
-  return status === 408 || status === 425 || status === 429 || (status >= 500 && status < 600)
-}
-
-function isTransientMessage(msg) {
-  if (!msg) return false
-  const m = msg.toLowerCase()
-  return m.includes('overload') || m.includes('rate limit') ||
-         m.includes('temporarily') || m.includes('try again') ||
-         m.includes('timeout') || m.includes('503') || m.includes('429')
-}
+      if (r.type === 'batch
