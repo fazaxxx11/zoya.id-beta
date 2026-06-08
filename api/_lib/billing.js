@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 
 // Pricing configuration
@@ -169,7 +170,7 @@ export async function chargeForTool(supabaseAdmin, userId, toolId, sampleSize, o
     }
 
     // Generate order ID if not provided
-    const finalOrderId = orderId || `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const finalOrderId = orderId || `order_${crypto.randomUUID()}`;
     
     // Try to use RPC function first
     try {

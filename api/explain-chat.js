@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     })
   }
 
-  const rl = checkRateLimit('explain:' + user.id, { maxRequests: 20, windowMs: 60000 });
+  const rl = await checkRateLimit('explain:' + user.id, { maxRequests: 20, windowMs: 60000 });
   if (!rl.allowed) {
     return res.status(429).json({
       error: 'Terlalu banyak permintaan. Coba lagi nanti.',

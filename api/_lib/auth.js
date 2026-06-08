@@ -11,7 +11,7 @@ const supabasePublic = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
-const rateLimitStore = new Map();
+import { slidingWindow } from './rate-limit.js';
 let cleanupInterval;
 
 const cleanupRateLimits = () => {
@@ -85,31 +85,9 @@ export const requireAdmin = async (req, res) => {
   return user;
 };
 
-export const checkRateLimit = (key, { maxRequests, windowMs }) => {
-  const now = Date.now();
-  const entry = rateLimitStore.get(key);
-
-  if (!entry) {
-    rateLimitStore.set(key, {
-      count: 1,
-      startTime: now,
-      windowMs
-    });
-    return { allowed: true, remaining: maxRequests - 1 };
-  }
-
-  if (now - entry.startTime > windowMs) {
-    entry.count = 1;
-    entry.startTime = now;
-    return { allowed: true, remaining: maxRequests - 1 };
-  }
-
-  if (entry.count >= maxRequests) {
-    return { allowed: false, remaining: 0 };
-  }
-
-  entry.count++;
-  return { allowed: true, remaining: maxRequests - entry.count };
+export const checkRateLimit = async (key, { maxRequests = 30, windowMs = 60000 } = {}) => {
+  const windowSec = Math.ceil(windowMs / 1000);
+  return slidingWindow(key, maxRequests, windowSec);
 };
 
 export const getClientIp = (req) => {

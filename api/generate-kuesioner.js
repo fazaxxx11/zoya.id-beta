@@ -45,7 +45,7 @@ export default async function handler(req, res) {
   }
 
   // Rate limiting
-  const rl = checkRateLimit('kuesioner:' + user.id, { maxRequests: 20, windowMs: 60000 });
+  const rl = await checkRateLimit('kuesioner:' + user.id, { maxRequests: 20, windowMs: 60000 });
   if (!rl.allowed) {
     return res.status(429).json({
       error: 'Terlalu banyak permintaan. Coba lagi dalam ' + Math.ceil(rl.retryAfter / 1000) + ' detik.'
