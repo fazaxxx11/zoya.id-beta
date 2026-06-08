@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { 
   ChevronLeft, DollarSign, TrendingUp, Users, Settings,
   LogOut, Download, CreditCard, CheckCircle,
-  XCircle, Clock, Search, Eye, EyeOff, Lock
+  XCircle, Clock, Search, Eye, EyeOff, Lock, ShieldAlert
 } from 'lucide-react'
 import { verifyAdminPassword, ADMIN_EMAIL, BRAND_NAME } from '../lib/brand'
-import { CURRENT_USER_KEY, ADMIN_FLAG_KEY, isAdminLogged } from '../lib/auth'
+import { CURRENT_USER_KEY, ADMIN_FLAG_KEY, isAdminLogged, isAdminUser, hasPermission } from '../lib/auth'
+import { useCurrentUser } from '../lib/useCurrentUser'
 import {
   getPendingTopups, approvePendingTopup, rejectPendingTopup,
 } from '../lib/wallet'
@@ -55,6 +56,7 @@ function normalizeOrders(orders, emailById) {
 
 function Admin() {
   const navigate = useNavigate()
+  const currentUser = useCurrentUser()
   // Auto-detect: kalau session admin masih hidup (flag di localStorage),
   // langsung skip login screen.
   const [isAuthenticated, setIsAuthenticated] = useState(() => isAdminLogged())
@@ -138,20 +140,30 @@ function Admin() {
 
   const [loginError, setLoginError] = useState('')
 
+  // RBAC: Check if current Supabase user is admin
+  const isSupabaseAdmin = isAdminUser(currentUser)
+
   const handleLogin = (e) => {
     e.preventDefault()
+    // First check: is the logged-in Supabase user an admin?
+    if (isSupabaseAdmin) {
+      setIsAuthenticated(true)
+      setLoginError('')
+      localStorage.setItem(ADMIN_FLAG_KEY, 'true')
+      return
+    }
+    // Fallback: legacy password check (for backwards compat)
     if (verifyAdminPassword(password)) {
       setIsAuthenticated(true)
       setLoginError('')
       localStorage.setItem(ADMIN_FLAG_KEY, 'true')
-      // Set user session juga supaya admin bisa browse seperti user biasa
       localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({
         email: ADMIN_EMAIL,
         name: 'Admin',
         isAdmin: true,
       }))
     } else {
-      setLoginError('Password salah')
+      setLoginError('Password salah atau akun belum memiliki role admin')
     }
   }
 
@@ -194,8 +206,38 @@ function Admin() {
 
   const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount)
 
+  // Access Denied screen for logged-in non-admin users
+  const renderAccessDenied = () => (
+    <div className="min-h-screen bg-pattern flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center">
+        <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <ShieldAlert className="w-8 h-8 text-red-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Akses Ditolak</h1>
+        <p className="text-gray-500 text-sm mb-6">
+          Akun kamu <strong>{currentUser?.email}</strong> tidak memiliki role admin.
+          Hubungi administrator jika kamu yakin ini adalah kesalahan.
+        </p>
+        <div className="space-y-3">
+          <Link
+            to="/dashboard"
+            className="block w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all"
+          >
+            Kembali ke Dashboard
+          </Link>
+          <Link to="/" className="text-sm text-sky-600 hover:underline">← Kembali ke Home</Link>
+        </div>
+      </div>
+    </div>
+  )
+
   // Login Form
   if (!isAuthenticated) {
+    // If user is logged in but not admin, show Access Denied
+    if (currentUser && !isSupabaseAdmin) {
+      return renderAccessDenied()
+    }
+
     return (
       <div className="min-h-screen bg-pattern flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
@@ -205,14 +247,29 @@ function Admin() {
             </div>
             <h1 className="text-2xl font-bold text-gray-800">Admin Login</h1>
             <p className="text-gray-500 text-sm">{BRAND_NAME} — Akses terbatas</p>
+            {!currentUser && (
+              <p className="text-amber-600 text-xs mt-2">
+                ⚠️ Kamu belum login. Login dengan akun admin untuk akses dashboard.
+              </p>
+            )}
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
+            {/* Quick access button if user is already an admin */}
+            {currentUser && isSupabaseAdmin && (
+              <button
+                type="submit"
+                className="w-full bg-green-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-green-600 transition-all flex items-center justify-center gap-2"
+              >
+                <ShieldAlert className="w-5 h-5" /> Masuk sebagai Admin ({currentUser.email})
+              </button>
+            )}
+            {/* Legacy password fallback */}
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setLoginError('') }}
-                placeholder="Masukkan password admin"
+                placeholder="Masukkan password admin (legacy)"
                 autoFocus
                 className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-sky-500 outline-none"
               />
