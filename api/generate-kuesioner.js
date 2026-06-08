@@ -6,6 +6,8 @@
 //                 indikator, dan items (kisi-kisi lengkap untuk skripsi)
 // Provider chain (sama kayak assess.js): GeneralCompute → OpenRouter → Groq → Kimi.
 
+import { requireAuth, checkRateLimit, checkPayloadSize } from './_lib/auth.js'
+
 const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
 const KIMI_URL       = 'https://api.moonshot.ai/v1/chat/completions'
@@ -20,6 +22,21 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
+
+  // Authentication
+  const user = await requireAuth(req, res);
+  if (!user) return;
+
+  // Rate limiting
+  const rl = checkRateLimit('kuesioner:' + user.id, { maxRequests: 20, windowMs: 60000 });
+  if (!rl.allowed) {
+    return res.status(429).json({
+      error: 'Terlalu banyak permintaan. Coba lagi dalam ' + Math.ceil(rl.retryAfter / 1000) + ' detik.'
+    });
+  }
+
+  // Payload size check
+  if (!checkPayloadSize(req, res, 500 * 1024)) return;
 
   const body = req.body || {}
   const {
@@ -52,25 +69,25 @@ export default async function handler(req, res) {
     const out = await callJSON(GC_URL, GC_MODEL, gcKey, prompt, false)
     if (out.ok) return res.status(200).json({ success: true, provider: `generalcompute:${GC_MODEL}`, ...out.data })
     errors.push(`generalcompute/${GC_MODEL}: ${out.error}`)
-    console.log('[gen-kuesioner]', errors.at(-1))
+    if (process.env.NODE_ENV !== 'production') console.log('[gen-kuesioner]', errors.at(-1))
   }
   if (orKey) {
     const out = await callJSON(OPENROUTER_URL, orModel, orKey, prompt, true)
     if (out.ok) return res.status(200).json({ success: true, provider: `openrouter:${orModel}`, ...out.data })
     errors.push(`openrouter/${orModel}: ${out.error}`)
-    console.log('[gen-kuesioner]', errors.at(-1))
+    if (process.env.NODE_ENV !== 'production') console.log('[gen-kuesioner]', errors.at(-1))
   }
   if (groqKey) {
     const out = await callJSON(GROQ_URL, GROQ_MODEL, groqKey, prompt, false)
     if (out.ok) return res.status(200).json({ success: true, provider: `groq:${GROQ_MODEL}`, ...out.data })
     errors.push(`groq: ${out.error}`)
-    console.log('[gen-kuesioner]', errors.at(-1))
+    if (process.env.NODE_ENV !== 'production') console.log('[gen-kuesioner]', errors.at(-1))
   }
   if (kimiKey) {
     const out = await callJSON(KIMI_URL, KIMI_MODEL, kimiKey, prompt, false)
     if (out.ok) return res.status(200).json({ success: true, provider: 'kimi', ...out.data })
     errors.push(`kimi: ${out.error}`)
-    console.log('[gen-kuesioner]', errors.at(-1))
+    if (process.env.NODE_ENV !== 'production') console.log('[gen-kuesioner]', errors.at(-1))
   }
 
   return res.status(503).json({

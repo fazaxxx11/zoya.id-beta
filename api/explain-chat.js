@@ -3,6 +3,8 @@
 // Provider chain: GeneralCompute -> OpenRouter -> Groq -> Kimi.
 // Rate limit: max 5 user turns per session (server-side guard + client-side counter).
 
+import { requireAuth, checkRateLimit, getClientIp, checkPayloadSize, sanitize } from './_lib/auth.js'
+
 const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
 const KIMI_URL       = 'https://api.moonshot.ai/v1/chat/completions'
@@ -20,17 +22,38 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  // Security checks
+  const user = await requireAuth(req, res);
+  if (!user) return;
+
+  const rl = checkRateLimit('explain:' + user.id, { maxRequests: 20, windowMs: 60000 });
+  if (!rl.allowed) {
+    return res.status(429).json({
+      error: 'Terlalu banyak permintaan. Coba lagi nanti.',
+      retryAfter: Math.ceil(rl.resetTime / 1000)
+    });
+  }
+
+  if (!checkPayloadSize(req, res, 500 * 1024)) return;
+
   const body = req.body || {}
   const { resultContext = '', messages = [] } = body
 
-  if (!resultContext) {
+  // Sanitize inputs
+  const sanitizedResultContext = sanitize(resultContext);
+  const sanitizedMessages = Array.isArray(messages) ? messages.map(m => ({
+    role: m.role,
+    content: sanitize(String(m.content || ''))
+  })) : [];
+
+  if (!sanitizedResultContext) {
     return res.status(400).json({ error: 'resultContext wajib diisi' })
   }
-  if (!Array.isArray(messages) || messages.length === 0) {
+  if (!Array.isArray(sanitizedMessages) || sanitizedMessages.length === 0) {
     return res.status(400).json({ error: 'messages tidak boleh kosong' })
   }
 
-  const userCount = messages.filter(m => m.role === 'user').length
+  const userCount = sanitizedMessages.filter(m => m.role === 'user').length
   if (userCount > MAX_USER_TURNS) {
     return res.status(429).json({
       error: `Limit ${MAX_USER_TURNS} pertanyaan per hasil tercapai.`,
@@ -47,8 +70,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'No API key configured' })
   }
 
-  const systemPrompt = buildSystemPrompt(resultContext)
-  const cleanMsgs = messages
+  const systemPrompt = buildSystemPrompt(sanitizedResultContext)
+  const cleanMsgs = sanitizedMessages
     .filter(m => m && (m.role === 'user' || m.role === 'assistant'))
     .map(m => ({ role: m.role, content: String(m.content || '').slice(0, 2000) }))
 
@@ -59,25 +82,25 @@ export default async function handler(req, res) {
     const out = await callChat(GC_URL, GC_MODEL, gcKey, systemPrompt, cleanMsgs, false)
     if (out.ok) return res.status(200).json({ reply: out.text, provider: `generalcompute:${GC_MODEL}`, remaining, maxTurns: MAX_USER_TURNS })
     errors.push(`generalcompute/${GC_MODEL}: ${out.error}`)
-    console.log('[explain-chat]', errors.at(-1))
+    if (process.env.NODE_ENV !== 'production') console.log('[explain-chat]', errors.at(-1))
   }
   if (orKey) {
     const out = await callChat(OPENROUTER_URL, orModel, orKey, systemPrompt, cleanMsgs, true)
     if (out.ok) return res.status(200).json({ reply: out.text, provider: `openrouter:${orModel}`, remaining, maxTurns: MAX_USER_TURNS })
     errors.push(`openrouter/${orModel}: ${out.error}`)
-    console.log('[explain-chat]', errors.at(-1))
+    if (process.env.NODE_ENV !== 'production') console.log('[explain-chat]', errors.at(-1))
   }
   if (groqKey) {
     const out = await callChat(GROQ_URL, GROQ_MODEL, groqKey, systemPrompt, cleanMsgs, false)
     if (out.ok) return res.status(200).json({ reply: out.text, provider: `groq:${GROQ_MODEL}`, remaining, maxTurns: MAX_USER_TURNS })
     errors.push(`groq: ${out.error}`)
-    console.log('[explain-chat]', errors.at(-1))
+    if (process.env.NODE_ENV !== 'production') console.log('[explain-chat]', errors.at(-1))
   }
   if (kimiKey) {
     const out = await callChat(KIMI_URL, KIMI_MODEL, kimiKey, systemPrompt, cleanMsgs, false)
     if (out.ok) return res.status(200).json({ reply: out.text, provider: 'kimi', remaining, maxTurns: MAX_USER_TURNS })
     errors.push(`kimi: ${out.error}`)
-    console.log('[explain-chat]', errors.at(-1))
+    if (process.env.NODE_ENV !== 'production') console.log('[explain-chat]', errors.at(-1))
   }
 
   return res.status(503).json({

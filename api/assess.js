@@ -2,6 +2,7 @@
 // Mode baru (recommended): kirim {rubrik, jawaban, studentName, title, context}.
 // Mode lama (backward compat): kirim {messages, max_tokens}.
 import { buildAssessPrompt, validateAssessResponse, parseJSONLoose } from './_lib/assessPrompt.js'
+import { requireAuth, checkRateLimit, getClientIp, checkPayloadSize, sanitize } from './_lib/auth.js'
 
 const GC_URL = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
@@ -23,6 +24,22 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
+
+  // Security: Authentication
+  const user = await requireAuth(req, res);
+  if (!user) return;
+
+  // Security: Rate limiting
+  const rl = checkRateLimit('assess:' + user.id, { maxRequests: 20, windowMs: 60000 });
+  if (!rl.allowed) {
+    return res.status(429).json({
+      error: 'Too many requests',
+      retryAfter: Math.ceil(rl.remainingTime / 1000)
+    });
+  }
+
+  // Security: Payload size check
+  if (!checkPayloadSize(req, res, 500 * 1024)) return;
 
   const gcKey = process.env.GENERALCOMPUTE_API_KEY
   const groqKey = process.env.GROQ_API_KEY
@@ -74,7 +91,7 @@ async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey
         tokens: result.tokens,
       })
     }
-    console.log('[assess] generalcompute failed:', result.error)
+    if (process.env.NODE_ENV !== 'production') console.log('[assess] generalcompute failed:', result.error)
   }
 
   // Fallback: OpenRouter
@@ -89,7 +106,7 @@ async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey
         tokens: result.tokens,
       })
     }
-    console.log('[assess] openrouter failed:', result.error)
+    if (process.env.NODE_ENV !== 'production') console.log('[assess] openrouter failed:', result.error)
   }
 
   if (groqKey) {
@@ -103,7 +120,7 @@ async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey
         tokens: result.tokens,
       })
     }
-    console.log('[assess] groq failed:', result.error)
+    if (process.env.NODE_ENV !== 'production') console.log('[assess] groq failed:', result.error)
   }
 
   if (kimiKey) {
@@ -117,7 +134,7 @@ async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey
         tokens: result.tokens,
       })
     }
-    console.log('[assess] kimi failed:', result.error)
+    if (process.env.NODE_ENV !== 'production') console.log('[assess] kimi failed:', result.error)
   }
 
   return res.status(502).json({ error: 'All AI providers failed', success: false })
@@ -339,7 +356,9 @@ async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body })
           provider: 'generalcompute',
         })
       }
-    } catch (e) { console.log('[legacy] generalcompute error:', e.message) }
+    } catch (e) { 
+      if (process.env.NODE_ENV !== 'production') console.log('[legacy] generalcompute error:', e.message) 
+    }
   }
   if (groqKey) {
     try {
@@ -355,7 +374,9 @@ async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body })
           provider: 'groq',
         })
       }
-    } catch (e) { console.log('[legacy] groq error:', e.message) }
+    } catch (e) { 
+      if (process.env.NODE_ENV !== 'production') console.log('[legacy] groq error:', e.message) 
+    }
   }
   if (kimiKey) {
     try {
@@ -371,7 +392,9 @@ async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body })
           provider: 'kimi',
         })
       }
-    } catch (e) { console.log('[legacy] kimi error:', e.message) }
+    } catch (e) { 
+      if (process.env.NODE_ENV !== 'production') console.log('[legacy] kimi error:', e.message) 
+    }
   }
   return res.status(502).json({ error: 'AI providers failed' })
 }

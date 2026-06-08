@@ -11,7 +11,6 @@
 // Untuk login/register/logout: async (return Promise). Auth.jsx sudah pakai await.
 
 import { supabase, isSupabaseConfigured } from './supabase'
-import { ADMIN_EMAIL } from './brand'
 
 // ─── Module-level cache ─────────────────────────────────────────────
 let _user = null              // normalized user object atau null
@@ -25,18 +24,18 @@ const CURRENT_USER_KEY = 'skor_current_user'
 const ADMIN_FLAG_KEY = 'admin_logged_in'
 
 /** Normalize Supabase user object ke shape yang dipakai UI lama. */
-function normalizeUser(supaUser) {
+function normalizeUser(supaUser, role = 'user') {
   if (!supaUser) return null
   const meta = supaUser.user_metadata || {}
   const email = supaUser.email || ''
-  const isAdminUser = !!email && email.toLowerCase() === (ADMIN_EMAIL || '').toLowerCase()
+  const isAdminUser = role === 'admin'
   return {
     id: supaUser.id,
     email,
     name: meta.name || meta.full_name || (email ? email.split('@')[0] : ''),
     phone: meta.phone || '',
     isAdmin: isAdminUser,
-    role: isAdminUser ? 'admin' : 'user',
+    role: role,
     createdAt: supaUser.created_at ? Date.parse(supaUser.created_at) : Date.now(),
   }
 }
@@ -45,6 +44,27 @@ function setUser(next) {
   _user = next
   for (const cb of _listeners) {
     try { cb(_user) } catch (e) { console.error('[auth subscriber]', e) }
+  }
+}
+
+/**
+ * Fetch user role from Supabase profiles table.
+ * @param {string} userId
+ * @returns {Promise<'admin'|'user'>}
+ */
+async function fetchUserRole(userId) {
+  if (!userId || !isSupabaseConfigured) return 'user'
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .maybeSingle()
+    if (error) throw error
+    return data?.role === 'admin' ? 'admin' : 'user'
+  } catch (e) {
+    console.error('[auth] fetchUserRole failed:', e)
+    return 'user'
   }
 }
 
@@ -64,14 +84,26 @@ export async function initAuth() {
     }
     try {
       const { data } = await supabase.auth.getSession()
-      setUser(normalizeUser(data?.session?.user))
+      const supaUser = data?.session?.user
+      if (supaUser) {
+        const role = await fetchUserRole(supaUser.id)
+        setUser(normalizeUser(supaUser, role))
+      } else {
+        setUser(null)
+      }
     } catch (e) {
       console.error('[auth] getSession failed:', e)
       setUser(null)
     }
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(normalizeUser(session?.user))
+    supabase.auth.onAuthStateChange(async (_event, session) => {
+      const supaUser = session?.user
+      if (supaUser) {
+        const role = await fetchUserRole(supaUser.id)
+        setUser(normalizeUser(supaUser, role))
+      } else {
+        setUser(null)
+      }
     })
 
     _initialized = true
@@ -183,7 +215,8 @@ export async function loginUser(email, password) {
   }
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) return { success: false, error: translateAuthError(error.message) }
-  const u = normalizeUser(data.user)
+  const role = await fetchUserRole(data.user.id)
+  const u = normalizeUser(data.user, role)
   setUser(u)
   return { success: true, user: u }
 }
@@ -210,13 +243,16 @@ export async function registerUser({ email, password, name, phone }) {
   if (error) return { success: false, error: translateAuthError(error.message) }
   // Note: kalau email confirmation aktif, data.session akan null sampai user verifikasi.
   if (data.session) {
-    const u = normalizeUser(data.user)
+    const role = await fetchUserRole(data.user.id)
+    const u = normalizeUser(data.user, role)
     setUser(u)
     return { success: true, user: u }
   }
+  // For new registration, default role is 'user'
+  const u = normalizeUser(data.user, 'user')
   return {
     success: true,
-    user: normalizeUser(data.user),
+    user: u,
     needsEmailConfirmation: true,
   }
 }
@@ -259,7 +295,8 @@ export async function verifyOtp(email, token) {
     type: 'email',
   })
   if (error) return { success: false, error: translateAuthError(error.message) }
-  const u = normalizeUser(data.user)
+  const role = await fetchUserRole(data.user.id)
+  const u = normalizeUser(data.user, role)
   setUser(u)
   return { success: true, user: u }
 }

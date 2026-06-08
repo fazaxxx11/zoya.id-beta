@@ -5,8 +5,8 @@ import {
   LogOut, Download, CreditCard, CheckCircle,
   XCircle, Clock, Search, Eye, EyeOff, Lock, ShieldAlert
 } from 'lucide-react'
-import { verifyAdminPassword, ADMIN_EMAIL, BRAND_NAME } from '../lib/brand'
-import { CURRENT_USER_KEY, ADMIN_FLAG_KEY, isAdminLogged, isAdminUser, hasPermission } from '../lib/auth'
+import { BRAND_NAME } from '../lib/brand'
+import { isAdminUser, hasPermission } from '../lib/auth'
 import { useCurrentUser } from '../lib/useCurrentUser'
 import {
   getPendingTopups, approvePendingTopup, rejectPendingTopup,
@@ -57,19 +57,27 @@ function normalizeOrders(orders, emailById) {
 function Admin() {
   const navigate = useNavigate()
   const currentUser = useCurrentUser()
-  // Auto-detect: kalau session admin masih hidup (flag di localStorage),
-  // langsung skip login screen.
-  const [isAuthenticated, setIsAuthenticated] = useState(() => isAdminLogged())
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [transactions, setTransactions] = useState([])
   const [stats, setStats] = useState({ todayRevenue: 0, totalRevenue: 0, todayTransactions: 0, totalTransactions: 0, activeUsers: 0 })
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [pendingTopups, setPendingTopups] = useState([])
-
   const [loadingData, setLoadingData] = useState(false)
   const [dataError, setDataError] = useState('')
+
+  // Check authentication status on mount and when user changes
+  useEffect(() => {
+    if (currentUser) {
+      const isAdmin = isAdminUser(currentUser)
+      setIsAuthenticated(isAdmin)
+      if (isAdmin) {
+        refreshData()
+      }
+    } else {
+      setIsAuthenticated(false)
+    }
+  }, [currentUser])
 
   const refreshData = async () => {
     setDataError('')
@@ -110,13 +118,6 @@ function Admin() {
     }
   }
 
-  // Load real orders & users on mount + saat tab admin diakses
-  useEffect(() => {
-    if (!isAuthenticated) return
-    refreshData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated])
-
   const handleApproveTopup = async (id) => {
     const r = await approvePendingTopup(id)
     if (r.success) {
@@ -138,63 +139,16 @@ function Admin() {
     }
   }
 
-  const [loginError, setLoginError] = useState('')
-
-  // RBAC: Check if current Supabase user is admin
-  const isSupabaseAdmin = isAdminUser(currentUser)
-
-  const handleLogin = (e) => {
-    e.preventDefault()
-    // First check: is the logged-in Supabase user an admin?
-    if (isSupabaseAdmin) {
-      setIsAuthenticated(true)
-      setLoginError('')
-      localStorage.setItem(ADMIN_FLAG_KEY, 'true')
-      return
-    }
-    // Fallback: legacy password check (for backwards compat)
-    if (verifyAdminPassword(password)) {
-      setIsAuthenticated(true)
-      setLoginError('')
-      localStorage.setItem(ADMIN_FLAG_KEY, 'true')
-      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({
-        email: ADMIN_EMAIL,
-        name: 'Admin',
-        isAdmin: true,
-      }))
-    } else {
-      setLoginError('Password salah atau akun belum memiliki role admin')
-    }
-  }
-
   const handleLogout = () => {
     setIsAuthenticated(false)
-    // Clear admin flag saja — user session (CURRENT_USER) tetap supaya admin
-    // bisa lanjut browse sebagai user biasa kalau mau. Untuk full logout,
-    // gunakan menu Logout di /dashboard.
-    localStorage.removeItem(ADMIN_FLAG_KEY)
-    // Hapus flag isAdmin di user object juga supaya konsisten dengan flag.
-    try {
-      const u = JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null')
-      if (u && u.isAdmin) {
-        const { isAdmin: _, role: __, ...rest } = u
-        if (u.__synthetic) {
-          // Synthetic admin: clear sekalian, jangan tinggalkan ghost user
-          localStorage.removeItem(CURRENT_USER_KEY)
-        } else {
-          localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(rest))
-        }
-      }
-    } catch {}
+    // No localStorage cleanup needed - Supabase Auth handles session
   }
 
   const goToUserMode = () => {
-    // Switch to user mode - can browse and order
     navigate('/dashboard')
   }
 
   const goToHome = () => {
-    // Go to home and use services
     navigate('/')
   }
 
@@ -231,59 +185,25 @@ function Admin() {
     </div>
   )
 
-  // Login Form
-  if (!isAuthenticated) {
-    // If user is logged in but not admin, show Access Denied
-    if (currentUser && !isSupabaseAdmin) {
-      return renderAccessDenied()
-    }
-
+  // Not logged in - redirect to auth
+  if (!currentUser) {
     return (
       <div className="min-h-screen bg-pattern flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-sky-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-sky-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-800">Admin Login</h1>
-            <p className="text-gray-500 text-sm">{BRAND_NAME} — Akses terbatas</p>
-            {!currentUser && (
-              <p className="text-amber-600 text-xs mt-2">
-                ⚠️ Kamu belum login. Login dengan akun admin untuk akses dashboard.
-              </p>
-            )}
+        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center">
+          <div className="w-16 h-16 bg-sky-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-8 h-8 text-sky-600" />
           </div>
-          <form onSubmit={handleLogin} className="space-y-4">
-            {/* Quick access button if user is already an admin */}
-            {currentUser && isSupabaseAdmin && (
-              <button
-                type="submit"
-                className="w-full bg-green-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-green-600 transition-all flex items-center justify-center gap-2"
-              >
-                <ShieldAlert className="w-5 h-5" /> Masuk sebagai Admin ({currentUser.email})
-              </button>
-            )}
-            {/* Legacy password fallback */}
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setLoginError('') }}
-                placeholder="Masukkan password admin (legacy)"
-                autoFocus
-                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-sky-500 outline-none"
-              />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-            {loginError && (
-              <p className="text-sm text-red-600 -mt-2">{loginError}</p>
-            )}
-            <button type="submit" className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all">
-              Login
-            </button>
-          </form>
+          <h1 className="text-2xl font-bold text-gray-800">Admin Login</h1>
+          <p className="text-gray-500 text-sm">{BRAND_NAME} — Akses terbatas</p>
+          <p className="text-amber-600 text-xs mt-4 mb-6">
+            ⚠️ Kamu belum login. Login dengan akun admin untuk akses dashboard.
+          </p>
+          <Link
+            to="/auth"
+            className="block w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all"
+          >
+            Login ke Akun
+          </Link>
           <div className="mt-6 text-center">
             <Link to="/" className="text-sm text-sky-600 hover:underline">← Kembali ke Home</Link>
           </div>
@@ -292,6 +212,12 @@ function Admin() {
     )
   }
 
+  // Logged in but not admin
+  if (!isAuthenticated) {
+    return renderAccessDenied()
+  }
+
+  // Admin dashboard
   return (
     <div className="min-h-screen bg-pattern">
       <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">

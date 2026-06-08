@@ -2,6 +2,8 @@
 // Menerima result object → return paragraf interpretasi akademik Bahasa Indonesia.
 // Providers (prioritas): GeneralCompute → OpenRouter → Groq → Kimi.
 
+import { requireAuth, checkRateLimit, getClientIp, checkPayloadSize, sanitize } from './_lib/auth.js'
+
 const GC_URL = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const KIMI_URL = 'https://api.moonshot.ai/v1/chat/completions'
@@ -18,10 +20,27 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  // Security checks
+  const user = await requireAuth(req, res);
+  if (!user) return;
+
+  const rl = checkRateLimit('interpret:' + user.id, { maxRequests: 20, windowMs: 60000 });
+  if (!rl.allowed) {
+    return res.status(429).json({
+      error: 'Terlalu banyak permintaan. Coba lagi dalam 1 menit.',
+      retryAfter: Math.ceil(rl.retryAfter / 1000)
+    });
+  }
+
+  if (!checkPayloadSize(req, res, 500 * 1024)) return;
+
   const { result } = req.body || {}
   if (!result || !result.type) {
     return res.status(400).json({ error: 'Missing result payload' })
   }
+
+  // Sanitize input
+  const sanitizedResult = sanitize(result);
 
   const gcKey = process.env.GENERALCOMPUTE_API_KEY
   const groqKey = process.env.GROQ_API_KEY
@@ -32,7 +51,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'No API key configured' })
   }
 
-  const prompt = buildPrompt(result)
+  const prompt = buildPrompt(sanitizedResult)
   const errors = []
 
   // Try General Compute first (DeepSeek V3.2 — primary)
@@ -47,7 +66,7 @@ export default async function handler(req, res) {
       })
     }
     const errMsg = `generalcompute/${GC_MODEL}: ${out.error}`
-    console.log('[interpret]', errMsg)
+    if (process.env.NODE_ENV !== 'production') console.log('[interpret]', errMsg)
     errors.push(errMsg)
   }
 
@@ -63,7 +82,7 @@ export default async function handler(req, res) {
       })
     }
     const errMsg = `openrouter/${orModel}: ${out.error}`
-    console.log('[interpret]', errMsg)
+    if (process.env.NODE_ENV !== 'production') console.log('[interpret]', errMsg)
     errors.push(errMsg)
   }
 
@@ -80,7 +99,7 @@ export default async function handler(req, res) {
         })
       }
       const errMsg = `groq/${model}: ${out.error}`
-      console.log('[interpret]', errMsg)
+      if (process.env.NODE_ENV !== 'production') console.log('[interpret]', errMsg)
       errors.push(errMsg)
       // Kalau bukan rate-limit/overload, no point coba model Groq lain — langsung Kimi
       if (!out.transient) break
@@ -98,7 +117,7 @@ export default async function handler(req, res) {
       })
     }
     const errMsg = `kimi: ${out.error}`
-    console.log('[interpret]', errMsg)
+    if (process.env.NODE_ENV !== 'production') console.log('[interpret]', errMsg)
     errors.push(errMsg)
   }
 

@@ -5,20 +5,7 @@ export const BRAND_NAME = import.meta.env.VITE_BRAND_NAME || 'zoya.id'
 export const BRAND_TAGLINE = import.meta.env.VITE_BRAND_TAGLINE || 'AI Tools for Research & Education'
 export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'zoya.id1432@gmail.com'
 
-/** Password admin dari env. Kalau kosong → admin login disabled. */
-export const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || ''
-
-/**
- * Verifikasi password admin.
- * Returns true kalau cocok, false kalau salah atau env belum set.
- */
-export function verifyAdminPassword(input) {
-  if (!ADMIN_PASSWORD) {
-    console.warn('[admin] VITE_ADMIN_PASSWORD tidak di-set di .env — admin login disabled')
-    return false
-  }
-  return String(input || '') === ADMIN_PASSWORD
-}
+// Admin authentication now uses Supabase profiles.role instead of password
 
 // ───────────────────────────────────────────────────────────────────
 // Payment info untuk manual TF (ditampilkan di modal top-up).
