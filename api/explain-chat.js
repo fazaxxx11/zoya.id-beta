@@ -1,12 +1,14 @@
 // AI Explain Chat — pop-up "Belum Paham?" untuk hasil uji statistik.
 // AI menjelaskan dengan bahasa santai (kayak ngobrol ke anak SMA).
-// Provider chain: OpenRouter -> Groq -> Kimi.
+// Provider chain: GeneralCompute -> OpenRouter -> Groq -> Kimi.
 // Rate limit: max 5 user turns per session (server-side guard + client-side counter).
 
+const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
 const KIMI_URL       = 'https://api.moonshot.ai/v1/chat/completions'
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 
+const GC_MODEL = 'deepseek-v3.2'
 const GROQ_MODEL = 'llama-3.3-70b-versatile'
 const KIMI_MODEL = 'moonshot-v1-8k'
 const OPENROUTER_MODEL_DEFAULT = 'openrouter/auto'
@@ -36,11 +38,12 @@ export default async function handler(req, res) {
     })
   }
 
+  const gcKey  = process.env.GENERALCOMPUTE_API_KEY
   const groqKey = process.env.GROQ_API_KEY
   const kimiKey = process.env.KIMI_API_KEY
   const orKey   = process.env.OPENROUTER_API_KEY
   const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT
-  if (!groqKey && !kimiKey && !orKey) {
+  if (!gcKey && !groqKey && !kimiKey && !orKey) {
     return res.status(500).json({ error: 'No API key configured' })
   }
 
@@ -52,6 +55,12 @@ export default async function handler(req, res) {
   const remaining = Math.max(0, MAX_USER_TURNS - userCount)
   const errors = []
 
+  if (gcKey) {
+    const out = await callChat(GC_URL, GC_MODEL, gcKey, systemPrompt, cleanMsgs, false)
+    if (out.ok) return res.status(200).json({ reply: out.text, provider: `generalcompute:${GC_MODEL}`, remaining, maxTurns: MAX_USER_TURNS })
+    errors.push(`generalcompute/${GC_MODEL}: ${out.error}`)
+    console.log('[explain-chat]', errors.at(-1))
+  }
   if (orKey) {
     const out = await callChat(OPENROUTER_URL, orModel, orKey, systemPrompt, cleanMsgs, true)
     if (out.ok) return res.status(200).json({ reply: out.text, provider: `openrouter:${orModel}`, remaining, maxTurns: MAX_USER_TURNS })

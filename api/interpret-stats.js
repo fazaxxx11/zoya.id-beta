@@ -1,10 +1,12 @@
 // AI Interpretation untuk hasil analisis statistik.
 // Menerima result object → return paragraf interpretasi akademik Bahasa Indonesia.
-// Providers (prioritas): OpenRouter → Groq → Kimi.
+// Providers (prioritas): GeneralCompute → OpenRouter → Groq → Kimi.
 
+const GC_URL = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const KIMI_URL = 'https://api.moonshot.ai/v1/chat/completions'
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
+const GC_MODEL = 'deepseek-v3.2'
 // Cascade: large model first, fall back to small instant model when overloaded.
 const GROQ_MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant']
 const KIMI_MODEL = 'moonshot-v1-8k'
@@ -21,18 +23,35 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing result payload' })
   }
 
+  const gcKey = process.env.GENERALCOMPUTE_API_KEY
   const groqKey = process.env.GROQ_API_KEY
   const kimiKey = process.env.KIMI_API_KEY
   const orKey = process.env.OPENROUTER_API_KEY
   const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT
-  if (!groqKey && !kimiKey && !orKey) {
+  if (!gcKey && !groqKey && !kimiKey && !orKey) {
     return res.status(500).json({ error: 'No API key configured' })
   }
 
   const prompt = buildPrompt(result)
   const errors = []
 
-  // Try OpenRouter first (paling fleksibel — pick model via env)
+  // Try General Compute first (DeepSeek V3.2 — primary)
+  if (gcKey) {
+    const out = await callWithRetry(GC_URL, GC_MODEL, gcKey, prompt)
+    if (out.ok) {
+      return res.status(200).json({
+        success: true,
+        provider: `generalcompute:${GC_MODEL}`,
+        interpretation: out.text,
+        tokens: out.tokens,
+      })
+    }
+    const errMsg = `generalcompute/${GC_MODEL}: ${out.error}`
+    console.log('[interpret]', errMsg)
+    errors.push(errMsg)
+  }
+
+  // Fallback: OpenRouter
   if (orKey) {
     const out = await callWithRetry(OPENROUTER_URL, orModel, orKey, prompt, 2, true)
     if (out.ok) {

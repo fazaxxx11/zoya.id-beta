@@ -4,12 +4,14 @@
 //   "quick"     → topik + jumlah item → generate kuesioner langsung
 //   "blueprint" → variable + dimensions → generate definisi operasional,
 //                 indikator, dan items (kisi-kisi lengkap untuk skripsi)
-// Provider chain (sama kayak assess.js): OpenRouter → Groq → Kimi.
+// Provider chain (sama kayak assess.js): GeneralCompute → OpenRouter → Groq → Kimi.
 
+const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
 const KIMI_URL       = 'https://api.moonshot.ai/v1/chat/completions'
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 
+const GC_MODEL = 'deepseek-v3.2'
 const GROQ_MODEL = 'llama-3.3-70b-versatile'
 const KIMI_MODEL = 'moonshot-v1-8k'
 const OPENROUTER_MODEL_DEFAULT = 'openrouter/auto'
@@ -34,17 +36,24 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'topic atau variable wajib diisi' })
   }
 
+  const gcKey  = process.env.GENERALCOMPUTE_API_KEY
   const groqKey = process.env.GROQ_API_KEY
   const kimiKey = process.env.KIMI_API_KEY
   const orKey   = process.env.OPENROUTER_API_KEY
   const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT
-  if (!groqKey && !kimiKey && !orKey) {
+  if (!gcKey && !groqKey && !kimiKey && !orKey) {
     return res.status(500).json({ error: 'No API key configured' })
   }
 
   const prompt = buildPrompt({ mode, topic, variable, dimensions, scale, itemsPerDimension, includeDemografi })
   const errors = []
 
+  if (gcKey) {
+    const out = await callJSON(GC_URL, GC_MODEL, gcKey, prompt, false)
+    if (out.ok) return res.status(200).json({ success: true, provider: `generalcompute:${GC_MODEL}`, ...out.data })
+    errors.push(`generalcompute/${GC_MODEL}: ${out.error}`)
+    console.log('[gen-kuesioner]', errors.at(-1))
+  }
   if (orKey) {
     const out = await callJSON(OPENROUTER_URL, orModel, orKey, prompt, true)
     if (out.ok) return res.status(200).json({ success: true, provider: `openrouter:${orModel}`, ...out.data })
@@ -170,7 +179,7 @@ async function callJSON(url, model, key, prompt, isOpenRouter) {
       temperature: 0.5,
       max_tokens: 4000,
     }
-    // Groq + OpenRouter mendukung json_object response_format. Kimi tidak.
+    // GeneralCompute, Groq, OpenRouter mendukung json_object. Kimi tidak.
     if (!url.includes('moonshot.ai')) {
       payload.response_format = { type: 'json_object' }
     }
