@@ -87,7 +87,7 @@ export default async function handler(req, res) {
       // Call the top_up_wallet RPC function
       const { error: topupError } = await supabaseAdmin.rpc('top_up_wallet', {
         p_user_id: pendingTopup.user_id,
-        p_amount: pendingTopup.amount + pendingTopup.bonus,
+        p_amount: pendingTopup.amount,
         p_reference_id: topupId
       });
 
