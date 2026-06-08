@@ -3,6 +3,7 @@
 // Mode lama (backward compat): kirim {messages, max_tokens}.
 import { buildAssessPrompt, validateAssessResponse, parseJSONLoose } from './_lib/assessPrompt.js'
 import { requireAuth, checkRateLimit, getClientIp, checkPayloadSize, sanitize } from './_lib/auth.js'
+import { corsMiddleware, securityHeaders, sanitizeError } from './_lib/security.js'
 import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
 import { supabaseAdmin } from './_lib/auth.js'
 
@@ -30,6 +31,10 @@ export default async function handler(req, res) {
   // Security: Authentication
   const user = await requireAuth(req, res);
   if (!user) return;
+
+  // Security headers + CORS
+  corsMiddleware(req, res)
+  securityHeaders(res)
 
   // Billing check
   const body = req.body || {}

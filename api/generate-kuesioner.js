@@ -7,6 +7,7 @@
 // Provider chain (sama kayak assess.js): GeneralCompute → OpenRouter → Groq → Kimi.
 
 import { requireAuth, checkRateLimit, checkPayloadSize } from './_lib/auth.js'
+import { corsMiddleware, securityHeaders, sanitizeError } from './_lib/security.js'
 import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
 import { supabaseAdmin } from './_lib/auth.js'
 
@@ -28,6 +29,10 @@ export default async function handler(req, res) {
   // Authentication
   const user = await requireAuth(req, res);
   if (!user) return;
+
+  // Security headers + CORS
+  corsMiddleware(req, res)
+  securityHeaders(res)
 
   // Billing check
   const billing = await checkToolAccess(supabaseAdmin, user.id, 'kuesioner', 1)

@@ -4,6 +4,7 @@
 // Rate limit: max 5 user turns per session (server-side guard + client-side counter).
 
 import { requireAuth, checkRateLimit, getClientIp, checkPayloadSize, sanitize } from './_lib/auth.js'
+import { corsMiddleware, securityHeaders, sanitizeError } from './_lib/security.js'
 import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
 import { supabaseAdmin } from './_lib/auth.js'
 
@@ -27,6 +28,10 @@ export default async function handler(req, res) {
   // Security checks
   const user = await requireAuth(req, res);
   if (!user) return;
+
+  // Security headers + CORS
+  corsMiddleware(req, res)
+  securityHeaders(res)
 
   // Billing check (free tool, but still log usage)
   const toolId = 'deskriptif'
