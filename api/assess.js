@@ -1,11 +1,11 @@
 // AI assessment endpoint (Vercel serverless function).
-// Mode baru (recommended): kirim {rubrik, jawaban, studentName, title, context}.
-// Mode lama (backward compat): kirim {messages, max_tokens}.
+// Mode baru: {rubrik, jawaban, studentName, title, context}
+// Mode lama: {messages, max_tokens} (backward compat)
+// Middleware: JWT auth + dual rate limit + payload guard + AI timeout
+
 import { buildAssessPrompt, validateAssessResponse, parseJSONLoose } from './_lib/assessPrompt.js'
-import { requireAuth, checkRateLimit, getClientIp, checkPayloadSize, sanitize } from './_lib/auth.js'
-import { corsMiddleware, securityHeaders, sanitizeError } from './_lib/security.js'
+import { aiMiddleware, callAIWithTimeout, sanitizeError, getSupabaseAdmin } from './_lib/middleware.js'
 import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
-import { supabaseAdmin } from './_lib/auth.js'
 
 const GC_URL = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
@@ -15,450 +15,172 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 const GC_MODEL = 'deepseek-v3.2'
 const GROQ_MODEL = 'llama-3.3-70b-versatile'
 const KIMI_MODEL = 'moonshot-v1-8k'
-// OpenRouter: default = Auto Router (OpenRouter pilih model terbaik per request).
-// Override via OPENROUTER_MODEL env. Contoh:
-//   openrouter/auto                              → Auto Router (default)
-//   meta-llama/llama-3.3-70b-instruct:free       → free, fixed
-//   deepseek/deepseek-chat-v3.1:free             → free, reasoning
-//   anthropic/claude-3.5-sonnet                  → premium berbayar
 const OPENROUTER_MODEL_DEFAULT = 'openrouter/auto'
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
-  // Security: Authentication
-  const user = await requireAuth(req, res);
+  // ── Middleware: auth + rate limit + payload + CORS ──
+  const user = await aiMiddleware(req, res, 'assess');
   if (!user) return;
 
-  // Security headers + CORS
-  corsMiddleware(req, res)
-  securityHeaders(res)
+  const supabaseAdmin = getSupabaseAdmin();
+  const body = req.body || {};
 
-  // Billing check
-  const body = req.body || {}
-  const toolId = 'assessment'
-  const sampleSize = Array.isArray(body.jawaban) ? body.jawaban.length : 1
-  const billingCheck = await checkToolAccess(supabaseAdmin, user.id, toolId, sampleSize)
+  // ── Billing check ──
+  const toolId = 'assessment';
+  const sampleSize = Array.isArray(body.jawaban) ? body.jawaban.length : 1;
+  const billingCheck = await checkToolAccess(supabaseAdmin, user.id, toolId, sampleSize);
   if (!billingCheck.allowed) {
     return res.status(402).json({
-      error: billingCheck.error || 'Billing required',
+      error: billingCheck.error || 'Saldo tidak cukup',
       reason: billingCheck.reason,
       price: billingCheck.price,
-      balance: billingCheck.balance
-    })
-  }
-
-  // Security: Rate limiting
-  const rl = await checkRateLimit('assess:' + user.id, { maxRequests: 20, windowMs: 60000 });
-  if (!rl.allowed) {
-    return res.status(429).json({
-      error: 'Too many requests',
-      retryAfter: Math.ceil(rl.remainingTime / 1000)
+      balance: billingCheck.balance,
     });
   }
 
-  // Security: Payload size check
-  if (!checkPayloadSize(req, res, 500 * 1024)) return;
+  const gcKey = process.env.GENERALCOMPUTE_API_KEY;
+  const groqKey = process.env.GROQ_API_KEY;
+  const kimiKey = process.env.KIMI_API_KEY;
+  const orKey = process.env.OPENROUTER_API_KEY;
+  const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT;
 
-  const gcKey = process.env.GENERALCOMPUTE_API_KEY
-  const groqKey = process.env.GROQ_API_KEY
-  const kimiKey = process.env.KIMI_API_KEY
-  const orKey = process.env.OPENROUTER_API_KEY
-  const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT
   if (!gcKey && !groqKey && !kimiKey && !orKey) {
-    return res.status(500).json({ error: 'No API key. Set GENERALCOMPUTE_API_KEY, GROQ_API_KEY, KIMI_API_KEY, or OPENROUTER_API_KEY.' })
+    return res.status(500).json({ error: 'Tidak ada API key yang dikonfigurasi' });
   }
 
-  const ctx = { gcKey, groqKey, kimiKey, orKey, orModel, body }
+  const ctx = { gcKey, groqKey, kimiKey, orKey, orModel, body };
 
-  // ── Mode baru: data terstruktur ─────────────────────────────────
+  // ── Mode baru: structured assess ──
   if (body.rubrik && body.jawaban) {
-    return handleStructuredAssess(req, res, ctx, user.id, toolId, billingCheck)
+    return handleStructuredAssess(req, res, ctx, user, toolId, billingCheck, sampleSize);
   }
 
-  // ── Mode lama: messages array ───────────────────────────────────
+  // ── Mode lama: messages array ──
   if (body.messages) {
-    return handleLegacyMessages(req, res, ctx, user.id, toolId, billingCheck)
+    return handleLegacyMessages(req, res, ctx, user, toolId, billingCheck);
   }
 
-  return res.status(400).json({ error: 'Invalid payload. Send {rubrik, jawaban, ...} or {messages}.' })
+  return res.status(400).json({ error: 'Payload tidak valid. Kirim {rubrik, jawaban, ...} atau {messages}.' });
 }
 
 // =====================================================================
 // MODE BARU: structured assess
 // =====================================================================
-async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey, orModel, body }, userId, toolId, billingCheck) {
-  const { rubrik, jawaban, studentName, title, context } = body
+async function handleStructuredAssess(req, res, { gcKey, groqKey, kimiKey, orKey, orModel, body }, user, toolId, billingCheck, sampleSize) {
+  const supabaseAdmin = getSupabaseAdmin();
+  const { rubrik, jawaban, studentName, title, context } = body;
 
-  let prompt
+  let prompt;
   try {
-    prompt = buildAssessPrompt({ rubrik, jawaban, studentName, title, context })
+    prompt = buildAssessPrompt({ rubrik, jawaban, studentName, title, context });
   } catch (e) {
-    return res.status(400).json({ error: e.message })
+    return res.status(400).json({ error: e.message });
   }
 
-  // Charge wallet if price > 0
+  // Charge wallet
   if (billingCheck.price > 0) {
-    const chargeResult = await chargeForTool(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize)
+    const chargeResult = await chargeForTool(supabaseAdmin, user.id, toolId, billingCheck.price, sampleSize);
     if (!chargeResult.success) {
       return res.status(402).json({
-        error: chargeResult.error || 'Payment failed',
+        error: chargeResult.error || 'Pembayaran gagal',
         reason: chargeResult.reason,
         price: billingCheck.price,
-        balance: chargeResult.balance
-      })
+        balance: chargeResult.balance,
+      });
     }
   }
 
-  // Try General Compute first (DeepSeek V3.2 — primary)
-  if (gcKey) {
-    const result = await callGeneralComputeJSON({ key: gcKey, prompt, rubrik })
+  const providers = [];
+  if (gcKey) providers.push({ name: 'generalcompute', url: GC_URL, model: GC_MODEL, key: gcKey, isOpenRouter: false });
+  if (orKey) providers.push({ name: 'openrouter', url: OPENROUTER_URL, model: orModel, key: orKey, isOpenRouter: true });
+  if (groqKey) providers.push({ name: 'groq', url: GROQ_URL, model: GROQ_MODEL, key: groqKey, isOpenRouter: false });
+  if (kimiKey) providers.push({ name: 'kimi', url: KIMI_URL, model: KIMI_MODEL, key: kimiKey, isOpenRouter: false });
+
+  for (const provider of providers) {
+    const result = await callAssessProvider(provider, prompt, rubrik);
     if (result.ok) {
-      // Log usage
-      await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'success')
+      await createOrder(supabaseAdmin, { userId: user.id, service: 'assessment', tier: 'assessment', amount: billingCheck.price, status: 'completed' });
       return res.status(200).json({
         success: true,
-        provider: 'generalcompute:deepseek-v3.2',
+        provider: `${provider.name}:${provider.model}`,
         scores: result.scores,
         kesimpulan: result.kesimpulan,
         tokens: result.tokens,
-      })
+      });
     }
-    if (process.env.NODE_ENV !== 'production') console.log('[assess] generalcompute failed:', result.error)
   }
 
-  // Fallback: OpenRouter
-  if (orKey) {
-    const result = await callOpenRouterJSON({ key: orKey, model: orModel, prompt, rubrik })
-    if (result.ok) {
-      // Log usage
-      await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'success')
-      return res.status(200).json({
-        success: true,
-        provider: `openrouter:${orModel}`,
-        scores: result.scores,
-        kesimpulan: result.kesimpulan,
-        tokens: result.tokens,
-      })
-    }
-    if (process.env.NODE_ENV !== 'production') console.log('[assess] openrouter failed:', result.error)
-  }
-
-  if (groqKey) {
-    const result = await callGroqJSON({ key: groqKey, prompt, rubrik })
-    if (result.ok) {
-      // Log usage
-      await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'success')
-      return res.status(200).json({
-        success: true,
-        provider: 'groq',
-        scores: result.scores,
-        kesimpulan: result.kesimpulan,
-        tokens: result.tokens,
-      })
-    }
-    if (process.env.NODE_ENV !== 'production') console.log('[assess] groq failed:', result.error)
-  }
-
-  if (kimiKey) {
-    const result = await callKimiJSON({ key: kimiKey, prompt, rubrik })
-    if (result.ok) {
-      // Log usage
-      await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'success')
-      return res.status(200).json({
-        success: true,
-        provider: 'kimi',
-        scores: result.scores,
-        kesimpulan: result.kesimpulan,
-        tokens: result.tokens,
-      })
-    }
-    if (process.env.NODE_ENV !== 'production') console.log('[assess] kimi failed:', result.error)
-  }
-
-  // Log failed usage
-  await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, sampleSize, 'failed')
-  return res.status(502).json({ error: 'All AI providers failed', success: false })
+  await createOrder(supabaseAdmin, { userId: user.id, service: 'assessment', tier: 'assessment', amount: billingCheck.price, status: 'failed' });
+  return res.status(503).json({ error: 'Semua provider AI sedang sibuk. Coba lagi 30 detik.' });
 }
 
-async function callGeneralComputeJSON({ key, prompt, rubrik }) {
+async function callAssessProvider(provider, prompt, rubrik) {
   for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const messages = [
-        { role: 'system', content: prompt.system },
-        { role: 'user', content: prompt.user },
-      ]
-      if (attempt > 0) {
-        messages.push({
-          role: 'user',
-          content: 'Output JSON sebelumnya tidak valid. Return ulang HANYA JSON valid sesuai schema.',
-        })
-      }
-      const res = await fetch(GC_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${key}`,
-        },
-        body: JSON.stringify({
-          model: GC_MODEL,
-          messages,
-          temperature: 0.3,
-          max_tokens: 1500,
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) return { ok: false, error: data.error?.message || `HTTP ${res.status}` }
-
-      const raw = data.choices?.[0]?.message?.content || ''
-      const parsed = parseJSONLoose(raw)
-      const validation = validateAssessResponse(parsed, rubrik)
-      if (validation.valid) {
-        return {
-          ok: true,
-          scores: validation.scores,
-          kesimpulan: validation.kesimpulan,
-          tokens: data.usage?.total_tokens,
-        }
-      }
-      if (attempt === 1) {
-        return { ok: false, error: 'Validation failed: ' + validation.error }
-      }
-    } catch (e) {
-      if (attempt === 1) return { ok: false, error: e.message }
+    const messages = [
+      { role: 'system', content: prompt.system },
+      { role: 'user', content: prompt.user },
+    ];
+    if (attempt > 0) {
+      messages.push({ role: 'user', content: 'Output JSON sebelumnya tidak valid. Return ulang HANYA JSON valid sesuai schema.' });
     }
-  }
-  return { ok: false, error: 'unreachable' }
-}
 
-async function callOpenRouterJSON({ key, model, prompt, rubrik }) {
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const messages = [
-        { role: 'system', content: prompt.system },
-        { role: 'user', content: prompt.user },
-      ]
-      if (attempt > 0) {
-        messages.push({
-          role: 'user',
-          content: 'Output JSON sebelumnya tidak valid. Return ulang HANYA JSON valid sesuai schema.',
-        })
-      }
-      const res = await fetch(OPENROUTER_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${key}`,
-          // OpenRouter: HTTP-Referer & X-Title optional but good for leaderboard/attribution
-          'HTTP-Referer': 'https://zoya-id-beta.vercel.app',
-          'X-Title': 'zoya.id',
-        },
-        body: JSON.stringify({
-          model,
-          messages,
-          temperature: 0.3,
-          max_tokens: 1500,
-          // response_format hanya didukung sebagian model di OpenRouter — set via "type":"json_object"
-          response_format: { type: 'json_object' },
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) return { ok: false, error: data.error?.message || `HTTP ${res.status}` }
-
-      const raw = data.choices?.[0]?.message?.content || ''
-      const parsed = parseJSONLoose(raw)
-      const validation = validateAssessResponse(parsed, rubrik)
-      if (validation.valid) {
-        return {
-          ok: true,
-          scores: validation.scores,
-          kesimpulan: validation.kesimpulan,
-          tokens: data.usage?.total_tokens,
-        }
-      }
-      if (attempt === 1) {
-        return { ok: false, error: 'Validation failed: ' + validation.error }
-      }
-    } catch (e) {
-      if (attempt === 1) return { ok: false, error: e.message }
+    const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${provider.key}` };
+    if (provider.isOpenRouter) {
+      headers['HTTP-Referer'] = 'https://zoya.id';
+      headers['X-Title'] = 'zoya.id';
     }
-  }
-  return { ok: false, error: 'unreachable' }
-}
 
-async function callGroqJSON({ key, prompt, rubrik }) {
-  // 2 attempts max — kalau JSON invalid, retry sekali dengan instruksi tambahan
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const messages = [
-        { role: 'system', content: prompt.system },
-        { role: 'user', content: prompt.user },
-      ]
-      if (attempt > 0) {
-        messages.push({
-          role: 'user',
-          content: 'Output JSON sebelumnya tidak valid. Return ulang HANYA JSON valid sesuai schema.',
-        })
-      }
+    const body = { model: provider.model, messages, temperature: 0.3, max_tokens: 1500 };
+    if (provider.isOpenRouter) body.response_format = { type: 'json_object' };
 
-      const res = await fetch(GROQ_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${key}`,
-        },
-        body: JSON.stringify({
-          model: GROQ_MODEL,
-          messages,
-          temperature: 0.3,
-          max_tokens: 1500,
-          response_format: { type: 'json_object' },
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) return { ok: false, error: data.error?.message || `HTTP ${res.status}` }
+    const result = await callAIWithTimeout(provider.url, { method: 'POST', headers, body: JSON.stringify(body) });
+    if (!result.ok) continue;
 
-      const raw = data.choices?.[0]?.message?.content || ''
-      const parsed = parseJSONLoose(raw)
-      const validation = validateAssessResponse(parsed, rubrik)
-      if (validation.valid) {
-        return {
-          ok: true,
-          scores: validation.scores,
-          kesimpulan: validation.kesimpulan,
-          tokens: data.usage?.total_tokens,
-        }
-      }
-      if (attempt === 1) {
-        return { ok: false, error: 'Validation failed: ' + validation.error }
-      }
-    } catch (e) {
-      if (attempt === 1) return { ok: false, error: e.message }
-    }
-  }
-  return { ok: false, error: 'unreachable' }
-}
-
-async function callKimiJSON({ key, prompt, rubrik }) {
-  // Kimi: tidak semua model support response_format. Kita coba tanpa, validate manual.
-  try {
-    const res = await fetch(KIMI_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${key}`,
-      },
-      body: JSON.stringify({
-        model: KIMI_MODEL,
-        messages: [
-          { role: 'system', content: prompt.system },
-          { role: 'user', content: prompt.user },
-        ],
-        temperature: 0.3,
-        max_tokens: 1500,
-      }),
-    })
-    const data = await res.json()
-    if (!res.ok) return { ok: false, error: data.error?.message || `HTTP ${res.status}` }
-
-    const raw = data.choices?.[0]?.message?.content || ''
-    const parsed = parseJSONLoose(raw)
-    const validation = validateAssessResponse(parsed, rubrik)
+    const raw = result.data.choices?.[0]?.message?.content || '';
+    const parsed = parseJSONLoose(raw);
+    const validation = validateAssessResponse(parsed, rubrik);
     if (validation.valid) {
-      return {
-        ok: true,
-        scores: validation.scores,
-        kesimpulan: validation.kesimpulan,
-        tokens: data.usage?.total_tokens,
-      }
+      return { ok: true, scores: validation.scores, kesimpulan: validation.kesimpulan, tokens: result.data.usage?.total_tokens };
     }
-    return { ok: false, error: 'Validation failed: ' + validation.error }
-  } catch (e) {
-    return { ok: false, error: e.message }
+    if (attempt === 1) return { ok: false, error: 'Validation failed' };
   }
+  return { ok: false };
 }
 
 // =====================================================================
-// MODE LAMA: passthrough messages array (backward compat)
+// MODE LAMA: passthrough messages array
 // =====================================================================
-async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body }, userId, toolId, billingCheck) {
-  const { messages, max_tokens } = body
-  // Charge wallet if price > 0
+async function handleLegacyMessages(req, res, { gcKey, groqKey, kimiKey, body }, user, toolId, billingCheck) {
+  const supabaseAdmin = getSupabaseAdmin();
+  const { messages, max_tokens } = body;
+
   if (billingCheck.price > 0) {
-    const chargeResult = await chargeForTool(supabaseAdmin, userId, toolId, billingCheck.price, 1)
+    const chargeResult = await chargeForTool(supabaseAdmin, user.id, toolId, billingCheck.price, 1);
     if (!chargeResult.success) {
-      return res.status(402).json({
-        error: chargeResult.error || 'Payment failed',
-        reason: chargeResult.reason,
-        price: billingCheck.price,
-        balance: chargeResult.balance
-      })
+      return res.status(402).json({ error: chargeResult.error || 'Pembayaran gagal', reason: chargeResult.reason });
     }
   }
 
-  if (gcKey) {
-    try {
-      const r = await fetch(GC_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${gcKey}` },
-        body: JSON.stringify({ model: GC_MODEL, messages, max_tokens: max_tokens || 1000, temperature: 0.3 }),
-      })
-      const data = await r.json()
-      if (r.ok) {
-        // Log usage
-        await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, 1, 'success')
-        return res.status(200).json({
-          content: [{ type: 'text', text: data.choices?.[0]?.message?.content || '' }],
-          provider: 'generalcompute',
-        })
-      }
-    } catch (e) { 
-      if (process.env.NODE_ENV !== 'production') console.log('[legacy] generalcompute error:', e.message) 
+  const providers = [];
+  if (gcKey) providers.push({ url: GC_URL, model: GC_MODEL, key: gcKey });
+  if (groqKey) providers.push({ url: GROQ_URL, model: GROQ_MODEL, key: groqKey });
+  if (kimiKey) providers.push({ url: KIMI_URL, model: KIMI_MODEL, key: kimiKey });
+
+  for (const p of providers) {
+    const result = await callAIWithTimeout(p.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${p.key}` },
+      body: JSON.stringify({ model: p.model, messages, max_tokens: max_tokens || 1000, temperature: 0.3 }),
+    });
+    if (result.ok) {
+      await createOrder(supabaseAdmin, { userId: user.id, service: 'assessment', tier: 'assessment', amount: billingCheck.price, status: 'completed' });
+      return res.status(200).json({
+        content: [{ type: 'text', text: result.data.choices?.[0]?.message?.content || '' }],
+        provider: p.model,
+      });
     }
   }
-  if (groqKey) {
-    try {
-      const r = await fetch(GROQ_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
-        body: JSON.stringify({ model: GROQ_MODEL, messages, max_tokens: max_tokens || 1000, temperature: 0.3 }),
-      })
-      const data = await r.json()
-      if (r.ok) {
-        // Log usage
-        await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, 1, 'success')
-        return res.status(200).json({
-          content: [{ type: 'text', text: data.choices?.[0]?.message?.content || '' }],
-          provider: 'groq',
-        })
-      }
-    } catch (e) { 
-      if (process.env.NODE_ENV !== 'production') console.log('[legacy] groq error:', e.message) 
-    }
-  }
-  if (kimiKey) {
-    try {
-      const r = await fetch(KIMI_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${kimiKey}` },
-        body: JSON.stringify({ model: KIMI_MODEL, messages, max_tokens: max_tokens || 1000, temperature: 0.3 }),
-      })
-      const data = await r.json()
-      if (r.ok) {
-        // Log usage
-        await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, 1, 'success')
-        return res.status(200).json({
-          content: [{ type: 'text', text: data.choices?.[0]?.message?.content || '' }],
-          provider: 'kimi',
-        })
-      }
-    } catch (e) { 
-      if (process.env.NODE_ENV !== 'production') console.log('[legacy] kimi error:', e.message) 
-    }
-  }
-  // Log failed usage
-  await createOrder(supabaseAdmin, userId, toolId, billingCheck.price, 1, 'failed')
-  return res.status(502).json({ error: 'AI providers failed' })
+
+  await createOrder(supabaseAdmin, { userId: user.id, service: 'assessment', tier: 'assessment', amount: billingCheck.price, status: 'failed' });
+  return res.status(503).json({ error: 'Semua provider AI sedang sibuk. Coba lagi 30 detik.' });
 }

@@ -1,4 +1,5 @@
-import { UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN } from './config.js';
+const UPSTASH_REDIS_REST_URL = process.env.UPSTASH_REDIS_REST_URL || '';
+const UPSTASH_REDIS_REST_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || '';
 
 const inMemoryStore = new Map();
 const FALLBACK_WINDOW_SEC = 60;
