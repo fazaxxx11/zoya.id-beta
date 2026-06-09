@@ -18,7 +18,7 @@ const MODULES = [
     icon: BarChart3,
     href: '/statistik',
     cta: 'Mulai Olah Data',
-    tags: ['Deskriptif', 'Normalitas', 'Korelasi', 'T-Test', 'ANOVA', 'Regresi'],
+    tags: ['Deskriptif', 'Normalitas', 'Korelasi', 'ANOVA'],
     note: 'Interpretasi otomatis untuk setiap hasil',
   },
   {
@@ -27,7 +27,7 @@ const MODULES = [
     icon: ClipboardList,
     href: '/kuesioner',
     cta: 'Buat Instrumen',
-    tags: ['Kuesioner', 'Sampling', 'Butir Soal', 'Referensi', 'Kualitatif'],
+    tags: ['Kuesioner', 'Sampling', 'Butir Soal'],
     note: 'Dibantu AI untuk generate item',
   },
   {
@@ -36,7 +36,7 @@ const MODULES = [
     icon: FileText,
     href: '/statistik?tool=deskriptif',
     cta: 'Interpretasi Hasil',
-    tags: ['Interpretasi', 'Export Excel', 'Export PDF', 'Riwayat', 'Bandingkan'],
+    tags: ['Interpretasi', 'Export Excel', 'Export PDF'],
     note: 'Asisten penelitian untuk penulisan',
   },
   {
@@ -139,7 +139,7 @@ function Home() {
       {/* ── Trust bar ── */}
       <section className="border-y border-border bg-card/50">
         <div className="max-w-5xl mx-auto px-5 py-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted">
-          {['Kalkulasi di browser', 'Diverifikasi R/SPSS', 'Format APA 7', 'Bootstrap 5000 resamples'].map(t => (
+          {['Dibuat untuk penelitian kuantitatif', 'Metode statistik transparan', 'Export laporan akademik', 'Diverifikasi R/SPSS'].map(t => (
             <span key={t} className="flex items-center gap-1.5">
               <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
               {t}

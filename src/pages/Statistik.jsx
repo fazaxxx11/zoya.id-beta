@@ -653,7 +653,7 @@ function Statistik() {
   // Render
   // ============================================================
   return (
-    <div className="min-h-screen bg-pattern pb-bottomnav">
+    <div className="min-h-screen bg-bg text-fg pb-bottomnav">
       <PageHeader
         title={currentTool?.name || 'Analisis Statistik'}
         subtitle="Modul Statistik"
@@ -673,19 +673,19 @@ function Statistik() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           {/* Sidebar tools */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-sm p-4 sticky top-24">
-              <h3 className="font-semibold text-gray-800 mb-4">Pilih Analisis</h3>
+            <div className="border border-border bg-card rounded-xl p-4 sticky top-24">
+              <h3 className="font-semibold text-fg mb-4">Pilih Analisis</h3>
               <div className="space-y-1.5">
                 {tools.map(tool => (
                   <a key={tool.id} href={'/statistik?tool=' + tool.id}
                     className={'block p-3 rounded-xl transition-all ' + (activeTool === tool.id
-                      ? 'bg-sky-100 text-sky-700 border border-sky-200'
-                      : 'hover:bg-gray-50 text-gray-600')}>
+                      ? 'bg-accent/10 text-accent border border-accent/20'
+                      : 'hover:bg-card/50 text-muted')}>
                     <div className="font-medium text-sm">{tool.name}</div>
-                    <div className="text-xs text-gray-400">{tool.desc}</div>
+                    <div className="text-xs text-muted">{tool.desc}</div>
                     <div className="text-xs mt-0.5 flex items-center gap-1">
                       <PriceDisplay price={calculateStatisticsPrice(tool.id).price} size="sm" inline showBadge />
-                      <span className="text-gray-400">· {tool.tier}</span>
+                      <span className="text-muted">· {tool.tier}</span>
                     </div>
                   </a>
                 ))}
@@ -695,62 +695,62 @@ function Statistik() {
 
           {/* Main panel */}
           <div className="lg:col-span-3 space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">{currentTool?.name}</h1>
-              <p className="text-gray-600">{currentTool?.desc}</p>
+            <div className="border border-border bg-card rounded-xl p-6">
+              <h1 className="text-2xl font-bold text-fg mb-2">{currentTool?.name}</h1>
+              <p className="text-muted">{currentTool?.desc}</p>
               <div className="mt-2 inline-flex items-center gap-2">
-                <span className="text-sm text-gray-600">Harga:</span>
+                <span className="text-sm text-muted">Harga:</span>
                 <PriceDisplay price={pricing.original || pricing.price} size="md" inline showBadge />
               </div>
             </div>
 
             {/* Upload */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="border border-border bg-card rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-800">
+                <h2 className="text-lg font-semibold text-fg">
                   <Upload className="w-5 h-5 inline mr-2" />Upload Data
                 </h2>
                 <button onClick={() => setShowGuide(true)}
-                  className="text-sm text-sky-600 hover:text-sky-700 font-medium flex items-center gap-1">
+                  className="text-sm text-accent hover:text-accent font-medium flex items-center gap-1">
                   <AlertCircle className="w-4 h-4" /> Panduan Format Data
                 </button>
               </div>
-              <label className="border-2 border-dashed border-gray-200 rounded-xl p-10 flex flex-col items-center cursor-pointer hover:border-sky-300 bg-gray-50">
+              <label className="border-2 border-dashed border-border rounded-xl p-10 flex flex-col items-center cursor-pointer hover:border-accent/30 bg-card/50">
                 <FileSpreadsheet className="w-12 h-12 text-gray-300 mb-4" />
-                <p className="text-gray-600 font-medium">Klik untuk upload file</p>
-                <p className="text-gray-400 text-sm">Format: .xlsx, .xls, .csv</p>
+                <p className="text-muted font-medium">Klik untuk upload file</p>
+                <p className="text-muted text-sm">Format: .xlsx, .xls, .csv</p>
                 <input type="file" accept=".xlsx,.xls,.csv" onChange={handleFileUpload} className="hidden" />
               </label>
               {!file && (
-                <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-500">
+                <div className="mt-3 flex items-center justify-center gap-2 text-xs text-muted">
                   <span>Belum punya data?</span>
                   <button onClick={() => setExamplePickerOpen(true)}
-                          className="text-sky-600 hover:text-sky-700 font-medium inline-flex items-center gap-1">
+                          className="text-accent hover:text-accent font-medium inline-flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5" />
                     Pakai Contoh Data
                   </button>
                 </div>
               )}
               {file && (
-                <div className="mt-4 border-2 border-green-200 bg-green-50 rounded-xl p-4">
+                <div className="mt-4 border-2 border-emerald-200/50 bg-emerald-50/50 rounded-xl p-4">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                    <CheckCircle className="w-6 h-6 text-emerald-600 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{file.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted">
                         {sampleSize === rawSampleSize
                           ? `${sampleSize} baris · ${columns.length} variabel · ${numericColumns.length} numerik`
                           : `${sampleSize} dari ${rawSampleSize} baris (filter aktif) · ${columns.length} variabel · ${numericColumns.length} numerik`}
                       </p>
                     </div>
                     <button onClick={() => setCleanerOpen(true)}
-                      className="text-xs font-medium px-3 py-2 rounded-lg bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 whitespace-nowrap">
+                      className="text-xs font-medium px-3 py-2 rounded-lg bg-white hover:bg-card/50 border border-border text-gray-700 whitespace-nowrap">
                       Bersihkan Data
                     </button>
                   </div>
                   {cleaningReport && cleaningReport.actions.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-green-200 text-xs text-gray-700">
-                      <span className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">Cleaning aktif:</span>{' '}
+                    <div className="mt-3 pt-3 border-t border-emerald-200/50 text-xs text-gray-700">
+                      <span className="text-[10px] uppercase tracking-wider text-muted font-medium">Cleaning aktif:</span>{' '}
                       <span>{cleaningReport.dropped} drop, {cleaningReport.filled} filled, {cleaningReport.clipped} clipped, {cleaningReport.duplicatesRemoved} dup removed</span>
                     </div>
                   )}
@@ -872,30 +872,30 @@ function FilterPanel({
   const [open, setOpen] = useState(isFiltered)
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div className="border border-border bg-card rounded-xl overflow-hidden">
       <button onClick={() => setOpen(!open)}
-              className="w-full px-5 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors">
+              className="w-full px-5 py-3 flex items-center justify-between hover:bg-card/50 transition-colors">
         <div className="flex items-center gap-2 text-sm">
           <span>🔎</span>
           <span className="font-medium text-gray-700">Filter Data</span>
-          <span className="text-xs text-gray-400">(opsional — analisis tetap jalan tanpa ini)</span>
+          <span className="text-xs text-muted">(opsional — analisis tetap jalan tanpa ini)</span>
           {isFiltered && (
-            <span className="ml-2 px-2 py-0.5 bg-sky-100 text-sky-700 rounded-full text-xs font-semibold">
+            <span className="ml-2 px-2 py-0.5 bg-accent/10 text-accent rounded-full text-xs font-semibold">
               Aktif: {filteredSize}/{rawSampleSize}
             </span>
           )}
         </div>
-        <span className="text-gray-400 text-sm">{open ? '−' : '+'}</span>
+        <span className="text-muted text-sm">{open ? '−' : '+'}</span>
       </button>
 
       {open && (
         <div className="px-5 pb-5 pt-1 border-t border-gray-100">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-muted mb-3">
             Saring baris berdasarkan kategori. Misal: pilih hanya kelas A, atau gender = Perempuan.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Kolom kategori</label>
+              <label className="block text-xs font-medium text-muted mb-1">Kolom kategori</label>
               <select value={filterColumn} onChange={e => setFilterColumn(e.target.value)}
                       className="input-field text-sm">
                 <option value="">— Tidak filter —</option>
@@ -905,20 +905,20 @@ function FilterPanel({
             {filterColumn && (
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-medium text-gray-600">Pilih nilai (centang)</label>
+                  <label className="block text-xs font-medium text-muted">Pilih nilai (centang)</label>
                   {uniqueValues.length > 0 && (
                     <button
                       type="button"
                       onClick={() => setFilterValues(
                         filterValues.length === uniqueValues.length ? [] : [...uniqueValues]
                       )}
-                      className="text-xs text-sky-600 hover:text-sky-700 font-medium"
+                      className="text-xs text-accent hover:text-accent font-medium"
                     >
                       {filterValues.length === uniqueValues.length ? 'Hapus Semua' : 'Pilih Semua'}
                     </button>
                   )}
                 </div>
-                <div className="border border-gray-200 rounded-xl p-2 max-h-32 overflow-y-auto bg-gray-50">
+                <div className="border border-border rounded-xl p-2 max-h-32 overflow-y-auto bg-card/50">
                   {uniqueValues.map(v => (
                     <label key={v} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-white px-2 py-1 rounded">
                       <input type="checkbox" checked={filterValues.includes(v)}
@@ -930,14 +930,14 @@ function FilterPanel({
                     </label>
                   ))}
                 </div>
-                <p className="text-[11px] text-gray-500 mt-1">
+                <p className="text-[11px] text-muted mt-1">
                   {filterValues.length} dari {uniqueValues.length} nilai dipilih
                 </p>
               </div>
             )}
           </div>
           {isFiltered && (
-            <div className="mt-3 flex items-center justify-between p-2 bg-sky-50 rounded text-xs text-sky-900">
+            <div className="mt-3 flex items-center justify-between p-2 bg-accent/5 rounded text-xs text-sky-900">
               <span>📊 Analisis akan pakai <strong>{filteredSize}</strong> dari {rawSampleSize} baris</span>
               <button onClick={() => { setFilterColumn(''); setFilterValues([]) }}
                       className="text-red-600 hover:text-red-700 font-medium">
@@ -959,8 +959,8 @@ function DataGuideModal({ open, onClose }) {
     <Modal open={open} onClose={onClose}
       panelClassName="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
       <div className="flex-shrink-0 flex items-center justify-between p-6 pb-4 border-b border-gray-100">
-        <h2 className="text-xl font-bold text-gray-800">📖 Panduan Format Data</h2>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+        <h2 className="text-xl font-bold text-fg">📖 Panduan Format Data</h2>
+        <button onClick={onClose} className="text-muted hover:text-muted text-2xl leading-none">×</button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-5 text-sm text-gray-700">
@@ -980,7 +980,7 @@ function DataGuideModal({ open, onClose }) {
               <li><strong>Tiap kolom = 1 variabel</strong> (jangan campur 2 variabel di 1 kolom)</li>
               <li>Hindari <strong>merged cells</strong>, baris kosong di tengah, atau judul tabel sebelum header</li>
             </ul>
-            <div className="mt-2 bg-gray-50 border border-gray-200 rounded-lg p-3 font-mono text-xs">
+            <div className="mt-2 bg-card/50 border border-border rounded-lg p-3 font-mono text-xs">
               <div className="font-bold mb-1">✅ Format yang BENAR:</div>
               <pre>{`nama,umur,skor_pre,skor_post,kelas
 Andi,18,72,80,A
@@ -1001,8 +1001,8 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
 
           <section>
             <h3 className="font-semibold text-base text-gray-900 mb-2">3. Tipe Data per Kolom</h3>
-            <table className="w-full text-xs border border-gray-200 rounded">
-              <thead className="bg-gray-50">
+            <table className="w-full text-xs border border-border rounded">
+              <thead className="bg-card/50">
                 <tr><th className="p-2 text-left">Tipe</th><th className="p-2 text-left">Contoh</th><th className="p-2 text-left">Tool yang cocok</th></tr>
               </thead>
               <tbody className="divide-y">
@@ -1029,19 +1029,19 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
           <section>
             <h3 className="font-semibold text-base text-gray-900 mb-2">5. Contoh Skema per Tool</h3>
             <div className="space-y-2 text-xs">
-              <div className="bg-sky-50 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
                 <strong>Korelasi & Regresi Sederhana</strong> — minimal 2 kolom numerik (X dan Y).
               </div>
-              <div className="bg-sky-50 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
                 <strong>Independent t-test / ANOVA</strong> — 1 kolom numerik (outcome) + 1 kolom kategorik (grouping). Independent t-test = 2 grup, ANOVA = ≥2 grup.
               </div>
-              <div className="bg-sky-50 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
                 <strong>Paired t-test</strong> — 2 kolom numerik (sebelum, sesudah) untuk responden yang sama.
               </div>
-              <div className="bg-sky-50 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
                 <strong>Validitas-Reliabilitas</strong> — minimal 2 kolom item Likert (1-5 atau 1-7). Skala harus sama antar item. Item negatif sudah harus di-reverse code dulu.
               </div>
-              <div className="bg-sky-50 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
                 <strong>Regresi Berganda</strong> — 1 kolom outcome (Y) + ≥2 kolom predictor (X₁, X₂, ...) numerik.
               </div>
             </div>
@@ -1097,7 +1097,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
               <button
                 type="button"
                 onClick={() => onChange(allSelected ? [] : [...options])}
-                className="text-sky-600 hover:text-sky-700 font-medium"
+                className="text-accent hover:text-accent font-medium"
               >
                 {allSelected ? 'Hapus Semua' : 'Pilih Semua'}
               </button>
@@ -1107,7 +1107,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
                   <button
                     type="button"
                     onClick={() => onChange([])}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-muted hover:text-gray-700"
                   >
                     Reset
                   </button>
@@ -1127,17 +1127,17 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
             </label>
           ))}
         </div>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted mt-1">
           {selected.length} dari {options.length} dipilih
-          {allSelected && <span className="text-sky-600 font-medium"> · semua</span>}
+          {allSelected && <span className="text-accent font-medium"> · semua</span>}
         </p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
-      <h3 className="font-semibold text-gray-800">Parameter Analisis</h3>
+    <div className="border border-border bg-card rounded-xl p-6 space-y-4">
+      <h3 className="font-semibold text-fg">Parameter Analisis</h3>
 
       {tool === 'deskriptif' && (
         <MultiSelect label="Kolom yang dianalisis (numerik)" values={params.columns}
@@ -1162,8 +1162,8 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
                 <button key={id} onClick={() => update('method', id)}
                         className={'flex-1 px-3 py-2 rounded-xl text-sm border transition-colors '
                                  + ((params.method || 'pearson') === id
-                                     ? 'bg-sky-100 border-sky-300 text-sky-700'
-                                     : 'border-gray-200 hover:bg-gray-50')}>
+                                     ? 'bg-accent/10 border-accent/30 text-accent'
+                                     : 'border-border hover:bg-card/50')}>
                   {lbl}
                 </button>
               ))}
@@ -1185,8 +1185,8 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
                 <button key={id} onClick={() => update('mode', id)}
                         className={'px-3 py-2 rounded-xl text-sm border transition-colors '
                                  + (params.mode === id
-                                     ? 'bg-sky-100 border-sky-300 text-sky-700'
-                                     : 'border-gray-200 hover:bg-gray-50')}>
+                                     ? 'bg-accent/10 border-accent/30 text-accent'
+                                     : 'border-border hover:bg-card/50')}>
                   {lbl}
                 </button>
               ))}
@@ -1266,7 +1266,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
             <Select label="Variabel 1 (kategorik)" value={params.var1} onChange={v => update('var1', v)} options={categoricalColumns.length ? categoricalColumns : columns} />
             <Select label="Variabel 2 (kategorik)" value={params.var2} onChange={v => update('var2', v)} options={categoricalColumns.length ? categoricalColumns : columns} />
           </div>
-          <p className="text-xs text-gray-500">Kedua variabel harus kategorik (mis. gender, kelas, status). Tabel kontingensi otomatis dibuat.</p>
+          <p className="text-xs text-muted">Kedua variabel harus kategorik (mis. gender, kelas, status). Tabel kontingensi otomatis dibuat.</p>
         </>
       )}
 
@@ -1282,7 +1282,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
               <Select label="Bandingkan: Grup 2" value={params.group2} onChange={v => update('group2', v)} options={groupingUniqueValues} />
             </div>
           )}
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted">
             Alternatif non-parametrik untuk Independent t-test bila data tidak normal.
             {groupingUniqueValues.length > 2 && ' Ada lebih dari 2 grup — pilih 2 grup yang ingin dibandingkan.'}
           </p>
@@ -1295,7 +1295,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
             <Select label="Sebelum" value={params.column1} onChange={v => update('column1', v)} options={numericColumns} />
             <Select label="Sesudah" value={params.column2} onChange={v => update('column2', v)} options={numericColumns} />
           </div>
-          <p className="text-xs text-gray-500">Alternatif non-parametrik untuk Paired t-test bila data tidak normal.</p>
+          <p className="text-xs text-muted">Alternatif non-parametrik untuk Paired t-test bila data tidak normal.</p>
         </>
       )}
 
@@ -1305,7 +1305,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
             <Select label="Outcome (numerik)" value={params.outcome} onChange={v => update('outcome', v)} options={numericColumns} />
             <Select label="Grouping (≥3 grup)" value={params.grouping} onChange={v => update('grouping', v)} options={categoricalColumns.length ? categoricalColumns : columns} />
           </div>
-          <p className="text-xs text-gray-500">Alternatif non-parametrik untuk One-way ANOVA bila data tidak normal.</p>
+          <p className="text-xs text-muted">Alternatif non-parametrik untuk One-way ANOVA bila data tidak normal.</p>
         </>
       )}
 
@@ -1317,7 +1317,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-medium text-gray-600 mb-1">Skor Maksimum</label>
+              <label className="block text-[11px] font-medium text-muted mb-1">Skor Maksimum</label>
               <input
                 type="number"
                 min="1"
@@ -1325,7 +1325,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
                 value={params.maxScore ?? 100}
                 onChange={e => update('maxScore', e.target.value)}
                 placeholder="100"
-                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-200"
+                className="w-full text-sm border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-200"
               />
             </div>
             <Select
@@ -1335,7 +1335,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
               options={['', ...columns.filter(c => !numericColumns.includes(c))]}
             />
           </div>
-          <div className="bg-sky-50 border border-sky-100 rounded-lg p-3 text-xs text-sky-900 leading-relaxed">
+          <div className="bg-accent/5 border border-sky-100 rounded-lg p-3 text-xs text-sky-900 leading-relaxed">
             <strong>Rumus N-Gain (Hake, 1998):</strong> g = (post − pre) / (max − pre)<br />
             <strong>Kategori:</strong> Tinggi (g ≥ 0.7), Sedang (0.3 ≤ g &lt; 0.7), Rendah (g &lt; 0.3).<br />
             Mengukur efektivitas pembelajaran/treatment dengan desain pre-test → post-test.
@@ -1361,18 +1361,18 @@ function ResultDisplay({ result, onReset }) {
 
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div className="border border-border bg-card rounded-xl overflow-hidden">
       <div className="p-5 border-b border-gray-100 flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h3 className="font-bold text-gray-800 text-lg">Hasil: {result.toolName}</h3>
-          <p className="text-sm text-gray-500">{result.sampleSize} sampel · {result.analyzedAt}</p>
+          <h3 className="font-bold text-fg text-lg">Hasil: {result.toolName}</h3>
+          <p className="text-sm text-muted">{result.sampleSize} sampel · {result.analyzedAt}</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button onClick={() => setSaveModalOpen(true)}
             className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border transition-colors ${
               savedId
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                : 'bg-white border-border text-gray-700 hover:bg-card/50'
             }`}>
             <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3.5L3 18V4z" /></svg>
             {savedId ? 'Tersimpan' : 'Simpan'}
@@ -1467,26 +1467,26 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
       panelClassName="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
       <div>
         <div className="mb-4">
-          <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-1">Simpan Analisis</div>
+          <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Simpan Analisis</div>
           <h3 className="text-lg font-bold text-gray-900">Simpan ke Riwayat</h3>
-          <p className="text-sm text-gray-500 mt-1">Akses lagi kapan saja dari halaman Riwayat.</p>
+          <p className="text-sm text-muted mt-1">Akses lagi kapan saja dari halaman Riwayat.</p>
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1.5">Judul</label>
+            <label className="block text-xs font-medium text-muted mb-1.5">Judul</label>
             <input value={title} onChange={e => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-gray-400"
               placeholder="Misal: Pre-test Eksperimen Kelompok A" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1.5">Catatan (opsional)</label>
+            <label className="block text-xs font-medium text-muted mb-1.5">Catatan (opsional)</label>
             <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400 resize-none"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-gray-400 resize-none"
               placeholder="Misal: data dari kuesioner X, n=50 setelah cleaning" />
           </div>
           {aiInterpretation && (
-            <div className="text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+            <div className="text-xs text-muted bg-card/50 border border-border rounded-lg px-3 py-2">
               Interpretasi AI yang sudah Anda generate akan ikut tersimpan.
             </div>
           )}
@@ -1494,7 +1494,7 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
 
         <div className="flex items-center justify-end gap-2 mt-5 pt-5 border-t border-gray-100">
           <button onClick={onClose} disabled={saving}
-            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg disabled:opacity-50">
+            className="px-4 py-2 text-sm font-medium text-muted hover:text-gray-900 rounded-lg disabled:opacity-50">
             Batal
           </button>
           <button onClick={handleSave} disabled={saving || !title.trim()}
@@ -1546,8 +1546,8 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
     <div className="mt-6 border-t border-gray-100 pt-5">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-0.5">Interpretasi AI</div>
-          <div className="text-sm text-gray-600">Paragraf akademik siap-paste untuk skripsi (Bahasa Indonesia, format APA).</div>
+          <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-0.5">Interpretasi AI</div>
+          <div className="text-sm text-muted">Paragraf akademik siap-paste untuk skripsi (Bahasa Indonesia, format APA).</div>
         </div>
         {!text && !loading && (
           <button onClick={handleGenerate}
@@ -1558,11 +1558,11 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
         {text && (
           <div className="flex items-center gap-2">
             <button onClick={handleCopy}
-                    className="text-xs text-gray-600 hover:text-gray-900 border border-gray-200 hover:bg-gray-50 px-3 py-2 rounded-lg">
+                    className="text-xs text-muted hover:text-gray-900 border border-border hover:bg-card/50 px-3 py-2 rounded-lg">
               Salin
             </button>
             <button onClick={handleGenerate} disabled={loading}
-                    className="text-xs text-gray-600 hover:text-gray-900 border border-gray-200 hover:bg-gray-50 px-3 py-2 rounded-lg disabled:opacity-50">
+                    className="text-xs text-muted hover:text-gray-900 border border-border hover:bg-card/50 px-3 py-2 rounded-lg disabled:opacity-50">
               {loading ? 'Memproses…' : 'Regenerate'}
             </button>
           </div>
@@ -1570,7 +1570,7 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
       </div>
 
       {loading && (
-        <div className="bg-gray-50 border border-gray-200/80 rounded-lg p-4 text-sm text-gray-500 flex items-center gap-2">
+        <div className="bg-card/50 border border-border/80 rounded-lg p-4 text-sm text-muted flex items-center gap-2">
           <span className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" />
           Menulis interpretasi… (biasanya 5-15 detik)
         </div>
@@ -1583,17 +1583,17 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
       )}
 
       {text && !loading && (
-        <div className="bg-gray-50 border border-gray-200/80 rounded-lg p-4">
+        <div className="bg-card/50 border border-border/80 rounded-lg p-4">
           {isFallback && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3 text-[11px] text-amber-800 leading-relaxed">
               <span className="font-medium">Mode offline:</span> AI provider sedang sibuk, jadi interpretasi disusun dari template lokal berdasarkan angka hasil analisis. Hasil tetap akurat tapi gaya bahasanya lebih baku — coba <em>Regenerate</em> beberapa saat lagi untuk versi AI.
             </div>
           )}
-          <div className="prose prose-sm max-w-none text-gray-800 whitespace-pre-wrap leading-relaxed text-[13.5px]">
+          <div className="prose prose-sm max-w-none text-fg whitespace-pre-wrap leading-relaxed text-[13.5px]">
             {text}
           </div>
           {provider && (
-            <div className="text-[10px] uppercase tracking-[0.18em] text-gray-400 mt-3 pt-3 border-t border-gray-200/70">
+            <div className="text-[10px] uppercase tracking-[0.18em] text-muted mt-3 pt-3 border-t border-border/70">
               {isFallback ? `Template lokal (${provider})` : `Disusun oleh AI (${provider})`} · Periksa kembali sebelum digunakan
             </div>
           )}
@@ -1699,18 +1699,18 @@ function ExplainChatPanel({ result, aiInterpretation }) {
             <div className="w-9 h-9 rounded-full bg-purple-500 text-white flex items-center justify-center flex-shrink-0">💬</div>
             <div className="min-w-0">
               <div className="font-semibold text-gray-900 truncate">Tanya AI tentang Hasil</div>
-              <div className="text-xs text-gray-500">{result.toolName} · sisa {remaining}/{MAX_TURNS} pertanyaan</div>
+              <div className="text-xs text-muted">{result.toolName} · sisa {remaining}/{MAX_TURNS} pertanyaan</div>
             </div>
           </div>
-          <button onClick={() => setOpen(false)} className="p-1.5 rounded hover:bg-gray-100 text-gray-500">
+          <button onClick={() => setOpen(false)} className="p-1.5 rounded hover:bg-gray-100 text-muted">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-gray-50/50">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-card/50/50">
           {messages.map((m, i) => <ChatBubble key={i} role={m.role} content={m.content} />)}
           {loading && (
-            <div className="flex items-center gap-2 text-sm text-gray-500 pl-2">
+            <div className="flex items-center gap-2 text-sm text-muted pl-2">
               <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
               <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
               <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
@@ -1736,7 +1736,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
                 value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
                 placeholder={loading ? 'Tunggu AI…' : 'Tanya apa aja tentang hasilmu…'}
                 disabled={loading} rows={1}
-                className="flex-1 resize-none border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 disabled:bg-gray-50 disabled:text-gray-400"
+                className="flex-1 resize-none border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 disabled:bg-card/50 disabled:text-muted"
                 style={{ maxHeight: '120px' }}
               />
               <button onClick={handleSend} disabled={!input.trim() || loading}
@@ -1745,7 +1745,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
               </button>
             </div>
           )}
-          <div className="text-[10px] text-gray-400 text-center mt-2">Enter untuk kirim · Shift+Enter untuk baris baru</div>
+          <div className="text-[10px] text-muted text-center mt-2">Enter untuk kirim · Shift+Enter untuk baris baru</div>
         </div>
       </Modal>
     </>
@@ -1765,7 +1765,7 @@ function ChatBubble({ role, content }) {
   return (
     <div className="flex justify-start gap-2">
       <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center flex-shrink-0 text-base">💬</div>
-      <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed text-gray-800">
+      <div className="bg-white border border-border rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed text-fg">
         {content}
       </div>
     </div>
