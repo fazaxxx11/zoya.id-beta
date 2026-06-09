@@ -6,6 +6,7 @@
 
 import { aiMiddleware, callAIWithTimeout, getSupabaseAdmin } from './_lib/middleware.js'
 import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
+import { ExplainSchema, validate } from './_lib/validate.js'
 
 const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
@@ -26,7 +27,12 @@ export default async function handler(req, res) {
 
   const supabaseAdmin = getSupabaseAdmin();
   const body = req.body || {};
-  const { resultContext = '', messages = [] } = body;
+  // ── Zod validation ──
+  const validation = validate(ExplainSchema, body);
+  if (!validation.valid) {
+    return res.status(400).json({ error: 'Payload tidak valid', details: validation.errors });
+  }
+  const { resultContext, messages } = validation.data;
 
   // ── Billing check (free tool, but still check access) ──
   const toolId = 'deskriptif';
@@ -35,24 +41,10 @@ export default async function handler(req, res) {
     return res.status(402).json({ error: 'Saldo tidak cukup', reason: billingCheck.reason });
   }
 
-  // ── Validate input ──
-  if (!resultContext) {
-    return res.status(400).json({ error: 'resultContext wajib diisi' });
-  }
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: 'messages tidak boleh kosong' });
-  }
-
   const userCount = messages.filter(m => m.role === 'user').length;
   if (userCount > MAX_USER_TURNS) {
     return res.status(429).json({ error: `Limit ${MAX_USER_TURNS} pertanyaan per hasil tercapai.`, limit: MAX_USER_TURNS });
   }
-
-  // ── Sanitize inputs ──
-  const sanitizedContext = String(resultContext).trim().substring(0, 10_000);
-  const cleanMsgs = messages
-    .filter(m => m && (m.role === 'user' || m.role === 'assistant'))
-    .map(m => ({ role: m.role, content: String(m.content || '').trim().substring(0, 2000) }));
 
   const gcKey  = process.env.GENERALCOMPUTE_API_KEY;
   const groqKey = process.env.GROQ_API_KEY;

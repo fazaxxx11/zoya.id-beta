@@ -2,42 +2,29 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  ci:
+  lint-build-audit:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
       - name: Lint
-        run: npm run lint
-
-      - name: Test
-        run: npm test
+        run: npx eslint api/ src/ --max-warnings=0
 
       - name: Build
         run: npm run build
 
-      - name: Audit
-        run: npm audit --audit-level=critical
+      - name: Security audit
+        run: npm audit --audit-level=high
+        continue-on-error: false

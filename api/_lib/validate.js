@@ -1,173 +1,114 @@
-class ValidationError extends Error {
-    constructor(errors) {
-        super('Validation failed');
-        this.errors = errors;
-    }
+// api/_lib/validate.js
+// Zod schemas + validation helper for all AI endpoints
+// Validates request body BEFORE auth/rate-limit to reject garbage early
+
+import { z } from 'zod';
+
+// ── Common schemas ────────────────────────────────────────────────
+const NonEmptyString = z.string().min(1).max(50_000);
+const LimitedString = (max = 2000) => z.string().max(max);
+
+// ── /api/assess ───────────────────────────────────────────────────
+// Mode baru: {rubrik, jawaban, studentName?, title?, context?}
+// Mode lama: {messages, max_tokens?}
+
+const RubrikItem = z.object({
+  id: NonEmptyString.optional(),
+  name: NonEmptyString,
+  weight: z.number().min(0).max(100),
+  description: LimitedString(1000).optional(),
+});
+
+const JawabanItem = z.object({
+  rubrikId: NonEmptyString.optional(),
+  text: LimitedString(10_000),
+});
+
+const AssessStructuredBody = z.object({
+  rubrik: z.array(RubrikItem).min(1).max(50),
+  jawaban: z.array(JawabanItem).min(1).max(200),
+  studentName: LimitedString(200).optional(),
+  title: LimitedString(500).optional(),
+  context: LimitedString(5000).optional(),
+});
+
+const ChatMessage = z.object({
+  role: z.enum(['user', 'assistant', 'system']),
+  content: LimitedString(10_000),
+});
+
+const AssessLegacyBody = z.object({
+  messages: z.array(ChatMessage).min(1).max(100),
+  max_tokens: z.number().int().min(100).max(4000).optional(),
+});
+
+export const AssessSchema = z.union([AssessStructuredBody, AssessLegacyBody]);
+
+// ── /api/interpret-stats ──────────────────────────────────────────
+const InterpretResult = z.object({
+  type: NonEmptyString,
+  toolName: LimitedString(200).optional(),
+  sampleSize: z.number().int().positive().optional(),
+  stats: z.array(z.object({}).passthrough()).max(100).optional(),
+  results: z.array(z.object({}).passthrough()).max(100).optional(),
+}).passthrough(); // Allow additional fields from analysis results
+
+export const InterpretSchema = z.object({
+  result: InterpretResult,
+});
+
+// ── /api/explain-chat ─────────────────────────────────────────────
+const ExplainMessage = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: LimitedString(2000),
+});
+
+export const ExplainSchema = z.object({
+  resultContext: NonEmptyString.max(10_000),
+  messages: z.array(ExplainMessage).min(1).max(20),
+});
+
+// ── /api/generate-kuesioner ───────────────────────────────────────
+export const KuesionerSchema = z.object({
+  mode: z.enum(['quick', 'blueprint']).default('quick'),
+  topic: LimitedString(500).optional(),
+  variable: LimitedString(500).optional(),
+  dimensions: LimitedString(1000).optional(),
+  scale: z.number().int().min(3).max(10).default(5),
+  itemsPerDimension: z.number().int().min(3).max(20).default(5),
+  includeDemografi: z.boolean().default(false),
+}).refine(data => data.topic || data.variable, {
+  message: 'topic atau variable wajib diisi',
+});
+
+// ── Validation helper ─────────────────────────────────────────────
+// Returns { valid, data, errors } — never throws
+export function validate(schema, body) {
+  const result = schema.safeParse(body);
+  if (result.success) {
+    return { valid: true, data: result.data, errors: null };
+  }
+  const errors = result.error.issues.map(i => ({
+    path: i.path.join('.'),
+    message: i.message,
+  }));
+  return { valid: false, data: null, errors };
 }
 
-class Validator {
-    constructor(type) {
-        this.type = type;
-        this.rules = [];
-        this.optional = false;
-    }
-
-    optional() {
-        this.optional = true;
-        return this;
-    }
-
-    min(value) {
-        this.rules.push((val) => {
-            if (this.type === 'string' && val.length < value) {
-                return `Minimum length is ${value}`;
-            }
-            if (this.type === 'number' && val < value) {
-                return `Minimum value is ${value}`;
-            }
-            if (this.type === 'array' && val.length < value) {
-                return `Minimum array length is ${value}`;
-            }
-            return null;
-        });
-        return this;
-    }
-
-    max(value) {
-        this.rules.push((val) => {
-            if (this.type === 'string' && val.length > value) {
-                return `Maximum length is ${value}`;
-            }
-            if (this.type === 'number' && val > value) {
-                return `Maximum value is ${value}`;
-            }
-            if (this.type === 'array' && val.length > value) {
-                return `Maximum array length is ${value}`;
-            }
-            return null;
-        });
-        return this;
-    }
-
-    enum(values) {
-        this.rules.push((val) => {
-            if (!values.includes(val)) {
-                return `Must be one of: ${values.join(', ')}`;
-            }
-            return null;
-        });
-        return this;
-    }
-
-    validate(value, path = '') {
-        // Handle optional values
-        if (this.optional && (value === undefined || value === null)) {
-            return { valid: true, value: undefined };
-        }
-
-        // Type checking
-        let typeError = null;
-        switch (this.type) {
-            case 'string':
-                if (typeof value !== 'string') {
-                    typeError = 'Must be a string';
-                }
-                break;
-            case 'number':
-                if (typeof value !== 'number' || isNaN(value)) {
-                    typeError = 'Must be a number';
-                }
-                break;
-            case 'boolean':
-                if (typeof value !== 'boolean') {
-                    typeError = 'Must be a boolean';
-                }
-                break;
-            case 'array':
-                if (!Array.isArray(value)) {
-                    typeError = 'Must be an array';
-                }
-                break;
-            case 'object':
-                if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-                    typeError = 'Must be an object';
-                }
-                break;
-        }
-
-        if (typeError) {
-            return { valid: false, error: path ? `${path}: ${typeError}` : typeError };
-        }
-
-        // Apply rules
-        for (const rule of this.rules) {
-            const error = rule(value);
-            if (error) {
-                return { valid: false, error: path ? `${path}: ${error}` : error };
-            }
-        }
-
-        return { valid: true, value };
-    }
-}
-
-export const z = {
-    string: () => new Validator('string'),
-    number: () => new Validator('number'),
-    boolean: () => new Validator('boolean'),
-    array: () => new Validator('array'),
-    object: (schema) => {
-        const validator = new Validator('object');
-        validator.schema = schema;
-        
-        const originalValidate = validator.validate.bind(validator);
-        validator.validate = function(value, path = '') {
-            const baseResult = originalValidate(value, path);
-            if (!baseResult.valid) {
-                return baseResult;
-            }
-
-            if (value === undefined || value === null) {
-                return { valid: true, value };
-            }
-
-            const result = {};
-            const errors = [];
-
-            for (const [key, fieldValidator] of Object.entries(schema)) {
-                const fieldPath = path ? `${path}.${key}` : key;
-                const fieldResult = fieldValidator.validate(value[key], fieldPath);
-                
-                if (!fieldResult.valid) {
-                    errors.push(fieldResult.error);
-                } else if (fieldResult.value !== undefined) {
-                    result[key] = fieldResult.value;
-                }
-            }
-
-            if (errors.length > 0) {
-                return { valid: false, errors };
-            }
-
-            return { valid: true, value: result };
-        };
-
-        return validator;
-    },
-};
-
-export function validate(data, schema) {
-    const result = schema.validate(data);
-    
+// ── Middleware: validate request body ──────────────────────────────
+// Attaches validated data to req._validatedBody
+export function validateBody(schema) {
+  return (req, res) => {
+    const body = req.body || {};
+    const result = validate(schema, body);
     if (!result.valid) {
-        return {
-            success: false,
-            errors: Array.isArray(result.errors) ? result.errors : [result.error]
-        };
+      res.status(400).json({
+        error: 'Payload tidak valid',
+        details: result.errors,
+      });
+      return false;
     }
-    
-    return {
-        success: true,
-        data: result.value
-    };
+    req._validatedBody = result.data;
+    return true;
+  };
 }

@@ -6,6 +6,7 @@
 
 import { aiMiddleware, callAIWithTimeout, getSupabaseAdmin } from './_lib/middleware.js'
 import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
+import { KuesionerSchema, validate } from './_lib/validate.js'
 
 const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
 const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
@@ -38,19 +39,13 @@ export default async function handler(req, res) {
   }
 
   const body = req.body || {};
-  const {
-    mode = 'quick',
-    topic = '',
-    variable = '',
-    dimensions = '',
-    scale = 5,
-    itemsPerDimension = 5,
-    includeDemografi = false,
-  } = body;
 
-  if (!topic && !variable) {
-    return res.status(400).json({ error: 'topic atau variable wajib diisi' });
+  // ── Zod validation ──
+  const validation = validate(KuesionerSchema, body);
+  if (!validation.valid) {
+    return res.status(400).json({ error: 'Payload tidak valid', details: validation.errors });
   }
+  const { mode, topic, variable, dimensions, scale, itemsPerDimension, includeDemografi } = validation.data;
 
   const gcKey  = process.env.GENERALCOMPUTE_API_KEY;
   const groqKey = process.env.GROQ_API_KEY;
