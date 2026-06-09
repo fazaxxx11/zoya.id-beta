@@ -83,6 +83,20 @@ const MODULES = [
   },
 ]
 
+const AUDIENCES = [
+  { icon: '🎓', label: 'Mahasiswa skripsi/tesis', desc: 'Analisis data, validasi instrumen, susun Bab IV' },
+  { icon: '👨‍🏫', label: 'Dosen pembimbing', desc: 'Verifikasi hasil, skoring tugas, feedback otomatis' },
+  { icon: '🔬', label: 'Peneliti kuantitatif', desc: 'Uji hipotesis, regresi, non-parametrik, EFA' },
+  { icon: '📝', label: 'Guru/dosen pembuat assessment', desc: 'Rubrik, penilaian esai, laporan hasil belajar' },
+]
+
+const METHOD_TRANSPARENCY = [
+  { title: 'Metode ditampilkan', desc: 'Setiap hasil analisis menampilkan metode statistik yang digunakan, termasuk formula dan asumsi.' },
+  { title: 'Parameter kunci', desc: 'Nilai uji, p-value, effect size, dan confidence interval — semua tercantum dalam tabel yang jelas.' },
+  { title: 'Interpretasi terverifikasi', desc: 'Interpretasi mengacu pada literatur akademik dan dapat diverifikasi dengan R/SPSS.' },
+  { title: 'Format APA 7', desc: 'Pelaporan mengikuti standar APA 7th edition untuk skripsi, tesis, dan jurnal.' },
+]
+
 // ============================================================
 // Trust signals
 // ============================================================
@@ -245,6 +259,107 @@ function Home() {
                 </div>
               )
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── COCOK UNTUK ─── */}
+      <section className="py-16 px-4 border-t border-border/30">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">Cocok untuk</h2>
+          <p className="text-muted text-center mb-10 max-w-xl mx-auto">Dirancang untuk siapa saja yang bekerja dengan data penelitian.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {AUDIENCES.map((a) => (
+              <div key={a.label} className="p-5 rounded-xl bg-white dark:bg-white/[0.03] border border-border/50 hover:border-accent/30 transition-all">
+                <div className="text-2xl mb-2">{a.icon}</div>
+                <h3 className="font-semibold text-sm mb-1">{a.label}</h3>
+                <p className="text-xs text-muted">{a.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TRANSPARANSI METODE ─── */}
+      <section className="py-16 px-4 border-t border-border/30">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">Transparansi Metode</h2>
+          <p className="text-muted text-center mb-10 max-w-xl mx-auto">Setiap hasil analisis dapat diverifikasi dan ditelusuri sumbernya.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {METHOD_TRANSPARENCY.map((m) => (
+              <div key={m.title} className="flex items-start gap-3 p-5 rounded-xl bg-white dark:bg-white/[0.03] border border-border/50">
+                <CheckCircle className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-sm mb-1">{m.title}</h3>
+                  <p className="text-xs text-muted">{m.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── PREVIEW OUTPUT ─── */}
+      <section className="py-16 px-4 border-t border-border/30">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">Contoh Hasil</h2>
+          <p className="text-muted text-center mb-10 max-w-xl mx-auto">Ini yang akan Anda dapatkan — tabel rapi, interpretasi jelas, format siap pakai.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Validitas */}
+            <div className="p-5 rounded-xl bg-white dark:bg-white/[0.03] border border-border/50">
+              <h3 className="font-semibold text-sm mb-2">Tabel Validitas</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead><tr className="border-b"><th className="py-1.5 text-left font-medium text-muted">Item</th><th className="py-1.5 text-left font-medium text-muted">r</th><th className="py-1.5 text-left font-medium text-muted">p</th><th className="py-1.5 text-left font-medium text-muted">Verdict</th></tr></thead>
+                  <tbody className="divide-y divide-border/30">
+                    <tr><td className="py-1.5">Q1</td><td className="py-1.5">0.812</td><td className="py-1.5">&lt;0.001</td><td className="py-1.5 text-emerald-600 font-medium">Valid ✓</td></tr>
+                    <tr><td className="py-1.5">Q2</td><td className="py-1.5">0.756</td><td className="py-1.5">&lt;0.001</td><td className="py-1.5 text-emerald-600 font-medium">Valid ✓</td></tr>
+                    <tr><td className="py-1.5">Q3</td><td className="py-1.5">0.234</td><td className="py-1.5">0.087</td><td className="py-1.5 text-red-600 font-medium">Tidak Valid</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {/* Cronbach Alpha */}
+            <div className="p-5 rounded-xl bg-white dark:bg-white/[0.03] border border-border/50">
+              <h3 className="font-semibold text-sm mb-2">Reliabilitas (Cronbach's α)</h3>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between"><span className="text-muted">Cronbach's α</span><span className="font-bold text-sky-600">0.847</span></div>
+                <div className="flex justify-between"><span className="text-muted">N item</span><span className="font-medium">15</span></div>
+                <div className="flex justify-between"><span className="text-muted">Status</span><span className="font-medium text-emerald-600">Reliabel ✓</span></div>
+              </div>
+              <p className="text-[10px] text-muted mt-2 italic">α ≥ 0.7 dianggap reliabel (Nunnally, 1978)</p>
+            </div>
+            {/* Regresi */}
+            <div className="p-5 rounded-xl bg-white dark:bg-white/[0.03] border border-border/50">
+              <h3 className="font-semibold text-sm mb-2">Regresi Linear</h3>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between"><span className="text-muted">R²</span><span className="font-bold text-sky-600">0.634</span></div>
+                <div className="flex justify-between"><span className="text-muted">F(2, 97)</span><span className="font-medium">83.21</span></div>
+                <div className="flex justify-between"><span className="text-muted">p-value</span><span className="font-medium text-emerald-600">&lt;0.001</span></div>
+                <div className="flex justify-between"><span className="text-muted">Persamaan</span><span className="font-mono text-[10px]">Y = 2.31 + 0.54X</span></div>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+            {/* Narasi BAB IV */}
+            <div className="p-5 rounded-xl bg-white dark:bg-white/[0.03] border border-border/50">
+              <h3 className="font-semibold text-sm mb-2">Narasi BAB IV <span className="text-xs font-normal text-sky-600">dibantu AI</span></h3>
+              <p className="text-xs text-muted leading-relaxed">Hasil analisis regresi menunjukkan bahwa variabel X secara simultan berpengaruh signifikan terhadap Y (F = 83.21, p &lt; 0.001). Kontribusi variabel X terhadap Y adalah 63.4% (R² = 0.634), sedangkan sisanya 36.6% dipengaruhi variabel lain.</p>
+            </div>
+            {/* Rubrik */}
+            <div className="p-5 rounded-xl bg-white dark:bg-white/[0.03] border border-border/50">
+              <h3 className="font-semibold text-sm mb-2">Rubrik Assessment <span className="text-xs font-normal text-sky-600">dibantu AI</span></h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead><tr className="border-b"><th className="py-1.5 text-left font-medium text-muted">Aspek</th><th className="py-1.5 text-left font-medium text-muted">Skor</th><th className="py-1.5 text-left font-medium text-muted">Feedback</th></tr></thead>
+                  <tbody className="divide-y divide-border/30">
+                    <tr><td className="py-1.5">Isi</td><td className="py-1.5 font-bold">85</td><td className="py-1.5 text-muted">Argumen kuat, data pendukung lengkap</td></tr>
+                    <tr><td className="py-1.5">Struktur</td><td className="py-1.5 font-bold">78</td><td className="py-1.5 text-muted">Tata bahasa baik, kurang transisi antar paragraf</td></tr>
+                    <tr><td className="py-1.5">Referensi</td><td className="py-1.5 font-bold">90</td><td className="py-1.5 text-muted">Sumber terkini dan relevan</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </section>
