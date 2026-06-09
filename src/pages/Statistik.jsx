@@ -21,6 +21,7 @@ import Modal from '../components/Modal'
 import AssumptionsPanel from '../components/AssumptionsPanel'
 import PageHeader from '../components/PageHeader'
 import { datasetToParsed } from '../lib/exampleDatasets'
+import StatistikFlow from '../components/statistik/StatistikFlow'
 import {
   DescriptiveResult, NormalityResult, CorrelationResult, TTestResult,
   ValidityResult, ANOVAResult, SimpleRegressionResult, MultipleRegressionResult,
@@ -669,95 +670,29 @@ function Statistik() {
         ]}
       />
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-          {/* Sidebar tools */}
-          <div className="lg:col-span-1">
-            <div className="border border-border bg-card rounded-xl p-4 sticky top-24">
-              <h3 className="font-semibold text-fg mb-4">Pilih Analisis</h3>
-              <div className="space-y-1.5">
-                {tools.map(tool => (
-                  <a key={tool.id} href={'/statistik?tool=' + tool.id}
-                    className={'block p-3 rounded-xl transition-all ' + (activeTool === tool.id
-                      ? 'bg-accent/10 text-accent border border-accent/20'
-                      : 'hover:bg-card/50 text-muted')}>
-                    <div className="font-medium text-sm">{tool.name}</div>
-                    <div className="text-xs text-muted">{tool.desc}</div>
-                    <div className="text-xs mt-0.5 flex items-center gap-1">
-                      <PriceDisplay price={calculateStatisticsPrice(tool.id).price} size="sm" inline showBadge />
-                      <span className="text-muted">· {tool.tier}</span>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-
+      <div className="max-w-5xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
+        <StatistikFlow
+          file={file}
+          data={data}
+          columns={columns}
+          numericColumns={numericColumns}
+          categoricalColumns={categoricalColumns}
+          error={error}
+          activeTool={activeTool}
+          selectedTool={activeTool}
+          onSelectTool={(id) => navigate('/statistik?tool=' + id)}
+          onFileUpload={handleFileUpload}
+          onExampleLoad={() => setExamplePickerOpen(true)}
+          onOpenGuide={() => setShowGuide(true)}
+          onAnalyze={handlePayClick}
+          analyzing={analyzing}
+        >
           {/* Main panel */}
           <div className="lg:col-span-3 space-y-6">
-            <div className="border border-border bg-card rounded-xl p-6">
-              <h1 className="text-2xl font-bold text-fg mb-2">{currentTool?.name}</h1>
-              <p className="text-muted">{currentTool?.desc}</p>
-              <div className="mt-2 inline-flex items-center gap-2">
-                <span className="text-sm text-muted">Harga:</span>
-                <PriceDisplay price={pricing.original || pricing.price} size="md" inline showBadge />
-              </div>
+
             </div>
 
-            {/* Upload */}
-            <div className="border border-border bg-card rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-fg">
-                  <Upload className="w-5 h-5 inline mr-2" />Upload Data
-                </h2>
-                <button onClick={() => setShowGuide(true)}
-                  className="text-sm text-accent hover:text-accent font-medium flex items-center gap-1">
-                  <AlertCircle className="w-4 h-4" /> Panduan Format Data
-                </button>
-              </div>
-              <label className="border-2 border-dashed border-border rounded-xl p-10 flex flex-col items-center cursor-pointer hover:border-accent/30 bg-card/50">
-                <FileSpreadsheet className="w-12 h-12 text-gray-300 mb-4" />
-                <p className="text-muted font-medium">Klik untuk upload file</p>
-                <p className="text-muted text-sm">Format: .xlsx, .xls, .csv</p>
-                <input type="file" accept=".xlsx,.xls,.csv" onChange={handleFileUpload} className="hidden" />
-              </label>
-              {!file && (
-                <div className="mt-3 flex items-center justify-center gap-2 text-xs text-muted">
-                  <span>Belum punya data?</span>
-                  <button onClick={() => setExamplePickerOpen(true)}
-                          className="text-accent hover:text-accent font-medium inline-flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Pakai Contoh Data
-                  </button>
-                </div>
-              )}
-              {file && (
-                <div className="mt-4 border-2 border-emerald-200/50 bg-emerald-50/50 rounded-xl p-4">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6 text-emerald-600 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{file.name}</p>
-                      <p className="text-sm text-muted">
-                        {sampleSize === rawSampleSize
-                          ? `${sampleSize} baris · ${columns.length} variabel · ${numericColumns.length} numerik`
-                          : `${sampleSize} dari ${rawSampleSize} baris (filter aktif) · ${columns.length} variabel · ${numericColumns.length} numerik`}
-                      </p>
-                    </div>
-                    <button onClick={() => setCleanerOpen(true)}
-                      className="text-xs font-medium px-3 py-2 rounded-lg bg-white hover:bg-card/50 border border-border text-gray-700 whitespace-nowrap">
-                      Bersihkan Data
-                    </button>
-                  </div>
-                  {cleaningReport && cleaningReport.actions.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-emerald-200/50 text-xs text-gray-700">
-                      <span className="text-[10px] uppercase tracking-wider text-muted font-medium">Cleaning aktif:</span>{' '}
-                      <span>{cleaningReport.dropped} drop, {cleaningReport.filled} filled, {cleaningReport.clipped} clipped, {cleaningReport.duplicatesRemoved} dup removed</span>
-                    </div>
-                  )}
-                </div>
-              )}
-              {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
-            </div>
+
 
             {/* Filter panel — pilih subset data berdasarkan kategori */}
             {data && categoricalColumns.length > 0 && (
@@ -786,27 +721,6 @@ function Statistik() {
               />
             )}
 
-            {/* Run button */}
-            {data && !result && (
-              <button
-                onClick={handlePayClick}
-                disabled={analyzing}
-                className="btn-primary w-full text-lg py-4 disabled:opacity-50"
-              >
-                {analyzing ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Menganalisis...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-5 h-5" />
-                    {pricing.betaFree ? 'Jalankan Analisis Gratis' : `Bayar ${formatIDR(pricing.price)} & Jalankan Analisis`}
-                  </>
-                )}
-              </button>
-            )}
-
             {/* Result */}
             {result && (
               <ResultDisplay
@@ -814,8 +728,7 @@ function Statistik() {
                 onReset={() => { setResult(null); setParams({}) }}
               />
             )}
-          </div>
-        </div>
+        </StatistikFlow>
       </div>
 
       <ConfirmPaymentModal
