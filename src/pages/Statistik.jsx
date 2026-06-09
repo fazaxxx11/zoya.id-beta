@@ -249,7 +249,7 @@ function Statistik() {
     setResult(null)
     setError(null)
     if (dataset.recommendedTool) {
-      setActiveTool(dataset.recommendedTool)
+      navigate('/statistik?tool=' + dataset.recommendedTool)
     }
     if (dataset.recommendedParams) {
       // delay sedikit supaya activeTool effect (yg reset params) berjalan dulu

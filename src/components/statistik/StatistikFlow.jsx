@@ -94,10 +94,16 @@ function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuid
 function StepReview({ columns, data, numericColumns, categoricalColumns }) {
   if (!data) return null
 
-  const totalRows = data.length
-  const missingByCol = columns.map(col => {
-    const vals = data.map(r => r[col]).filter(v => v === null || v === undefined || v === '' || v === 'NA' || v === 'null')
-    return { col, count: vals.length, pct: ((vals.length / totalRows) * 100).toFixed(1) }
+  const safeColumns = Array.isArray(columns) ? columns : []
+  const safeNumeric = Array.isArray(numericColumns) ? numericColumns : []
+  const safeCategorical = Array.isArray(categoricalColumns) ? categoricalColumns : []
+
+  // data is column-oriented: { col1: [values...], col2: [values...] }
+  const totalRows = safeColumns[0] ? (data?.[safeColumns[0]]?.length || 0) : 0
+  const missingByCol = safeColumns.map(col => {
+    const values = Array.isArray(data?.[col]) ? data[col] : []
+    const missing = values.filter(v => v === null || v === undefined || v === '' || v === 'NA' || v === 'null')
+    return { col, count: missing.length, pct: totalRows ? ((missing.length / totalRows) * 100).toFixed(1) : '0.0' }
   })
   const totalMissing = missingByCol.filter(m => m.count > 0)
 
@@ -145,9 +151,10 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
             </tr>
           </thead>
           <tbody>
-            {columns.map(col => {
-              const isNum = numericColumns.includes(col)
-              const sample = data.find(r => r[col] != null && r[col] !== '')?.[col]
+            {safeColumns.map(col => {
+              const isNum = safeNumeric.includes(col)
+              const values = Array.isArray(data?.[col]) ? data[col] : []
+              const sample = values.find(v => v !== null && v !== undefined && v !== '')
               const m = missingByCol.find(x => x.col === col)
               return (
                 <tr key={col} className="border-b border-border/50">
@@ -179,29 +186,32 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
 // Step 3: Select Analysis (guided recommendations)
 // ============================================================
 function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelectTool, onAnalyze }) {
-  if (!numericColumns.length && !categoricalColumns.length) return null
+  const safeNumeric = Array.isArray(numericColumns) ? numericColumns : []
+  const safeCategorical = Array.isArray(categoricalColumns) ? categoricalColumns : []
+
+  if (!safeNumeric.length && !safeCategorical.length) return null
 
   // Build recommendations based on data types
   const recommendations = useMemo(() => {
     const recs = []
-    if (numericColumns.length >= 2) {
+    if (safeNumeric.length >= 2) {
       recs.push({
         category: 'Hubungan',
         items: [
-          { id: 'korelasi', label: 'Korelasi', desc: `Hubungan antar variabel numerik (${numericColumns.slice(0, 3).join(', ')}${numericColumns.length > 3 ? '...' : ''})` },
+          { id: 'korelasi', label: 'Korelasi', desc: `Hubungan antar variabel numerik (${safeNumeric.slice(0, 3).join(', ')}${safeNumeric.length > 3 ? '...' : ''})` },
           { id: 'regresi', label: 'Regresi Sederhana', desc: 'Prediksi 1 variabel dari 1 variabel lain' },
         ],
       })
     }
-    if (numericColumns.length >= 3) {
+    if (safeNumeric.length >= 3) {
       recs.push({
         category: 'Prediksi',
         items: [
-          { id: 'regresiganda', label: 'Regresi Berganda', desc: `Prediksi dari ${numericColumns.length} variabel numerik` },
+          { id: 'regresiganda', label: 'Regresi Berganda', desc: `Prediksi dari ${safeNumeric.length} variabel numerik` },
         ],
       })
     }
-    if (numericColumns.length >= 1) {
+    if (safeNumeric.length >= 1) {
       recs.push({
         category: 'Distribusi',
         items: [
@@ -210,7 +220,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
         ],
       })
     }
-    if (categoricalColumns.length >= 2) {
+    if (safeCategorical.length >= 2) {
       recs.push({
         category: 'Asosiasi',
         items: [
@@ -218,7 +228,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
         ],
       })
     }
-    if (numericColumns.length >= 1 && categoricalColumns.length >= 1) {
+    if (safeNumeric.length >= 1 && safeCategorical.length >= 1) {
       recs.push({
         category: 'Perbandingan',
         items: [
@@ -228,7 +238,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
       })
     }
     return recs
-  }, [numericColumns, categoricalColumns])
+  }, [safeNumeric, safeCategorical])
 
   // All tools (for advanced mode)
   const allTools = [
