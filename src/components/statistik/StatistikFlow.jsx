@@ -184,6 +184,59 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
           </tbody>
         </table>
       </div>
+
+      {/* Spreadsheet preview */}
+      {totalRows > 0 && safeColumns.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-sm font-semibold text-fg mb-1">Preview Dataset</h3>
+          <p className="text-xs text-muted mb-3">
+            Menampilkan {Math.min(totalRows, 20)} baris pertama dari {totalRows.toLocaleString()} baris.
+          </p>
+          <div className="border border-border rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-card/80 border-b border-border">
+                    <th className="px-3 py-2 text-left font-medium text-muted border-r border-border w-10">#</th>
+                    {safeColumns.map(col => (
+                      <th key={col} className="px-3 py-2 text-left font-medium text-muted border-r border-border last:border-r-0 whitespace-nowrap">
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: Math.min(totalRows, 20) }, (_, i) => (
+                    <tr key={i} className="border-b border-border/50 hover:bg-card/30">
+                      <td className="px-3 py-1.5 text-muted border-r border-border w-10 font-mono">
+                        {i + 1}
+                      </td>
+                      {safeColumns.map(col => {
+                        const values = Array.isArray(data?.[col]) ? data[col] : []
+                        const value = values[i]
+                        const display = value === null || value === undefined || value === '' ? '—' : String(value)
+                        return (
+                          <td
+                            key={col}
+                            className="px-3 py-1.5 border-r border-border last:border-r-0 font-mono max-w-[180px] truncate"
+                            title={display === '—' ? 'empty' : display}
+                          >
+                            {display === '—' ? (
+                              <span className="text-muted/40">—</span>
+                            ) : (
+                              display
+                            )}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
