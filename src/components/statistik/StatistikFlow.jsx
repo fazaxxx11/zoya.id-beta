@@ -501,14 +501,18 @@ export default function StatistikFlow({
   const handleCellSave = useCallback((col, rowIndex) => {
     setEditingCell(null)
     const trimmed = draftValue.trim()
-    // Convert to number if valid, otherwise string, empty = null
+    // Convert to number if valid (supports comma decimal), otherwise string, empty = null
     let newValue
     if (trimmed === '') {
       newValue = null
-    } else if (!isNaN(trimmed) && trimmed !== '') {
-      newValue = Number(trimmed)
     } else {
-      newValue = trimmed
+      // Replace comma with dot for number parsing
+      const normalized = trimmed.replace(',', '.')
+      if (!isNaN(normalized) && normalized !== '') {
+        newValue = Number(normalized)
+      } else {
+        newValue = trimmed
+      }
     }
     setEditedData(prev => {
       const base = prev || propData

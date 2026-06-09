@@ -7,6 +7,7 @@ import { BRAND_NAME } from '../lib/brand'
 import { logoutUser } from '../lib/auth'
 import { useCurrentUser } from '../lib/useCurrentUser'
 import Logo from '../components/Logo'
+import ThemeToggle from '../components/ThemeToggle'
 
 // ============================================================
 // Data
@@ -83,6 +84,7 @@ function Home() {
           </Link>
 
           <nav className="flex items-center gap-3">
+            <ThemeToggle />
             <Link to="/order" className="text-sm text-muted hover:text-fg transition-colors hidden sm:inline">
               Riwayat
             </Link>

@@ -5,6 +5,7 @@
 
 import { Link, useLocation } from 'react-router-dom'
 import { Home, BarChart3, Clock, FileText, Sigma } from 'lucide-react'
+import ThemeToggle from './ThemeToggle'
 
 const ITEMS = [
   { path: '/', label: 'Home', icon: Home, exact: true },
@@ -63,6 +64,10 @@ export default function BottomNav() {
             </Link>
           )
         })}
+        {/* Theme toggle */}
+        <div className="flex flex-col items-center justify-center py-2 px-1">
+          <ThemeToggle className="!border-0 !px-0 !py-0 !text-[10px]" />
+        </div>
       </div>
     </nav>
   )

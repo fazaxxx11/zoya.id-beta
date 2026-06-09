@@ -28,27 +28,36 @@
 
 /* =====================================================
    Theme tokens (RGB triplets supaya bisa pakai opacity)
-   Default: light. .dark class di <html> override-nya.
+   Light default. .dark class di <html> override-nya.
 ===================================================== */
 :root {
-  --bg:        250 248 244;   /* warm ivory */
-  --fg:        23 32 51;      /* deep navy */
+  --bg:        247 243 234;   /* warm ivory #F7F3EA */
+  --fg:        23 32 51;      /* deep navy #172033 */
   --card:      255 255 255;   /* soft white */
-  --border:    232 225 214;   /* warm beige-gray */
-  --muted:     120 113 108;   /* warm gray */
-  --accent:    15 118 110;    /* deep teal */
+  --surface:   252 250 246;   /* #FCFAF6 */
+  --border:    216 208 195;   /* warm beige-gray #D8D0C3 */
+  --muted:     98 95 88;      /* warm gray #625F58 */
+  --accent:    15 118 110;    /* deep teal #0F766E */
+  --accent-fg: 255 255 255;   /* white on accent */
+  --accent-soft: 230 243 241; /* #E6F3F1 */
+  --table-head: 239 232 220;  /* #EFE8DC */
+  --input:     255 255 255;   /* white input */
   --accent-2:  79 70 229;     /* indigo soft */
 }
 
 .dark {
-  /* Purple Galaxy theme — saturasi DINAIKKAN supaya kelihatan jelas purple */
-  --bg:        12 7 30;        /* deep purple void */
-  --fg:        237 230 252;    /* lavender-tinted off-white */
-  --card:      48 26 110;      /* VIBRANT purple, jauh dari grey */
-  --border:    102 65 175;     /* bright purple border */
-  --muted:     200 180 235;    /* lavender muted */
-  --accent:    192 132 252;    /* lavender-purple */
-  --accent-2:  56 189 248;     /* sky cyan accent */
+  --bg:        16 20 24;      /* warm dark charcoal #101418 */
+  --fg:        244 241 234;   /* warm off-white #F4F1EA */
+  --card:      23 28 33;      /* #171C21 */
+  --surface:   29 35 41;      /* #1D2329 */
+  --border:    52 59 67;      /* #343B43 */
+  --muted:     184 176 163;   /* #B8B0A3 */
+  --accent:    45 212 191;    /* teal bright #2DD4BF */
+  --accent-fg: 8 47 42;       /* dark on accent */
+  --accent-soft: 18 59 54;    /* #123B36 */
+  --table-head: 34 42 49;     /* #222A31 */
+  --input:     17 22 27;      /* #11161B */
+  --accent-2:  129 140 248;   /* indigo lighter */
 }
 
 * {

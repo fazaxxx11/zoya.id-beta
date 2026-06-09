@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import { ThemeProvider } from './lib/ThemeContext'
 import Home from './pages/Home'
 import ErrorBoundary from './components/ErrorBoundary'
 import ToastContainer from './components/ToastContainer'
@@ -54,6 +55,7 @@ function PageLoader() {
 function App() {
   return (
     <ErrorBoundary>
+      <ThemeProvider>
       <Aurora />
       <BrowserRouter>
         <PromoBanner />
@@ -102,6 +104,7 @@ function App() {
         <FeedbackButton />
       </BrowserRouter>
       <ToastContainer />
+      </ThemeProvider>
     </ErrorBoundary>
   )
 }

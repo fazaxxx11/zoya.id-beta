@@ -1,34 +1,31 @@
-import { useEffect, useState } from 'react'
-import { Sun, Moon } from 'lucide-react'
-import { getTheme, toggleTheme, subscribeTheme } from '../lib/theme'
+// src/components/ThemeToggle.jsx
+// Light/dark mode toggle — simple icon cycle: light → dark → system
 
-/**
- * Animated toggle dark/light. Pakai di header.
- */
+import { Sun, Moon, Monitor } from 'lucide-react'
+import { useTheme } from '../lib/ThemeContext'
+
 export default function ThemeToggle({ className = '' }) {
-  const [theme, setLocalTheme] = useState(getTheme())
+  const { mode, setMode } = useTheme()
 
-  useEffect(() => subscribeTheme(setLocalTheme), [])
+  const cycle = () => {
+    if (mode === 'light') setMode('dark')
+    else if (mode === 'dark') setMode('system')
+    else setMode('light')
+  }
 
-  const isDark = theme === 'dark'
+  const Icon = mode === 'light' ? Sun : mode === 'dark' ? Moon : Monitor
+  const label = mode === 'light' ? 'Siang' : mode === 'dark' ? 'Malam' : 'Sistem'
 
   return (
     <button
-      onClick={toggleTheme}
-      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-      className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-accent/10 ${className}`}
-      style={{ color: 'rgb(var(--fg))' }}
+      onClick={cycle}
+      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border text-xs font-medium transition-colors hover:bg-card/80 ${className}`}
+      style={{ color: 'rgb(var(--muted))' }}
+      title={`Mode: ${label}`}
+      aria-label={`Ganti tema (sekarang: ${label})`}
     >
-      <Sun
-        className={`absolute w-5 h-5 transition-all duration-500 ${
-          isDark ? 'opacity-0 rotate-90 scale-50' : 'opacity-100 rotate-0 scale-100'
-        }`}
-      />
-      <Moon
-        className={`absolute w-5 h-5 transition-all duration-500 ${
-          isDark ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-50'
-        }`}
-      />
+      <Icon className="w-3.5 h-3.5" />
+      <span className="hidden sm:inline">{label}</span>
     </button>
   )
 }
