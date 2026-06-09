@@ -2,7 +2,7 @@
 // Guided step-based flow for Statistik page
 // Wraps existing logic, presents as Upload → Review → Select → Results → Interpret → Export
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import {
   Upload, Table, BarChart3, Brain, Download, CheckCircle,
   ChevronRight, AlertCircle, FileSpreadsheet, ArrowRight,
@@ -97,7 +97,7 @@ function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuid
 // ============================================================
 // Step 2: Review Variables
 // ============================================================
-function StepReview({ columns, data, numericColumns, categoricalColumns }) {
+function StepReview({ columns, data, numericColumns, categoricalColumns, editingCell, draftValue, hasEdits, onCellClick, onCellChange, onCellSave, onCellCancel, onReset }) {
   if (!data) return null
 
   const safeColumns = Array.isArray(columns) ? columns : []
@@ -122,8 +122,27 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
 
   return (
     <div className="border border-border bg-card rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-fg mb-1">Preview Data</h2>
-      <p className="text-sm text-muted mb-5">Periksa variabel sebelum memilih analisis</p>
+      <div className="flex items-start justify-between mb-1">
+        <h2 className="text-lg font-semibold text-fg">Data kamu sudah terbaca</h2>
+        {hasEdits && (
+          <button
+            onClick={onReset}
+            className="text-xs text-muted hover:text-fg border border-border rounded-lg px-3 py-1.5 transition-colors"
+          >
+            Reset ke file asli
+          </button>
+        )}
+      </div>
+      <p className="text-sm text-muted mb-5">
+        Cek beberapa baris pertama untuk memastikan header, angka, dan kategori terbaca dengan benar sebelum memilih analisis.
+      </p>
+
+      {/* Edit status */}
+      {hasEdits && (
+        <div className="mb-5 p-3 rounded-lg bg-accent/5 border border-accent/20 text-sm text-accent">
+          Data sudah diubah — hasil analisis akan memakai data terbaru.
+        </div>
+      )}
 
       {/* Summary stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
@@ -153,7 +172,10 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
       )}
 
       {/* Variable list */}
-      <div className="overflow-x-auto">
+      <p className="text-xs text-muted mb-2">
+        Zoya mendeteksi tipe variabel secara otomatis. Kamu bisa lanjut jika tipe sudah sesuai.
+      </p>
+      <div className="overflow-x-auto mb-6">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border">
@@ -192,10 +214,13 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
         </table>
       </div>
 
-      {/* Spreadsheet preview */}
+      {/* Spreadsheet preview — editable */}
       {totalRows > 0 && safeColumns.length > 0 && (
-        <div className="mt-6">
+        <div className="mt-2">
           <h3 className="text-sm font-semibold text-fg mb-1">Preview Dataset</h3>
+          <p className="text-xs text-muted mb-1">
+            Klik cell untuk memperbaiki nilai kecil. Untuk edit besar, ubah file Excel lalu upload ulang.
+          </p>
           <p className="text-xs text-muted mb-3">
             Menampilkan {Math.min(totalRows, 20)} baris pertama dari {totalRows.toLocaleString()} baris.
           </p>
@@ -221,12 +246,34 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
                       {safeColumns.map(col => {
                         const values = Array.isArray(data?.[col]) ? data[col] : []
                         const value = values[i]
+                        const isEditing = editingCell?.rowIndex === i && editingCell?.col === col
                         const display = isMissing(value) ? '—' : String(value)
+
+                        if (isEditing) {
+                          return (
+                            <td key={col} className="px-1 py-0.5 border-r border-border last:border-r-0">
+                              <input
+                                autoFocus
+                                type="text"
+                                value={draftValue}
+                                onChange={(e) => onCellChange(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') onCellSave(col, i)
+                                  if (e.key === 'Escape') onCellCancel()
+                                }}
+                                onBlur={() => onCellSave(col, i)}
+                                className="w-full px-1.5 py-0.5 text-xs font-mono border border-accent rounded bg-card text-fg outline-none"
+                              />
+                            </td>
+                          )
+                        }
+
                         return (
                           <td
                             key={col}
-                            className="px-3 py-1.5 border-r border-border last:border-r-0 font-mono max-w-[180px] truncate"
-                            title={display === '—' ? 'empty' : display}
+                            onClick={() => onCellClick(i, col, value)}
+                            className="px-3 py-1.5 border-r border-border last:border-r-0 font-mono max-w-[180px] truncate cursor-pointer hover:bg-accent/5 transition-colors"
+                            title={display === '—' ? 'empty — klik untuk edit' : `${display} — klik untuk edit`}
                           >
                             {display === '—' ? (
                               <span className="text-muted/40">—</span>
@@ -242,6 +289,11 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
               </table>
             </div>
           </div>
+          {totalRows > 20 && (
+            <p className="text-xs text-muted mt-2 italic">
+              Untuk perubahan besar, sebaiknya edit file Excel lalu upload ulang.
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -251,6 +303,14 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
 // ============================================================
 // Step 3: Select Analysis (guided recommendations)
 // ============================================================
+const categoryHints = {
+  Hubungan: 'Cari tahu apakah dua variabel saling berkaitan.',
+  Prediksi: 'Prediksi satu variabel berdasarkan variabel lain.',
+  Distribusi: 'Lihat ringkasan dan pola sebaran data.',
+  Perbandingan: 'Bandingkan rata-rata antar kelompok.',
+  Asosiasi: 'Cek hubungan antar kategori.',
+}
+
 function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelectTool, onAnalyze }) {
   const safeNumeric = Array.isArray(numericColumns) ? numericColumns : []
   const safeCategorical = Array.isArray(categoricalColumns) ? categoricalColumns : []
@@ -328,14 +388,15 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
 
   return (
     <div className="border border-border bg-card rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-fg mb-1">Pilih Analisis</h2>
-      <p className="text-sm text-muted mb-5">Rekomendasi berdasarkan tipe data Anda</p>
+      <h2 className="text-lg font-semibold text-fg mb-1">Analisis apa yang ingin kamu lakukan?</h2>
+      <p className="text-sm text-muted mb-5">Zoya merekomendasikan analisis berdasarkan tipe data yang terdeteksi.</p>
 
       {/* Recommendations */}
       <div className="space-y-5">
         {recommendations.map(rec => (
           <div key={rec.category}>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">{rec.category}</h3>
+            <p className="text-xs text-muted/70 mb-2">{categoryHints[rec.category] || ''}</p>
             <div className="space-y-2">
               {rec.items.map(item => (
                 <button
@@ -395,11 +456,82 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
 // Export
 // ============================================================
 export default function StatistikFlow({
-  file, data, columns, numericColumns, categoricalColumns, error,
+  file, data: propData, columns, numericColumns, categoricalColumns, error,
   activeTool, selectedTool, onSelectTool,
-  onFileUpload, onExampleLoad, onOpenGuide, onAnalyze,
+  onFileUpload, onExampleLoad, onOpenGuide, onAnalyze, onDataChange,
   analyzing, children, // children = result/interpretation panels
 }) {
+  // Editing state
+  const [originalData, setOriginalData] = useState(null)
+  const [editedData, setEditedData] = useState(null)
+  const [editingCell, setEditingCell] = useState(null) // { rowIndex, col }
+  const [draftValue, setDraftValue] = useState('')
+  const [hasEdits, setHasEdits] = useState(false)
+
+  // Use edited data if available, otherwise prop data
+  const data = editedData || propData
+
+  // Store original data when file changes
+  useMemo(() => {
+    if (propData && !originalData) {
+      setOriginalData(propData)
+    }
+  }, [propData]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reset originalData when file changes (new upload)
+  useMemo(() => {
+    if (file) {
+      setOriginalData(null)
+      setEditedData(null)
+      setHasEdits(false)
+      setEditingCell(null)
+    }
+  }, [file]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cell edit handlers
+  const handleCellClick = useCallback((rowIndex, col, value) => {
+    setEditingCell({ rowIndex, col })
+    setDraftValue(value === null || value === undefined ? '' : String(value))
+  }, [])
+
+  const handleCellChange = useCallback((value) => {
+    setDraftValue(value)
+  }, [])
+
+  const handleCellSave = useCallback((col, rowIndex) => {
+    setEditingCell(null)
+    const trimmed = draftValue.trim()
+    // Convert to number if valid, otherwise string, empty = null
+    let newValue
+    if (trimmed === '') {
+      newValue = null
+    } else if (!isNaN(trimmed) && trimmed !== '') {
+      newValue = Number(trimmed)
+    } else {
+      newValue = trimmed
+    }
+    setEditedData(prev => {
+      const base = prev || propData
+      if (!base) return base
+      const colValues = Array.isArray(base[col]) ? [...base[col]] : []
+      if (colValues[rowIndex] === newValue) return prev // no change
+      colValues[rowIndex] = newValue
+      return { ...base, [col]: colValues }
+    })
+    setHasEdits(true)
+  }, [draftValue, propData])
+
+  const handleCellCancel = useCallback(() => {
+    setEditingCell(null)
+  }, [])
+
+  const handleReset = useCallback(() => {
+    setEditedData(originalData)
+    setHasEdits(false)
+    setEditingCell(null)
+    if (onDataChange) onDataChange(originalData)
+  }, [originalData, onDataChange])
+
   // Determine current step based on state
   const currentStep = useMemo(() => {
     if (!file || !data) return 'upload'
@@ -438,6 +570,14 @@ export default function StatistikFlow({
             data={data}
             numericColumns={numericColumns}
             categoricalColumns={categoricalColumns}
+            editingCell={editingCell}
+            draftValue={draftValue}
+            hasEdits={hasEdits}
+            onCellClick={handleCellClick}
+            onCellChange={handleCellChange}
+            onCellSave={handleCellSave}
+            onCellCancel={handleCellCancel}
+            onReset={handleReset}
           />
         </div>
       )}
