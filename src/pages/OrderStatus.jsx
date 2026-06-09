@@ -6,7 +6,6 @@ import {
   Loader2, RefreshCw, QrCode, Wallet, Building,
   TrendingUp, Award
 } from 'lucide-react'
-import { jsPDF } from 'jspdf'
 import { getOrders, saveOrder } from '../lib/orders'
 
 function OrderStatus() {
@@ -345,7 +344,8 @@ function OrderStatus() {
                     
                     {/* PDF Download */}
                     <button
-                      onClick={() => {
+                      onClick={async () => {
+                        const { default: jsPDF } = await import('jspdf')
                         const doc = new jsPDF({ unit: 'mm', format: 'a4' })
                         const pageW = 210, pageH = 297
                         const mx = 18

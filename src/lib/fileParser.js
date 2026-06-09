@@ -3,15 +3,20 @@
  * Supports: .xlsx, .xls, .csv, .docx, .pdf, .txt
  * With advanced parsing logic
  */
-import * as XLSX from 'xlsx'
-import mammoth from 'mammoth'
-import * as pdfjsLib from 'pdfjs-dist'
+let XLSX = null
+let mammoth = null
+let pdfjsLib = null
 
-// pdf-lib TIDAK punya getTextContent() — itu API milik pdfjs-dist.
-// Worker dimuat dari CDN agar tidak butuh konfigurasi vite tambahan.
-if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+async function ensureDeps() {
+  if (!XLSX) XLSX = await import('xlsx')
+  if (!mammoth) mammoth = await import('mammoth')
+  if (!pdfjsLib) {
+    pdfjsLib = await import('pdfjs-dist')
+    if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+    }
+  }
 }
 
 /**
@@ -420,6 +425,7 @@ function uid() {
  * Main parse function
  */
 export async function parseStudentFile(file) {
+  await ensureDeps()
   const ext = file.name.split('.').pop().toLowerCase()
   
   switch (ext) {

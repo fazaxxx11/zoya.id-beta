@@ -5,8 +5,6 @@ import {
   Sparkles, Download, FileType, File as FileIcon, AlertCircle,
   Layers, Sigma, Clock, FileText, BookOpen, X,
 } from 'lucide-react'
-import * as XLSX from 'xlsx'
-import { jsPDF } from 'jspdf'
 import { getCurrentUser } from '../lib/auth'
 import { getWallet, deductWallet } from '../lib/wallet'
 import { calculateStatisticsPrice, getStatisticsPriceWithDiscount, formatIDR } from '../lib/pricing'
@@ -166,8 +164,9 @@ function Statistik() {
     setResult(null)
     setError(null)
     const reader = new FileReader()
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
+        const XLSX = await import('xlsx')
         const wb = XLSX.read(event.target.result, { type: 'binary' })
         if (!wb.SheetNames.length) throw new Error('File tidak punya sheet')
         const sheet = wb.Sheets[wb.SheetNames[0]]
@@ -2800,23 +2799,24 @@ function TwoWayANOVAResult({ r }) {
 // Export utilities (Excel + PDF)
 // ============================================================
 function exportToExcel(result) {
-  const wb = XLSX.utils.book_new()
-  let ws
+  import('xlsx').then(XLSX => {
+    const wb = XLSX.utils.book_new()
+    let ws
 
-  if (result.type === 'descriptive') {
-    ws = XLSX.utils.json_to_sheet(result.stats.map(s => ({
-      Variabel: s.column, N: s.n, Mean: s.mean, Median: s.median,
-      Modus: s.mode, SD: s.stdDev, Variance: s.variance,
-      Min: s.min, Max: s.max, Skewness: s.skewness, Kurtosis: s.kurtosis,
-    })))
-  } else {
-    // generic flat object
-    const flat = flatten(result)
-    ws = XLSX.utils.json_to_sheet([flat])
-  }
+    if (result.type === 'descriptive') {
+      ws = XLSX.utils.json_to_sheet(result.stats.map(s => ({
+        Variabel: s.column, N: s.n, Mean: s.mean, Median: s.median,
+        Modus: s.mode, SD: s.stdDev, Variance: s.variance,
+        Min: s.min, Max: s.max, Skewness: s.skewness, Kurtosis: s.kurtosis,
+      })))
+    } else {
+      const flat = flatten(result)
+      ws = XLSX.utils.json_to_sheet([flat])
+    }
 
-  XLSX.utils.book_append_sheet(wb, ws, result.toolName?.slice(0, 30) || 'Hasil')
-  XLSX.writeFile(wb, `${result.tool}_${Date.now()}.xlsx`)
+    XLSX.utils.book_append_sheet(wb, ws, result.toolName?.slice(0, 30) || 'Hasil')
+    XLSX.writeFile(wb, `${result.tool}_${Date.now()}.xlsx`)
+  })
 }
 
 function flatten(obj, prefix = '') {
@@ -2839,6 +2839,7 @@ function flatten(obj, prefix = '') {
 // PDF Export — formatted dengan tabel & chart embed
 // ============================================================
 async function exportToPDF(result, containerEl) {
+  const { default: jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const pageW = 210, pageH = 297
   const mx = 18                 // margin x

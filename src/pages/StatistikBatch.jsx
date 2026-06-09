@@ -3,8 +3,6 @@
 // Useful for comparing the same metric across multiple datasets/cohorts/periods.
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
-import * as XLSX from 'xlsx'
-import { jsPDF } from 'jspdf'
 import { describe, oneWayANOVA, kruskalWallis, shapiroWilk } from '../lib/stats'
 import jstat from 'jstat'
 import { toast } from '../lib/toast'
@@ -180,8 +178,9 @@ export default function StatistikBatch() {
   // -----------------------------------------------------------
   // Excel export
   // -----------------------------------------------------------
-  const exportExcel = () => {
+  const exportExcel = async () => {
     if (!matrix.length) return
+    const XLSX = await import('xlsx')
     const rows = matrix.map(r => ({
       File: r.name,
       Column: selectedColumn,
@@ -270,10 +269,10 @@ export default function StatistikBatch() {
     }
   }, [matrix, assumptions, inferential, testMethod, selectedColumn, files])
 
-  const exportPDF = () => {
+  const exportPDF = async () => {
     if (!matrix.length) return
     try {
-      buildBatchPDF({
+      await buildBatchPDF({
         column: selectedColumn,
         matrix,
         assumptions,
@@ -832,7 +831,8 @@ const fmtP = (p) => {
 // PDF report builder — minimalist layout, no canvas dependency.
 // Sections: header → file list → descriptive matrix → assumptions → inferential.
 // =====================================================================
-function buildBatchPDF({ column, matrix, assumptions, inferential, method }) {
+async function buildBatchPDF({ column, matrix, assumptions, inferential, method }) {
+  const { default: jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const pageW = 210, pageH = 297
   const mx = 16

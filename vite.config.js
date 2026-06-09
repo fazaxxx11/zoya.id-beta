@@ -26,6 +26,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+        // Skip old hashed chunks during precache to prevent stale bundles
+        globIgnores: ['**/sw.js', '**/workbox-*.js'],
+        // Clean up old caches on activate
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
