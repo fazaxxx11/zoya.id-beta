@@ -104,11 +104,18 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
   const safeNumeric = Array.isArray(numericColumns) ? numericColumns : []
   const safeCategorical = Array.isArray(categoricalColumns) ? categoricalColumns : []
 
+  // Consistent missing value policy
+  const isMissing = (v) =>
+    v === null ||
+    v === undefined ||
+    v === '' ||
+    ['NA', 'N/A', 'NULL', 'null', '-'].includes(String(v).trim())
+
   // data is column-oriented: { col1: [values...], col2: [values...] }
   const totalRows = safeColumns[0] ? (data?.[safeColumns[0]]?.length || 0) : 0
   const missingByCol = safeColumns.map(col => {
     const values = Array.isArray(data?.[col]) ? data[col] : []
-    const missing = values.filter(v => v === null || v === undefined || v === '' || v === 'NA' || v === 'null')
+    const missing = values.filter(isMissing)
     return { col, count: missing.length, pct: totalRows ? ((missing.length / totalRows) * 100).toFixed(1) : '0.0' }
   })
   const totalMissing = missingByCol.filter(m => m.count > 0)
@@ -160,7 +167,7 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
             {safeColumns.map(col => {
               const isNum = safeNumeric.includes(col)
               const values = Array.isArray(data?.[col]) ? data[col] : []
-              const sample = values.find(v => v !== null && v !== undefined && v !== '')
+              const sample = values.find(v => !isMissing(v))
               const m = missingByCol.find(x => x.col === col)
               return (
                 <tr key={col} className="border-b border-border/50">
@@ -214,7 +221,7 @@ function StepReview({ columns, data, numericColumns, categoricalColumns }) {
                       {safeColumns.map(col => {
                         const values = Array.isArray(data?.[col]) ? data[col] : []
                         const value = values[i]
-                        const display = value === null || value === undefined || value === '' ? '—' : String(value)
+                        const display = isMissing(value) ? '—' : String(value)
                         return (
                           <td
                             key={col}
