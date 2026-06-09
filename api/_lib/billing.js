@@ -43,6 +43,16 @@ const ASSESSMENT_OVERFLOW = { startsAt: 30, basePrice: 25000, perStudent: 500 };
  */
 export async function checkToolAccess(supabaseAdmin, userId, toolId, sampleSize) {
   try {
+    // Kill switch: PAYMENTS disabled → free mode
+    if (process.env.PAYMENTS_ENABLED === 'false') {
+      return {
+        allowed: true,
+        price: 0,
+        balance: 0,
+        reason: 'PAYMENTS disabled via kill switch'
+      };
+    }
+
     // Check for BETA_FREE environment variable
     if (process.env.BETA_FREE === 'true') {
       return {

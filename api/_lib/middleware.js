@@ -4,6 +4,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { slidingWindow, getRateLimitHeaders } from './rate-limit.js';
+import { logRequest, logRateLimit, logError, incrementCounter } from './usage.js';
 
 // ── Supabase clients (lazy init) ──────────────────────────────────
 let _supabaseAdmin = null;
@@ -289,9 +290,35 @@ export function applySecurity(req, res) {
   return true;
 }
 
+// ── Kill Switch ───────────────────────────────────────────────────
+// Environment variables to disable features without redeploy:
+//   AI_ENABLED=false          → all AI endpoints return 503
+//   PAYMENTS_ENABLED=false    → billing check skipped (free mode)
+//   REGISTRATION_ENABLED=false → signup blocked
+export function isFeatureEnabled(feature) {
+  const envKey = `${feature.toUpperCase()}_ENABLED`;
+  const val = process.env[envKey];
+  // Default: enabled (true). Only disable if explicitly set to 'false'.
+  return val !== 'false';
+}
+
+export function requireFeature(feature, res) {
+  if (!isFeatureEnabled(feature)) {
+    res.status(503).json({
+      error: `${feature} sedang dinonaktifkan sementara.`,
+      feature,
+      enabled: false,
+    });
+    return false;
+  }
+  return true;
+}
+
 // ── Combined Middleware ───────────────────────────────────────────
 // Runs all guards in sequence. Returns user on success, null on failure (response already sent).
 export async function aiMiddleware(req, res, endpoint, rateLimitOverrides = {}) {
+  // 0. Kill switch: AI feature
+  if (!requireFeature('AI', res)) return null;
   // 1. CORS + Security headers
   if (!applySecurity(req, res)) return null;
 
@@ -311,6 +338,8 @@ export async function aiMiddleware(req, res, endpoint, rateLimitOverrides = {}) 
   // 4. Dual rate limit (per-IP + per-user)
   const rl = await checkDualRateLimit(req, endpoint, rateLimitOverrides);
   if (!rl.allowed) {
+    incrementCounter('rate_limit');
+    logRateLimit({ endpoint, userId: user.id, ip: getClientIp(req), limit: rl.limit, window: '60s' });
     res.setHeader('Retry-After', rl.headers['Retry-After'] || 60);
     return res.status(rl.status).json({ error: rl.error });
   }
