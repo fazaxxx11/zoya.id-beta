@@ -9,18 +9,18 @@ const num = (v, d = 3) => typeof v === 'number' ? v.toFixed(d) : (v ?? '—')
 const pct = (p) => typeof p === 'number' ? (p < 0.001 ? '< 0.001' : p.toFixed(4)) : '—'
 
 export const Stat = ({ label, value, accent, term }) => (
-  <div className="bg-gray-50 rounded-lg p-3">
-    <div className="text-xs text-gray-500">
+  <div className="bg-card/50 rounded-lg p-3">
+    <div className="text-xs text-muted">
       {term ? <StatTooltip term={term}>{label}</StatTooltip> : label}
     </div>
-    <div className={`font-semibold mt-0.5 ${accent || 'text-gray-800'}`}>{value}</div>
+    <div className={`font-semibold mt-0.5 ${accent || 'text-fg'}`}>{value}</div>
   </div>
 )
 
 export const InterpBox = ({ children }) => (
-  <div className="mt-4 p-4 bg-sky-50 border-l-4 border-sky-500 rounded-r-lg">
-    <p className="text-sm font-semibold text-sky-800 mb-1">Interpretasi:</p>
-    <p className="text-sm text-sky-900">{children}</p>
+  <div className="mt-4 p-4 bg-accent/5 border-l-4 border-accent rounded-r-lg">
+    <p className="text-sm font-semibold text-accent mb-1">Interpretasi:</p>
+    <p className="text-sm text-fg">{children}</p>
   </div>
 )
 
@@ -29,19 +29,19 @@ export function DescriptiveResult({ r }) {
     <div>
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="bg-gray-50">
+        <thead className="bg-card/50">
           <tr>
             {['Variabel','N','Mean','Median','Modus','SD','Var','Min','Max','Skew','Kurt','SEM'].map(h => (
-              <th key={h} className="px-3 py-2 text-left font-semibold text-gray-700">{h}</th>
+              <th key={h} className="px-3 py-2 text-left font-semibold text-fg">{h}</th>
             ))}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
           {r.stats.map((s, i) => (
-            <tr key={i} className="hover:bg-gray-50">
+            <tr key={i} className="hover:bg-card/50">
               <td className="px-3 py-2 font-medium">{s.column}</td>
               <td className="px-3 py-2">{s.n}</td>
-              <td className="px-3 py-2 font-semibold text-sky-600">{s.mean}</td>
+              <td className="px-3 py-2 font-semibold text-accent">{s.mean}</td>
               <td className="px-3 py-2">{s.median}</td>
               <td className="px-3 py-2">{s.mode}</td>
               <td className="px-3 py-2">{s.stdDev}</td>
@@ -55,7 +55,7 @@ export function DescriptiveResult({ r }) {
           ))}
         </tbody>
       </table>
-      <p className="text-xs text-gray-500 mt-3">SD &amp; Variance dihitung dengan formula sample (n−1).</p>
+      <p className="text-xs text-muted mt-3">SD &amp; Variance dihitung dengan formula sample (n−1).</p>
     </div>
       <ChartGrid>
         {r.stats.map((s, i) => (
@@ -71,34 +71,34 @@ export function NormalityResult({ r }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="bg-gray-50">
+        <thead className="bg-card/50">
           <tr>
             {['Variabel', 'Metode', 'Statistik', 'p-value', 'Status', 'Kesimpulan'].map(h => (
-              <th key={h} className="px-3 py-2 text-left font-semibold text-gray-700">{h}</th>
+              <th key={h} className="px-3 py-2 text-left font-semibold text-fg">{h}</th>
             ))}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
           {rows.map((row, i) => (
-            <tr key={i} className="hover:bg-gray-50 align-top">
+            <tr key={i} className="hover:bg-card/50 align-top">
               <td className="px-3 py-2 font-medium">{row.column}</td>
               <td className="px-3 py-2">{row.method}</td>
               <td className="px-3 py-2">{num(row.W ?? row.D, 4)}</td>
               <td className="px-3 py-2 font-semibold">{pct(row.pValue)}</td>
-              <td className={'px-3 py-2 font-semibold ' + (row.isNormal ? 'text-green-600' : 'text-red-600')}>
+              <td className={'px-3 py-2 font-semibold ' + (row.isNormal ? 'text-accent' : 'text-red-600')}>
                 {row.isNormal ? 'Normal ✅' : 'Tidak Normal ❌'}
               </td>
-              <td className="px-3 py-2 text-xs text-gray-600 max-w-md">{row.interpretation}</td>
+              <td className="px-3 py-2 text-xs text-muted max-w-md">{row.interpretation}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="text-xs text-gray-500 mt-3">
+      <p className="text-xs text-muted mt-3">
         H₀: data berdistribusi normal. Jika p &gt; 0.05 → tidak ada bukti tolak H₀ → data dianggap normal.
       </p>
       {rows.map((row, i) => row.values && (
         <div key={i} className="mt-4">
-          <h4 className="font-semibold text-sm text-gray-700 mb-2">Visualisasi: {row.column}</h4>
+          <h4 className="font-semibold text-sm text-fg mb-2">Visualisasi: {row.column}</h4>
           <ChartGrid>
             <Histogram values={row.values} title="Histogram + kurva normal" xLabel={row.column} overlayNormal />
             <QQPlot values={row.values} title="Q-Q Plot (Normal)" />
@@ -114,8 +114,8 @@ export function CorrelationResult({ r }) {
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="Metode" value={r.method === 'spearman' ? 'Spearman' : 'Pearson'} />
-        <Stat label="r / ρ" value={num(r.r ?? r.rho, 3)} accent="text-sky-600" term={r.method === 'spearman' ? 'spearman_rho' : 'pearson_r'} />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.pValue < 0.05 ? 'text-green-600' : 'text-gray-700'} term="p_value" />
+        <Stat label="r / ρ" value={num(r.r ?? r.rho, 3)} accent="text-accent" term={r.method === 'spearman' ? 'spearman_rho' : 'pearson_r'} />
+        <Stat label="p-value" value={pct(r.pValue)} accent={r.pValue < 0.05 ? 'text-accent' : 'text-fg'} term="p_value" />
         <Stat label="n" value={r.n} />
         <Stat label="t" value={num(r.t)} />
         <Stat label="df" value={r.df} />
@@ -141,11 +141,11 @@ export function TTestResult({ r }) {
         <Stat label="Test" value={r.test} />
         <Stat label="t" value={num(r.t)} term="t_statistic" />
         <Stat label="df" value={typeof r.df === 'number' ? r.df.toFixed(2) : r.df} term="df" />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.significant ? 'text-green-600' : 'text-gray-700'} term="p_value" />
+        <Stat label="p-value" value={pct(r.pValue)} accent={r.significant ? 'text-accent' : 'text-fg'} term="p_value" />
         <Stat label="Cohen's d" value={num(r.cohensD)} term="cohens_d" />
         <Stat label="Effect Size" value={r.effectSize} />
         {r.ci95 && <Stat label="95% CI" value={`[${num(r.ci95[0])}, ${num(r.ci95[1])}]`} />}
-        <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'} accent={r.significant ? 'text-green-600' : 'text-red-600'} />
+        <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'} accent={r.significant ? 'text-accent' : 'text-red-600'} />
       </div>
       {r.mode === 'independent' && r.group1 && (
         <div className="grid grid-cols-2 gap-3 mb-4">
@@ -153,7 +153,7 @@ export function TTestResult({ r }) {
           <Stat label={`Grup 2 (${r.groupNames?.[1] ?? 'B'})`} value={`M=${num(r.group2.mean)}, SD=${num(r.group2.sd)}, n=${r.group2.n}`} />
         </div>
       )}
-      {r.note && <p className="text-xs text-gray-500 italic mb-3">{r.note}</p>}
+      {r.note && <p className="text-xs text-muted italic mb-3">{r.note}</p>}
       {r.mode === 'oneSample' && r.values && (
         <div className="mt-3">
           <Histogram values={r.values} title={`Histogram: ${r.column} (μ₀ = ${r.mu0})`} xLabel={r.column} overlayNormal />
@@ -183,21 +183,21 @@ export function ValidityResult({ r }) {
       <div>
         <h4 className="font-semibold mb-2">Reliabilitas (Cronbach's α)</h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-          <Stat label="Cronbach's α" value={num(r.reliability.alpha)} accent="text-sky-600" term="cronbach_alpha" />
+          <Stat label="Cronbach's α" value={num(r.reliability.alpha)} accent="text-accent" term="cronbach_alpha" />
           <Stat label="N item" value={r.reliability.k} />
           <Stat label="N responden" value={r.reliability.n} />
           <Stat label="Status" value={r.reliability.alpha >= 0.7 ? 'Reliabel ✅' : 'Kurang Reliabel ⚠️'}
-                accent={r.reliability.alpha >= 0.7 ? 'text-green-600' : 'text-amber-600'} />
+                accent={r.reliability.alpha >= 0.7 ? 'text-accent' : 'text-amber-600'} />
         </div>
         <InterpBox>{r.reliability.interpretation}</InterpBox>
       </div>
 
       <div>
         <h4 className="font-semibold mb-2">Validitas Item (Pearson item-total terkoreksi)</h4>
-        <p className="text-xs text-gray-500 mb-2">Kriteria: r ≥ {num(r.validity.rCritical)} dan p &lt; 0.05</p>
+        <p className="text-xs text-muted mb-2">Kriteria: r ≥ {num(r.validity.rCritical)} dan p &lt; 0.05</p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-card/50">
               <tr>
                 <th className="px-3 py-2 text-left">Item</th>
                 <th className="px-3 py-2 text-left">r</th>
@@ -216,7 +216,7 @@ export function ValidityResult({ r }) {
                     <td className="px-3 py-2">{num(it.r)}</td>
                     <td className="px-3 py-2">{pct(it.pValue)}</td>
                     <td className="px-3 py-2">{num(alpha)}</td>
-                    <td className={'px-3 py-2 font-semibold ' + (it.isValid ? 'text-green-600' : 'text-red-600')}>
+                    <td className={'px-3 py-2 font-semibold ' + (it.isValid ? 'text-accent' : 'text-red-600')}>
                       {it.verdict}
                     </td>
                   </tr>
@@ -225,7 +225,7 @@ export function ValidityResult({ r }) {
             </tbody>
           </table>
         </div>
-        <p className="text-sm mt-3 text-gray-700">{r.validity.summary}</p>
+        <p className="text-sm mt-3 text-fg">{r.validity.summary}</p>
       </div>
     </div>
   )
@@ -237,7 +237,7 @@ export function ANOVAResult({ r }) {
       <h4 className="font-semibold mb-2">Statistik Per Grup</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{['Grup','n','Mean','SD'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -245,7 +245,7 @@ export function ANOVAResult({ r }) {
               <tr key={i}>
                 <td className="px-3 py-2 font-medium">{g.label}</td>
                 <td className="px-3 py-2">{g.n}</td>
-                <td className="px-3 py-2 font-semibold text-sky-600">{num(g.mean)}</td>
+                <td className="px-3 py-2 font-semibold text-accent">{num(g.mean)}</td>
                 <td className="px-3 py-2">{num(g.sd)}</td>
               </tr>
             ))}
@@ -256,13 +256,13 @@ export function ANOVAResult({ r }) {
       <h4 className="font-semibold mb-2">Tabel ANOVA</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{['Sumber','SS','df','MS','F','p'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            <tr><td className="px-3 py-2">Antar grup</td><td className="px-3 py-2">{num(r.ssBetween)}</td><td className="px-3 py-2">{r.dfBetween}</td><td className="px-3 py-2">{num(r.msBetween)}</td><td className="px-3 py-2 font-semibold text-sky-600">{num(r.F)}</td><td className="px-3 py-2 font-semibold">{pct(r.pValue)}</td></tr>
+            <tr><td className="px-3 py-2">Antar grup</td><td className="px-3 py-2">{num(r.ssBetween)}</td><td className="px-3 py-2">{r.dfBetween}</td><td className="px-3 py-2">{num(r.msBetween)}</td><td className="px-3 py-2 font-semibold text-accent">{num(r.F)}</td><td className="px-3 py-2 font-semibold">{pct(r.pValue)}</td></tr>
             <tr><td className="px-3 py-2">Dalam grup</td><td className="px-3 py-2">{num(r.ssWithin)}</td><td className="px-3 py-2">{r.dfWithin}</td><td className="px-3 py-2">{num(r.msWithin)}</td><td colSpan="2" /></tr>
-            <tr className="font-semibold bg-gray-50"><td className="px-3 py-2">Total</td><td className="px-3 py-2">{num(r.ssTotal)}</td><td className="px-3 py-2">{r.dfTotal}</td><td colSpan="3" /></tr>
+            <tr className="font-semibold bg-card/50"><td className="px-3 py-2">Total</td><td className="px-3 py-2">{num(r.ssTotal)}</td><td className="px-3 py-2">{r.dfTotal}</td><td colSpan="3" /></tr>
           </tbody>
         </table>
       </div>
@@ -272,7 +272,7 @@ export function ANOVAResult({ r }) {
         <Stat label="ω² (Omega-squared)" value={num(r.omegaSquared)} term="omega_squared" />
         <Stat label="Effect Size" value={r.effectSize} />
         <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'}
-              accent={r.significant ? 'text-green-600' : 'text-red-600'} />
+              accent={r.significant ? 'text-accent' : 'text-red-600'} />
       </div>
 
       {r.postHoc && (
@@ -280,7 +280,7 @@ export function ANOVAResult({ r }) {
           <h4 className="font-semibold mb-2">Post-hoc: {r.postHoc.method}</h4>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+              <thead className="bg-card/50">
                 <tr>{['Pasangan','Mean Diff','t','p (Bonferroni)','Signifikan'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -290,7 +290,7 @@ export function ANOVAResult({ r }) {
                     <td className="px-3 py-2">{num(c.meanDiff)}</td>
                     <td className="px-3 py-2">{num(c.t)}</td>
                     <td className="px-3 py-2">{pct(c.pBonferroni)}</td>
-                    <td className={'px-3 py-2 font-semibold ' + (c.significant ? 'text-green-600' : 'text-gray-500')}>
+                    <td className={'px-3 py-2 font-semibold ' + (c.significant ? 'text-accent' : 'text-muted')}>
                       {c.significant ? '✅ Ya' : 'Tidak'}
                     </td>
                   </tr>
@@ -315,29 +315,29 @@ export function SimpleRegressionResult({ r }) {
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="R²" value={num(r.rSquared)} accent="text-sky-600" term="r_squared" />
+        <Stat label="R²" value={num(r.rSquared)} accent="text-accent" term="r_squared" />
         <Stat label="Adj. R²" value={num(r.adjustedR2)} term="adjusted_r_squared" />
         <Stat label="F" value={num(r.F)} term="f_statistic" />
-        <Stat label="p (F)" value={pct(r.pF)} accent={r.significant ? 'text-green-600' : 'text-gray-700'} term="p_value" />
+        <Stat label="p (F)" value={pct(r.pF)} accent={r.significant ? 'text-accent' : 'text-fg'} term="p_value" />
         <Stat label="SE Estimate" value={num(r.standardErrorOfEstimate)} />
         <Stat label="β (standardized)" value={num(r.standardizedBeta)} />
-        <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'} accent={r.significant ? 'text-green-600' : 'text-red-600'} />
+        <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'} accent={r.significant ? 'text-accent' : 'text-red-600'} />
         <Stat label="N" value={r.n} />
       </div>
 
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{['Koefisien','b','SE','t','p','95% CI'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             <tr><td className="px-3 py-2">Intercept (b₀)</td><td className="px-3 py-2 font-semibold">{num(r.intercept)}</td><td className="px-3 py-2">{num(r.intercept_se)}</td><td className="px-3 py-2">{num(r.intercept_t)}</td><td className="px-3 py-2">{pct(r.intercept_p)}</td><td className="px-3 py-2">[{num(r.intercept_ci?.[0])}, {num(r.intercept_ci?.[1])}]</td></tr>
-            <tr><td className="px-3 py-2">Slope ({r.x})</td><td className="px-3 py-2 font-semibold text-sky-600">{num(r.slope)}</td><td className="px-3 py-2">{num(r.slope_se)}</td><td className="px-3 py-2">{num(r.slope_t)}</td><td className="px-3 py-2">{pct(r.slope_p)}</td><td className="px-3 py-2">[{num(r.slope_ci?.[0])}, {num(r.slope_ci?.[1])}]</td></tr>
+            <tr><td className="px-3 py-2">Slope ({r.x})</td><td className="px-3 py-2 font-semibold text-accent">{num(r.slope)}</td><td className="px-3 py-2">{num(r.slope_se)}</td><td className="px-3 py-2">{num(r.slope_t)}</td><td className="px-3 py-2">{pct(r.slope_p)}</td><td className="px-3 py-2">[{num(r.slope_ci?.[0])}, {num(r.slope_ci?.[1])}]</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p className="text-sm bg-gray-50 p-3 rounded font-mono">{r.equation}</p>
+      <p className="text-sm bg-card/50 p-3 rounded font-mono">{r.equation}</p>
       {r.xValues && r.yValues && (
         <div className="mt-4">
           <ScatterPlot x={r.xValues} y={r.yValues}
@@ -355,20 +355,20 @@ export function MultipleRegressionResult({ r }) {
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="R²" value={num(r.rSquared)} accent="text-sky-600" term="r_squared" />
+        <Stat label="R²" value={num(r.rSquared)} accent="text-accent" term="r_squared" />
         <Stat label="Adj. R²" value={num(r.adjustedR2)} term="adjusted_r_squared" />
         <Stat label="F" value={num(r.F)} term="f_statistic" />
-        <Stat label="p (F)" value={pct(r.pF)} accent={r.significant ? 'text-green-600' : 'text-gray-700'} term="p_value" />
+        <Stat label="p (F)" value={pct(r.pF)} accent={r.significant ? 'text-accent' : 'text-fg'} term="p_value" />
         <Stat label="SE Estimate" value={num(r.standardErrorOfEstimate)} />
         <Stat label="N" value={r.n} />
         <Stat label="p (predictors)" value={r.p} />
-        <Stat label="Multikolinearitas" value={r.multicollinearity} accent={r.multicollinearity.includes('TERDETEKSI') ? 'text-red-600' : 'text-green-600'} />
+        <Stat label="Multikolinearitas" value={r.multicollinearity} accent={r.multicollinearity.includes('TERDETEKSI') ? 'text-red-600' : 'text-accent'} />
       </div>
 
       <h4 className="font-semibold mb-2">Koefisien</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{['Variabel','b','SE','t','p'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -388,17 +388,17 @@ export function MultipleRegressionResult({ r }) {
       {r.vifs?.length > 0 && (
         <div className="mb-4">
           <h4 className="font-semibold mb-2">VIF (Multikolinearitas)</h4>
-          <p className="text-xs text-gray-500 mb-2">VIF &gt; 10 mengindikasikan masalah multikolinearitas berat.</p>
+          <p className="text-xs text-muted mb-2">VIF &gt; 10 mengindikasikan masalah multikolinearitas berat.</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {r.vifs.map((v, i) => (
               <Stat key={i} label={v.predictor} value={num(v.vif)}
-                    accent={v.vif > 10 ? 'text-red-600' : v.vif > 5 ? 'text-amber-600' : 'text-green-600'} />
+                    accent={v.vif > 10 ? 'text-red-600' : v.vif > 5 ? 'text-amber-600' : 'text-accent'} />
             ))}
           </div>
         </div>
       )}
 
-      <p className="text-sm bg-gray-50 p-3 rounded font-mono">{r.equation}</p>
+      <p className="text-sm bg-card/50 p-3 rounded font-mono">{r.equation}</p>
       <InterpBox>{r.interpretation}</InterpBox>
     </div>
   )
@@ -408,21 +408,21 @@ export function ChiSquareResult({ r }) {
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="χ²" value={num(r.chi2)} accent="text-sky-600" />
+        <Stat label="χ²" value={num(r.chi2)} accent="text-accent" />
         <Stat label="df" value={r.df} term="df" />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-green-600' : 'text-gray-700'} term="p_value" />
+        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-accent' : 'text-fg'} term="p_value" />
         <Stat label="N" value={r.N} />
-        <Stat label="Cramer's V" value={num(r.cramersV)} accent="text-sky-600" term="cramers_v" />
+        <Stat label="Cramer's V" value={num(r.cramersV)} accent="text-accent" term="cramers_v" />
         <Stat label="Effect Size" value={r.effectSizeLabel} />
         {r.phi !== null && <Stat label="Phi (φ)" value={num(r.phi)} />}
         <Stat label="Status" value={r.isSignificant ? 'Signifikan ✅' : 'Tidak signifikan'}
-              accent={r.isSignificant ? 'text-green-600' : 'text-gray-700'} />
+              accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
       </div>
 
       <h4 className="font-semibold mb-2">Tabel Kontingensi (Observed)</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm border border-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>
               <th className="px-3 py-2 text-left border">{r.var1} \ {r.var2}</th>
               {r.colLabels.map(c => <th key={c} className="px-3 py-2 text-left border">{c}</th>)}
@@ -432,24 +432,24 @@ export function ChiSquareResult({ r }) {
           <tbody>
             {r.observed.map((row, i) => (
               <tr key={i} className="border-t">
-                <td className="px-3 py-2 font-medium border bg-gray-50">{r.rowLabels[i]}</td>
+                <td className="px-3 py-2 font-medium border bg-card/50">{r.rowLabels[i]}</td>
                 {row.map((v, j) => (
                   <td key={j} className="px-3 py-2 border">
                     {v}
                     <span className="text-xs text-gray-400 ml-1">(E={r.expected[i][j].toFixed(1)})</span>
                   </td>
                 ))}
-                <td className="px-3 py-2 border bg-gray-50 font-semibold">{r.rowTotals[i]}</td>
+                <td className="px-3 py-2 border bg-card/50 font-semibold">{r.rowTotals[i]}</td>
               </tr>
             ))}
-            <tr className="border-t bg-gray-50">
+            <tr className="border-t bg-card/50">
               <td className="px-3 py-2 font-semibold border">Total</td>
               {r.colTotals.map((c, j) => <td key={j} className="px-3 py-2 border font-semibold">{c}</td>)}
               <td className="px-3 py-2 border font-bold">{r.N}</td>
             </tr>
           </tbody>
         </table>
-        <p className="text-xs text-gray-500 mt-2">Angka dalam kurung = expected frequency.</p>
+        <p className="text-xs text-muted mt-2">Angka dalam kurung = expected frequency.</p>
       </div>
 
       {r.assumptionWarning && (
@@ -467,20 +467,20 @@ export function MannWhitneyResult({ r }) {
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="U" value={num(r.U, 2)} accent="text-sky-600" term="mann_whitney_u" />
+        <Stat label="U" value={num(r.U, 2)} accent="text-accent" term="mann_whitney_u" />
         <Stat label="z" value={num(r.z, 3)} />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-green-600' : 'text-gray-700'} term="p_value" />
+        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-accent' : 'text-fg'} term="p_value" />
         <Stat label="Status" value={r.isSignificant ? 'Signifikan ✅' : 'Tidak signifikan'}
-              accent={r.isSignificant ? 'text-green-600' : 'text-gray-700'} />
+              accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
         <Stat label="N total" value={r.N} />
-        <Stat label="Effect size r" value={num(r.effectSize, 3)} accent="text-sky-600" />
+        <Stat label="Effect size r" value={num(r.effectSize, 3)} accent="text-accent" />
         <Stat label="Magnitude" value={r.effectSizeLabel} />
       </div>
 
       <h4 className="font-semibold mb-2">Statistik per Grup</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{['Grup', 'n', 'Mean Rank', 'Sum Rank'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -504,14 +504,14 @@ export function WilcoxonResult({ r }) {
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="W" value={num(r.W, 2)} accent="text-sky-600" term="wilcoxon_signed_rank" />
+        <Stat label="W" value={num(r.W, 2)} accent="text-accent" term="wilcoxon_signed_rank" />
         <Stat label="z" value={num(r.z, 3)} />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-green-600' : 'text-gray-700'} term="p_value" />
+        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-accent' : 'text-fg'} term="p_value" />
         <Stat label="N pasangan" value={r.n} />
         <Stat label="W+ (positif)" value={num(r.Wpos, 1)} />
         <Stat label="W− (negatif)" value={num(r.Wneg, 1)} />
         <Stat label="Mean diff" value={num(r.meanDiff, 3)} />
-        <Stat label="Effect size r" value={num(r.effectSize, 3)} accent="text-sky-600" />
+        <Stat label="Effect size r" value={num(r.effectSize, 3)} accent="text-accent" />
       </div>
       {r.beforeValues && r.afterValues && (
         <div className="mb-4">
@@ -530,21 +530,21 @@ export function KruskalResult({ r }) {
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="H" value={num(r.H, 3)} accent="text-sky-600" />
+        <Stat label="H" value={num(r.H, 3)} accent="text-accent" />
         <Stat label="df" value={r.df} />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-green-600' : 'text-gray-700'} />
+        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
         <Stat label="Status" value={r.isSignificant ? 'Signifikan ✅' : 'Tidak signifikan'}
-              accent={r.isSignificant ? 'text-green-600' : 'text-gray-700'} />
+              accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
         <Stat label="N total" value={r.N} />
         <Stat label="k grup" value={r.k} />
-        <Stat label="η² (eta²)" value={num(r.etaSquared, 3)} accent="text-sky-600" />
+        <Stat label="η² (eta²)" value={num(r.etaSquared, 3)} accent="text-accent" />
         <Stat label="Magnitude" value={r.effectSizeLabel} />
       </div>
 
       <h4 className="font-semibold mb-2">Statistik per Grup</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{['Grup', 'n', 'Median', 'Mean Rank'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -581,12 +581,12 @@ export function NGainResult({ r }) {
         <Stat
           label="Rata-rata N-Gain"
           value={num(r.nGainMean, 3)}
-          accent={r.nGainMean >= 0.7 ? 'text-green-600' : r.nGainMean >= 0.3 ? 'text-amber-600' : 'text-red-600'}
+          accent={r.nGainMean >= 0.7 ? 'text-accent' : r.nGainMean >= 0.3 ? 'text-amber-600' : 'text-red-600'}
         />
         <Stat
           label="Kategori Kelas"
           value={r.kategoriKelas}
-          accent={r.kategoriKelas === 'Tinggi' ? 'text-green-600' : r.kategoriKelas === 'Sedang' ? 'text-amber-600' : 'text-red-600'}
+          accent={r.kategoriKelas === 'Tinggi' ? 'text-accent' : r.kategoriKelas === 'Sedang' ? 'text-amber-600' : 'text-red-600'}
         />
         <Stat label="SD N-Gain" value={num(r.nGainSD, 3)} />
         <Stat label="Min" value={num(r.nGainMin, 3)} />
@@ -594,13 +594,13 @@ export function NGainResult({ r }) {
         <Stat
           label="Efektivitas"
           value={`${num(r.efektivitasPersen, 2)}%`}
-          accent="text-sky-600"
+          accent="text-accent"
         />
       </div>
 
       <div className={`rounded-xl p-3 mb-4 text-sm border ${
         r.tafsiranEfektivitas === 'Efektif'        ? 'bg-green-50 border-green-200 text-green-800' :
-        r.tafsiranEfektivitas === 'Cukup Efektif'  ? 'bg-sky-50 border-sky-200 text-sky-800' :
+        r.tafsiranEfektivitas === 'Cukup Efektif'  ? 'bg-accent/5 border-sky-200 text-accent' :
         r.tafsiranEfektivitas === 'Kurang Efektif' ? 'bg-amber-50 border-amber-200 text-amber-800' :
                                                      'bg-red-50 border-red-200 text-red-800'
       }`}>
@@ -611,7 +611,7 @@ export function NGainResult({ r }) {
       <h4 className="font-semibold mb-2">Statistik Pre-test vs Post-test</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{['Variabel', 'Mean', 'SD', 'Min', 'Max'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -629,7 +629,7 @@ export function NGainResult({ r }) {
               <td className="px-3 py-2">{num(r.postStats.min, 2)}</td>
               <td className="px-3 py-2">{num(r.postStats.max, 2)}</td>
             </tr>
-            <tr className="bg-sky-50/50">
+            <tr className="bg-accent/5/50">
               <td className="px-3 py-2 font-medium">Rata-rata Selisih</td>
               <td className="px-3 py-2 font-bold text-sky-700" colSpan={4}>
                 {num(r.postStats.mean - r.preStats.mean, 2)} poin
@@ -642,7 +642,7 @@ export function NGainResult({ r }) {
       <h4 className="font-semibold mb-2">Distribusi Kategori N-Gain</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{['Kategori', 'Rentang', 'Jumlah', '%', 'Visualisasi'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -656,7 +656,7 @@ export function NGainResult({ r }) {
               return (
                 <tr key={kat}>
                   <td className="px-3 py-2 font-medium">{kat}</td>
-                  <td className="px-3 py-2 text-gray-500">{range}</td>
+                  <td className="px-3 py-2 text-muted">{range}</td>
                   <td className="px-3 py-2 font-bold">{n}</td>
                   <td className="px-3 py-2">{pct.toFixed(1)}%</td>
                   <td className="px-3 py-2">
@@ -673,16 +673,16 @@ export function NGainResult({ r }) {
 
       {sig && (
         <div className={`rounded-xl p-4 mb-4 border ${
-          sig.significant ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'
+          sig.significant ? 'bg-green-50 border-green-200' : 'bg-card/50 border-gray-200'
         }`}>
           <h4 className="font-semibold mb-2 text-sm">Uji Signifikansi (Paired t-test)</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div><span className="text-gray-500">t:</span> <strong>{num(sig.t, 3)}</strong></div>
-            <div><span className="text-gray-500">df:</span> <strong>{sig.df}</strong></div>
-            <div><span className="text-gray-500">p-value:</span> <strong>{pct(sig.pValue)}</strong></div>
-            <div><span className="text-gray-500">Cohen's d:</span> <strong>{num(sig.cohensD, 3)}</strong></div>
+            <div><span className="text-muted">t:</span> <strong>{num(sig.t, 3)}</strong></div>
+            <div><span className="text-muted">df:</span> <strong>{sig.df}</strong></div>
+            <div><span className="text-muted">p-value:</span> <strong>{pct(sig.pValue)}</strong></div>
+            <div><span className="text-muted">Cohen's d:</span> <strong>{num(sig.cohensD, 3)}</strong></div>
           </div>
-          <p className="text-xs mt-2 text-gray-700">
+          <p className="text-xs mt-2 text-fg">
             {sig.significant
               ? `✅ Peningkatan signifikan secara statistik (p < 0.05). Selisih rata-rata: ${num(sig.meanDiff, 2)} poin.`
               : `❌ Peningkatan TIDAK signifikan secara statistik (p ≥ 0.05). Selisih rata-rata: ${num(sig.meanDiff, 2)} poin.`
@@ -692,12 +692,12 @@ export function NGainResult({ r }) {
       )}
 
       <details className="border border-gray-200 rounded-xl overflow-hidden mb-4">
-        <summary className="px-4 py-2.5 bg-gray-50 hover:bg-gray-100 cursor-pointer text-sm font-medium">
+        <summary className="px-4 py-2.5 bg-card/50 hover:bg-gray-100 cursor-pointer text-sm font-medium">
           Detail per Subjek ({r.pairs.length}) — klik untuk buka
         </summary>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-gray-50 sticky top-0">
+            <thead className="bg-card/50 sticky top-0">
               <tr>{['No', 'Nama', 'Pre', 'Post', 'Gain', 'N-Gain', 'Kategori'].map(h =>
                 <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
             </thead>
@@ -708,7 +708,7 @@ export function NGainResult({ r }) {
                   <td className="px-3 py-1.5 font-medium">{p.name}</td>
                   <td className="px-3 py-1.5">{p.pre}</td>
                   <td className="px-3 py-1.5">{p.post}</td>
-                  <td className={`px-3 py-1.5 ${p.gain > 0 ? 'text-green-600' : p.gain < 0 ? 'text-red-600' : ''}`}>
+                  <td className={`px-3 py-1.5 ${p.gain > 0 ? 'text-accent' : p.gain < 0 ? 'text-red-600' : ''}`}>
                     {p.gain > 0 ? '+' : ''}{p.gain}
                   </td>
                   <td className="px-3 py-1.5 font-bold">{num(p.nGain, 3)}</td>
@@ -761,14 +761,14 @@ export function TwoWayANOVAResult({ r }) {
         <Stat label={`Level ${r.nameA}`} value={r.levelsA.length} />
         <Stat label={`Level ${r.nameB}`} value={r.levelsB.length} />
         <Stat label="Grand Mean" value={num(r.grandMean, 3)} />
-        <Stat label={`F ${r.nameA}`} value={num(r.factorA.F, 3)} accent={r.significantA ? 'text-green-600' : 'text-gray-500'} />
-        <Stat label={`F ${r.nameB}`} value={num(r.factorB.F, 3)} accent={r.significantB ? 'text-green-600' : 'text-gray-500'} />
-        <Stat label={`F ${r.nameA}×${r.nameB}`} value={num(r.interaction.F, 3)} accent={r.significantInteraction ? 'text-green-600' : 'text-gray-500'} />
-        <Stat label="Desain" value={r.isBalanced ? 'Balanced' : 'Unbalanced'} accent={r.isBalanced ? 'text-green-600' : 'text-amber-600'} />
+        <Stat label={`F ${r.nameA}`} value={num(r.factorA.F, 3)} accent={r.significantA ? 'text-accent' : 'text-muted'} />
+        <Stat label={`F ${r.nameB}`} value={num(r.factorB.F, 3)} accent={r.significantB ? 'text-accent' : 'text-muted'} />
+        <Stat label={`F ${r.nameA}×${r.nameB}`} value={num(r.interaction.F, 3)} accent={r.significantInteraction ? 'text-accent' : 'text-muted'} />
+        <Stat label="Desain" value={r.isBalanced ? 'Balanced' : 'Unbalanced'} accent={r.isBalanced ? 'text-accent' : 'text-amber-600'} />
       </div>
 
       <div className={`rounded-xl p-3 mb-4 text-sm border ${
-        r.significantInteraction ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-gray-50 border-gray-200 text-gray-700'
+        r.significantInteraction ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-card/50 border-gray-200 text-fg'
       }`}>
         <strong>Ringkasan:</strong>
         <ul className="mt-1 space-y-0.5 list-disc list-inside">
@@ -786,7 +786,7 @@ export function TwoWayANOVAResult({ r }) {
       <h4 className="font-semibold mb-2">Tabel ANOVA</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{['Source', 'SS', 'df', 'MS', 'F', 'p-value', 'partial η²', 'Effect'].map(h =>
               <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
@@ -800,7 +800,7 @@ export function TwoWayANOVAResult({ r }) {
                 <td className="px-3 py-2 font-bold">{row.F === null ? '—' : num(row.F, 3)}</td>
                 <td className="px-3 py-2">{fmtP(row.pValue)}</td>
                 <td className="px-3 py-2">{row.partialEtaSquared === null ? '—' : num(row.partialEtaSquared, 3)}</td>
-                <td className="px-3 py-2 text-xs text-gray-500">{row.effectSize || '—'}</td>
+                <td className="px-3 py-2 text-xs text-muted">{row.effectSize || '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -810,7 +810,7 @@ export function TwoWayANOVAResult({ r }) {
       <h4 className="font-semibold mb-2">Cell Means ({r.nameA} × {r.nameB})</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-card/50">
             <tr>{[r.nameA, r.nameB, 'n', 'Mean', 'SD'].map(h =>
               <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
           </thead>
@@ -837,7 +837,7 @@ export function TwoWayANOVAResult({ r }) {
         <div>
           <h4 className="font-semibold mb-2 text-sm">Marginal Means: {r.nameA}</h4>
           <table className="w-full text-sm">
-            <thead className="bg-gray-50"><tr><th className="px-3 py-2 text-left">Level</th><th className="px-3 py-2 text-left">n</th><th className="px-3 py-2 text-left">Mean</th></tr></thead>
+            <thead className="bg-card/50"><tr><th className="px-3 py-2 text-left">Level</th><th className="px-3 py-2 text-left">n</th><th className="px-3 py-2 text-left">Mean</th></tr></thead>
             <tbody className="divide-y divide-gray-100">
               {r.marginalA.map((m, i) => (
                 <tr key={i}><td className="px-3 py-2 font-medium">{m.level}</td><td className="px-3 py-2">{m.n}</td><td className="px-3 py-2 font-bold">{num(m.mean, 3)}</td></tr>
@@ -848,7 +848,7 @@ export function TwoWayANOVAResult({ r }) {
         <div>
           <h4 className="font-semibold mb-2 text-sm">Marginal Means: {r.nameB}</h4>
           <table className="w-full text-sm">
-            <thead className="bg-gray-50"><tr><th className="px-3 py-2 text-left">Level</th><th className="px-3 py-2 text-left">n</th><th className="px-3 py-2 text-left">Mean</th></tr></thead>
+            <thead className="bg-card/50"><tr><th className="px-3 py-2 text-left">Level</th><th className="px-3 py-2 text-left">n</th><th className="px-3 py-2 text-left">Mean</th></tr></thead>
             <tbody className="divide-y divide-gray-100">
               {r.marginalB.map((m, i) => (
                 <tr key={i}><td className="px-3 py-2 font-medium">{m.level}</td><td className="px-3 py-2">{m.n}</td><td className="px-3 py-2 font-bold">{num(m.mean, 3)}</td></tr>

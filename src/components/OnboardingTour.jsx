@@ -114,7 +114,7 @@ export default function OnboardingTour() {
         {/* Skip button */}
         <button
           onClick={handleSkip}
-          className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors z-10"
+          className="absolute top-4 right-4 p-1.5 rounded-full text-muted hover:bg-card/50 hover:text-fg transition-colors z-10"
           title="Skip tour"
           aria-label="Skip"
         >
@@ -130,8 +130,8 @@ export default function OnboardingTour() {
 
         {/* Content */}
         <div className="px-7 py-6 text-center">
-          <h2 className="text-xl font-bold text-gray-900 mb-2">{current.title}</h2>
-          <p className="text-sm text-gray-600 leading-relaxed">{current.body}</p>
+          <h2 className="text-xl font-bold text-fg mb-2">{current.title}</h2>
+          <p className="text-sm text-muted leading-relaxed">{current.body}</p>
         </div>
 
         {/* Progress dots */}
@@ -141,7 +141,7 @@ export default function OnboardingTour() {
               key={i}
               onClick={() => setStep(i)}
               className={`h-1.5 rounded-full transition-all ${
-                i === step ? 'w-6 bg-gray-900' : 'w-1.5 bg-gray-300 hover:bg-gray-400'
+                i === step ? 'w-6 bg-gray-900' : 'w-1.5 bg-border hover:bg-gray-400'
               }`}
               aria-label={`Step ${i + 1}`}
             />
@@ -153,14 +153,14 @@ export default function OnboardingTour() {
           {step > 0 ? (
             <button
               onClick={handleBack}
-              className="px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors text-sm font-medium flex items-center gap-1"
+              className="px-3 py-2.5 rounded-xl text-muted hover:bg-card/50 transition-colors text-sm font-medium flex items-center gap-1"
             >
               <ChevronLeft className="w-4 h-4" /> Kembali
             </button>
           ) : (
             <button
               onClick={handleSkip}
-              className="px-3 py-2.5 rounded-xl text-gray-400 hover:text-gray-700 transition-colors text-sm font-medium"
+              className="px-3 py-2.5 rounded-xl text-muted hover:text-fg transition-colors text-sm font-medium"
             >
               Lewati
             </button>

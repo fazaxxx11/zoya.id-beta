@@ -31,7 +31,7 @@ function StepIndicator({ current, completed }) {
           <div key={step.id} className="flex items-center gap-1 flex-shrink-0">
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               isActive ? 'bg-accent/10 text-accent' :
-              isDone ? 'text-emerald-600' :
+              isDone ? 'text-accent' :
               'text-muted'
             }`}>
               {isDone ? (
@@ -204,7 +204,7 @@ function StepReview({ columns, data, numericColumns, categoricalColumns, editing
                     {m && m.count > 0 ? (
                       <span className="text-amber-600 text-xs">{m.count} ({m.pct}%)</span>
                     ) : (
-                      <span className="text-emerald-600 text-xs">0</span>
+                      <span className="text-accent text-xs">0</span>
                     )}
                   </td>
                 </tr>

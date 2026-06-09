@@ -31,13 +31,13 @@
    Default: light. .dark class di <html> override-nya.
 ===================================================== */
 :root {
-  --bg:        248 250 252;   /* slate-50 */
-  --fg:        15 23 42;      /* slate-900 */
-  --card:      255 255 255;   /* white */
-  --border:    226 232 240;   /* slate-200 */
-  --muted:     100 116 139;   /* slate-500 */
-  --accent:    14 165 233;    /* sky-500 */
-  --accent-2:  168 85 247;    /* purple-500 */
+  --bg:        250 248 244;   /* warm ivory */
+  --fg:        23 32 51;      /* deep navy */
+  --card:      255 255 255;   /* soft white */
+  --border:    232 225 214;   /* warm beige-gray */
+  --muted:     120 113 108;   /* warm gray */
+  --accent:    15 118 110;    /* deep teal */
+  --accent-2:  79 70 229;     /* indigo soft */
 }
 
 .dark {
