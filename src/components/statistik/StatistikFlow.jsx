@@ -476,7 +476,7 @@ export default function StatistikFlow({
     if (propData && !originalData) {
       setOriginalData(propData)
     }
-  }, [propData]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [propData])
 
   // Reset originalData when file changes (new upload)
   useMemo(() => {
@@ -486,7 +486,7 @@ export default function StatistikFlow({
       setHasEdits(false)
       setEditingCell(null)
     }
-  }, [file]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [file])
 
   // Cell edit handlers
   const handleCellClick = useCallback((rowIndex, col, value) => {

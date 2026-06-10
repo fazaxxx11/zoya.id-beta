@@ -63,11 +63,6 @@ export const STAT_GLOSSARY = {
     title: 'Adjusted R²',
     description: 'R² yang sudah disesuaikan dengan jumlah prediktor. Selalu ≤ R². Lebih akurat untuk membandingkan model dengan jumlah prediktor berbeda.',
   },
-  vif: {
-    title: 'VIF (Variance Inflation Factor)',
-    description: 'Mendeteksi multikolinieritas antar prediktor dalam regresi berganda. VIF tinggi → prediktor saling tumpang-tindih → koefisien tidak stabil.',
-    threshold: 'VIF < 5 → aman; 5–10 → perlu perhatian; > 10 → multikolinieritas serius.',
-  },
   beta: {
     title: 'Beta (β) — koefisien standardized',
     description: 'Koefisien regresi yang sudah distandardisasi (skor-z). Memungkinkan perbandingan kekuatan relatif antar prediktor pada skala yang sama, terlepas dari unit asalnya.',

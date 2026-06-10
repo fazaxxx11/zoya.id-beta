@@ -35,7 +35,7 @@ export function ThemeProvider({ children }) {
   // Apply on mount
   useEffect(() => {
     applyTheme(mode)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   // Listen for system preference changes
   useEffect(() => {

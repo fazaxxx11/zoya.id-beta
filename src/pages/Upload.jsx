@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
-  ChevronLeft, Upload, FileSpreadsheet, FileText, 
+  ChevronLeft, Upload as UploadIcon, FileSpreadsheet, FileText, 
   CheckCircle, XCircle, Loader2, File, AlertCircle,
   Eye, Trash2, Plus
 } from 'lucide-react'
@@ -147,7 +147,7 @@ function Upload() {
               {processing ? (
                 <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
               ) : (
-                <Upload className={`w-8 h-8 ${dragActive ? 'text-sky-600' : 'text-gray-400'}`} />
+                <UploadIcon className={`w-8 h-8 ${dragActive ? 'text-sky-600' : 'text-gray-400'}`} />
               )}
             </div>
             <p className="text-gray-700 font-medium text-lg mb-1">

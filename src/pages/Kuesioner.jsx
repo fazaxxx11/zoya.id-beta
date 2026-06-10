@@ -62,7 +62,7 @@ export default function Kuesioner() {
       setActiveId(all[0].id)
       setDraft(all[0])
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [])
 
   // Load responses when active changes
@@ -1570,7 +1570,7 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
         setScale(likertItems[0].scale)
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [open])
 
   async function generate(mode /* 'replace' | 'append' */) {

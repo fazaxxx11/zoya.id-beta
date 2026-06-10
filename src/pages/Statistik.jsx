@@ -308,7 +308,7 @@ function Statistik() {
     } catch (e) {
       toast.error('Gagal parse data kuesioner')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [])
 
   // ============================================================

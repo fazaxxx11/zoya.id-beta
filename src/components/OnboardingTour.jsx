@@ -72,7 +72,7 @@ export default function OnboardingTour() {
     const onKey = (e) => { if (e.key === 'Escape') handleSkip() }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [open])
 
   const markComplete = () => {
