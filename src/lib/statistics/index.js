@@ -34,7 +34,9 @@ export {
   cronbachAdapter,
   oneSampleTTestAdapter, independentTTestAdapter, pairedTTestAdapter,
   oneWayANOVAAdapter,
+  twoWayANOVAAdapter,
   simpleRegressionAdapter,
+  multipleLinearRegressionAdapter,
   normalityAdapter,
   mannWhitneyAdapter, wilcoxonAdapter, kruskalWallisAdapter,
 } from './uiAdapters.js';
