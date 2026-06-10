@@ -4,3 +4,7 @@ export { default as Panel } from './Panel';
 export { default as MetricCard } from './MetricCard';
 export { default as DataTable } from './DataTable';
 export { default as EmptyState } from './EmptyState';
+export { default as ResultSummary } from './ResultSummary';
+export { default as MethodNote } from './MethodNote';
+export { default as DetailsBlock } from './DetailsBlock';
+export { default as RecommendationList } from './RecommendationList';

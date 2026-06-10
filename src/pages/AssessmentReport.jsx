@@ -12,6 +12,7 @@ import {
 import { generateClassReport, generateStudentCard } from '../lib/assessmentReport'
 import { getOrders } from '../lib/orders'
 import { BRAND_NAME } from '../lib/brand'
+import DetailsBlock from '../components/design/DetailsBlock'
 
 /** Coba ambil order data dari URL param atau localStorage 'latest_assessment_order'. */
 function loadOrderData(orderIdParam) {
@@ -252,9 +253,8 @@ function ClassReportView({ report }) {
         </table>
       </section>
 
-      {/* Tabel skor per siswa */}
-      <section className="mb-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-3 border-l-4 border-sky-500 pl-3">D. Skor Individu</h2>
+      {/* Tabel skor per siswa — dense, use progressive disclosure */}
+      <DetailsBlock title="D. Skor Individu — klik untuk melihat tabel lengkap">
         <div className="overflow-x-auto">
           <table className="w-full text-xs border border-gray-200">
             <thead>
@@ -289,11 +289,11 @@ function ClassReportView({ report }) {
             </tbody>
           </table>
         </div>
-      </section>
+      </DetailsBlock>
 
       {/* Narasi (Bab IV-style) */}
       <section className="mb-4">
-        <h2 className="text-lg font-bold text-gray-900 mb-3 border-l-4 border-sky-500 pl-3">E. Pembahasan</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-3 border-l-4 border-sky-500 pl-3">D. Pembahasan</h2>
         <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed">
           {narrative.split('\n\n').map((p, i) => (
             <p key={i} className="mb-3 text-justify">{p}</p>

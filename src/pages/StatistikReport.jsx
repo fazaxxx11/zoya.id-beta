@@ -11,6 +11,8 @@ import { listAnalyses, getAnalysis } from '../lib/savedAnalyses'
 import { buildReport, reportToText, reportToHTML } from '../lib/reportBuilder'
 import { toast } from '../lib/toast'
 import PageHeader from '../components/PageHeader'
+import ResultSummary from '../components/design/ResultSummary'
+import DetailsBlock from '../components/design/DetailsBlock'
 
 export default function StatistikReport() {
   const [items, setItems] = useState([])     // list saved analyses (metadata only)
@@ -242,13 +244,24 @@ export default function StatistikReport() {
               <div className="text-sm text-gray-500">Pilih analisis di sidebar untuk men-generate draft</div>
             </div>
           ) : (
-            <div ref={previewRef} className="bg-white rounded-2xl border border-gray-100 p-8 lg:p-10 prose prose-sm max-w-none report-page">
-              <h1 className="text-center text-lg font-bold mb-6">{report.title}</h1>
-              <p className="text-justify indent-8 text-gray-800 leading-relaxed">{report.intro}</p>
-              {report.sections.map((sec, i) => (
-                <ReportSection key={i} section={sec} />
-              ))}
-            </div>
+            <>
+              {/* Summary: what's in this report */}
+              <ResultSummary
+                status="info"
+                conclusion={`Draft Bab IV — ${report.sections.length} sub-bab`}
+                metric={`${selected.size} analisis dipilih`}
+                meaning="Draft ini disusun otomatis dari analisis yang Anda pilih. Review setiap sub-bab, sesuaikan dengan konteks penelitian Anda, lalu polish sebelum digunakan."
+              />
+
+              {/* Report preview with progressive disclosure for long content */}
+              <div ref={previewRef} className="bg-white rounded-2xl border border-gray-100 p-8 lg:p-10 prose prose-sm max-w-none report-page">
+                <h1 className="text-center text-lg font-bold mb-6">{report.title}</h1>
+                <p className="text-justify indent-8 text-gray-800 leading-relaxed">{report.intro}</p>
+                {report.sections.map((sec, i) => (
+                  <ReportSection key={i} section={sec} />
+                ))}
+              </div>
+            </>
           )}
 
           {/* Footer guidance — hidden saat print */}
