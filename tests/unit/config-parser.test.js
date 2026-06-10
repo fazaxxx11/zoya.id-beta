@@ -13,7 +13,7 @@ describe('config-parser: parseAllowedOrigins', () => {
     expect(result).toEqual([
       'https://zoya.id',
       'https://www.zoya.id',
-      'https://zoya-id-beta.vercel.app',
+      'https://zoya-id-beta.vercel.app', 'https://azezmen.vercel.app',
     ]);
   });
 
@@ -44,7 +44,7 @@ describe('config-parser: parseAllowedOrigins', () => {
     expect(result).toEqual([
       'https://zoya.id',
       'https://www.zoya.id',
-      'https://zoya-id-beta.vercel.app',
+      'https://zoya-id-beta.vercel.app', 'https://azezmen.vercel.app',
     ]);
   });
 

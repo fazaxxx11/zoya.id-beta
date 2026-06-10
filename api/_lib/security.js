@@ -1,5 +1,5 @@
 // Default CORS configuration (backward compatibility)
-export const DEFAULT_CORS_ALLOWLIST = ['https://zoya.id', 'https://www.zoya.id', 'https://zoya-id-beta.vercel.app'];
+export const DEFAULT_CORS_ALLOWLIST = ['https://zoya.id', 'https://www.zoya.id', 'https://zoya-id-beta.vercel.app', 'https://azezmen.vercel.app'];
 export const DEFAULT_CORS_REGEXES = [
   /^https:\/\/zoya-id-beta-[a-z0-9]+-zaaaxx11s-projects\.vercel\.app$/,
   /^http:\/\/localhost:\d+$/

@@ -5,4 +5,4 @@ Disallow: /dashboard
 Disallow: /profile
 Disallow: /payment
 
-Sitemap: https://zoya-id-beta.vercel.app/sitemap.xml
+Sitemap: https://azezmen.vercel.app/sitemap.xml
