@@ -1,194 +1,255 @@
 /**
- * AI Provider Configuration Module
- * Centralized configuration for various AI providers
+ * @file AI provider configuration and utilities
+ * @module api/_lib/ai-providers
  */
 
 /**
- * Provider configuration type definition
- * @typedef {Object} ProviderConfig
- * @property {string} id - Unique identifier
- * @property {string} name - Display name
- * @property {string} envKey - Environment variable name for API key
- * @property {string} defaultUrl - Default API endpoint URL
- * @property {string} defaultModel - Default model name
- * @property {string} urlEnv - Environment variable for URL override
- * @property {string} modelEnv - Environment variable for model override
- * @property {boolean} [isOpenRouter] - Whether this is OpenRouter provider
+ * Provider definitions with configuration details
+ * @type {Array<Object>}
  */
-
-/**
- * Chat completion options
- * @typedef {Object} ChatOptions
- * @property {number} [temperature] - Sampling temperature
- * @property {number} [maxTokens] - Maximum tokens to generate
- */
-
-/**
- * Provider status without secrets
- * @typedef {Object} ProviderStatus
- * @property {string} id - Provider ID
- * @property {string} name - Provider name
- * @property {boolean} configured - Whether provider is configured
- * @property {string} model - Active model name
- * @property {string} url - Active API URL
- */
-
-// Provider configurations
-const PROVIDERS = Object.freeze([
+const providerDefinitions = [
   {
     id: 'generalcompute',
     name: 'General Compute',
-    envKey: 'GENERALCOMPUTE_API_KEY',
+    urlEnv: 'GENERALCOMPUTE_URL',
+    baseUrlEnv: 'GENERALCOMPUTE_BASE_URL',
     defaultUrl: 'https://api.generalcompute.com/v1/chat/completions',
+    modelEnv: 'GENERALCOMPUTE_MODEL',
     defaultModel: 'deepseek-v3.2',
-    urlEnv: 'GENERALCOMPUTE_BASE_URL',
-    modelEnv: 'GENERALCOMPUTE_MODEL'
+    keyEnv: 'GENERALCOMPUTE_API_KEY',
+    isOpenRouter: false
   },
   {
     id: 'openrouter',
     name: 'OpenRouter',
-    envKey: 'OPENROUTER_API_KEY',
+    urlEnv: 'OPENROUTER_URL',
+    baseUrlEnv: 'OPENROUTER_BASE_URL',
     defaultUrl: 'https://openrouter.ai/api/v1/chat/completions',
-    defaultModel: 'openrouter/auto',
-    urlEnv: 'OPENROUTER_BASE_URL',
     modelEnv: 'OPENROUTER_MODEL',
+    defaultModel: 'openrouter/auto',
+    keyEnv: 'OPENROUTER_API_KEY',
     isOpenRouter: true
   },
   {
     id: 'groq',
     name: 'Groq',
-    envKey: 'GROQ_API_KEY',
+    urlEnv: 'GROQ_URL',
+    baseUrlEnv: 'GROQ_BASE_URL',
     defaultUrl: 'https://api.groq.com/openai/v1/chat/completions',
+    modelEnv: 'GROQ_MODEL',
     defaultModel: 'llama-3.3-70b-versatile',
-    urlEnv: 'GROQ_BASE_URL',
-    modelEnv: 'GROQ_MODEL'
+    keyEnv: 'GROQ_API_KEY',
+    isOpenRouter: false
   },
   {
     id: 'kimi',
     name: 'Kimi',
-    envKey: 'KIMI_API_KEY',
+    urlEnv: 'KIMI_URL',
+    baseUrlEnv: 'KIMI_BASE_URL',
     defaultUrl: 'https://api.moonshot.ai/v1/chat/completions',
+    modelEnv: 'KIMI_MODEL',
     defaultModel: 'moonshot-v1-8k',
-    urlEnv: 'KIMI_BASE_URL',
-    modelEnv: 'KIMI_MODEL'
+    keyEnv: 'KIMI_API_KEY',
+    isOpenRouter: false
   }
-]);
+];
 
 /**
- * Get all configured providers (filtered by API key presence)
- * @returns {ProviderConfig[]} Array of configured providers
+ * Resolves provider URL with fallback chain
+ * @param {Object} providerDef - Provider definition object
+ * @returns {string} Resolved URL
+ */
+export function getProviderUrl(providerDef) {
+  try {
+    return process.env[providerDef.urlEnv] || 
+           process.env[providerDef.baseUrlEnv] || 
+           providerDef.defaultUrl;
+  } catch (error) {
+    console.error(`Error resolving URL for ${providerDef.id}:`, error);
+    return providerDef.defaultUrl;
+  }
+}
+
+/**
+ * Resolves provider model with fallback chain
+ * @param {Object} providerDef - Provider definition object
+ * @returns {string|Array<string>} Resolved model or cascade array
+ */
+export function getProviderModel(providerDef) {
+  try {
+    if (providerDef.id === 'groq') {
+      const modelEnv = process.env[providerDef.modelEnv];
+      if (modelEnv) {
+        return modelEnv;
+      }
+      return ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+    }
+    
+    return process.env[providerDef.modelEnv] || providerDef.defaultModel;
+  } catch (error) {
+    console.error(`Error resolving model for ${providerDef.id}:`, error);
+    return providerDef.defaultModel;
+  }
+}
+
+/**
+ * Gets OpenRouter-specific headers
+ * @returns {Object} Headers for OpenRouter requests
+ */
+function getOpenRouterHeaders() {
+  return {
+    'HTTP-Referer': 'https://zoya.id',
+    'X-Title': 'zoya.id'
+  };
+}
+
+/**
+ * Creates configured provider objects based on available API keys
+ * @param {Object} apiKeys - Object with provider IDs as keys and API keys as values
+ * @param {Object} [options] - Optional provider-specific overrides
+ * @returns {Array<Object>} Array of configured provider objects
+ */
+export function getConfiguredProviders(apiKeys, options = {}) {
+  const providers = [];
+
+  for (const providerDef of providerDefinitions) {
+    const key = apiKeys[providerDef.id];
+    if (!key) continue;
+
+    const providerOptions = options[providerDef.id] || {};
+    
+    const provider = {
+      id: providerDef.id,
+      name: providerDef.name,
+      url: providerOptions.url || getProviderUrl(providerDef),
+      model: providerOptions.model || getProviderModel(providerDef),
+      key: key,
+      isOpenRouter: providerDef.isOpenRouter
+    };
+
+    if (provider.isOpenRouter) {
+      provider.headers = getOpenRouterHeaders();
+    }
+
+    providers.push(provider);
+  }
+
+  return providers;
+}
+
+/**
+ * Gets provider status information without exposing secrets
+ * @returns {Array<Object>} Array of provider status objects
+ */
+export function getProviderStatus() {
+  const status = [];
+
+  for (const providerDef of providerDefinitions) {
+    try {
+      const hasKey = !!process.env[providerDef.keyEnv];
+      const url = getProviderUrl(providerDef);
+      const model = getProviderModel(providerDef);
+      
+      status.push({
+        id: providerDef.id,
+        name: providerDef.name,
+        configured: hasKey,
+        url: url,
+        model: model,
+        isOpenRouter: providerDef.isOpenRouter
+      });
+    } catch (error) {
+      console.error(`Error getting status for ${providerDef.id}:`, error);
+      status.push({
+        id: providerDef.id,
+        name: providerDef.name,
+        configured: false,
+        error: error.message
+      });
+    }
+  }
+
+  return status;
+}
+
+// ── Backward-compat exports (used by AI endpoints) ───────────────
+
+/**
+ * Get providers from env keys — backward-compat wrapper.
+ * Reads GENERALCOMPUTE_API_KEY, GROQ_API_KEY, KIMI_API_KEY, OPENROUTER_API_KEY from env.
+ * @returns {Array<Object>} Configured providers with key, url, model, isOpenRouter
  */
 export function getProviders() {
-  return PROVIDERS.filter(provider => {
-    const apiKey = process.env[provider.envKey];
-    return apiKey && apiKey.trim().length > 0;
-  });
+  const apiKeys = {};
+  for (const def of providerDefinitions) {
+    const key = process.env[def.keyEnv];
+    if (key) apiKeys[def.id] = key;
+  }
+  return getConfiguredProviders(apiKeys);
 }
 
 /**
- * Get a specific provider by ID
+ * Get single provider by ID (backward-compat).
  * @param {string} id - Provider ID
- * @returns {ProviderConfig|null} Provider configuration or null if not found
+ * @returns {Object|null} Provider or null
  */
 export function getProvider(id) {
-  const provider = PROVIDERS.find(p => p.id === id);
-  if (!provider) return null;
-  
-  const apiKey = process.env[provider.envKey];
-  return apiKey && apiKey.trim().length > 0 ? provider : null;
+  const providers = getProviders();
+  return providers.find(p => p.id === id) || null;
 }
 
 /**
- * Get Groq cascade models
- * @returns {string[]} Array of model names for cascade
+ * Get Groq cascade models (backward-compat).
+ * @returns {string[]} Array of model names
  */
 export function getGroqCascadeModels() {
-  const groqProvider = PROVIDERS.find(p => p.id === 'groq');
-  if (!groqProvider) return [];
-  
-  const envModel = process.env[groqProvider.modelEnv];
-  if (envModel && envModel.trim().length > 0) {
-    return [envModel.trim()];
-  }
-  
+  const def = providerDefinitions.find(p => p.id === 'groq');
+  const envModel = process.env[def.modelEnv];
+  if (envModel) return [envModel];
   return ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
 }
 
 /**
- * Check if any providers are configured
- * @returns {boolean} True if at least one provider is configured
+ * Check if any providers are configured (backward-compat).
+ * @returns {boolean}
  */
 export function hasProviders() {
   return getProviders().length > 0;
 }
 
 /**
- * Build HTTP headers for a provider
- * @param {ProviderConfig} provider - Provider configuration
- * @returns {Object} Headers object for fetch
- * @throws {Error} If API key is missing
+ * Build headers for a provider (backward-compat).
+ * @param {Object} provider - Provider object with key and isOpenRouter
+ * @returns {Object} Headers object
  */
 export function buildHeaders(provider) {
-  const apiKey = process.env[provider.envKey];
-  if (!apiKey || apiKey.trim().length === 0) {
-    throw new Error(`Missing API key for provider: ${provider.name}`);
-  }
-  
   const headers = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${apiKey.trim()}`
+    'Authorization': `Bearer ${provider.key}`,
   };
-  
   if (provider.isOpenRouter) {
     headers['HTTP-Referer'] = 'https://zoya.id';
     headers['X-Title'] = 'zoya.id';
   }
-  
   return headers;
 }
 
 /**
- * Build chat completion request body
- * @param {ProviderConfig} provider - Provider configuration
- * @param {Array} messages - Array of message objects
- * @param {ChatOptions} [options] - Chat options
- * @returns {Object} Request body for chat completion
+ * Build chat completion body (backward-compat).
+ * @param {Object} provider - Provider object with model and isOpenRouter
+ * @param {Array} messages - Chat messages
+ * @param {Object} [options] - { temperature, maxTokens }
+ * @returns {Object} Request body
  */
 export function buildChatBody(provider, messages, options = {}) {
-  const model = process.env[provider.modelEnv]?.trim() || provider.defaultModel;
-  
   const body = {
-    model,
+    model: provider.model,
     messages,
     temperature: options.temperature ?? 0.3,
-    max_tokens: options.maxTokens ?? 1500
+    max_tokens: options.maxTokens ?? 1500,
   };
-  
   if (provider.isOpenRouter) {
     body.response_format = { type: 'json_object' };
   }
-  
   return body;
-}
-
-/**
- * Get provider status information without secrets
- * @returns {ProviderStatus[]} Array of provider status objects
- */
-export function getProviderStatus() {
-  return PROVIDERS.map(provider => {
-    const apiKey = process.env[provider.envKey];
-    const configured = !!(apiKey && apiKey.trim().length > 0);
-    
-    const model = process.env[provider.modelEnv]?.trim() || provider.defaultModel;
-    const url = process.env[provider.urlEnv]?.trim() || provider.defaultUrl;
-    
-    return {
-      id: provider.id,
-      name: provider.name,
-      configured,
-      model,
-      url
-    };
-  });
 }
