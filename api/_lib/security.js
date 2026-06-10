@@ -1,141 +1,132 @@
-export const CORS_ALLOWLIST = [
-  'https://zoya.id',
-  'https://www.zoya.id',
-  'https://zoya-id-beta.vercel.app'
-];
-
-export const CORS_REGEXES = [
+// Default CORS configuration (backward compatibility)
+export const DEFAULT_CORS_ALLOWLIST = ['https://zoya.id', 'https://www.zoya.id', 'https://zoya-id-beta.vercel.app'];
+export const DEFAULT_CORS_REGEXES = [
   /^https:\/\/zoya-id-beta-[a-z0-9]+-zaaaxx11s-projects\.vercel\.app$/,
   /^http:\/\/localhost:\d+$/
 ];
 
+// Parse allowed origins from environment variable
+export function parseAllowedOrigins() {
+  const envOrigins = process.env.ALLOWED_ORIGINS;
+  const origins = [...DEFAULT_CORS_ALLOWLIST];
+  
+  if (envOrigins) {
+    const parsedOrigins = envOrigins
+      .split(',')
+      .map(origin => origin.trim())
+      .filter(origin => origin.length > 0);
+    
+    origins.push(...parsedOrigins);
+  }
+  
+  return [...new Set(origins)]; // Remove duplicates
+}
+
+// CORS middleware
 export function corsMiddleware(req, res) {
   const origin = req.headers.origin;
+  const allowedOrigins = parseAllowedOrigins();
   
-  // Allow server-to-server requests (no origin)
-  if (!origin) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    return;
-  }
-  
-  // Check against allowlist
-  if (CORS_ALLOWLIST.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Vary', 'Origin');
-    return;
-  }
-  
-  // Check against regex patterns
-  for (const regex of CORS_REGEXES) {
-    if (regex.test(origin)) {
+  if (origin) {
+    // Check exact matches
+    if (allowedOrigins.includes(origin)) {
       res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      res.setHeader('Vary', 'Origin');
-      return;
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } 
+    // Check regex patterns
+    else if (DEFAULT_CORS_REGEXES.some(regex => regex.test(origin))) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
     }
   }
   
-  // Block unauthorized origins
-  res.status(403).json({ error: 'CORS policy: Origin not allowed' });
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Max-Age', '86400');
+    res.status(200).end();
+    return true;
+  }
+  
+  return false;
 }
 
+// Security headers middleware
 export function securityHeaders(res) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.generalcompute.com https://api.groq.com https://api.moonshot.ai https://openrouter.ai; font-src 'self' data:");
 }
 
-export function sanitizeError(error, isProduction = true) {
+// Sanitize error for production
+export function sanitizeError(error, isProduction) {
   if (isProduction) {
-    return { error: 'Terjadi kesalahan server' }
+    return {
+      message: 'An error occurred',
+      code: error.code || 'INTERNAL_ERROR'
+    };
   }
-  return { error: error.message || 'Unknown error', details: error }
+  return error;
 }
 
+// Validate request body against schema
 export function validateBody(req, res, schema) {
   try {
-    const body = req.body;
-    if (!body || typeof body !== 'object') {
-      return { valid: false, error: 'Invalid request body' }
+    const result = schema.safeParse(req.body);
+    if (!result.success) {
+      res.status(400).json({
+        error: 'Validation failed',
+        details: result.error.errors
+      });
+      return null;
     }
-    
-    const result = {}
-    
-    for (const [key, typeDef] of Object.entries(schema)) {
-      const isOptional = typeDef.endsWith('?');
-      const type = isOptional ? typeDef.slice(0, -1) : typeDef;
-      
-      if (!(key in body)) {
-        if (!isOptional) {
-          return { valid: false, error: `Missing required field: ${key}` }
-        }
-        continue;
-      }
-      
-      const value = body[key];
-      
-      switch (type) {
-        case 'string':
-          if (typeof value !== 'string') {
-            return { valid: false, error: `Field ${key} must be a string` }
-          }
-          result[key] = value;
-          break;
-          
-        case 'number':
-          if (typeof value !== 'number' || isNaN(value)) {
-            return { valid: false, error: `Field ${key} must be a number` }
-          }
-          result[key] = value;
-          break;
-          
-        case 'boolean':
-          if (typeof value !== 'boolean') {
-            return { valid: false, error: `Field ${key} must be a boolean` }
-          }
-          result[key] = value;
-          break;
-          
-        case 'object':
-          if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-            return { valid: false, error: `Field ${key} must be an object` }
-          }
-          result[key] = value;
-          break;
-          
-        case 'array':
-          if (!Array.isArray(value)) {
-            return { valid: false, error: `Field ${key} must be an array` }
-          }
-          result[key] = value;
-          break;
-          
-        default:
-          return { valid: false, error: `Unknown type for field ${key}: ${type}` }
-      }
-    }
-    
-    return { valid: true, data: result }
+    return result.data;
   } catch (error) {
-    return { valid: false, error: 'Invalid request body format' }
+    res.status(400).json({
+      error: 'Invalid request body'
+    });
+    return null;
   }
 }
 
-export function rateLimitByIP(req, res, { maxRequests = 30, windowMs = 60000 } = {}) {
-  // This function should be implemented with your actual rate limiting logic
-  // For now, it returns a mock implementation
+// Rate limiting by IP
+const rateLimitStore = new Map();
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT_MAX = 100; // 100 requests per window
+
+export function rateLimitByIP(req, res) {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const now = Date.now();
   
-  // In a real implementation, you would check against a store (Redis, etc.)
-  // and return { allowed: false, remaining: 0 } if rate limited
+  if (!rateLimitStore.has(ip)) {
+    rateLimitStore.set(ip, {
+      count: 1,
+      startTime: now
+    });
+    return true;
+  }
   
-  return { allowed: true, remaining: maxRequests }
+  const entry = rateLimitStore.get(ip);
+  
+  if (now - entry.startTime > RATE_LIMIT_WINDOW) {
+    entry.count = 1;
+    entry.startTime = now;
+    return true;
+  }
+  
+  if (entry.count >= RATE_LIMIT_MAX) {
+    res.status(429).json({
+      error: 'Too many requests'
+    });
+    return false;
+  }
+  
+  entry.count++;
+  return true;
 }
+
+// Backward compatibility exports
+export const CORS_ALLOWLIST = DEFAULT_CORS_ALLOWLIST;
+export const CORS_REGEXES = DEFAULT_CORS_REGEXES;

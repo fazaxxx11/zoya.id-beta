@@ -1,47 +1,131 @@
-# AI Assessment Tool — by zaaaxx
+# zoya.id — AI Tools for Research & Education
 
-Sistem penilaian rubrik otomatis berbasis AI (Claude) untuk dosen/guru.
+Alat bantu riset dan analisis statistik berbasis AI untuk dosen, mahasiswa, dan peneliti.
+
+## Tech Stack
+
+- **Frontend:** React 18 + Vite + Tailwind CSS
+- **Backend/API:** Express.js (local dev) + Vercel Serverless Functions (production)
+- **Database:** Supabase (PostgreSQL + RLS)
+- **AI Providers:** GeneralCompute (DeepSeek V3.2) → OpenRouter → Groq → Kimi (cascade fallback)
+- **Auth:** JWT via Supabase Auth
+- **Rate Limiting:** Upstash Redis (optional, degrades gracefully to in-memory)
+- **Payments:** Midtrans (Indonesian payment gateway)
 
 ## Fitur
-- Buat rubrik penilaian custom dengan bobot per kriteria
-- Input jawaban beberapa murid sekaligus
-- AI menilai tiap kriteria dengan skor 1–10 dan komentar
-- Skor final otomatis berdasarkan bobot
 
-## Deploy ke Vercel
+- **Assessment** — Rubrik penilaian otomatis berbasis AI
+- **Statistik** — Analisis deskriptif, inferensial, non-parametrik
+- **Kuesioner** — Generate instrumen Likert otomatis
+- **Interpretasi** — AI menulis interpretasi akademik dari hasil uji
+- **Explain** — "Belum Paham?" chat untuk penjelasan statistik
 
-### 1. Clone & install
+## Setup
+
+### 1. Clone & Install
+
 ```bash
-git clone https://github.com/username/mafaza-assessment.git
-cd mafaza-assessment
+git clone https://github.com/fazaxxx11/zoya.id-beta.git
+cd zoya.id-beta
 npm install
 ```
 
-### 2. Dapatkan API Key Anthropic
-- Daftar di [console.anthropic.com](https://console.anthropic.com)
-- Buat API key baru
+### 2. Configure Environment
 
-### 3. Deploy ke Vercel
+```bash
+cp .env.example .env
+# Edit .env — isi minimal SUPABASE_URL, SUPABASE_ANON_KEY, dan salah satu AI provider key
+```
+
+### 3. Run Development
+
+```bash
+npm run dev          # Vite dev server (frontend only)
+npm run server       # Express server (full stack, port 3000)
+```
+
+### 4. Build & Preview
+
+```bash
+npm run build
+npm run preview
+```
+
+## Environment Variables
+
+Lihat `.env.example` untuk daftar lengkap. Yang wajib:
+
+| Variable | Description |
+|----------|-------------|
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (backend only) |
+| `GENERALCOMPUTE_API_KEY` | GeneralCompute API key (DeepSeek V3.2) |
+| `GROQ_API_KEY` | Groq API key (fallback, gratis) |
+
+Opsional:
+- `KIMI_API_KEY` — Kimi/Moonshot fallback
+- `OPENROUTER_API_KEY` — OpenRouter multi-model fallback
+- `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` — Redis rate limiting
+
+### AI Provider URL/Model Override
+
+Semua provider support env override untuk URL dan model:
+
+```
+GENERALCOMPUTE_URL atau GENERALCOMPUTE_BASE_URL
+GENERALCOMPUTE_MODEL (default: deepseek-v3.2)
+GROQ_URL atau GROQ_BASE_URL
+GROQ_MODEL (default: llama-3.3-70b-versatile)
+KIMI_URL atau KIMI_BASE_URL
+KIMI_MODEL (default: moonshot-v1-8k)
+OPENROUTER_URL atau OPENROUTER_BASE_URL
+OPENROUTER_MODEL (default: openrouter/auto)
+```
+
+### Rate Limiting
+
+```
+RATE_LIMIT_USER_MAX=20       # per user per window
+RATE_LIMIT_IP_MAX=40         # per IP per window
+RATE_LIMIT_WINDOW_MS=60000   # 60 detik
+RATE_LIMIT_FAIL_CLOSED=false # true = reject saat Redis down
+```
+
+Tanpa Redis, rate limit menggunakan in-memory degraded mode dengan limit lebih ketat (`floor(max * 0.5)`).
+
+### CORS
+
+```
+ALLOWED_ORIGINS=https://zoya.id,https://www.zoya.id,https://zoya-id-beta.vercel.app
+```
+
+## Testing
+
+```bash
+npm test              # Run Vitest unit tests
+npm run test:watch    # Watch mode
+npm run lint          # ESLint
+```
+
+## Production Hardening
+
+- **Redis optional** — Graceful degraded fallback saat Redis down
+- **Circuit breaker** — Per-provider, trips setelah 3 transient failure, cooldown 60s
+- **Rate limit configurable** — Semua limit bisa di-set via env
+- **CORS configurable** — Allowed origins dari env
+- **Supabase migrations** — Indexes untuk performa query
+- **Kill switches** — `AI_ENABLED=false`, `PAYMENTS_ENABLED=false`
+
+## Deploy ke Vercel
+
 ```bash
 npm install -g vercel
 vercel
 ```
 
-Atau connect repo GitHub kamu di [vercel.com](https://vercel.com) → **Import Project**.
+Atau connect repo GitHub di [vercel.com](https://vercel.com) → Import Project → set env vars di dashboard.
 
-### 4. Tambahkan Environment Variable di Vercel
-Di dashboard Vercel → Settings → Environment Variables:
-```
-ANTHROPIC_API_KEY = sk-ant-xxxxxxxxxxxxx
-```
+## License
 
-### 5. Redeploy
-Setelah menambah env var, klik **Redeploy** di Vercel.
-
-## Development Lokal
-```bash
-cp .env.example .env.local
-# isi ANTHROPIC_API_KEY di .env.local
-npm run dev
-```
-# z
+Private — zoya.id

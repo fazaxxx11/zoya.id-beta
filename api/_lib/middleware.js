@@ -5,6 +5,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { slidingWindow, getRateLimitHeaders } from './rate-limit.js';
 import { logRequest, logRateLimit, logError, incrementCounter } from './usage.js';
+import { parseAllowedOrigins, DEFAULT_CORS_REGEXES } from './security.js';
 
 // ── Supabase clients (lazy init) ──────────────────────────────────
 let _supabaseAdmin = null;
@@ -32,10 +33,10 @@ function getSupabasePublic() {
   return _supabasePublic;
 }
 
-// ── Config ────────────────────────────────────────────────────────
+// ── Config (env-overridable) ─────────────────────────────────────
 const DEFAULT_RATE_LIMITS = {
-  perUser:  { maxRequests: 20, windowMs: 60_000 },   // 20 req/min per user
-  perIP:    { maxRequests: 40, windowMs: 60_000 },   // 40 req/min per IP (shared across users)
+  perUser:  { maxRequests: parseInt(process.env.RATE_LIMIT_USER_MAX) || 20, windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 60_000 },
+  perIP:    { maxRequests: parseInt(process.env.RATE_LIMIT_IP_MAX) || 40, windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 60_000 },
 };
 
 const MAX_PAYLOAD_BYTES = 500 * 1024; // 500KB
@@ -246,19 +247,11 @@ export function sanitizeError(err, context = '') {
   };
 }
 
-// ── CORS + Security Headers ───────────────────────────────────────
-const CORS_ALLOWLIST = [
-  'https://zoya.id',
-  'https://www.zoya.id',
-  'https://zoya-id-beta.vercel.app',
-];
-const CORS_REGEXES = [
-  /^https:\/\/zoya-id-beta-[a-z0-9]+-zaaaxx11s-projects\.vercel\.app$/,
-  /^http:\/\/localhost:\d+$/,
-];
-
+// ── CORS + Security Headers (uses shared config from security.js) ─
 export function applySecurity(req, res) {
   const origin = req.headers.origin;
+  const CORS_ALLOWLIST = parseAllowedOrigins();
+  const CORS_REGEXES = DEFAULT_CORS_REGEXES;
 
   // CORS
   let allowed = false;
@@ -291,14 +284,9 @@ export function applySecurity(req, res) {
 }
 
 // ── Kill Switch ───────────────────────────────────────────────────
-// Environment variables to disable features without redeploy:
-//   AI_ENABLED=false          → all AI endpoints return 503
-//   PAYMENTS_ENABLED=false    → billing check skipped (free mode)
-//   REGISTRATION_ENABLED=false → signup blocked
 export function isFeatureEnabled(feature) {
   const envKey = `${feature.toUpperCase()}_ENABLED`;
   const val = process.env[envKey];
-  // Default: enabled (true). Only disable if explicitly set to 'false'.
   return val !== 'false';
 }
 
@@ -315,27 +303,20 @@ export function requireFeature(feature, res) {
 }
 
 // ── Combined Middleware ───────────────────────────────────────────
-// Runs all guards in sequence. Returns user on success, null on failure (response already sent).
 export async function aiMiddleware(req, res, endpoint, rateLimitOverrides = {}) {
-  // 0. Kill switch: AI feature
   if (!requireFeature('AI', res)) return null;
-  // 1. CORS + Security headers
   if (!applySecurity(req, res)) return null;
 
-  // 2. Method check
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return null;
   }
 
-  // 3. JWT Auth
   const user = await requireAuth(req, res);
   if (!user) return null;
 
-  // Attach user for downstream use
   req._authUser = user;
 
-  // 4. Dual rate limit (per-IP + per-user)
   const rl = await checkDualRateLimit(req, endpoint, rateLimitOverrides);
   if (!rl.allowed) {
     incrementCounter('rate_limit');
@@ -343,12 +324,10 @@ export async function aiMiddleware(req, res, endpoint, rateLimitOverrides = {}) 
     res.setHeader('Retry-After', rl.headers['Retry-After'] || 60);
     return res.status(rl.status).json({ error: rl.error });
   }
-  // Set rate limit headers
   for (const [k, v] of Object.entries(rl.headers)) {
     res.setHeader(k, v);
   }
 
-  // 5. Payload size check
   if (!checkPayload(req, res)) return null;
 
   return user;
