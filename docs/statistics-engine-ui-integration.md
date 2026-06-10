@@ -41,6 +41,8 @@ src/pages/StatistikBatch.jsx ← Batch mode (imports from statistics/)
 | Mann-Whitney U | `lib/stats/nonparametric.js` | `statistics/nonparametric.js` | `mannWhitneyAdapter` | ✅ Full migration |
 | Wilcoxon Signed-Rank | `lib/stats/nonparametric.js` | `statistics/nonparametric.js` | `wilcoxonAdapter` | ✅ Full migration |
 | Kruskal-Wallis | `lib/stats/nonparametric.js` | `statistics/nonparametric.js` | `kruskalWallisAdapter` | ✅ Full migration |
+| Multiple Regression | `lib/stats/regression.js` | `statistics/regression.js` | `multipleLinearRegressionAdapter` | ✅ Full migration |
+| Two-Way ANOVA | `lib/stats/twoWayANOVA.js` | `statistics/anova.js` | `twoWayANOVAAdapter` | ✅ Full migration |
 | One-way ANOVA | `lib/stats/anova.js` | `statistics/anova.js` | `oneWayANOVAAdapter` | Signature changed: flat arrays |
 | Two-way ANOVA | `lib/stats/twoWayANOVA.js` | `lib/stats/twoWayANOVA.js` | none | Not yet ported |
 | Regresi Sederhana | `lib/stats/regression.js` | `statistics/regression.js` | `simpleRegressionAdapter` | Full migration |
@@ -96,6 +98,26 @@ src/pages/StatistikBatch.jsx ← Batch mode (imports from statistics/)
 - `averageRank()` helper exported for custom use.
 - All three match old function output shapes via adapters.
 
+## Multiple Linear Regression — Limitations
+
+- OLS via matrix algebra (β = (XᵀX)⁻¹ Xᵀy).
+- Listwise deletion for missing values.
+- VIF computed recursively (calls itself for sub-regressions).
+- Durbin-Watson included for residual autocorrelation.
+- Breusch-Pagan not included (uses old assumptions module if needed).
+- Singular matrix returns clear error message.
+- Matches old multipleLinearRegression() output shape.
+
+## Two-Way ANOVA — Limitations
+
+- Cell-means approach: exact for balanced designs, approximates Type III for unbalanced.
+- Empty cells detected and rejected.
+- Factor A × B interaction computed.
+- Effect sizes: η² and partial η² per source.
+- Cell table with n, mean, SD per cell combination.
+- Marginal means per factor level.
+- Matches old twoWayANOVA() output shape.
+
 - ✅ Sample variance/SD uses n-1 (Bessel's correction)
 - ✅ Two-tailed p-values by default
 - ✅ Alpha = 0.05 default
@@ -107,8 +129,6 @@ src/pages/StatistikBatch.jsx ← Batch mode (imports from statistics/)
 
 Functions still using old `lib/stats/` (not yet ported):
 - `itemValidity`
-- `twoWayANOVA`
-- `multipleLinearRegression`
 - `analyzeNGain`
 - `chiSquareIndependence`
 

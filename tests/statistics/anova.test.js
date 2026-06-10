@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { oneWayANOVA } from '../../src/lib/statistics/anova.js';
+import { oneWayANOVA, twoWayANOVA } from '../../src/lib/statistics/anova.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -60,6 +60,105 @@ describe('one-way ANOVA', () => {
 
   it('returns error for single group', () => {
     const result = oneWayANOVA([1, 2, 3], ['A', 'A', 'A']);
+    expect(result.error).toBeDefined();
+  });
+});
+
+describe('two-way ANOVA', () => {
+  // 2x2 factorial: Factor A (Low/High) x Factor B (Control/Treatment)
+  const y = [5, 6, 7, 8, 9, 10, 11, 12, 6, 7, 8, 9, 10, 11, 12, 13];
+  const a = ['Low','Low','Low','Low','High','High','High','High',
+             'Low','Low','Low','Low','High','High','High','High'];
+  const b = ['Control','Control','Control','Control','Control','Control','Control','Control',
+             'Treat','Treat','Treat','Treat','Treat','Treat','Treat','Treat'];
+
+  it('returns correct shape', () => {
+    const result = twoWayANOVA({ y, a, b, nameA: 'Dose', nameB: 'Drug' });
+    expect(result.error).toBeNull();
+    expect(result.test).toBe('Two-Way ANOVA');
+    expect(result.N).toBe(16);
+    expect(result.levelsA).toEqual(['High', 'Low']);
+    expect(result.levelsB).toEqual(['Control', 'Treat']);
+    expect(result.anovaTable).toHaveLength(5);
+  });
+
+  it('detects main effect of factor A', () => {
+    const result = twoWayANOVA({ y, a, b });
+    expect(result.factorA.F).toBeGreaterThan(0);
+    expect(result.factorA.pValue).toBeDefined();
+  });
+
+  it('detects main effect of factor B', () => {
+    const result = twoWayANOVA({ y, a, b });
+    expect(result.factorB.F).toBeGreaterThan(0);
+    expect(result.factorB.pValue).toBeDefined();
+  });
+
+  it('computes interaction effect', () => {
+    const result = twoWayANOVA({ y, a, b });
+    expect(result.interaction.F).toBeDefined();
+    expect(result.interaction.pValue).toBeDefined();
+    expect(result.interaction.SS).toBeDefined();
+  });
+
+  it('computes effect sizes', () => {
+    const result = twoWayANOVA({ y, a, b });
+    expect(result.factorA.etaSquared).toBeDefined();
+    expect(result.factorA.partialEtaSquared).toBeDefined();
+    expect(result.factorA.effectSize).toBeDefined();
+  });
+
+  it('computes cell table', () => {
+    const result = twoWayANOVA({ y, a, b });
+    expect(result.cellTable).toHaveLength(4); // 2x2
+    expect(result.cellTable[0]).toHaveProperty('levelA');
+    expect(result.cellTable[0]).toHaveProperty('levelB');
+    expect(result.cellTable[0]).toHaveProperty('n');
+    expect(result.cellTable[0]).toHaveProperty('mean');
+    expect(result.cellTable[0]).toHaveProperty('sd');
+  });
+
+  it('computes marginal means', () => {
+    const result = twoWayANOVA({ y, a, b });
+    expect(result.marginalA).toHaveLength(2);
+    expect(result.marginalB).toHaveLength(2);
+  });
+
+  it('detects balanced design', () => {
+    const result = twoWayANOVA({ y, a, b });
+    expect(result.isBalanced).toBe(true);
+    expect(result.cellSizesRange.min).toBe(result.cellSizesRange.max);
+  });
+
+  it('handles missing values', () => {
+    const ym = [...y]; ym[0] = NaN;
+    const am = [...a];
+    const bm = [...b];
+    const result = twoWayANOVA({ y: ym, a: am, b: bm });
+    expect(result.N).toBe(15);
+  });
+
+  it('returns error for mismatched lengths', () => {
+    const result = twoWayANOVA({ y: [1, 2], a: ['A'], b: ['B'] });
+    expect(result.error).toContain('sama');
+  });
+
+  it('returns error for single level factor', () => {
+    const result = twoWayANOVA({
+      y: [1, 2, 3, 4],
+      a: ['A', 'A', 'A', 'A'],
+      b: ['X', 'X', 'Y', 'Y'],
+    });
+    expect(result.error).toContain('1 level');
+  });
+
+  it('returns error for empty cells', () => {
+    const result = twoWayANOVA({
+      y: [1, 2, 3],
+      a: ['A', 'A', 'B'],
+      b: ['X', 'X', 'Y'],
+    });
+    // Missing A-Y cell
     expect(result.error).toBeDefined();
   });
 });

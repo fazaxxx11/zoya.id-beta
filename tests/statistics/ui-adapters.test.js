@@ -14,6 +14,8 @@ import {
   mannWhitneyAdapter,
   wilcoxonAdapter,
   kruskalWallisAdapter,
+  multipleLinearRegressionAdapter,
+  twoWayANOVAAdapter,
 } from '../../src/lib/statistics/uiAdapters.js';
 
 describe('UI adapters', () => {
@@ -244,6 +246,34 @@ describe('UI adapters', () => {
       expect(result.pValue).toBeDefined();
       expect(result.groupStats).toHaveLength(3);
       expect(result.isSignificant).toBeDefined();
+    });
+  });
+
+  describe('multiple regression adapter', () => {
+    it('returns correct shape matching old multipleLinearRegression', () => {
+      const x1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      const x2 = [2, 4, 1, 5, 3, 6, 2, 7, 4, 8];
+      const y = x1.map((v, i) => 2 * v + 3 * x2[i] + 1);
+      const result = multipleLinearRegressionAdapter([x1, x2], y);
+      expect(result.coefficients).toBeDefined();
+      expect(result.rSquared).toBeDefined();
+      expect(result.F).toBeDefined();
+      expect(result.vifs).toBeDefined();
+      expect(result.equation).toBeDefined();
+    });
+  });
+
+  describe('two-way anova adapter', () => {
+    it('returns correct shape matching old twoWayANOVA', () => {
+      const y = [5, 6, 7, 8, 9, 10, 11, 12];
+      const a = ['Low', 'Low', 'Low', 'Low', 'High', 'High', 'High', 'High'];
+      const b = ['Control', 'Control', 'Treat', 'Treat', 'Control', 'Control', 'Treat', 'Treat'];
+      const result = twoWayANOVAAdapter({ y, a, b, nameA: 'Dose', nameB: 'Drug' });
+      expect(result.factorA).toBeDefined();
+      expect(result.factorB).toBeDefined();
+      expect(result.interaction).toBeDefined();
+      expect(result.anovaTable).toHaveLength(5);
+      expect(result.cellTable).toBeDefined();
     });
   });
 

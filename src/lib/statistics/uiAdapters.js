@@ -18,8 +18,8 @@ import { describe as engineDescribe } from './descriptive.js';
 import { pearson, spearman } from './correlation.js';
 import { cronbachAlpha as engineCronbach } from './reliability.js';
 import { oneSampleTTest as engineOneSampleT, independentTTest as engineIndepT, pairedTTest as enginePairedT } from './ttest.js';
-import { oneWayANOVA as engineAnova } from './anova.js';
-import { simpleRegression as engineRegression } from './regression.js';
+import { oneWayANOVA as engineAnova, twoWayANOVA as engineTwoWay } from './anova.js';
+import { simpleRegression as engineRegression, multipleLinearRegression as engineMLR } from './regression.js';
 import { testNormality as engineNormality, shapiroWilk as engineShapiro, kolmogorovSmirnov as engineKS } from './normality.js';
 
 // ── Descriptive ───────────────────────────────────────────────────
@@ -311,6 +311,26 @@ export function wilcoxonAdapter(before, post, alpha = 0.05) {
  */
 export function kruskalWallisAdapter(groups, groupNames = null, alpha = 0.05) {
   return engineKW(groups, groupNames, alpha);
+}
+
+// ── Multiple Linear Regression ──────────────────────────────────
+
+/**
+ * Adapter for multiple linear regression.
+ * Matches old multipleLinearRegression() output shape.
+ */
+export function multipleLinearRegressionAdapter(X, y, predictorNames, alpha = 0.05) {
+  return engineMLR(X, y, predictorNames, alpha);
+}
+
+// ── Two-Way ANOVA ───────────────────────────────────────────────
+
+/**
+ * Adapter for two-way ANOVA.
+ * Matches old twoWayANOVA() output shape.
+ */
+export function twoWayANOVAAdapter(args) {
+  return engineTwoWay(args);
 }
 
 // ── Helper functions ──────────────────────────────────────────────
