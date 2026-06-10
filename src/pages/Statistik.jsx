@@ -1153,7 +1153,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
             <Select label="Faktor A (kategorik)" value={params.factorA} onChange={v => update('factorA', v)} options={categoricalColumns.length ? categoricalColumns : columns} />
             <Select label="Faktor B (kategorik)" value={params.factorB} onChange={v => update('factorB', v)} options={categoricalColumns.length ? categoricalColumns : columns} />
           </div>
-          <div className="bg-purple-50 border border-purple-100 rounded-lg p-3 text-xs text-purple-900 leading-relaxed">
+          <div className="bg-surface border border-border rounded-lg p-3 text-xs text-fg leading-relaxed">
             <strong>Two-way ANOVA</strong> menguji pengaruh 2 faktor sekaligus + interaksinya.
             Cocok untuk desain faktorial (mis. metode × jenis kelamin, dosis × waktu).
             Output: <em>F utama</em> tiap faktor + <em>F interaksi</em> + partial η².
@@ -1380,7 +1380,7 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
 
   return (
     <Modal open={true} onClose={onClose}
-      panelClassName="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+      panelClassName="bg-white rounded-2xl  max-w-md w-full p-6">
       <div>
         <div className="mb-4">
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Simpan Analisis</div>
@@ -1592,18 +1592,18 @@ function ExplainChatPanel({ result, aiInterpretation }) {
 
   return (
     <>
-      <div className="mt-5 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
+      <div className="mt-5 bg-gradient-to-r from-surface border border-border rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className="w-10 h-10 rounded-full bg-purple-500 text-white flex items-center justify-center flex-shrink-0 text-lg">💬</div>
+          <div className="w-10 h-10 rounded-full bg-surface0 text-white flex items-center justify-center flex-shrink-0 text-lg">💬</div>
           <div className="min-w-0">
-            <div className="font-semibold text-purple-900">Belum paham hasilnya?</div>
-            <div className="text-sm text-purple-700">
+            <div className="font-semibold text-fg">Belum paham hasilnya?</div>
+            <div className="text-sm text-muted">
               Tanya AI! Bakal dijelasin pakai bahasa santai, kayak ngobrol sama temen. Gratis {MAX_TURNS} pertanyaan per hasil.
             </div>
           </div>
         </div>
         <button onClick={handleOpen}
-                className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg flex-shrink-0">
+                className="bg-accent hover:bg-accent/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg flex-shrink-0">
           Tanya AI
         </button>
       </div>
@@ -1612,7 +1612,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
              panelClassName="bg-white rounded-2xl shadow-2xl max-w-2xl w-full h-[80vh] flex flex-col">
         <div className="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-full bg-purple-500 text-white flex items-center justify-center flex-shrink-0">💬</div>
+            <div className="w-9 h-9 rounded-full bg-surface0 text-white flex items-center justify-center flex-shrink-0">💬</div>
             <div className="min-w-0">
               <div className="font-semibold text-gray-900 truncate">Tanya AI tentang Hasil</div>
               <div className="text-xs text-muted">{result.toolName} · sisa {remaining}/{MAX_TURNS} pertanyaan</div>
@@ -1627,9 +1627,9 @@ function ExplainChatPanel({ result, aiInterpretation }) {
           {messages.map((m, i) => <ChatBubble key={i} role={m.role} content={m.content} />)}
           {loading && (
             <div className="flex items-center gap-2 text-sm text-muted pl-2">
-              <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
-              <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
-              <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
+              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
               <span className="ml-1">AI lagi mikir…</span>
             </div>
           )}
@@ -1652,11 +1652,11 @@ function ExplainChatPanel({ result, aiInterpretation }) {
                 value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
                 placeholder={loading ? 'Tunggu AI…' : 'Tanya apa aja tentang hasilmu…'}
                 disabled={loading} rows={1}
-                className="flex-1 resize-none border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 disabled:bg-card/50 disabled:text-muted"
+                className="flex-1 resize-none border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:bg-card/50 disabled:text-muted"
                 style={{ maxHeight: '120px' }}
               />
               <button onClick={handleSend} disabled={!input.trim() || loading}
-                      className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2.5 rounded-xl">
+                      className="bg-accent hover:bg-accent/90 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2.5 rounded-xl">
                 Kirim
               </button>
             </div>
@@ -1672,7 +1672,7 @@ function ChatBubble({ role, content }) {
   if (role === 'user') {
     return (
       <div className="flex justify-end">
-        <div className="bg-purple-600 text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed">
+        <div className="bg-accent text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed">
           {content}
         </div>
       </div>
@@ -1680,7 +1680,7 @@ function ChatBubble({ role, content }) {
   }
   return (
     <div className="flex justify-start gap-2">
-      <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center flex-shrink-0 text-base">💬</div>
+      <div className="w-8 h-8 rounded-full bg-surface text-accent flex items-center justify-center flex-shrink-0 text-base">💬</div>
       <div className="bg-white border border-border rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed text-fg">
         {content}
       </div>

@@ -341,7 +341,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
             <button
               type="button"
               onClick={() => setAiOpen(true)}
-              className="text-xs font-medium px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-md transition-all flex items-center gap-1.5"
+              className="text-xs font-medium px-3 py-1.5 rounded-lg bg-accent text-white transition-all flex items-center gap-1.5"
               title="Buatkan rubrik dengan AI"
             >
               <Wand2 className="w-3.5 h-3.5" /> Auto-Buat
@@ -1136,7 +1136,7 @@ function HasilPenilaian({
         {hasAnyResult && (
           <Link
             to="/assessment/report"
-            className="btn-primary flex-1 min-w-[120px] bg-purple-600 hover:bg-purple-700 text-center inline-flex items-center justify-center gap-2"
+            className="btn-primary flex-1 min-w-[120px] bg-accent hover:bg-accent/90 text-center inline-flex items-center justify-center gap-2"
             title="Buka laporan Bab IV / cetak PDF"
           >
             <FileText className="w-5 h-5"/> Laporan / PDF
@@ -1479,7 +1479,7 @@ function Assessment() {
         actions={
           <Link
             to="/kuesioner"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-white hover:bg-sky-50 text-sky-700 border-sky-200 transition-colors"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-white hover:bg-sky-50 text-sky-700 border-border transition-colors"
             title="Buka Kuesioner Builder"
           >
             <ClipboardList className="w-3.5 h-3.5" /> Kuesioner
@@ -1492,7 +1492,7 @@ function Assessment() {
           <>
             <Link
               to="/kuesioner"
-              className="block mb-4 bg-gradient-to-r from-sky-50 to-cyan-50 border border-sky-200 rounded-xl p-3 hover:shadow-sm transition-shadow group"
+              className="block mb-4 bg-gradient-to-r from-surface border border-border rounded-xl p-3 hover:shadow-sm transition-shadow group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-sky-500 text-white flex items-center justify-center flex-shrink-0">
@@ -1555,7 +1555,7 @@ function Assessment() {
       {/* Reset confirmation — supaya guru ngga ke-trigger accidental clear data */}
       {showResetConfirm && (
         <div
-          className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in"
+          className="fixed inset-0 z-[100] bg-black/50  flex items-center justify-center p-4 animate-in"
           onClick={(e) => { if (e.target === e.currentTarget) setShowResetConfirm(false) }}
         >
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-scale-in">

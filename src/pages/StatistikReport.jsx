@@ -170,7 +170,7 @@ export default function StatistikReport() {
           {loading ? (
             <div className="text-xs text-gray-400 py-8 text-center">Memuat…</div>
           ) : error ? (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 flex items-start gap-2">
+            <div className="bg-surface border border-border rounded-lg p-3 text-xs text-muted flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <div>{error === 'Belum login' ? 'Login dulu untuk mengakses analisis tersimpan.' : error}</div>
             </div>
@@ -265,7 +265,7 @@ export default function StatistikReport() {
           )}
 
           {/* Footer guidance — hidden saat print */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-[12.5px] text-amber-900 leading-relaxed print:hidden">
+          <div className="bg-surface border border-border rounded-xl p-4 text-[12.5px] text-muted leading-relaxed print:hidden">
             <strong className="font-semibold">Catatan penting:</strong> Draft ini adalah <em>template otomatis</em> — wajib dipoles ulang dengan konteks substantif penelitian Anda (kerangka teori, hipotesis spesifik, perbandingan dengan literatur). Untuk dokumentasi formal, ekspor R script dari setiap hasil analisis dan jalankan di RStudio sebagai bukti reproducibility.
           </div>
         </section>

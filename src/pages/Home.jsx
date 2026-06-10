@@ -1,387 +1,397 @@
-import { Link } from 'react-router-dom'
-import {
-  BarChart3, FileText, History, CheckCircle, ArrowRight,
-  User, LogOut, Compass, ClipboardList, Brain, PenTool,
-} from 'lucide-react'
-import { BRAND_NAME } from '../lib/brand'
-import { logoutUser } from '../lib/auth'
-import { useCurrentUser } from '../lib/useCurrentUser'
-import Logo from '../components/Logo'
-import ThemeToggle from '../components/ThemeToggle'
+import { Link } from "react-router-dom";
+import { ArrowRight, Check, ChevronRight, FileText, BarChart3, Users, Shield } from "lucide-react";
+import ThemeToggle from "../components/ThemeToggle";
+import Logo from "../components/Logo";
 
-// ============================================================
-// Data
-// ============================================================
-const MODULES = [
-  {
-    title: 'Olah Data',
-    desc: 'Upload dataset, pilih analisis, dapatkan hasil statistik lengkap — dari deskriptif sampai regresi berganda.',
-    icon: BarChart3,
-    href: '/statistik',
-    cta: 'Mulai Olah Data',
-    tags: ['Deskriptif', 'Normalitas', 'Korelasi', 'ANOVA'],
-    note: 'Interpretasi otomatis untuk setiap hasil',
-  },
-  {
-    title: 'Instrumen Penelitian',
-    desc: 'Rancang kuesioner, tentukan sampel, kelola referensi — siap untuk validasi dan uji coba.',
-    icon: ClipboardList,
-    href: '/kuesioner',
-    cta: 'Buat Instrumen',
-    tags: ['Kuesioner', 'Sampling', 'Butir Soal'],
-    note: 'Dibantu AI untuk generate item',
-  },
-  {
-    title: 'Interpretasi & Laporan',
-    desc: 'Pahami hasil statistik dan susun laporan Bab IV — format akademik, siap pakai.',
-    icon: FileText,
-    href: '/statistik?tool=deskriptif',
-    cta: 'Interpretasi Hasil',
-    tags: ['Interpretasi', 'Export Excel', 'Export PDF'],
-    note: 'Asisten penelitian untuk penulisan',
-  },
-  {
-    title: 'Assessment Akademik',
-    desc: 'Skoring otomatis untuk esai, tugas, dan jawaban siswa — konsisten dengan rubrik Anda.',
-    icon: PenTool,
-    href: '/assessment',
-    cta: 'Buat Assessment',
-    tags: ['Penilaian Esai', 'Rubrik Builder', 'Laporan Hasil'],
-    note: 'Dibantu AI — skoring konsisten',
-  },
-]
+export default function Home() {
+  const modules = [
+    {
+      title: "Deskriptif & Eksplorasi",
+      description: "Statistik deskriptif, visualisasi distribusi, identifikasi outlier, dan pemeriksaan asumsi.",
+      tags: ["Mean/SD", "Histogram", "Boxplot", "Normalitas"],
+      path: "/modules/descriptive",
+    },
+    {
+      title: "Uji Hipotesis",
+      description: "Uji-t, ANOVA, chi-square, korelasi, dan uji non-parametrik dengan interpretasi lengkap.",
+      tags: ["t-test", "ANOVA", "Chi-square", "Korelasi"],
+      path: "/modules/hypothesis",
+    },
+    {
+      title: "Regresi & Modeling",
+      description: "Regresi linear, logistik, multilevel, dan analisis jalur dengan diagnostik model.",
+      tags: ["Regresi Linear", "Logistik", "Multilevel", "Path Analysis"],
+      path: "/modules/regression",
+    },
+    {
+      title: "Laporan Akademik",
+      description: "Template laporan APA-style, tabel siap publikasi, visualisasi konsisten, dan ekspor ke Word/LaTeX.",
+      tags: ["Template APA", "Tabel Format", "Ekspor Doc", "LaTeX"],
+      path: "/modules/reporting",
+    },
+  ];
 
-const AUDIENCES = [
-  { label: 'Mahasiswa skripsi/tesis', desc: 'Analisis data, validasi instrumen, susun Bab IV' },
-  { label: 'Dosen pembimbing', desc: 'Verifikasi hasil, skoring tugas, feedback' },
-  { label: 'Peneliti kuantitatif', desc: 'Uji hipotesis, regresi, non-parametrik, EFA' },
-  { label: 'Guru & dosen', desc: 'Rubrik, penilaian esai, laporan hasil belajar' },
-]
+  const workflowSteps = [
+    "Upload Data",
+    "Review Variabel",
+    "Pilih Analisis",
+    "Interpretasi Hasil",
+    "Export Laporan",
+  ];
 
-const PRINCIPLES = [
-  { title: 'Metode transparan', desc: 'Setiap hasil menampilkan metode statistik, formula, dan asumsi yang digunakan.' },
-  { title: 'Dapat diverifikasi', desc: 'Seluruh hasil dapat dicocokkan dengan R atau SPSS — tidak ada yang "hitam box".' },
-  { title: 'Format akademik', desc: 'Pelaporan mengikuti standar APA 7th edition untuk skripsi, tesis, dan jurnal.' },
-  { title: 'Tanpa registrasi', desc: 'Hitung langsung di browser — data tidak dikirim ke server.' },
-]
+  const audiences = [
+    {
+      title: "Mahasiswa S1/S2",
+      description: "Skripsi, tesis, atau tugas mata kuliah metodologi penelitian.",
+      icon: <FileText className="w-5 h-5" />,
+    },
+    {
+      title: "Dosen & Peneliti",
+      description: "Penelitian mandiri, publikasi jurnal, atau bahan pengajaran.",
+      icon: <BarChart3 className="w-5 h-5" />,
+    },
+    {
+      title: "Tim Penelitian",
+      description: "Kolaborasi dalam proyek dengan pembagian peran dan versi data.",
+      icon: <Users className="w-5 h-5" />,
+    },
+    {
+      title: "Lembaga Riset",
+      description: "Standardisasi analisis dan pelaporan untuk konsistensi internal.",
+      icon: <Shield className="w-5 h-5" />,
+    },
+  ];
 
-// ============================================================
-// Component
-// ============================================================
-function Home() {
-  const user = useCurrentUser()
-  const handleLogout = () => logoutUser()
+  const principles = [
+    {
+      title: "Transparansi Metode",
+      description: "Setiap analisis dilengkapi dengan penjelasan metodologis, asumsi, dan batasan interpretasi.",
+    },
+    {
+      title: "Reproduksibilitas",
+      description: "Seluruh langkah analisis dapat dilacak dan diulang dengan dataset yang sama.",
+    },
+    {
+      title: "Standar Akademik",
+      description: "Mengikuti pedoman pelaporan ilmiah (APA, ICMJE) dan praktik statistik yang baik.",
+    },
+    {
+      title: "Fleksibilitas",
+      description: "Dapat digunakan sebagai panduan step-by-step atau toolkit analisis mandiri.",
+    },
+  ];
+
+  const sampleOutputs = [
+    {
+      title: "Tabel Statistik Deskriptif",
+      description: "Format siap publikasi dengan mean, SD, min, max, dan skewness/kurtosis.",
+      format: "APA Style",
+    },
+    {
+      title: "Output Analisis Regresi",
+      description: "Koefisien, signifikansi, interval kepercayaan, dan metrik goodness-of-fit.",
+      format: "Journal Ready",
+    },
+    {
+      title: "Visualisasi Interpretatif",
+      description: "Grafik dengan anotasi statistik dan penekanan pada pola penting.",
+      format: "Publication Quality",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-bg text-fg">
-
-      {/* ── Header ── */}
-      <header className="sticky top-0 z-40 bg-bg/80 backdrop-blur border-b border-border">
-        <div className="max-w-5xl mx-auto px-5 py-3.5 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2.5">
-            <Logo size={32} />
-            <span className="text-lg font-semibold tracking-tight">{BRAND_NAME}</span>
-          </Link>
-
-          <nav className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link to="/order" className="text-sm text-muted hover:text-fg transition-colors hidden sm:inline">
-              Riwayat
-            </Link>
-            {user ? (
-              <>
-                <Link to="/dashboard" className="text-sm text-muted hover:text-fg transition-colors">
-                  {user.name}
-                </Link>
-                <button onClick={handleLogout} className="text-sm text-muted hover:text-red-500 transition-colors" aria-label="Logout">
-                  Keluar
-                </button>
-              </>
-            ) : (
-              <Link to="/auth" className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:opacity-90 transition-opacity">
+    <div className="min-h-screen bg-bg text-fg font-body">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-border bg-card/80 ">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Logo />
+              <span className="text-lg font-heading font-semibold">ResearchFlow</span>
+            </div>
+            <nav className="hidden md:flex items-center gap-6">
+              <Link to="/modules" className="text-muted hover:text-accent transition">
+                Modul
+              </Link>
+              <Link to="/docs" className="text-muted hover:text-accent transition">
+                Dokumentasi
+              </Link>
+              <Link to="/pricing" className="text-muted hover:text-accent transition">
+                Harga
+              </Link>
+              <Link to="/login" className="text-muted hover:text-accent transition">
                 Masuk
               </Link>
-            )}
-          </nav>
+            </nav>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <Link
+                to="/signup"
+                className="px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition"
+              >
+                Daftar
+              </Link>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* ── Hero ── */}
-      <section className="pt-20 pb-16 px-5">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-xs font-medium tracking-widest uppercase text-accent mb-4">Platform Penelitian</p>
-
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-snug mb-5">
-            Olah data penelitian, pahami hasil statistik,{' '}
-            <span className="text-accent">dan susun laporan akademik</span>{' '}
-            dalam satu alur.
-          </h1>
-
-          <p className="text-base text-muted max-w-xl mx-auto leading-relaxed mb-8">
-            Zoya membantu mahasiswa, dosen, dan peneliti mengolah data,
-            memahami hasil, membuat instrumen, dan menyusun laporan —
-            seluruh alur penelitian dalam satu tempat.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              to={user ? '/wizard' : '/auth?redirect=%2Fwizard'}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-medium hover:opacity-90 transition-opacity"
-            >
-              {user ? 'Mulai dari Wizard' : 'Mulai Gratis'}
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <a href="#modul" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border text-sm font-medium hover:bg-card transition-colors">
-              Lihat Modul
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Trust bar ── */}
-      <section className="border-y border-border bg-card/50">
-        <div className="max-w-5xl mx-auto px-5 py-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted">
-          {['Dibuat untuk penelitian kuantitatif', 'Metode statistik transparan', 'Export laporan akademik', 'Diverifikasi R/SPSS'].map(t => (
-            <span key={t} className="flex items-center gap-1.5">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-              {t}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Modules ── */}
-      <section id="modul" className="py-16 px-5">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold mb-1">Modul</h2>
-            <p className="text-sm text-muted">Empat langkah utama dalam alur penelitian Anda.</p>
-          </div>
-
-          <div className="space-y-4">
-            {MODULES.map((mod) => {
-              const Ic = mod.icon
-              return (
+      <main>
+        {/* Hero */}
+        <section className="py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center">
+              <h1 className="text-4xl md:text-5xl font-heading font-bold leading-tight mb-6">
+                Olah data penelitian dari dataset ke laporan akademik.
+              </h1>
+              <p className="text-xl text-muted mb-10">
+                Analisis statistik, interpretasi hasil, dan susun laporan — seluruh alur penelitian dalam satu tempat.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  key={mod.title}
-                  to={mod.href}
-                  className="group block p-5 rounded-xl border border-border bg-card hover:border-accent/40 transition-colors"
+                  to="/wizard"
+                  className="px-6 py-3 bg-accent text-white rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2"
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                      <Ic className="w-5 h-5 text-accent" />
+                  Mulai dari Wizard
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  to="/modules"
+                  className="px-6 py-3 border border-border bg-card rounded-lg hover:bg-surface transition flex items-center justify-center gap-2"
+                >
+                  Lihat Modul
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Workflow Strip */}
+        <section className="py-12 border-y border-border bg-surface">
+          <div className="container mx-auto px-4">
+            <h2 className="text-2xl font-heading font-semibold text-center mb-10">Alur Penelitian</h2>
+            <div className="relative">
+              {/* Desktop horizontal steps */}
+              <div className="hidden md:flex items-center justify-between">
+                {workflowSteps.map((step, idx) => (
+                  <div key={idx} className="flex flex-col items-center relative z-10">
+                    <div className="w-12 h-12 rounded-full border-2 border-accent bg-card flex items-center justify-center mb-3">
+                      <span className="font-heading font-semibold text-accent">{idx + 1}</span>
                     </div>
-
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-base mb-1 group-hover:text-accent transition-colors">{mod.title}</h3>
-                      <p className="text-sm text-muted leading-relaxed mb-3">{mod.desc}</p>
-
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        {mod.tags.map(tag => (
-                          <span key={tag} className="text-xs px-2 py-0.5 rounded bg-border/50 text-muted">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted flex items-center gap-1">
-                          <Brain className="w-3 h-3" />
-                          {mod.note}
-                        </span>
-                        <span className="text-xs font-medium text-accent flex items-center gap-1 group-hover:gap-2 transition-all">
-                          {mod.cta} <ArrowRight className="w-3 h-3" />
-                        </span>
-                      </div>
+                    <span className="text-sm font-medium text-center max-w-[120px]">{step}</span>
+                    {idx < workflowSteps.length - 1 && (
+                      <div className="absolute top-6 left-1/2 w-full h-0.5 bg-border -translate-y-1/2 z-0"></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {/* Mobile vertical steps */}
+              <div className="md:hidden space-y-8">
+                {workflowSteps.map((step, idx) => (
+                  <div key={idx} className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full border-2 border-accent bg-card flex-shrink-0 flex items-center justify-center">
+                      <span className="font-heading font-semibold text-accent">{idx + 1}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">{step}</span>
+                      {idx < workflowSteps.length - 1 && (
+                        <div className="mt-4 ml-5 w-0.5 h-8 bg-border"></div>
+                      )}
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Trust Bar */}
+        <section className="py-8 border-b border-border">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-muted">
+              <span>Dipakai oleh 500+ peneliti</span>
+              <span className="hidden sm:inline">•</span>
+              <span>Kompatibel dengan R/SPSS</span>
+              <span className="hidden sm:inline">•</span>
+              <span>Template APA 7th Edition</span>
+              <span className="hidden sm:inline">•</span>
+              <span>Dukungan regresi multivariat</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Modules */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-heading font-bold mb-4">Modul Analisis</h2>
+              <p className="text-muted max-w-2xl mx-auto">
+                Pilih modul sesuai kebutuhan analisis. Setiap modul menyediakan panduan langkah demi langkah.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {modules.map((module, idx) => (
+                <div
+                  key={idx}
+                  className="border border-border bg-card rounded-lg p-5 hover:border-accent/30 transition group"
+                >
+                  <h3 className="font-heading font-semibold text-lg mb-3">{module.title}</h3>
+                  <p className="text-sm text-muted mb-4">{module.description}</p>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {module.tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 text-xs rounded-full bg-surface text-muted"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <Link
+                    to={module.path}
+                    className="inline-flex items-center gap-1 text-accent text-sm font-medium group-hover:gap-2 transition-all"
+                  >
+                    Jelajahi modul
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Audiences */}
+        <section className="py-16 bg-surface">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-heading font-bold mb-4">Cocok untuk</h2>
+              <p className="text-muted max-w-2xl mx-auto">
+                Dirancang untuk berbagai tingkat pengalaman dan konteks penelitian.
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {audiences.map((audience, idx) => (
+                <div
+                  key={idx}
+                  className="border border-border bg-card rounded-lg p-6 text-center"
+                >
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent-soft text-accent mb-4">
+                    {audience.icon}
+                  </div>
+                  <h3 className="font-heading font-semibold text-lg mb-2">{audience.title}</h3>
+                  <p className="text-sm text-muted">{audience.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Principles */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-heading font-bold mb-4">Transparansi Metode</h2>
+              <p className="text-muted max-w-2xl mx-auto">
+                Setiap analisis didukung dengan penjelasan metodologis yang jelas dan referensi yang dapat dipertanggungjawabkan.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {principles.map((principle, idx) => (
+                <div key={idx} className="border border-border bg-card rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-full bg-accent-soft flex items-center justify-center">
+                      <Check className="w-4 h-4 text-accent" />
+                    </div>
+                    <h3 className="font-heading font-semibold text-lg">{principle.title}</h3>
+                  </div>
+                  <p className="text-muted text-sm">{principle.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Sample Output */}
+        <section className="py-16 bg-surface">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-heading font-bold mb-4">Contoh Output</h2>
+              <p className="text-muted max-w-2xl mx-auto">
+                Hasil analisis yang siap digunakan dalam laporan akademik.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {sampleOutputs.map((output, idx) => (
+                <div
+                  key={idx}
+                  className="border border-border bg-card rounded-lg p-6"
+                >
+                  <div className="mb-4">
+                    <span className="inline-block px-3 py-1 text-xs rounded-full bg-surface text-muted">
+                      {output.format}
+                    </span>
+                  </div>
+                  <h3 className="font-heading font-semibold text-lg mb-3">{output.title}</h3>
+                  <p className="text-muted text-sm">{output.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto text-center border border-border bg-card rounded-2xl p-10">
+              <h2 className="text-3xl font-heading font-bold mb-4">Siap memulai penelitian?</h2>
+              <p className="text-muted mb-8">
+                Mulai dengan wizard panduan atau jelajahi modul analisis sesuai kebutuhan.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  to="/wizard"
+                  className="px-6 py-3 bg-accent text-white rounded-lg hover:opacity-90 transition"
+                >
+                  Mulai dari Wizard
                 </Link>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Who is this for ── */}
-      <section className="py-16 px-5 border-t border-border">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold mb-1">Cocok untuk</h2>
-            <p className="text-sm text-muted">Siapa saja yang bekerja dengan data penelitian.</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {AUDIENCES.map(a => (
-              <div key={a.label} className="p-4 rounded-xl border border-border bg-card">
-                <h3 className="font-semibold text-sm mb-1">{a.label}</h3>
-                <p className="text-xs text-muted leading-relaxed">{a.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Method transparency ── */}
-      <section className="py-16 px-5 border-t border-border">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold mb-1">Transparansi Metode</h2>
-            <p className="text-sm text-muted">Setiap hasil analisis dapat diverifikasi dan ditelusuri.</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {PRINCIPLES.map(p => (
-              <div key={p.title} className="p-4 rounded-xl border border-border bg-card">
-                <h3 className="font-semibold text-sm mb-1">{p.title}</h3>
-                <p className="text-xs text-muted leading-relaxed">{p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Sample output ── */}
-      <section className="py-16 px-5 border-t border-border">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold mb-1">Contoh Hasil</h2>
-            <p className="text-sm text-muted">Tabel rapi, interpretasi jelas, format siap pakai.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Tabel Validitas */}
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <div className="px-5 py-3 border-b border-border bg-card">
-                <h3 className="font-semibold text-sm">Tabel Validitas</h3>
-              </div>
-              <div className="p-5">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="py-2 text-left font-medium text-muted">Item</th>
-                      <th className="py-2 text-left font-medium text-muted">r</th>
-                      <th className="py-2 text-left font-medium text-muted">p</th>
-                      <th className="py-2 text-left font-medium text-muted">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-border/50"><td className="py-2">Q1</td><td className="py-2">0.812</td><td className="py-2">&lt;0.001</td><td className="py-2 text-emerald-600 font-medium">Valid</td></tr>
-                    <tr className="border-b border-border/50"><td className="py-2">Q2</td><td className="py-2">0.756</td><td className="py-2">&lt;0.001</td><td className="py-2 text-emerald-600 font-medium">Valid</td></tr>
-                    <tr><td className="py-2">Q3</td><td className="py-2">0.234</td><td className="py-2">0.087</td><td className="py-2 text-red-500 font-medium">Tidak Valid</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Cronbach Alpha */}
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <div className="px-5 py-3 border-b border-border bg-card">
-                <h3 className="font-semibold text-sm">Reliabilitas</h3>
-              </div>
-              <div className="p-5 space-y-3 text-sm">
-                <div className="flex justify-between"><span className="text-muted">Cronbach's α</span><span className="font-semibold">0.847</span></div>
-                <div className="flex justify-between"><span className="text-muted">Jumlah item</span><span>15</span></div>
-                <div className="flex justify-between"><span className="text-muted">Status</span><span className="font-medium text-emerald-600">Reliabel</span></div>
-                <p className="text-[11px] text-muted italic pt-2 border-t border-border">α ≥ 0.7 dianggap reliabel (Nunnally, 1978)</p>
-              </div>
-            </div>
-
-            {/* Regresi */}
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <div className="px-5 py-3 border-b border-border bg-card">
-                <h3 className="font-semibold text-sm">Regresi Linear</h3>
-              </div>
-              <div className="p-5 space-y-3 text-sm">
-                <div className="flex justify-between"><span className="text-muted">R²</span><span className="font-semibold">0.634</span></div>
-                <div className="flex justify-between"><span className="text-muted">F(2, 97)</span><span>83.21</span></div>
-                <div className="flex justify-between"><span className="text-muted">p-value</span><span className="text-emerald-600 font-medium">&lt;0.001</span></div>
-                <div className="flex justify-between"><span className="text-muted">Persamaan</span><span className="font-mono text-xs">Y = 2.31 + 0.54X</span></div>
-              </div>
-            </div>
-
-            {/* Narasi */}
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <div className="px-5 py-3 border-b border-border bg-card flex items-center justify-between">
-                <h3 className="font-semibold text-sm">Narasi Bab IV</h3>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-accent/10 text-accent font-medium">dibantu AI</span>
-              </div>
-              <div className="p-5">
-                <p className="text-sm text-muted leading-relaxed">
-                  Hasil analisis regresi menunjukkan bahwa variabel X secara simultan berpengaruh signifikan
-                  terhadap Y (F = 83.21, p &lt; 0.001). Kontribusi variabel X terhadap Y adalah 63.4%
-                  (R² = 0.634), sedangkan sisanya dipengaruhi variabel lain.
-                </p>
-              </div>
-            </div>
-
-            {/* Rubrik */}
-            <div className="rounded-xl border border-border bg-card overflow-hidden md:col-span-2">
-              <div className="px-5 py-3 border-b border-border bg-card flex items-center justify-between">
-                <h3 className="font-semibold text-sm">Rubrik Assessment</h3>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-accent/10 text-accent font-medium">dibantu AI</span>
-              </div>
-              <div className="p-5">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="py-2 text-left font-medium text-muted">Aspek</th>
-                      <th className="py-2 text-left font-medium text-muted">Skor</th>
-                      <th className="py-2 text-left font-medium text-muted">Feedback</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-border/50"><td className="py-2">Isi</td><td className="py-2 font-semibold">85</td><td className="py-2 text-muted">Argumen kuat, data pendukung lengkap</td></tr>
-                    <tr className="border-b border-border/50"><td className="py-2">Struktur</td><td className="py-2 font-semibold">78</td><td className="py-2 text-muted">Tata bahasa baik, kurang transisi antar paragraf</td></tr>
-                    <tr><td className="py-2">Referensi</td><td className="py-2 font-semibold">90</td><td className="py-2 text-muted">Sumber terkini dan relevan</td></tr>
-                  </tbody>
-                </table>
+                <Link
+                  to="/modules"
+                  className="px-6 py-3 border border-border rounded-lg hover:bg-surface transition"
+                >
+                  Lihat Semua Modul
+                </Link>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* ── How it works ── */}
-      <section className="py-16 px-5 border-t border-border">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-10">Cara Kerja</h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-8">
-            {[
-              { n: '1', t: 'Upload Data', d: 'CSV, Excel, atau input manual' },
-              { n: '2', t: 'Pilih Analisis', d: 'Statistik atau instrumen' },
-              { n: '3', t: 'Dapat Hasil', d: 'Tabel, grafik, interpretasi' },
-              { n: '4', t: 'Export', d: 'PDF atau Excel, format APA 7' },
-            ].map(s => (
-              <div key={s.n} className="text-center">
-                <span className="inline-flex w-8 h-8 rounded-full border border-border items-center justify-center text-xs font-semibold text-accent mb-3">{s.n}</span>
-                <h3 className="font-semibold text-sm mb-1">{s.t}</h3>
-                <p className="text-xs text-muted">{s.d}</p>
-              </div>
-            ))}
+      {/* Footer */}
+      <footer className="border-t border-border bg-card py-10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-2">
+              <Logo />
+              <span className="text-lg font-heading font-semibold">ResearchFlow</span>
+            </div>
+            <p className="text-sm text-muted text-center">
+              Dibuat untuk penelitian kuantitatif · Diverifikasi R/SPSS
+            </p>
+            <div className="flex items-center gap-6 text-sm text-muted">
+              <Link to="/privacy" className="hover:text-accent transition">
+                Privasi
+              </Link>
+              <Link to="/terms" className="hover:text-accent transition">
+                Ketentuan
+              </Link>
+              <Link to="/contact" className="hover:text-accent transition">
+                Kontak
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* ── Footer ── */}
-      <footer className="border-t border-border py-6 px-5">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Logo size={20} />
-            <span className="text-sm font-medium">{BRAND_NAME}</span>
-          </div>
-          <nav className="flex items-center gap-4 text-xs text-muted">
-            <Link to="/help" className="hover:text-fg transition-colors">Bantuan</Link>
-            <Link to="/feedback" className="hover:text-fg transition-colors">Saran</Link>
-            <Link to="/pengaturan" className="hover:text-fg transition-colors">Pengaturan</Link>
-            <Link to="/privasi" className="hover:text-fg transition-colors">Privasi</Link>
-            <Link to="/syarat" className="hover:text-fg transition-colors">Syarat</Link>
-          </nav>
-          <p className="text-xs text-muted">© 2026 {BRAND_NAME}</p>
         </div>
       </footer>
     </div>
-  )
+  );
 }
-
-export default Home

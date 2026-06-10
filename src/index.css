@@ -195,7 +195,7 @@
 html, body {
   background: rgb(var(--bg));
   color: rgb(var(--fg));
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: var(--body-font);
   min-height: 100vh;
   transition: background-color 300ms ease, color 300ms ease;
   -webkit-font-smoothing: antialiased;
