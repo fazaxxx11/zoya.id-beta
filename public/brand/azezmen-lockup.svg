@@ -1,0 +1,11 @@
+<svg width="2400" height="900" viewBox="0 0 2400 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="2400" height="900" fill="#F7F2EA"/>
+  <g transform="translate(180 160)">
+    <rect x="20" y="20" width="520" height="520" rx="260" fill="#F7F2EA" stroke="#102A43" stroke-width="28"/>
+    <path d="M143 427L237 172C254 127 306 127 323 172L417 427H329L308 364H252L231 427H143Z" fill="#102A43"/>
+    <path d="M264 300H296L280 250L264 300Z" fill="#F7F2EA"/>
+    <path d="M411 182L447 218L532 124" stroke="#B58B45" stroke-width="31" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="815" y="433" fill="#102A43" font-family="Source Serif 4, Georgia, serif" font-size="190" font-weight="650" letter-spacing="-1">Azezmen</text>
+  <text x="824" y="540" fill="#486581" font-family="IBM Plex Sans, Inter, Arial, sans-serif" font-size="50" font-weight="450">Assessment akademik, olah data, dan laporan penelitian.</text>
+</svg>
