@@ -33,10 +33,10 @@ import { exportToExcel } from '../lib/export/excelExport'
 import { exportToPDF } from '../lib/export/pdfExport'
 import {
   describeAdapter as describe, formatDescriptive,
-  testNormality,
+  normalityAdapter as testNormality,
   pearsonAdapter as pearsonCorrelation, spearmanAdapter as spearmanCorrelation,
   cronbachAdapter as cronbachAlpha, itemValidity,
-  oneSampleTTest, independentTTestAdapter as independentTTest, pairedTTestAdapter as pairedTTest,
+  oneSampleTTestAdapter as oneSampleTTest, independentTTestAdapter as independentTTest, pairedTTestAdapter as pairedTTest,
   oneWayANOVAAdapter as oneWayANOVA,
   twoWayANOVA,
   simpleRegressionAdapter as simpleLinearRegression, multipleLinearRegression,

@@ -16,7 +16,7 @@
 export { describe, percentile } from './descriptive.js';
 export { pearson, spearman } from './correlation.js';
 export { cronbachAlpha } from './reliability.js';
-export { independentTTest, pairedTTest } from './ttest.js';
+export { independentTTest, oneSampleTTest, pairedTTest } from './ttest.js';
 export { oneWayANOVA } from './anova.js';
 export { simpleRegression } from './regression.js';
 export { cleanNumeric, listwisePair, groupBy, parseCSV, column } from './data.js';
@@ -32,16 +32,15 @@ export {
   describeAdapter, formatDescriptive,
   pearsonAdapter, spearmanAdapter,
   cronbachAdapter,
-  independentTTestAdapter, pairedTTestAdapter,
+  oneSampleTTestAdapter, independentTTestAdapter, pairedTTestAdapter,
   oneWayANOVAAdapter,
   simpleRegressionAdapter,
+  normalityAdapter,
 } from './uiAdapters.js';
 
-// Re-export functions not yet ported to new engine (from old lib/stats)
+export { shapiroWilk, kolmogorovSmirnov, testNormality } from './normality.js';
 // These will be gradually migrated in future phases
-export { testNormality } from '../stats/normality.js';
 export { itemValidity } from '../stats/reliability.js';
-export { oneSampleTTest } from '../stats/ttest.js';
 export { twoWayANOVA } from '../stats/twoWayANOVA.js';
 export { multipleLinearRegression } from '../stats/regression.js';
 export { mannWhitneyU, wilcoxonSignedRank, kruskalWallis } from '../stats/nonparametric.js';

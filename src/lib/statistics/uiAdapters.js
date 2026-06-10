@@ -17,9 +17,10 @@
 import { describe as engineDescribe } from './descriptive.js';
 import { pearson, spearman } from './correlation.js';
 import { cronbachAlpha as engineCronbach } from './reliability.js';
-import { independentTTest as engineIndepT, pairedTTest as enginePairedT } from './ttest.js';
+import { oneSampleTTest as engineOneSampleT, independentTTest as engineIndepT, pairedTTest as enginePairedT } from './ttest.js';
 import { oneWayANOVA as engineAnova } from './anova.js';
 import { simpleRegression as engineRegression } from './regression.js';
+import { testNormality as engineNormality, shapiroWilk as engineShapiro, kolmogorovSmirnov as engineKS } from './normality.js';
 
 // ── Descriptive ───────────────────────────────────────────────────
 
@@ -235,6 +236,52 @@ export function simpleRegressionAdapter(x, y) {
     residuals: result.residuals,
     meanX: result.meanX,
     meanY: result.meanY,
+  };
+}
+
+// ── Normality ─────────────────────────────────────────────────────
+
+/**
+ * Adapter for normality tests.
+ * Matches old testNormality() output shape.
+ */
+export function normalityAdapter(values, alpha = 0.05) {
+  const clean = values.filter(v => typeof v === 'number' && !isNaN(v) && isFinite(v));
+  const n = clean.length;
+  // Match old behavior: Shapiro-Wilk for n≤50, KS for n>50
+  if (n <= 50) {
+    const result = engineShapiro(values, alpha);
+    return { ...result, method: 'Shapiro-Wilk' };
+  } else {
+    const result = engineKS(values, alpha);
+    return { ...result, method: 'Kolmogorov-Smirnov' };
+  }
+}
+
+// ── One-sample T-Test ────────────────────────────────────────────
+
+/**
+ * Adapter for one-sample t-test.
+ * Matches old oneSampleTTest() output shape.
+ */
+export function oneSampleTTestAdapter(values, mu0 = 0, alpha = 0.05) {
+  const result = engineOneSampleT(values, mu0, alpha);
+  if (result.error) return { error: result.error };
+  return {
+    test: result.test,
+    n: result.n,
+    mean: result.mean,
+    sd: result.sd,
+    sem: result.sem,
+    mu0: result.mu0,
+    t: result.t,
+    df: result.df,
+    pValue: result.pValue,
+    alpha: result.alpha,
+    cohensD: result.cohensD,
+    cohensD_CI: result.cohensD_CI,
+    ci95: result.ci95,
+    significant: result.significant,
   };
 }
 

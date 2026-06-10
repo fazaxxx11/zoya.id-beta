@@ -7,6 +7,54 @@ import { cleanNumeric } from './data.js';
 import { tCDF, tPValue } from './distributions.js';
 
 /**
+ * One-sample t-test.
+ * @param {number[]} values
+ * @param {number} mu0 - hypothesized population mean
+ * @param {number} alpha
+ * @returns {Object}
+ */
+export function oneSampleTTest(values, mu0 = 0, alpha = 0.05) {
+  const x = cleanNumeric(values);
+  const n = x.length;
+  if (n < 2) return { method: 'one_sample_t', error: 'n < 2' };
+
+  const mean = x.reduce((a, b) => a + b, 0) / n;
+  const variance = x.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1);
+  const sd = Math.sqrt(variance);
+  const sem = sd / Math.sqrt(n);
+  const t = sem > 0 ? (mean - mu0) / sem : 0;
+  const df = n - 1;
+  const pValue = tPValue(t, df);
+
+  // Effect size: Cohen's d
+  const d = sd > 0 ? (mean - mu0) / sd : 0;
+  const se_d = Math.sqrt((1 + d * d / 2) / n); // approximate SE for d
+  const ci95d = [d - 1.96 * se_d, d + 1.96 * se_d];
+
+  const ci95 = [mean - 1.96 * sem, mean + 1.96 * sem];
+
+  return {
+    method: 'one_sample_t',
+    test: 'One-sample t-test',
+    n,
+    mean,
+    sd,
+    sem,
+    mu0,
+    t,
+    df,
+    pValue,
+    alpha,
+    cohensD: d,
+    cohensD_CI: ci95d,
+    ci95,
+    significant: pValue < alpha,
+    missing: values.length - n,
+    notes: 'Two-tailed. Effect size: Cohen d. CI via normal approximation for large n.',
+  };
+}
+
+/**
  * Independent samples t-test (both Student and Welch).
  * @param {number[]} group1
  * @param {number[]} group2

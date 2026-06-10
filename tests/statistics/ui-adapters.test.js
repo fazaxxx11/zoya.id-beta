@@ -9,6 +9,8 @@ import {
   pairedTTestAdapter,
   oneWayANOVAAdapter,
   simpleRegressionAdapter,
+  normalityAdapter,
+  oneSampleTTestAdapter,
 } from '../../src/lib/statistics/uiAdapters.js';
 
 describe('UI adapters', () => {
@@ -156,6 +158,42 @@ describe('UI adapters', () => {
       ];
       const result = oneWayANOVAAdapter(groups);
       expect(result.N).toBeLessThanOrEqual(8);
+    });
+  });
+
+  describe('normality adapter', () => {
+    it('returns Shapiro-Wilk for small n', () => {
+      const data = [85, 90, 78, 92, 88, 76, 95, 82, 89, 80];
+      const result = normalityAdapter(data);
+      expect(result.method).toBe('Shapiro-Wilk');
+      expect(result.W).toBeDefined();
+      expect(result.pValue).toBeDefined();
+      expect(result.isNormal).toBeDefined();
+    });
+
+    it('handles missing values', () => {
+      const data = [85, 90, null, 92, NaN];
+      const result = normalityAdapter(data);
+      expect(result.n).toBe(3);
+    });
+  });
+
+  describe('one-sample t-test adapter', () => {
+    it('returns correct shape matching old oneSampleTTest', () => {
+      const data = [85, 90, 78, 92, 88, 76, 95, 82, 89, 80];
+      const result = oneSampleTTestAdapter(data, 80);
+      expect(result.test).toBe('One-sample t-test');
+      expect(result.mu0).toBe(80);
+      expect(result.t).toBeDefined();
+      expect(result.df).toBe(9);
+      expect(result.pValue).toBeDefined();
+      expect(result.significant).toBeDefined();
+    });
+
+    it('handles missing values', () => {
+      const data = [85, 90, NaN, 92];
+      const result = oneSampleTTestAdapter(data, 80);
+      expect(result.n).toBe(3);
     });
   });
 
