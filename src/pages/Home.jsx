@@ -26,7 +26,7 @@ const TRUST_ITEMS = [
 const QUICK_ACCESS = [
   { label: "Statistik", path: "/statistik", icon: BarChart3 },
   { label: "Kuesioner", path: "/kuesioner", icon: ClipboardList },
-  { label: "Wizard Skripsi", path: "/wizard", icon: FileText },
+  { label: "Panduan Skripsi", path: "/wizard", icon: FileText },
   { label: "Assessment", path: "/assessment", icon: CheckCircle },
 ];
 
@@ -47,29 +47,29 @@ const SERVICE_GROUPS = [
       {
         title: "Statistik",
         path: "/statistik",
-        description: "Analisis deskriptif, inferensial, dan visualisasi data",
-        tags: ["Deskriptif", "Normalitas", "Korelasi"],
+        description: "Untuk olah data kuantitatif: statistik deskriptif, uji normalitas, korelasi, uji beda, regresi, tabel hasil, dan interpretasi.",
+        tags: ["Deskriptif", "Normalitas", "Korelasi", "Uji beda", "Regresi"],
         primary: true,
       },
       {
         title: "Sampling",
         path: "/sampling",
-        description: "Hitung sampel ideal, power analysis, stratifikasi",
-        tags: ["Power Analysis", "Stratified"],
+        description: "Menentukan jumlah sampel dan strategi pengambilan sampel sesuai populasi, margin error, confidence level, atau power analysis.",
+        tags: ["Ukuran sampel", "Margin error", "Power", "Stratifikasi"],
         primary: false,
       },
       {
         title: "Regresi",
         path: "/statistik?tool=regresi",
-        description: "Regresi linear, logistik, multivariat",
+        description: "Menganalisis pengaruh antar variabel: regresi linear/logistik, koefisien, signifikansi, R², dan diagnostik model.",
         tags: ["Linear", "Logistik", "Multivariat"],
         primary: false,
       },
       {
         title: "Mediasi",
         path: "/mediasi",
-        description: "Uji mediasi dan moderasi variabel",
-        tags: ["Mediasi", "Moderasi", "Path"],
+        description: "Menguji variabel perantara/moderator: indirect effect, direct effect, total effect, dan interpretasi jalur.",
+        tags: ["Mediasi", "Moderasi", "Indirect effect", "Path"],
         primary: false,
       },
     ],
@@ -82,22 +82,22 @@ const SERVICE_GROUPS = [
       {
         title: "Analisis Kualitatif",
         path: "/kualitatif",
-        description: "Coding tema, analisis konten, dan triangulasi",
-        tags: ["Thematic", "Content Analysis"],
+        description: "Membantu membaca data wawancara/observasi: coding awal, tema utama, kutipan penting, dan ringkasan temuan.",
+        tags: ["Coding", "Tema", "Kutipan", "Temuan"],
         primary: false,
       },
       {
         title: "Ringkasan Wawancara",
         path: "/kualitatif",
-        description: "Ringkasan otomatis dari transkrip wawancara",
-        tags: ["Ringkasan", "Transkrip"],
+        description: "Mengubah transkrip panjang menjadi ringkasan terstruktur per narasumber, isu, dan poin penting.",
+        tags: ["Transkrip", "Ringkasan", "Narasumber"],
         primary: false,
       },
       {
         title: "Koding Tema",
         path: "/kualitatif",
-        description: "Identifikasi dan kategorisasi tema dari data kualitatif",
-        tags: ["Coding", "Kategori"],
+        description: "Menyusun kategori dan tema dari data kualitatif agar siap dipakai untuk bab hasil/pembahasan.",
+        tags: ["Kategori", "Tema", "Matriks"],
         primary: false,
       },
     ],
@@ -110,29 +110,29 @@ const SERVICE_GROUPS = [
       {
         title: "Kuesioner",
         path: "/kuesioner",
-        description: "Generate instrumen Likert, validasi, dan uji coba",
-        tags: ["Likert", "Validasi", "Blueprint"],
+        description: "Membuat blueprint, indikator, butir pernyataan Likert, skala jawaban, dan draft instrumen penelitian.",
+        tags: ["Blueprint", "Indikator", "Likert", "Butir"],
         primary: true,
       },
       {
         title: "Uji Butir",
         path: "/butir-soal",
-        description: "Analisis butir soal, difficulty index, discrimination",
-        tags: ["Difficulty", "Discrimination"],
+        description: "Mengecek kualitas soal/instrumen: tingkat kesukaran, daya beda, validitas butir, dan ringkasan item.",
+        tags: ["Validitas", "Daya beda", "Kesukaran"],
         primary: false,
       },
       {
         title: "Assessment",
         path: "/assessment",
-        description: "Rubrik penilaian otomatis untuk esai dan tugas",
-        tags: ["Rubrik", "Skoring", "Esai"],
+        description: "Membuat rubrik penilaian dan membantu skoring esai/tugas berdasarkan kriteria yang jelas.",
+        tags: ["Rubrik", "Skoring", "Kriteria"],
         primary: false,
       },
       {
         title: "EFA",
         path: "/efa",
-        description: "Exploratory Factor Analysis untuk identifikasi dimensi",
-        tags: ["EFA", "Factor Loading"],
+        description: "Mengeksplorasi struktur faktor instrumen: KMO, Bartlett, loading faktor, dan pengelompokan dimensi.",
+        tags: ["KMO", "Bartlett", "Loading", "Dimensi"],
         primary: false,
       },
     ],
@@ -145,29 +145,29 @@ const SERVICE_GROUPS = [
       {
         title: "Referensi",
         path: "/referensi",
-        description: "Kelola sitasi, bibliography, dan referensi",
-        tags: ["Citation", "Bibliography"],
+        description: "Mengelola sumber bacaan, sitasi, daftar pustaka, dan catatan literatur untuk proposal/skripsi.",
+        tags: ["Sitasi", "Daftar pustaka", "Literatur"],
         primary: false,
       },
       {
-        title: "Wizard Skripsi",
+        title: "Panduan Skripsi",
         path: "/wizard",
-        description: "Panduan langkah demi langkah menyusun skripsi",
-        tags: ["Step-by-step", "Template"],
+        description: "Memandu alur skripsi dari topik, rumusan masalah, metode, instrumen, analisis, sampai struktur laporan.",
+        tags: ["Topik", "Metode", "Bab", "Laporan"],
         primary: true,
       },
       {
         title: "Laporan Statistik",
         path: "/statistik/report",
-        description: "Auto-generate Bab IV dari hasil analisis",
-        tags: ["Bab IV", "APA Format"],
+        description: "Menyusun narasi Bab IV dari hasil analisis: tabel, interpretasi, kesimpulan uji, dan format akademik.",
+        tags: ["Bab IV", "Tabel", "Interpretasi"],
         primary: false,
       },
       {
         title: "Bantuan Akademik",
         path: "/help",
         description: "Panduan penggunaan dan FAQ",
-        tags: ["FAQ", "Panduan"],
+        tags: ["FAQ", "Panduan", "Pilih layanan"],
         primary: false,
       },
     ],
@@ -272,7 +272,7 @@ export default function Home() {
                   to="/wizard"
                   className="px-6 py-3 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-medium"
                 >
-                  Mulai dari Wizard
+                  Mulai Panduan Skripsi
                 </Link>
                 <button
                   onClick={() => scrollToSection("layanan")}
@@ -496,16 +496,27 @@ export default function Home() {
               Zoya — Platform Penelitian Akademik
             </div>
             <p className="text-sm text-muted max-w-md">
-              Dibuat untuk penelitian kuantitatif · Data tetap di browser Anda
+              Mendukung penelitian kuantitatif, kualitatif, instrumen, assessment, referensi, dan penyusunan laporan akademik.
             </p>
-            <div className="flex gap-6 text-sm">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+              <Link to="/privasi" className="text-muted hover:text-accent">
+                Privasi
+              </Link>
+              <Link to="/syarat" className="text-muted hover:text-accent">
+                Ketentuan
+              </Link>
               <Link to="/help" className="text-muted hover:text-accent">
                 Bantuan
               </Link>
+              <Link to="/feedback" className="text-muted hover:text-accent">
+                Kontak / Saran
+              </Link>
+            </div>
+            <div className="flex gap-4 text-sm">
               <Link to="/login" className="text-muted hover:text-accent">
                 Masuk
               </Link>
-              <Link to="/register" className="text-muted hover:text-accent">
+              <Link to="/register" className="px-4 py-1.5 bg-accent text-white rounded-lg hover:opacity-90 text-sm">
                 Daftar
               </Link>
             </div>
