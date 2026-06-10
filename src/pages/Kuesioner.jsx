@@ -223,14 +223,14 @@ export default function Kuesioner() {
           </div>
           <button
             onClick={() => setAiModalOpen(true)}
-            className="w-full text-xs py-2 px-3 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+            className="w-full text-xs py-2 px-3 rounded-lg bg-accent hover:opacity-90 text-white font-semibold transition-colors flex items-center justify-center gap-1.5 "
             title="Generate kuesioner pakai AI"
           >
             <Wand2 className="w-3.5 h-3.5" /> Generate dengan AI
           </button>
           <button
             onClick={handleLoadDemo}
-            className="w-full text-xs py-2 px-3 rounded-lg bg-gradient-to-r from-violet-50 to-fuchsia-50 hover:from-violet-100 hover:to-fuchsia-100 border border-violet-200 text-violet-700 font-medium transition-colors flex items-center justify-center gap-1.5"
+            className="w-full text-xs py-2 px-3 rounded-lg bg-surface border border-border text-fg hover:bg-card font-medium transition-colors flex items-center justify-center gap-1.5"
             title="Buat survei demo + 15 responden untuk uji coba"
           >
             <Sparkles className="w-3.5 h-3.5" /> Muat Data Demo
@@ -878,7 +878,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
         {/* Primary CTA — Generate with AI */}
         <button
           onClick={onAIGenerate}
-          className="w-full mb-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl p-4 flex items-center gap-3 transition-all shadow-md hover:shadow-lg group"
+          className="w-full mb-4 bg-accent hover:opacity-90 text-white rounded-xl p-4 flex items-center gap-3 transition-all  group"
         >
           <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
             <Wand2 className="w-5 h-5" />
@@ -919,18 +919,18 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
         {/* Demo */}
         <button
           onClick={onDemo}
-          className="text-left bg-gradient-to-br from-violet-50 to-fuchsia-50 hover:from-violet-100 hover:to-fuchsia-100 border-2 border-violet-200 rounded-xl p-5 transition-colors group"
+          className="text-left bg-surface border border-border hover:bg-card rounded-xl p-5 transition-colors group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-5 h-5 text-violet-600" />
-            <span className="font-semibold text-violet-900">Coba Data Demo</span>
-            <span className="ml-auto text-[10px] uppercase tracking-wide bg-violet-200 text-violet-800 px-1.5 py-0.5 rounded font-bold">Rekomendasi</span>
+            <Sparkles className="w-5 h-5 text-accent" />
+            <span className="font-semibold text-fg">Coba Data Demo</span>
+            <span className="ml-auto text-[10px] uppercase tracking-wide bg-surface text-fg px-1.5 py-0.5 rounded font-bold">Rekomendasi</span>
           </div>
-          <p className="text-xs text-violet-800 leading-relaxed">
+          <p className="text-xs text-fg leading-relaxed">
             Lihat seperti apa hasil akhirnya. Kami bikinkan kuesioner motivasi belajar lengkap dengan 15 responden,
             siap untuk diuji Cronbach α & validitas.
           </p>
-          <div className="mt-3 text-xs font-medium text-violet-700 flex items-center gap-1 group-hover:gap-2 transition-all">
+          <div className="mt-3 text-xs font-medium text-fg flex items-center gap-1 group-hover:gap-2 transition-all">
             Muat sekarang <ArrowRight className="w-3.5 h-3.5" />
           </div>
         </button>
@@ -1318,7 +1318,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
       {/* Header */}
       <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center">
             <Wand2 className="w-4 h-4" />
           </div>
           <div>
@@ -1343,12 +1343,12 @@ function AIGenerateModal({ open, onClose, onResult }) {
             disabled={loading}
             className={`p-3 rounded-lg border-2 text-left transition-colors ${
               mode === 'quick'
-                ? 'border-indigo-500 bg-indigo-50'
+                ? 'border-accent bg-surface'
                 : 'border-gray-200 bg-white hover:border-gray-300'
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
-              <Wand2 className="w-4 h-4 text-indigo-600" />
+              <Wand2 className="w-4 h-4 text-accent" />
               <span className="font-semibold text-sm">Quick Generate</span>
             </div>
             <div className="text-xs text-gray-600">Cepat — cukup deskripsi topik, AI buatkan items.</div>
@@ -1358,12 +1358,12 @@ function AIGenerateModal({ open, onClose, onResult }) {
             disabled={loading}
             className={`p-3 rounded-lg border-2 text-left transition-colors ${
               mode === 'blueprint'
-                ? 'border-indigo-500 bg-indigo-50'
+                ? 'border-accent bg-surface'
                 : 'border-gray-200 bg-white hover:border-gray-300'
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
-              <BookOpen className="w-4 h-4 text-indigo-600" />
+              <BookOpen className="w-4 h-4 text-accent" />
               <span className="font-semibold text-sm">Blueprint + Items</span>
             </div>
             <div className="text-xs text-gray-600">Lengkap — definisi operasional, indikator, kisi-kisi (untuk skripsi).</div>
@@ -1460,7 +1460,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
           <button
             onClick={handleGenerate}
             disabled={loading || (!topic.trim() && !variable.trim())}
-            className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg py-2.5 px-4 flex items-center justify-center gap-2 transition-colors"
+            className="flex-1 bg-accent hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg py-2.5 px-4 flex items-center justify-center gap-2 transition-colors"
           >
             {loading ? (
               <>
@@ -1488,8 +1488,8 @@ function AIGenerateModal({ open, onClose, onResult }) {
             </div>
 
             {preview.blueprint && (
-              <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-xs space-y-1.5">
-                <div className="font-semibold text-indigo-900 flex items-center gap-1">
+              <div className="bg-surface border border-border rounded-lg p-3 text-xs space-y-1.5">
+                <div className="font-semibold text-fg flex items-center gap-1">
                   <BookOpen className="w-3.5 h-3.5" /> Blueprint Penelitian
                 </div>
                 {preview.blueprint.teoriRujukan && (
@@ -1621,7 +1621,7 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="mb-3 inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 border border-indigo-200 text-indigo-700 font-medium transition-colors"
+        className="mb-3 inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-surface border border-border text-fg hover:bg-card font-medium transition-colors"
         title={`Generate items pakai AI untuk dimensi "${section.title}"`}
       >
         <Wand2 className="w-3.5 h-3.5" /> Regenerate dengan AI
@@ -1630,9 +1630,9 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
   }
 
   return (
-    <div className="mb-3 rounded-lg border-2 border-indigo-200 bg-indigo-50/50 p-3 space-y-2">
+    <div className="mb-3 rounded-lg border-2 border-border bg-surface/50 p-3 space-y-2">
       <div className="flex items-center justify-between">
-        <div className="text-xs font-semibold text-indigo-900 flex items-center gap-1.5">
+        <div className="text-xs font-semibold text-fg flex items-center gap-1.5">
           <Wand2 className="w-3.5 h-3.5" /> Generate items AI untuk: <span className="italic">"{section.title || '(belum ada judul)'}"</span>
         </div>
         <button
@@ -1670,7 +1670,7 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
           <button
             onClick={() => generate('append')}
             disabled={loading}
-            className="text-xs px-2.5 py-1.5 rounded-md bg-white hover:bg-indigo-100 border border-indigo-300 text-indigo-700 font-medium disabled:opacity-50 flex items-center gap-1"
+            className="text-xs px-2.5 py-1.5 rounded-md bg-white hover:bg-surface border border-border text-fg font-medium disabled:opacity-50 flex items-center gap-1"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
             Tambah
@@ -1678,7 +1678,7 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
           <button
             onClick={() => generate('replace')}
             disabled={loading}
-            className="text-xs px-2.5 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold disabled:opacity-50 flex items-center gap-1"
+            className="text-xs px-2.5 py-1.5 rounded-md bg-accent hover:opacity-90 text-white font-semibold disabled:opacity-50 flex items-center gap-1"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
             Ganti Semua
@@ -1725,20 +1725,20 @@ function BlueprintCard({ blueprint }) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl overflow-hidden">
+    <div className="bg-surface border-2 border-border rounded-xl overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full px-4 py-3 flex items-center gap-2 hover:bg-white/40 transition-colors text-left"
       >
-        <div className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-surface0 text-white flex items-center justify-center flex-shrink-0">
           <BookOpen className="w-4 h-4" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-indigo-900 flex items-center gap-2">
+          <div className="font-semibold text-fg flex items-center gap-2">
             Blueprint Penelitian
-            <span className="text-[10px] uppercase tracking-wide bg-indigo-200 text-indigo-800 px-1.5 py-0.5 rounded font-bold">AI Generated</span>
+            <span className="text-[10px] uppercase tracking-wide bg-accent/10 text-accent px-1.5 py-0.5 rounded font-bold">AI Generated</span>
           </div>
-          <div className="text-xs text-indigo-700 truncate">
+          <div className="text-xs text-fg truncate">
             {blueprint.dimensions?.length > 0
               ? `${blueprint.dimensions.length} dimensi · ${blueprint.dimensions.reduce((n, d) => n + (d.indicators?.length || 0), 0)} indikator`
               : 'Klik untuk lihat'}
@@ -1746,33 +1746,33 @@ function BlueprintCard({ blueprint }) {
         </div>
         <button
           onClick={(e) => { e.stopPropagation(); copyBlueprint() }}
-          className="p-1.5 rounded hover:bg-white/50 text-indigo-700"
+          className="p-1.5 rounded hover:bg-white/50 text-fg"
           title="Copy blueprint ke clipboard"
         >
           <Copy className="w-4 h-4" />
         </button>
-        {open ? <ChevronUp className="w-4 h-4 text-indigo-600" /> : <ChevronDown className="w-4 h-4 text-indigo-600" />}
+        {open ? <ChevronUp className="w-4 h-4 text-accent" /> : <ChevronDown className="w-4 h-4 text-accent" />}
       </button>
       {open && (
         <div className="px-4 pb-4 space-y-3 text-sm">
           {blueprint.teoriRujukan && (
             <div>
-              <div className="text-[10px] uppercase tracking-wide font-bold text-indigo-600 mb-0.5">Teori Rujukan</div>
+              <div className="text-[10px] uppercase tracking-wide font-bold text-accent mb-0.5">Teori Rujukan</div>
               <p className="text-gray-800">{blueprint.teoriRujukan}</p>
             </div>
           )}
           {blueprint.definisiOperasional && (
             <div>
-              <div className="text-[10px] uppercase tracking-wide font-bold text-indigo-600 mb-0.5">Definisi Operasional</div>
+              <div className="text-[10px] uppercase tracking-wide font-bold text-accent mb-0.5">Definisi Operasional</div>
               <p className="text-gray-800 leading-relaxed">{blueprint.definisiOperasional}</p>
             </div>
           )}
           {blueprint.dimensions?.length > 0 && (
             <div>
-              <div className="text-[10px] uppercase tracking-wide font-bold text-indigo-600 mb-1">Dimensi & Indikator</div>
+              <div className="text-[10px] uppercase tracking-wide font-bold text-accent mb-1">Dimensi & Indikator</div>
               <div className="space-y-2">
                 {blueprint.dimensions.map((d, i) => (
-                  <div key={i} className="bg-white/70 border border-indigo-100 rounded-lg p-2.5">
+                  <div key={i} className="bg-white/70 border border-border rounded-lg p-2.5">
                     <div className="font-semibold text-gray-900">{i + 1}. {d.name}</div>
                     {d.definition && (
                       <div className="text-xs text-gray-600 italic mt-0.5">{d.definition}</div>
@@ -1787,7 +1787,7 @@ function BlueprintCard({ blueprint }) {
               </div>
             </div>
           )}
-          <p className="text-[10px] text-indigo-600 italic pt-1 border-t border-indigo-100">
+          <p className="text-[10px] text-accent italic pt-1 border-t border-border">
             💡 Blueprint ini bisa kamu copy-paste langsung ke BAB 3 skripsi (Definisi Operasional, Kisi-kisi Instrumen).
           </p>
         </div>

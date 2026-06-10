@@ -80,15 +80,11 @@ function Statistik() {
   const navigate = useNavigate()
   const activeTool = searchParams.get('tool') || 'deskriptif'
 
-  // Auto-redirect ke onboarding kalau new user (tidak punya flag di localStorage)
-  // Skip kalau ada query param (mis. dari onboarding sendiri yang mengarahkan dengan ?tool=...)
+  // Auto-redirect DISABLED — show /statistik directly with analysis choices
+  // Users can access /statistik/start manually if they want guided tour
   useEffect(() => {
-    const hasOnboarded = localStorage.getItem('statistik_onboarded') === '1'
-    const hasParams = searchParams.toString().length > 0
-    const hasHandoff = !!sessionStorage.getItem('kuesioner_handoff_csv')
-    if (!hasOnboarded && !hasParams && !hasHandoff) {
-      navigate('/statistik/start', { replace: true })
-    }
+    // Set onboarded flag so future visits skip redirect
+    localStorage.setItem('statistik_onboarded', '1')
   }, [])
 
   const [file, setFile] = useState(null)

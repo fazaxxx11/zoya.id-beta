@@ -455,6 +455,69 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
 // ============================================================
 // Export
 // ============================================================
+// ============================================================
+// Always-visible Test Selection Panel
+// Shows all 13 tests even before upload
+// ============================================================
+const ALL_TESTS = [
+  { id: 'deskriptif', label: 'Deskriptif', desc: 'Mean, median, SD, skewness, kurtosis' },
+  { id: 'normalitas', label: 'Normalitas', desc: 'Shapiro-Wilk / Kolmogorov-Smirnov' },
+  { id: 'korelasi', label: 'Korelasi', desc: 'Pearson / Spearman' },
+  { id: 'ttest', label: 'T-Test', desc: 'Bandingkan rata-rata antar grup' },
+  { id: 'anova', label: 'ANOVA', desc: 'Bandingkan rata-rata ≥3 grup' },
+  { id: 'regresi', label: 'Regresi Sederhana', desc: '1 prediktor → 1 outcome' },
+  { id: 'regresiganda', label: 'Regresi Berganda', desc: '≥2 prediktor → 1 outcome' },
+  { id: 'chisquare', label: 'Chi-Square', desc: 'Asosiasi antar variabel kategorik' },
+  { id: 'validitas', label: 'Validitas & Reliabilitas', desc: 'Cronbach Alpha + korelasi item' },
+  { id: 'mannwhitney', label: 'Mann-Whitney U', desc: 'Non-parametrik, 2 grup' },
+  { id: 'wilcoxon', label: 'Wilcoxon', desc: 'Non-parametrik, berpasangan' },
+  { id: 'kruskal', label: 'Kruskal-Wallis', desc: 'Non-parametrik, ≥3 grup' },
+  { id: 'ngain', label: 'N-Gain', desc: 'Efektivitas pre-post' },
+]
+
+function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
+  const [notify, setNotify] = useState(null)
+
+  const handleClick = (id) => {
+    if (!data) {
+      setNotify(id)
+      setTimeout(() => setNotify(null), 3000)
+    }
+    onSelectTool(id)
+  }
+
+  return (
+    <div className="border border-border bg-card rounded-xl p-6">
+      <h2 className="text-base font-semibold text-fg mb-1">Pilih Uji Statistik</h2>
+      <p className="text-xs text-muted mb-4">Klik uji yang ingin dijalankan. {data ? 'Pilih kolom yang sesuai di data Anda.' : 'Upload dataset terlebih dahulu untuk menjalankan analisis.'}</p>
+
+      {!data && notify && (
+        <div className="mb-3 p-2.5 rounded-lg bg-accent/5 border border-accent/20 text-xs text-accent flex items-center gap-2">
+          <AlertCircle className="w-3.5 h-3.5" />
+          Upload dataset untuk menjalankan <strong>{ALL_TESTS.find(t => t.id === notify)?.label}</strong>
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {ALL_TESTS.map(test => (
+          <button
+            key={test.id}
+            onClick={() => handleClick(test.id)}
+            className={`text-left p-3 rounded-lg border text-xs transition-colors ${
+              selectedTool === test.id
+                ? 'border-accent bg-accent/5'
+                : 'border-border hover:border-accent/30 bg-card'
+            }`}
+          >
+            <div className="font-medium text-fg">{test.label}</div>
+            <div className="text-muted mt-0.5 leading-tight">{test.desc}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function StatistikFlow({
   file, data: propData, columns, numericColumns, categoricalColumns, error,
   activeTool, selectedTool, onSelectTool,
@@ -565,6 +628,15 @@ export default function StatistikFlow({
         onExampleLoad={onExampleLoad}
         onOpenGuide={onOpenGuide}
       />
+
+      {/* Always-visible: Pilih Uji Statistik */}
+      <div className="mt-4">
+        <TestSelectionPanel
+          data={data}
+          selectedTool={selectedTool}
+          onSelectTool={onSelectTool}
+        />
+      </div>
 
       {/* Step 2: Review (show after upload) */}
       {data && (

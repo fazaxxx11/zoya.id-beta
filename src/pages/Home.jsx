@@ -9,25 +9,25 @@ export default function Home() {
       title: "Deskriptif & Eksplorasi",
       description: "Statistik deskriptif, visualisasi distribusi, identifikasi outlier, dan pemeriksaan asumsi.",
       tags: ["Mean/SD", "Histogram", "Boxplot", "Normalitas"],
-      path: "/modules/descriptive",
+      path: "/statistik?tool=deskriptif",
     },
     {
       title: "Uji Hipotesis",
       description: "Uji-t, ANOVA, chi-square, korelasi, dan uji non-parametrik dengan interpretasi lengkap.",
       tags: ["t-test", "ANOVA", "Chi-square", "Korelasi"],
-      path: "/modules/hypothesis",
+      path: "/statistik?tool=ttest",
     },
     {
       title: "Regresi & Modeling",
       description: "Regresi linear, logistik, multilevel, dan analisis jalur dengan diagnostik model.",
       tags: ["Regresi Linear", "Logistik", "Multilevel", "Path Analysis"],
-      path: "/modules/regression",
+      path: "/statistik?tool=regresi",
     },
     {
       title: "Laporan Akademik",
       description: "Template laporan APA-style, tabel siap publikasi, visualisasi konsisten, dan ekspor ke Word/LaTeX.",
       tags: ["Template APA", "Tabel Format", "Ekspor Doc", "LaTeX"],
-      path: "/modules/reporting",
+      path: "/statistik/report",
     },
   ];
 
@@ -107,27 +107,31 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Logo />
-              <span className="text-lg font-heading font-semibold">ResearchFlow</span>
+              <span className="text-lg font-heading font-semibold">Zoya</span>
             </div>
             <nav className="hidden md:flex items-center gap-6">
-              <Link to="/modules" className="text-muted hover:text-accent transition">
+              <Link to="/statistik" className="text-muted hover:text-accent transition">
                 Modul
               </Link>
-              <Link to="/docs" className="text-muted hover:text-accent transition">
+              <Link to="/help" className="text-muted hover:text-accent transition">
                 Dokumentasi
               </Link>
-              <Link to="/pricing" className="text-muted hover:text-accent transition">
+              <Link to="/payment" className="text-muted hover:text-accent transition">
                 Harga
               </Link>
-              <Link to="/login" className="text-muted hover:text-accent transition">
-                Masuk
-              </Link>
+              
             </nav>
             <div className="flex items-center gap-3">
               <ThemeToggle />
               <Link
-                to="/signup"
-                className="px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition"
+                to="/login"
+                className="px-4 py-2 text-sm font-medium border border-border rounded-lg hover:bg-surface transition"
+              >
+                Masuk
+              </Link>
+              <Link
+                to="/register"
+                className="px-4 py-2 text-sm font-medium bg-accent text-white rounded-lg hover:opacity-90 transition"
               >
                 Daftar
               </Link>
@@ -156,7 +160,7 @@ export default function Home() {
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
-                  to="/modules"
+                  to="/statistik"
                   className="px-6 py-3 border border-border bg-card rounded-lg hover:bg-surface transition flex items-center justify-center gap-2"
                 >
                   Lihat Modul
@@ -210,9 +214,9 @@ export default function Home() {
         <section className="py-8 border-b border-border">
           <div className="container mx-auto px-4">
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-muted">
-              <span>Dipakai oleh 500+ peneliti</span>
+              <span>Perhitungan transparan</span>
               <span className="hidden sm:inline">•</span>
-              <span>Kompatibel dengan R/SPSS</span>
+              <span>Metode statistik standar</span>
               <span className="hidden sm:inline">•</span>
               <span>Template APA 7th Edition</span>
               <span className="hidden sm:inline">•</span>
@@ -356,7 +360,7 @@ export default function Home() {
                   Mulai dari Wizard
                 </Link>
                 <Link
-                  to="/modules"
+                  to="/statistik"
                   className="px-6 py-3 border border-border rounded-lg hover:bg-surface transition"
                 >
                   Lihat Semua Modul
@@ -373,19 +377,19 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
               <Logo />
-              <span className="text-lg font-heading font-semibold">ResearchFlow</span>
+              <span className="text-lg font-heading font-semibold">Zoya</span>
             </div>
             <p className="text-sm text-muted text-center">
-              Dibuat untuk penelitian kuantitatif · Diverifikasi R/SPSS
+              Dibuat untuk penelitian kuantitatif · Data tetap dalam kendali pengguna
             </p>
             <div className="flex items-center gap-6 text-sm text-muted">
-              <Link to="/privacy" className="hover:text-accent transition">
+              <Link to="/privasi" className="hover:text-accent transition">
                 Privasi
               </Link>
-              <Link to="/terms" className="hover:text-accent transition">
+              <Link to="/syarat" className="hover:text-accent transition">
                 Ketentuan
               </Link>
-              <Link to="/contact" className="hover:text-accent transition">
+              <Link to="/feedback" className="hover:text-accent transition">
                 Kontak
               </Link>
             </div>
