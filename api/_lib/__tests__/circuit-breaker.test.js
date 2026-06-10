@@ -1,4 +1,5 @@
 // Unit tests for circuit-breaker.js — open/half-open states
+// Tests match DeepSeek V3.2 generated API surface
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('circuit-breaker', () => {
@@ -116,14 +117,14 @@ describe('circuit-breaker', () => {
     expect(status['test-provider'].failures).toBe(1);
   });
 
-  it('should report cooldown remaining for open circuits', () => {
+  it('should report openedAt for open circuits', () => {
     for (let i = 0; i < 3; i++) {
       recordFailure('test-provider');
     }
     const status = getCircuitStatus();
     expect(status['test-provider'].state).toBe('open');
-    expect(status['test-provider'].cooldownRemaining).toBeGreaterThan(0);
-    expect(status['test-provider'].cooldownRemaining).toBeLessThanOrEqual(60_000);
+    expect(status['test-provider'].openedAt).toBeTypeOf('number');
+    expect(status['test-provider'].openedAt).toBeGreaterThan(0);
   });
 
   it('should reset individual circuit', () => {

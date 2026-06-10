@@ -1,89 +1,135 @@
-// api/_lib/circuit-breaker.js
-// Per-provider circuit breaker (in-memory only, no persistence)
-// States: closed → open → half-open → closed
-// Trip after 3 transient failures, cooldown 60s
+/**
+ * @typedef {Object} CircuitState
+ * @property {'closed' | 'open' | 'half-open'} state
+ * @property {number} failures - Consecutive transient failures
+ * @property {number | null} openedAt - Timestamp when circuit opened (null if closed)
+ */
 
-const TRIP_THRESHOLD = 3;
-const COOLDOWN_MS = 60_000;
+/**
+ * Circuit breaker implementation for per-provider fault tolerance
+ * @module api/_lib/circuit-breaker
+ */
 
-// ── Circuit state per provider ────────────────────────────────────
-// Map<providerId, { state, failures, openedAt }>
+/** @type {Map<string, CircuitState>} */
 const circuits = new Map();
 
-function getState(providerId) {
+/** @constant {number} */
+const TRIP_THRESHOLD = 3;
+
+/** @constant {number} */
+const COOLDOWN_MS = 60000;
+
+/**
+ * Get or initialize circuit state for a provider
+ * @param {string} providerId
+ * @returns {CircuitState}
+ */
+function getCircuit(providerId) {
   if (!circuits.has(providerId)) {
-    circuits.set(providerId, { state: 'closed', failures: 0, openedAt: 0 });
+    circuits.set(providerId, {
+      state: 'closed',
+      failures: 0,
+      openedAt: null
+    });
   }
   return circuits.get(providerId);
 }
 
-// ── Check if provider is available (not open) ─────────────────────
+/**
+ * Check if circuit is available for requests
+ * @param {string} providerId
+ * @returns {boolean}
+ */
 export function isAvailable(providerId) {
-  const c = getState(providerId);
-
-  if (c.state === 'closed') return true;
-
-  if (c.state === 'open') {
-    // Check if cooldown expired → transition to half-open
-    if (Date.now() - c.openedAt >= COOLDOWN_MS) {
-      c.state = 'half-open';
-      return true; // Allow one trial request
+  const circuit = getCircuit(providerId);
+  
+  if (circuit.state === 'closed') {
+    return true;
+  }
+  
+  if (circuit.state === 'open') {
+    const now = Date.now();
+    if (now - circuit.openedAt >= COOLDOWN_MS) {
+      circuit.state = 'half-open';
+      circuit.openedAt = null;
+      return true;
     }
     return false;
   }
-
-  // half-open: allow trial request
+  
+  // half-open state - allow one trial
   return true;
 }
 
-// ── Record success → reset circuit ────────────────────────────────
+/**
+ * Record a successful request
+ * @param {string} providerId
+ */
 export function recordSuccess(providerId) {
-  const c = getState(providerId);
-  c.failures = 0;
-  c.state = 'closed';
+  const circuit = getCircuit(providerId);
+  
+  if (circuit.state === 'half-open') {
+    console.warn(`Circuit breaker: ${providerId} half-open trial succeeded, resetting to closed`);
+    circuit.state = 'closed';
+    circuit.failures = 0;
+  } else if (circuit.state === 'closed') {
+    circuit.failures = 0;
+  }
+  // open state remains unchanged until cooldown
 }
 
-// ── Record transient failure → possibly trip ──────────────────────
+/**
+ * Record a transient failure
+ * @param {string} providerId
+ */
 export function recordFailure(providerId) {
-  const c = getState(providerId);
-
-  if (c.state === 'half-open') {
-    // Trial request failed → re-open
-    c.state = 'open';
-    c.openedAt = Date.now();
-    console.warn(`[circuit-breaker] ${providerId}: half-open trial failed → re-opened`);
+  const circuit = getCircuit(providerId);
+  
+  if (circuit.state === 'half-open') {
+    console.warn(`Circuit breaker: ${providerId} half-open trial failed, reopening circuit`);
+    circuit.state = 'open';
+    circuit.openedAt = Date.now();
     return;
   }
-
-  c.failures += 1;
-  if (c.failures >= TRIP_THRESHOLD) {
-    c.state = 'open';
-    c.openedAt = Date.now();
-    console.warn(`[circuit-breaker] ${providerId}: tripped after ${c.failures} failures → open (cooldown ${COOLDOWN_MS / 1000}s)`);
+  
+  circuit.failures++;
+  
+  if (circuit.state === 'closed' && circuit.failures >= TRIP_THRESHOLD) {
+    console.warn(`Circuit breaker: ${providerId} tripped to open after ${circuit.failures} failures`);
+    circuit.state = 'open';
+    circuit.openedAt = Date.now();
   }
 }
 
-// ── Get circuit status for health endpoint (no secrets) ───────────
+/**
+ * Get current status of all circuits (safe for logging/monitoring)
+ * @returns {Object<string, {state: string, failures: number, openedAt: number | null}>}
+ */
 export function getCircuitStatus() {
   const status = {};
-  for (const [id, c] of circuits.entries()) {
-    status[id] = {
-      state: c.state,
-      failures: c.failures,
-      ...(c.state === 'open' && {
-        cooldownRemaining: Math.max(0, COOLDOWN_MS - (Date.now() - c.openedAt)),
-      }),
+  
+  for (const [providerId, circuit] of circuits.entries()) {
+    status[providerId] = {
+      state: circuit.state,
+      failures: circuit.failures,
+      openedAt: circuit.openedAt
     };
   }
+  
   return status;
 }
 
-// ── Reset circuit (for testing) ───────────────────────────────────
+/**
+ * Reset circuit for a specific provider (for testing)
+ * @param {string} providerId
+ */
 export function resetCircuit(providerId) {
   circuits.delete(providerId);
 }
 
-// ── Reset all circuits (for testing) ──────────────────────────────
+/**
+ * Reset all circuits (for testing)
+ */
 export function resetAll() {
   circuits.clear();
 }

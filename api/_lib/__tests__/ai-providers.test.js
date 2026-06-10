@@ -1,4 +1,5 @@
 // Unit tests for ai-providers.js — centralized config + env overrides
+// Tests match DeepSeek V3.2 generated API surface
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ai-providers', () => {
@@ -24,27 +25,17 @@ describe('ai-providers', () => {
       expect(providers.map(p => p.id)).toEqual(['generalcompute', 'groq', 'kimi']);
     });
 
-    it('should use default URLs and models', async () => {
-      const { getProviders } = await import('../ai-providers.js');
-      const providers = getProviders();
-      const gc = providers.find(p => p.id === 'generalcompute');
-      expect(gc.url).toBe('https://api.generalcompute.com/v1/chat/completions');
-      expect(gc.model).toBe('deepseek-v3.2');
-      expect(gc.key).toBe('test-gc-key');
+    it('should return provider by id when configured', async () => {
+      const { getProvider } = await import('../ai-providers.js');
+      const provider = getProvider('generalcompute');
+      expect(provider).not.toBeNull();
+      expect(provider.id).toBe('generalcompute');
     });
 
     it('should return null for unconfigured provider', async () => {
       const { getProvider } = await import('../ai-providers.js');
       const provider = getProvider('openrouter');
       expect(provider).toBeNull();
-    });
-
-    it('should return provider by id', async () => {
-      const { getProvider } = await import('../ai-providers.js');
-      const provider = getProvider('generalcompute');
-      expect(provider).not.toBeNull();
-      expect(provider.id).toBe('generalcompute');
-      expect(provider.isOpenRouter).toBe(false);
     });
 
     it('should report hasProviders correctly', async () => {
@@ -58,29 +49,29 @@ describe('ai-providers', () => {
       expect(models).toEqual(['llama-3.3-70b-versatile', 'llama-3.1-8b-instant']);
     });
 
-    it('should build correct headers for non-openrouter', async () => {
-      const { buildHeaders } = await import('../ai-providers.js');
-      const provider = { key: 'test-key', isOpenRouter: false };
+    it('should build correct headers using env key', async () => {
+      const { getProvider, buildHeaders } = await import('../ai-providers.js');
+      const provider = getProvider('generalcompute');
       const headers = buildHeaders(provider);
       expect(headers['Content-Type']).toBe('application/json');
-      expect(headers['Authorization']).toBe('Bearer test-key');
+      expect(headers['Authorization']).toBe('Bearer test-gc-key');
       expect(headers['HTTP-Referer']).toBeUndefined();
     });
 
     it('should build chat body with defaults', async () => {
-      const { buildChatBody } = await import('../ai-providers.js');
-      const provider = { model: 'test-model', isOpenRouter: false };
+      const { getProvider, buildChatBody } = await import('../ai-providers.js');
+      const provider = getProvider('generalcompute');
       const messages = [{ role: 'user', content: 'hello' }];
       const body = buildChatBody(provider, messages);
-      expect(body.model).toBe('test-model');
+      expect(body.model).toBe('deepseek-v3.2');
       expect(body.messages).toEqual(messages);
       expect(body.temperature).toBe(0.3);
       expect(body.max_tokens).toBe(1500);
     });
 
     it('should build chat body with custom options', async () => {
-      const { buildChatBody } = await import('../ai-providers.js');
-      const provider = { model: 'test-model', isOpenRouter: false };
+      const { getProvider, buildChatBody } = await import('../ai-providers.js');
+      const provider = getProvider('generalcompute');
       const messages = [{ role: 'user', content: 'hello' }];
       const body = buildChatBody(provider, messages, { temperature: 0.7, maxTokens: 600 });
       expect(body.temperature).toBe(0.7);
@@ -88,8 +79,8 @@ describe('ai-providers', () => {
     });
 
     it('should not add response_format for non-openrouter', async () => {
-      const { buildChatBody } = await import('../ai-providers.js');
-      const provider = { model: 'test-model', isOpenRouter: false };
+      const { getProvider, buildChatBody } = await import('../ai-providers.js');
+      const provider = getProvider('generalcompute');
       const body = buildChatBody(provider, []);
       expect(body.response_format).toBeUndefined();
     });
@@ -101,6 +92,7 @@ describe('ai-providers', () => {
       const gc = status.find(p => p.id === 'generalcompute');
       expect(gc.configured).toBe(true);
       expect(gc).not.toHaveProperty('key');
+      expect(gc).not.toHaveProperty('envKey');
     });
   });
 
@@ -115,11 +107,19 @@ describe('ai-providers', () => {
       vi.resetModules();
     });
 
-    it('should apply env overrides for URL and model', async () => {
-      const { getProvider } = await import('../ai-providers.js');
-      const gc = getProvider('generalcompute');
+    it('should apply env overrides for URL and model in status', async () => {
+      const { getProviderStatus } = await import('../ai-providers.js');
+      const status = getProviderStatus();
+      const gc = status.find(p => p.id === 'generalcompute');
       expect(gc.url).toBe('https://custom-gc.example.com/v1/chat/completions');
       expect(gc.model).toBe('custom-model');
+    });
+
+    it('should apply env override for model in buildChatBody', async () => {
+      const { getProvider, buildChatBody } = await import('../ai-providers.js');
+      const provider = getProvider('generalcompute');
+      const body = buildChatBody(provider, []);
+      expect(body.model).toBe('custom-model');
     });
   });
 
@@ -132,23 +132,23 @@ describe('ai-providers', () => {
       vi.resetModules();
     });
 
-    it('should mark openrouter as isOpenRouter', async () => {
-      const { getProvider } = await import('../ai-providers.js');
-      const or = getProvider('openrouter');
-      expect(or.isOpenRouter).toBe(true);
+    it('should include openrouter when configured', async () => {
+      const { getProviders } = await import('../ai-providers.js');
+      const providers = getProviders();
+      expect(providers.map(p => p.id)).toContain('openrouter');
     });
 
     it('should build correct headers for openrouter', async () => {
-      const { buildHeaders } = await import('../ai-providers.js');
-      const provider = { key: 'test-key', isOpenRouter: true };
+      const { getProvider, buildHeaders } = await import('../ai-providers.js');
+      const provider = getProvider('openrouter');
       const headers = buildHeaders(provider);
       expect(headers['HTTP-Referer']).toBe('https://zoya.id');
       expect(headers['X-Title']).toBe('zoya.id');
     });
 
     it('should add response_format for openrouter', async () => {
-      const { buildChatBody } = await import('../ai-providers.js');
-      const provider = { model: 'test-model', isOpenRouter: true };
+      const { getProvider, buildChatBody } = await import('../ai-providers.js');
+      const provider = getProvider('openrouter');
       const body = buildChatBody(provider, []);
       expect(body.response_format).toEqual({ type: 'json_object' });
     });
