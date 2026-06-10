@@ -1,10 +1,11 @@
-// api/health.js
-// Health check endpoint — returns rate limiter status + kill switch status + usage
+// Health check endpoint — returns rate limiter status + circuit breaker + provider status + kill switch
 // No auth required (monitoring endpoint)
 
 import { getRateLimiterStatus } from './_lib/rate-limit.js';
 import { isFeatureEnabled } from './_lib/middleware.js';
 import { getUsageSummary } from './_lib/usage.js';
+import { getProviderStatus } from './_lib/ai-providers.js';
+import { getCircuitStatus } from './_lib/circuit-breaker.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -13,11 +14,15 @@ export default async function handler(req, res) {
 
   const rlStatus = getRateLimiterStatus();
   const usage = getUsageSummary();
+  const providers = getProviderStatus();
+  const circuits = getCircuitStatus();
 
   return res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     rateLimiter: rlStatus,
+    providers,
+    circuits,
     killSwitch: {
       ai: isFeatureEnabled('AI'),
       payments: isFeatureEnabled('PAYMENTS'),

@@ -1,21 +1,13 @@
 // AI Interpretation untuk hasil analisis statistik.
 // Menerima result object → return paragraf interpretasi akademik Bahasa Indonesia.
-// Providers: GeneralCompute → OpenRouter → Groq → Kimi.
+// Providers: centralized config + circuit breaker.
 // Middleware: JWT auth + dual rate limit + payload guard + AI timeout
 
 import { aiMiddleware, callAIWithTimeout, sanitizeError, getSupabaseAdmin } from './_lib/middleware.js'
 import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
 import { InterpretSchema, validate } from './_lib/validate.js'
-
-const GC_URL = 'https://api.generalcompute.com/v1/chat/completions'
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const KIMI_URL = 'https://api.moonshot.ai/v1/chat/completions'
-const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-
-const GC_MODEL = 'deepseek-v3.2'
-const GROQ_MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant']
-const KIMI_MODEL = 'moonshot-v1-8k'
-const OPENROUTER_MODEL_DEFAULT = 'openrouter/auto'
+import { getProviders, getGroqCascadeModels, buildHeaders, buildChatBody } from './_lib/ai-providers.js'
+import { isAvailable, recordSuccess, recordFailure } from './_lib/circuit-breaker.js'
 
 export default async function handler(req, res) {
   // ── Middleware: auth + rate limit + payload + CORS ──
@@ -62,76 +54,61 @@ export default async function handler(req, res) {
     }
   }
 
-  const gcKey = process.env.GENERALCOMPUTE_API_KEY;
-  const groqKey = process.env.GROQ_API_KEY;
-  const kimiKey = process.env.KIMI_API_KEY;
-  const orKey = process.env.OPENROUTER_API_KEY;
-  const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT;
-
-  if (!gcKey && !groqKey && !kimiKey && !orKey) {
+  const providers = getProviders();
+  if (providers.length === 0) {
     return res.status(500).json({ error: 'Tidak ada API key yang dikonfigurasi' });
   }
 
   const prompt = buildPrompt(result);
   const errors = [];
 
-  // GeneralCompute (primary)
-  if (gcKey) {
-    const out = await callInterpretProvider(GC_URL, GC_MODEL, gcKey, prompt);
-    if (out.ok) {
-      await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: toolId, amount: billingCheck.price, status: 'completed' });
-      return res.status(200).json({ success: true, provider: `generalcompute:${GC_MODEL}`, interpretation: out.text, tokens: out.tokens });
-    }
-    errors.push(`${GC_MODEL}: ${out.error}`);
-  }
-
-  // OpenRouter
-  if (orKey) {
-    const out = await callInterpretProvider(OPENROUTER_URL, orModel, orKey, prompt, true);
-    if (out.ok) {
-      await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: toolId, amount: billingCheck.price, status: 'completed' });
-      return res.status(200).json({ success: true, provider: `openrouter:${orModel}`, interpretation: out.text, tokens: out.tokens });
-    }
-    errors.push(`openrouter/${orModel}: ${out.error}`);
-  }
-
-  // Groq (model cascade)
-  if (groqKey) {
-    for (const model of GROQ_MODELS) {
-      const out = await callInterpretProvider(GROQ_URL, model, groqKey, prompt);
-      if (out.ok) {
-        await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: toolId, amount: billingCheck.price, status: 'completed' });
-        return res.status(200).json({ success: true, provider: `groq:${model}`, interpretation: out.text, tokens: out.tokens });
+  // ── Provider cascade with circuit breaker ──
+  for (const provider of providers) {
+    // Special handling for Groq: try model cascade
+    if (provider.id === 'groq') {
+      const groqModels = getGroqCascadeModels();
+      for (const model of groqModels) {
+        if (!isAvailable(provider.id)) break;
+        const groqProvider = { ...provider, model };
+        const out = await callInterpretProvider(groqProvider, prompt);
+        if (out.ok) {
+          recordSuccess(provider.id);
+          await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: toolId, amount: billingCheck.price, status: 'completed' });
+          return res.status(200).json({ success: true, provider: `groq:${model}`, interpretation: out.text, tokens: out.tokens });
+        }
+        errors.push(`groq/${model}: ${out.error}`);
+        recordFailure(provider.id);
       }
-      errors.push(`groq/${model}: ${out.error}`);
-      if (!out.transient) break;
+      continue;
     }
-  }
 
-  // Kimi
-  if (kimiKey) {
-    const out = await callInterpretProvider(KIMI_URL, KIMI_MODEL, kimiKey, prompt);
-    if (out.ok) {
-      await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: toolId, amount: billingCheck.price, status: 'completed' });
-      return res.status(200).json({ success: true, provider: 'kimi', interpretation: out.text, tokens: out.tokens });
+    if (!isAvailable(provider.id)) {
+      errors.push(`${provider.id}: circuit open`);
+      continue;
     }
-    errors.push(`kimi: ${out.error}`);
+
+    const out = await callInterpretProvider(provider, prompt);
+    if (out.ok) {
+      recordSuccess(provider.id);
+      await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: toolId, amount: billingCheck.price, status: 'completed' });
+      return res.status(200).json({ success: true, provider: `${provider.id}:${provider.model}`, interpretation: out.text, tokens: out.tokens });
+    }
+    errors.push(`${provider.id}/${provider.model}: ${out.error}`);
+    recordFailure(provider.id);
   }
 
   await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: toolId, amount: billingCheck.price, status: 'failed' });
   return res.status(503).json({ error: 'Semua provider AI sedang sibuk. Coba lagi 30 detik.' });
 }
 
-async function callInterpretProvider(url, model, key, prompt, isOpenRouter = false) {
-  const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` };
-  if (isOpenRouter) {
-    headers['HTTP-Referer'] = 'https://zoya.id';
-    headers['X-Title'] = 'zoya.id';
-  }
+async function callInterpretProvider(provider, prompt) {
+  const headers = buildHeaders(provider);
+  const body = buildChatBody(provider, [
+    { role: 'system', content: prompt.system },
+    { role: 'user', content: prompt.user },
+  ], { temperature: 0.3, maxTokens: 1500 });
 
-  const body = { model, messages: [{ role: 'system', content: prompt.system }, { role: 'user', content: prompt.user }], temperature: 0.3, max_tokens: 1500 };
-
-  const result = await callAIWithTimeout(url, { method: 'POST', headers, body: JSON.stringify(body) });
+  const result = await callAIWithTimeout(provider.url, { method: 'POST', headers, body: JSON.stringify(body) });
   if (!result.ok) return { ok: false, error: result.error, transient: true };
 
   const text = (result.data.choices?.[0]?.message?.content || '').trim();

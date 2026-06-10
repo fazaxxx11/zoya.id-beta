@@ -1,22 +1,14 @@
 // AI Explain Chat — "Belum Paham?" popup untuk hasil uji statistik.
 // AI menjelaskan dengan bahasa santai (kayak ngobrol ke anak SMA).
-// Provider chain: GeneralCompute → OpenRouter → Groq → Kimi.
+// Provider chain: centralized config + circuit breaker.
 // Rate limit: max 5 user turns per session (server-side guard).
 // Middleware: JWT auth + dual rate limit + payload guard + AI timeout
 
 import { aiMiddleware, callAIWithTimeout, getSupabaseAdmin } from './_lib/middleware.js'
 import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
 import { ExplainSchema, validate } from './_lib/validate.js'
-
-const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
-const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
-const KIMI_URL       = 'https://api.moonshot.ai/v1/chat/completions'
-const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-
-const GC_MODEL = 'deepseek-v3.2'
-const GROQ_MODEL = 'llama-3.3-70b-versatile'
-const KIMI_MODEL = 'moonshot-v1-8k'
-const OPENROUTER_MODEL_DEFAULT = 'openrouter/auto'
+import { getProviders, buildHeaders, buildChatBody } from './_lib/ai-providers.js'
+import { isAvailable, recordSuccess, recordFailure } from './_lib/circuit-breaker.js'
 
 const MAX_USER_TURNS = 5
 
@@ -46,17 +38,13 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: `Limit ${MAX_USER_TURNS} pertanyaan per hasil tercapai.`, limit: MAX_USER_TURNS });
   }
 
-  const gcKey  = process.env.GENERALCOMPUTE_API_KEY;
-  const groqKey = process.env.GROQ_API_KEY;
-  const kimiKey = process.env.KIMI_API_KEY;
-  const orKey   = process.env.OPENROUTER_API_KEY;
-  const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT;
-
-  if (!gcKey && !groqKey && !kimiKey && !orKey) {
+  const providers = getProviders();
+  if (providers.length === 0) {
     return res.status(500).json({ error: 'Tidak ada API key yang dikonfigurasi' });
   }
 
-  const systemPrompt = buildSystemPrompt(sanitizedContext);
+  const systemPrompt = buildSystemPrompt(resultContext);
+  const cleanMsgs = messages.map(m => ({ role: m.role, content: m.content }));
   const remaining = Math.max(0, MAX_USER_TURNS - userCount);
 
   // Charge if needed
@@ -67,37 +55,26 @@ export default async function handler(req, res) {
     }
   }
 
-  // Provider cascade
-  const providers = [];
-  if (gcKey)  providers.push({ url: GC_URL, model: GC_MODEL, key: gcKey, isOpenRouter: false });
-  if (orKey)  providers.push({ url: OPENROUTER_URL, model: orModel, key: orKey, isOpenRouter: true });
-  if (groqKey) providers.push({ url: GROQ_URL, model: GROQ_MODEL, key: groqKey, isOpenRouter: false });
-  if (kimiKey) providers.push({ url: KIMI_URL, model: KIMI_MODEL, key: kimiKey, isOpenRouter: false });
+  // Provider cascade with circuit breaker
+  for (const provider of providers) {
+    if (!isAvailable(provider.id)) continue;
 
-  for (const p of providers) {
-    const out = await callChatProvider(p, systemPrompt, cleanMsgs);
+    const out = await callChatProvider(provider, systemPrompt, cleanMsgs);
     if (out.ok) {
+      recordSuccess(provider.id);
       await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: 'explain', amount: 0, status: 'completed' });
-      return res.status(200).json({ reply: out.text, provider: `${p.model}`, remaining, maxTurns: MAX_USER_TURNS });
+      return res.status(200).json({ reply: out.text, provider: `${provider.id}:${provider.model}`, remaining, maxTurns: MAX_USER_TURNS });
     }
+    recordFailure(provider.id);
   }
 
   return res.status(503).json({ error: 'Semua provider AI sedang sibuk. Coba lagi 30 detik.' });
 }
 
 async function callChatProvider(provider, systemPrompt, messages) {
-  const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${provider.key}` };
-  if (provider.isOpenRouter) {
-    headers['HTTP-Referer'] = 'https://zoya.id';
-    headers['X-Title'] = 'zoya.id';
-  }
-
-  const body = {
-    model: provider.model,
-    messages: [{ role: 'system', content: systemPrompt }, ...messages],
-    temperature: 0.7,
-    max_tokens: 600,
-  };
+  const headers = buildHeaders(provider);
+  const allMessages = [{ role: 'system', content: systemPrompt }, ...messages];
+  const body = buildChatBody(provider, allMessages, { temperature: 0.7, maxTokens: 600 });
 
   const result = await callAIWithTimeout(provider.url, { method: 'POST', headers, body: JSON.stringify(body) });
   if (!result.ok) return { ok: false, error: result.error };

@@ -1,22 +1,14 @@
 // AI Kuesioner Generator
 // Mode: "quick" → topik + jumlah item → generate kuesioner
 //        "blueprint" → variable + dimensions → definisi operasional + indikator + items
-// Provider chain: GeneralCompute → OpenRouter → Groq → Kimi.
+// Provider chain: centralized config + circuit breaker.
 // Middleware: JWT auth + dual rate limit + payload guard + AI timeout
 
 import { aiMiddleware, callAIWithTimeout, getSupabaseAdmin } from './_lib/middleware.js'
 import { checkToolAccess, chargeForTool, createOrder } from './_lib/billing.js'
 import { KuesionerSchema, validate } from './_lib/validate.js'
-
-const GC_URL          = 'https://api.generalcompute.com/v1/chat/completions'
-const GROQ_URL       = 'https://api.groq.com/openai/v1/chat/completions'
-const KIMI_URL       = 'https://api.moonshot.ai/v1/chat/completions'
-const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-
-const GC_MODEL = 'deepseek-v3.2'
-const GROQ_MODEL = 'llama-3.3-70b-versatile'
-const KIMI_MODEL = 'moonshot-v1-8k'
-const OPENROUTER_MODEL_DEFAULT = 'openrouter/auto'
+import { getProviders, buildHeaders, buildChatBody } from './_lib/ai-providers.js'
+import { isAvailable, recordSuccess, recordFailure } from './_lib/circuit-breaker.js'
 
 export default async function handler(req, res) {
   // ── Middleware: auth + rate limit + payload + CORS ──
@@ -47,50 +39,39 @@ export default async function handler(req, res) {
   }
   const { mode, topic, variable, dimensions, scale, itemsPerDimension, includeDemografi } = validation.data;
 
-  const gcKey  = process.env.GENERALCOMPUTE_API_KEY;
-  const groqKey = process.env.GROQ_API_KEY;
-  const kimiKey = process.env.KIMI_API_KEY;
-  const orKey   = process.env.OPENROUTER_API_KEY;
-  const orModel = process.env.OPENROUTER_MODEL || OPENROUTER_MODEL_DEFAULT;
-
-  if (!gcKey && !groqKey && !kimiKey && !orKey) {
+  const providers = getProviders();
+  if (providers.length === 0) {
     return res.status(500).json({ error: 'Tidak ada API key yang dikonfigurasi' });
   }
 
   const prompt = buildPrompt({ mode, topic, variable, dimensions, scale, itemsPerDimension, includeDemografi });
 
-  // Provider cascade
-  const providers = [];
-  if (gcKey)  providers.push({ url: GC_URL, model: GC_MODEL, key: gcKey, isOpenRouter: false });
-  if (orKey)  providers.push({ url: OPENROUTER_URL, model: orModel, key: orKey, isOpenRouter: true });
-  if (groqKey) providers.push({ url: GROQ_URL, model: GROQ_MODEL, key: groqKey, isOpenRouter: false });
-  if (kimiKey) providers.push({ url: KIMI_URL, model: KIMI_MODEL, key: kimiKey, isOpenRouter: false });
+  // Provider cascade with circuit breaker
+  for (const provider of providers) {
+    if (!isAvailable(provider.id)) continue;
 
-  for (const p of providers) {
-    const out = await callKuesionerProvider(p, prompt);
+    const out = await callKuesionerProvider(provider, prompt);
     if (out.ok) {
+      recordSuccess(provider.id);
       await createOrder(supabaseAdmin, { userId: user.id, service: 'statistics', tier: 'kuesioner', amount: billing.price, status: 'completed' });
-      return res.status(200).json({ success: true, provider: p.model, ...out.data });
+      return res.status(200).json({ success: true, provider: `${provider.id}:${provider.model}`, ...out.data });
     }
+    recordFailure(provider.id);
   }
 
   return res.status(503).json({ error: 'Semua provider AI sedang sibuk. Coba lagi 30 detik.' });
 }
 
 async function callKuesionerProvider(provider, prompt) {
-  const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${provider.key}` };
-  if (provider.isOpenRouter) {
-    headers['HTTP-Referer'] = 'https://zoya.id';
-    headers['X-Title'] = 'zoya.id';
-  }
+  const headers = buildHeaders(provider);
+  const messages = [
+    { role: 'system', content: prompt.system },
+    { role: 'user', content: prompt.user },
+  ];
+  const body = buildChatBody(provider, messages, { temperature: 0.5, maxTokens: 4000 });
 
-  const body = {
-    model: provider.model,
-    messages: [{ role: 'system', content: prompt.system }, { role: 'user', content: prompt.user }],
-    temperature: 0.5,
-    max_tokens: 4000,
-  };
-  if (!provider.url.includes('moonshot.ai')) {
+  // Kimi doesn't support response_format
+  if (provider.id !== 'kimi') {
     body.response_format = { type: 'json_object' };
   }
 
