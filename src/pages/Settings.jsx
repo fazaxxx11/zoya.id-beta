@@ -98,14 +98,8 @@ export default function SettingsPage() {
       />
 
       <div className="max-w-4xl mx-auto px-3 sm:px-5 py-4 space-y-4">
-        {/* Hero */}
-        <div
-          className="border rounded-xl p-4"
-          style={{
-            backgroundColor: 'rgb(var(--card))',
-            borderColor: 'rgb(var(--border))',
-          }}
-        >
+        {/* Hero — using Panel */}
+        <div className="panel" style={{ borderColor: 'rgb(var(--accent) / 0.3)' }}>
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                  style={{ backgroundColor: 'rgb(var(--accent))', color: 'white' }}>
@@ -123,7 +117,7 @@ export default function SettingsPage() {
 
         {/* Stats grid */}
         <Card>
-          <h3 className="font-semibold text-sm mb-3 flex items-center gap-2" style={{ color: 'rgb(var(--fg))' }}>
+          <h3 className="section-title text-sm flex items-center gap-2">
             <Database className="w-4 h-4" style={{ color: 'rgb(var(--muted))' }} /> Isi Workspace ({totalItems} item)
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">

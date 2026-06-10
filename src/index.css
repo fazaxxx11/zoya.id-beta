@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&family=Source+Serif+4:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -43,6 +43,13 @@
   --table-head: 239 232 220;  /* #EFE8DC */
   --input:     255 255 255;   /* white input */
   --accent-2:  79 70 229;     /* indigo soft */
+  /* Typography */
+  --heading-font: 'Source Serif 4', 'Georgia', serif;
+  --body-font: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --mono-font: 'IBM Plex Mono', 'Menlo', monospace;
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .dark {
@@ -58,6 +65,9 @@
   --table-head: 34 42 49;     /* #222A31 */
   --input:     17 22 27;      /* #11161B */
   --accent-2:  129 140 248;   /* indigo lighter */
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -790,4 +800,134 @@ body::before { display: none; }
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+}
+
+/* =====================================================
+   Academic Design System — Typography & Utility Classes
+===================================================== */
+body {
+  font-family: var(--body-font);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--heading-font);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.375rem; }
+h3 { font-size: 1.125rem; }
+h4 { font-size: 1rem; }
+
+code, .tabular {
+  font-family: var(--mono-font);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Panel surfaces */
+.panel {
+  background: rgb(var(--card));
+  border: 1px solid rgb(var(--border));
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.panel-soft {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--border));
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.panel-emphasized {
+  background: rgb(var(--card));
+  border: 1px solid rgb(var(--accent));
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+/* Section */
+.section-title {
+  font-family: var(--heading-font);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+  margin-bottom: 0.5rem;
+}
+
+.section-desc {
+  font-size: 0.875rem;
+  color: rgb(var(--muted));
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+/* Metric card */
+.metric-value {
+  font-family: var(--mono-font);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+  line-height: 1.2;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: rgb(var(--muted));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* Data table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table thead th {
+  background: rgb(var(--table-head));
+  font-family: var(--body-font);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgb(var(--muted));
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid rgb(var(--border));
+}
+
+.data-table tbody td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid rgb(var(--border) / 0.5);
+  color: rgb(var(--fg));
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table .text-right {
+  text-align: right;
+}
+
+.data-table .mono {
+  font-family: var(--mono-font);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Dark mode overrides for panels */
+.dark .panel {
+  background: rgb(var(--card));
+  border-color: rgb(var(--border));
+}
+
+.dark .panel-soft {
+  background: rgb(var(--surface));
+  border-color: rgb(var(--border));
 }
