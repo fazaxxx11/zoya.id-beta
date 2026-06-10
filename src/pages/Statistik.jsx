@@ -32,18 +32,18 @@ import ExportActions from '../components/statistik/ExportActions'
 import { exportToExcel } from '../lib/export/excelExport'
 import { exportToPDF } from '../lib/export/pdfExport'
 import {
-  describe, formatDescriptive,
+  describeAdapter as describe, formatDescriptive,
   testNormality,
-  pearsonCorrelation, spearmanCorrelation,
-  cronbachAlpha, itemValidity,
-  oneSampleTTest, independentTTest, pairedTTest,
-  oneWayANOVA,
+  pearsonAdapter as pearsonCorrelation, spearmanAdapter as spearmanCorrelation,
+  cronbachAdapter as cronbachAlpha, itemValidity,
+  oneSampleTTest, independentTTestAdapter as independentTTest, pairedTTestAdapter as pairedTTest,
+  oneWayANOVAAdapter as oneWayANOVA,
   twoWayANOVA,
-  simpleLinearRegression, multipleLinearRegression,
+  simpleRegressionAdapter as simpleLinearRegression, multipleLinearRegression,
   mannWhitneyU, wilcoxonSignedRank, kruskalWallis,
   analyzeNGain,
   chiSquareIndependence,
-} from '../lib/stats'
+} from '../lib/statistics'
 
 // ============================================================
 // Tools registry — single source of truth
