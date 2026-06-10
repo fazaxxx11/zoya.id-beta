@@ -31,7 +31,8 @@ export function oneSampleTTest(values, mu0 = 0, alpha = 0.05) {
   const se_d = Math.sqrt((1 + d * d / 2) / n); // approximate SE for d
   const ci95d = [d - 1.96 * se_d, d + 1.96 * se_d];
 
-  const ci95 = [mean - 1.96 * sem, mean + 1.96 * sem];
+  const critical = tCriticalTwoTailed(alpha, df);
+  const ci95 = [mean - critical * sem, mean + critical * sem];
 
   return {
     method: 'one_sample_t',
@@ -50,8 +51,24 @@ export function oneSampleTTest(values, mu0 = 0, alpha = 0.05) {
     ci95,
     significant: pValue < alpha,
     missing: values.length - n,
-    notes: 'Two-tailed. Effect size: Cohen d. CI via normal approximation for large n.',
+    notes: 'Two-tailed. Effect size: Cohen d. Mean CI uses t critical value.',
   };
+}
+
+function tCriticalTwoTailed(alpha, df) {
+  const target = 1 - alpha / 2;
+  let lo = 0;
+  let hi = 1;
+
+  while (tCDF(hi, df) < target && hi < 1e6) hi *= 2;
+
+  for (let i = 0; i < 80; i++) {
+    const mid = (lo + hi) / 2;
+    if (tCDF(mid, df) < target) lo = mid;
+    else hi = mid;
+  }
+
+  return hi;
 }
 
 /**

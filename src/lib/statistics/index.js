@@ -36,6 +36,7 @@ export {
   oneWayANOVAAdapter,
   simpleRegressionAdapter,
   normalityAdapter,
+  mannWhitneyAdapter, wilcoxonAdapter, kruskalWallisAdapter,
 } from './uiAdapters.js';
 
 export { shapiroWilk, kolmogorovSmirnov, testNormality } from './normality.js';
