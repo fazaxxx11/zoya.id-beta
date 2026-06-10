@@ -285,6 +285,34 @@ export function oneSampleTTestAdapter(values, mu0 = 0, alpha = 0.05) {
   };
 }
 
+// ── Non-parametric tests ─────────────────────────────────────────
+
+import { mannWhitneyU as engineMWU, wilcoxonSignedRank as engineWilcoxon, kruskalWallis as engineKW } from './nonparametric.js';
+
+/**
+ * Adapter for Mann-Whitney U.
+ * Matches old mannWhitneyU() output shape.
+ */
+export function mannWhitneyAdapter(group1, group2, alpha = 0.05) {
+  return engineMWU(group1, group2, alpha);
+}
+
+/**
+ * Adapter for Wilcoxon Signed-Rank.
+ * Matches old wilcoxonSignedRank() output shape.
+ */
+export function wilcoxonAdapter(before, post, alpha = 0.05) {
+  return engineWilcoxon(before, post, alpha);
+}
+
+/**
+ * Adapter for Kruskal-Wallis.
+ * Matches old kruskalWallis() output shape.
+ */
+export function kruskalWallisAdapter(groups, groupNames = null, alpha = 0.05) {
+  return engineKW(groups, groupNames, alpha);
+}
+
 // ── Helper functions ──────────────────────────────────────────────
 
 function interpretStrength(r) {

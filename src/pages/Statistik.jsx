@@ -40,7 +40,7 @@ import {
   oneWayANOVAAdapter as oneWayANOVA,
   twoWayANOVA,
   simpleRegressionAdapter as simpleLinearRegression, multipleLinearRegression,
-  mannWhitneyU, wilcoxonSignedRank, kruskalWallis,
+  mannWhitneyAdapter as mannWhitneyU, wilcoxonAdapter as wilcoxonSignedRank, kruskalWallisAdapter as kruskalWallis,
   analyzeNGain,
   chiSquareIndependence,
 } from '../lib/statistics'

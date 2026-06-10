@@ -38,6 +38,9 @@ src/pages/StatistikBatch.jsx ← Batch mode (imports from statistics/)
 | T-Test Independent | `lib/stats/ttest.js` | `statistics/ttest.js` | `independentTTestAdapter` | Full migration |
 | T-Test Paired | `lib/stats/ttest.js` | `statistics/ttest.js` | `pairedTTestAdapter` | Full migration |
 | T-Test One-sample | `lib/stats/ttest.js` | `statistics/ttest.js` | `oneSampleTTestAdapter` | ✅ Full migration |
+| Mann-Whitney U | `lib/stats/nonparametric.js` | `statistics/nonparametric.js` | `mannWhitneyAdapter` | ✅ Full migration |
+| Wilcoxon Signed-Rank | `lib/stats/nonparametric.js` | `statistics/nonparametric.js` | `wilcoxonAdapter` | ✅ Full migration |
+| Kruskal-Wallis | `lib/stats/nonparametric.js` | `statistics/nonparametric.js` | `kruskalWallisAdapter` | ✅ Full migration |
 | One-way ANOVA | `lib/stats/anova.js` | `statistics/anova.js` | `oneWayANOVAAdapter` | Signature changed: flat arrays |
 | Two-way ANOVA | `lib/stats/twoWayANOVA.js` | `lib/stats/twoWayANOVA.js` | none | Not yet ported |
 | Regresi Sederhana | `lib/stats/regression.js` | `statistics/regression.js` | `simpleRegressionAdapter` | Full migration |
@@ -85,6 +88,14 @@ src/pages/StatistikBatch.jsx ← Batch mode (imports from statistics/)
 - CI via normal approximation (accurate for n > 30).
 - Matches old oneSampleTTest() output shape.
 
+## Non-parametric Tests — Limitations
+
+- **Mann-Whitney U**: Normal approximation with tie correction. Exact p-value not implemented (valid for n ≥ 5-8 per group). Includes continuity correction (0.5). Effect size r = |z|/√N.
+- **Wilcoxon Signed-Rank**: Normal approximation with tie correction. Exact p-value not implemented (valid for n ≥ 5 non-zero differences). Includes continuity correction (0.5). Effect size r = |z|/√n.
+- **Kruskal-Wallis**: Chi-square approximation with tie correction. Effect size η²_H = (H-k+1)/(N-k) clamped ≥ 0.
+- `averageRank()` helper exported for custom use.
+- All three match old function output shapes via adapters.
+
 - ✅ Sample variance/SD uses n-1 (Bessel's correction)
 - ✅ Two-tailed p-values by default
 - ✅ Alpha = 0.05 default
@@ -98,7 +109,6 @@ Functions still using old `lib/stats/` (not yet ported):
 - `itemValidity`
 - `twoWayANOVA`
 - `multipleLinearRegression`
-- `mannWhitneyU`, `wilcoxonSignedRank`, `kruskalWallis`
 - `analyzeNGain`
 - `chiSquareIndependence`
 

@@ -11,6 +11,9 @@ import {
   simpleRegressionAdapter,
   normalityAdapter,
   oneSampleTTestAdapter,
+  mannWhitneyAdapter,
+  wilcoxonAdapter,
+  kruskalWallisAdapter,
 } from '../../src/lib/statistics/uiAdapters.js';
 
 describe('UI adapters', () => {
@@ -194,6 +197,53 @@ describe('UI adapters', () => {
       const data = [85, 90, NaN, 92];
       const result = oneSampleTTestAdapter(data, 80);
       expect(result.n).toBe(3);
+    });
+  });
+
+  describe('mann-whitney adapter', () => {
+    it('returns correct shape matching old mannWhitneyU', () => {
+      const g1 = [23, 41, 54, 66, 32];
+      const g2 = [67, 55, 43, 29, 18];
+      const result = mannWhitneyAdapter(g1, g2);
+      expect(result.U).toBeDefined();
+      expect(result.z).toBeDefined();
+      expect(result.pValue).toBeDefined();
+      expect(result.isSignificant).toBeDefined();
+      expect(result.n1).toBe(5);
+      expect(result.n2).toBe(5);
+    });
+
+    it('returns error for insufficient data', () => {
+      const result = mannWhitneyAdapter([1, 2], [3, 4]);
+      expect(result.error).toBeDefined();
+    });
+  });
+
+  describe('wilcoxon adapter', () => {
+    it('returns correct shape matching old wilcoxonSignedRank', () => {
+      const before = [85, 90, 78, 92, 88, 76, 95, 82, 89, 80];
+      const after = [90, 95, 80, 88, 92, 82, 91, 85, 93, 86];
+      const result = wilcoxonAdapter(before, after);
+      expect(result.W).toBeDefined();
+      expect(result.Wpos).toBeDefined();
+      expect(result.Wneg).toBeDefined();
+      expect(result.z).toBeDefined();
+      expect(result.pValue).toBeDefined();
+      expect(result.isSignificant).toBeDefined();
+    });
+  });
+
+  describe('kruskal-wallis adapter', () => {
+    it('returns correct shape matching old kruskalWallis', () => {
+      const g1 = [23, 41, 54, 66, 32];
+      const g2 = [67, 55, 43, 29, 18];
+      const g3 = [80, 72, 91, 65, 88];
+      const result = kruskalWallisAdapter([g1, g2, g3], ['A', 'B', 'C']);
+      expect(result.H).toBeDefined();
+      expect(result.df).toBe(2);
+      expect(result.pValue).toBeDefined();
+      expect(result.groupStats).toHaveLength(3);
+      expect(result.isSignificant).toBeDefined();
     });
   });
 

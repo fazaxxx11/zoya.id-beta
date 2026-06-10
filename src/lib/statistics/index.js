@@ -39,10 +39,10 @@ export {
 } from './uiAdapters.js';
 
 export { shapiroWilk, kolmogorovSmirnov, testNormality } from './normality.js';
+export { mannWhitneyU, wilcoxonSignedRank, kruskalWallis, averageRank } from './nonparametric.js';
 // These will be gradually migrated in future phases
 export { itemValidity } from '../stats/reliability.js';
 export { twoWayANOVA } from '../stats/twoWayANOVA.js';
 export { multipleLinearRegression } from '../stats/regression.js';
-export { mannWhitneyU, wilcoxonSignedRank, kruskalWallis } from '../stats/nonparametric.js';
 export { analyzeNGain } from '../stats/ngain.js';
 export { chiSquareIndependence } from '../stats/chisquare.js';
