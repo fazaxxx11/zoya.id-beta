@@ -288,6 +288,8 @@ export function oneSampleTTestAdapter(values, mu0 = 0, alpha = 0.05) {
 // ── Non-parametric tests ─────────────────────────────────────────
 
 import { mannWhitneyU as engineMWU, wilcoxonSignedRank as engineWilcoxon, kruskalWallis as engineKW } from './nonparametric.js';
+import { itemValidity as engineItemValidity } from './itemValidity.js';
+import { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
 
 /**
  * Adapter for Mann-Whitney U.
@@ -311,6 +313,28 @@ export function wilcoxonAdapter(before, post, alpha = 0.05) {
  */
 export function kruskalWallisAdapter(groups, groupNames = null, alpha = 0.05) {
   return engineKW(groups, groupNames, alpha);
+}
+
+// ── Item Validity ─────────────────────────────────────────────────
+
+/**
+ * Adapter for item validity (corrected item-total correlation).
+ * Matches old itemValidity() output shape.
+ * Input: items matrix [n_respondents][n_items]
+ */
+export function itemValidityAdapter(items) {
+  return engineItemValidity(items);
+}
+
+// ── N-Gain ───────────────────────────────────────────────────────
+
+/**
+ * Adapter for N-gain analysis (Hake, 1998).
+ * Matches old analyzeNGain() output shape.
+ * Input: { pre, post, maxScore?, names? }
+ */
+export function analyzeNGainAdapter(data) {
+  return analyzeNGain(data);
 }
 
 // ── Multiple Linear Regression ──────────────────────────────────

@@ -9,6 +9,7 @@ import BottomNav from './components/BottomNav'
 import OnboardingTour from './components/OnboardingTour'
 import FeedbackButton from './components/FeedbackButton'
 import PromoBanner from './components/PromoBanner'
+import AdminRoute from './components/AdminRoute'
 import Logo from './components/Logo'
 import './index.css'
 
@@ -97,7 +98,7 @@ function App() {
           <Route path="/assessment" element={<Assessment />} />
           <Route path="/assessment/report" element={<AssessmentReport />} />
           <Route path="/payment" element={<Payment />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/profile" element={<UserDashboard />} />
           <Route path="/order" element={<OrderStatus />} />

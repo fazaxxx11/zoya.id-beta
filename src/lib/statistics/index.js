@@ -39,11 +39,14 @@ export {
   multipleLinearRegressionAdapter,
   normalityAdapter,
   mannWhitneyAdapter, wilcoxonAdapter, kruskalWallisAdapter,
+  itemValidityAdapter, analyzeNGainAdapter,
 } from './uiAdapters.js';
 
 export { shapiroWilk, kolmogorovSmirnov, testNormality } from './normality.js';
 export { mannWhitneyU, wilcoxonSignedRank, kruskalWallis, averageRank } from './nonparametric.js';
-// These will be gradually migrated in future phases
-export { itemValidity } from '../stats/reliability.js';
-export { analyzeNGain } from '../stats/ngain.js';
-export { chiSquareIndependence } from '../stats/chisquare.js';
+export { itemValidity } from './itemValidity.js';
+export { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
+
+// Legacy re-exports
+import { chiSquareIndependence } from '../stats/chisquare.js';
+export { chiSquareIndependence };

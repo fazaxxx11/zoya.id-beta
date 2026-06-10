@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { validate, AdminTopupSchema } from './_lib/validate.js';
 
 // Initialize Supabase admin client with service role key
 const supabaseAdmin = createClient(
@@ -51,22 +52,11 @@ export default async function handler(req, res) {
     // Verify admin access
     const adminUser = await requireAdmin(req);
     
-    const { topupId, action, rejectReason } = req.body;
-    
-    // Validate input
-    if (!topupId || !action || !['approve', 'reject'].includes(action)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Missing or invalid parameters: topupId and action (approve/reject) required' 
-      });
+    const validation = validate(AdminTopupSchema, req.body || {});
+    if (!validation.valid) {
+      return res.status(400).json({ success: false, error: 'Payload tidak valid', details: validation.errors });
     }
-
-    if (action === 'reject' && !rejectReason) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'rejectReason required for reject action' 
-      });
-    }
+    const { topupId, action, rejectReason } = validation.data;
 
     if (action === 'approve') {
       // Get the pending topup details

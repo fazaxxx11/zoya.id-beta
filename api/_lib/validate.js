@@ -81,6 +81,29 @@ export const KuesionerSchema = z.object({
   message: 'topic atau variable wajib diisi',
 });
 
+// ── /api/admin-topup ─────────────────────────────────────────────
+export const AdminTopupSchema = z.object({
+  topupId: NonEmptyString,
+  action: z.enum(['approve', 'reject']),
+  rejectReason: z.string().max(1000).optional(),
+}).refine(data => data.action !== 'reject' || (data.rejectReason && data.rejectReason.trim()), {
+  message: 'rejectReason wajib diisi untuk aksi reject',
+  path: ['rejectReason'],
+});
+
+// ── /api/billing-check ────────────────────────────────────────────
+export const BillingCheckSchema = z.object({
+  toolId: NonEmptyString,
+  sampleSize: z.number().int().min(0).max(100000).optional(),
+});
+
+// ── /api/pending-topups (POST) ────────────────────────────────────
+export const PendingTopupSchema = z.object({
+  amount: z.number().int().min(1000, 'Minimal top-up Rp 1.000').max(10000000, 'Maksimal top-up Rp 10.000.000'),
+  method: z.enum(['transfer', 'ewallet', 'qris']).default('transfer'),
+  note: z.string().max(500).default(''),
+});
+
 // ── Validation helper ─────────────────────────────────────────────
 // Returns { valid, data, errors } — never throws
 export function validate(schema, body) {

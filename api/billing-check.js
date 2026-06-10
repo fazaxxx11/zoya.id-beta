@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { checkToolAccess } from './_lib/billing.js';
+import { validate, BillingCheckSchema } from './_lib/validate.js';
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -36,12 +37,12 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Invalid or expired token' });
     }
 
-    // Parse request body
-    const { toolId, sampleSize } = req.body;
-    
-    if (!toolId) {
-      return res.status(400).json({ error: 'toolId is required' });
+    // Validate request body
+    const validation = validate(BillingCheckSchema, req.body || {});
+    if (!validation.valid) {
+      return res.status(400).json({ error: 'Payload tidak valid', details: validation.errors });
     }
+    const { toolId, sampleSize } = validation.data;
 
     // Initialize admin client for server-side operations
     const supabaseAdmin = createClient(

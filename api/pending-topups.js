@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { validate, PendingTopupSchema } from './_lib/validate.js';
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -59,15 +60,11 @@ export default async function handler(req, res) {
       });
 
     } else if (req.method === 'POST') {
-      const { amount, method = 'transfer', note = '' } = req.body;
-
-      // Validate amount
-      if (!amount || typeof amount !== 'number' || amount <= 0) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Valid amount greater than 0 is required' 
-        });
+      const validation = validate(PendingTopupSchema, req.body || {});
+      if (!validation.valid) {
+        return res.status(400).json({ success: false, error: 'Payload tidak valid', details: validation.errors });
       }
+      const { amount, method, note } = validation.data;
 
       // Calculate bonus
       const bonus = calculateBonus(amount);
