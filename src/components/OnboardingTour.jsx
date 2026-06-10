@@ -51,8 +51,9 @@ export default function OnboardingTour() {
     const completed = localStorage.getItem(STORAGE_KEY)
     if (completed) return
 
-    // Hanya muncul kalau di home page
-    if (window.location.pathname !== '/') return
+    // Disable auto-open on public Home (/)
+    // Tour only shows on explicit trigger or authenticated pages
+    if (window.location.pathname === '/') return
 
     const t = setTimeout(() => setOpen(true), 600)
     return () => clearTimeout(t)
