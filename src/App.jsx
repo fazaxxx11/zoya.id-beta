@@ -9,6 +9,7 @@ import BottomNav from './components/BottomNav'
 import OnboardingTour from './components/OnboardingTour'
 import FeedbackButton from './components/FeedbackButton'
 import PromoBanner from './components/PromoBanner'
+import Logo from './components/Logo'
 import './index.css'
 
 // Lazy-loaded routes — split heavy pages into separate chunks so the initial
@@ -43,10 +44,17 @@ const Feedback            = lazy(() => import('./pages/Feedback'))
 
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#fafafa]">
-      <div className="flex items-center gap-3 text-gray-400 text-sm">
-        <span className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" />
-        Memuat halaman…
+    <div className="min-h-screen flex items-center justify-center bg-bg">
+      <div className="bg-card border border-border rounded-xl shadow-sm p-8 flex flex-col items-center gap-4">
+        <Logo size={32} />
+        <div className="font-heading font-semibold text-fg">Zoya</div>
+        <div className="w-32 h-2 bg-surface rounded animate-pulse"></div>
+        <div className="flex items-center gap-1">
+          <div className="w-1.5 h-1.5 bg-muted/40 rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-1.5 h-1.5 bg-muted/40 rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-1.5 h-1.5 bg-muted/40 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+        </div>
+        <div className="text-xs text-muted">Memuat halaman…</div>
       </div>
     </div>
   )
