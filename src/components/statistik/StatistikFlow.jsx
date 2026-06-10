@@ -173,7 +173,7 @@ function StepReview({ columns, data, numericColumns, categoricalColumns, editing
 
       {/* Variable list */}
       <p className="text-xs text-muted mb-2">
-        Zoya mendeteksi tipe variabel secara otomatis. Kamu bisa lanjut jika tipe sudah sesuai.
+        Azezmen mendeteksi tipe variabel secara otomatis. Kamu bisa lanjut jika tipe sudah sesuai.
       </p>
       <div className="overflow-x-auto mb-6">
         <table className="w-full text-sm">
@@ -389,7 +389,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
   return (
     <div className="border border-border bg-card rounded-xl p-6">
       <h2 className="text-lg font-semibold text-fg mb-1">Analisis apa yang ingin kamu lakukan?</h2>
-      <p className="text-sm text-muted mb-5">Zoya merekomendasikan analisis berdasarkan tipe data yang terdeteksi.</p>
+      <p className="text-sm text-muted mb-5">Azezmen merekomendasikan analisis berdasarkan tipe data yang terdeteksi.</p>
 
       {/* Recommendations */}
       <div className="space-y-5">

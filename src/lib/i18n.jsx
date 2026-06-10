@@ -9,7 +9,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
 
-const KEY = 'zoya_lang'
+const KEY = 'azezmen_lang'
 export const SUPPORTED = ['id', 'en']
 export const LANG_LABELS = { id: 'Bahasa Indonesia', en: 'English' }
 

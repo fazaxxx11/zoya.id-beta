@@ -379,7 +379,7 @@ function OrderStatus() {
 
                         // Header (centered)
                         setFont(8, 'normal', [150, 150, 150])
-                        doc.text('zoya.id · Hasil Assessment', pageW / 2, state.y, { align: 'center' })
+                        doc.text('Azezmen · Hasil Assessment', pageW / 2, state.y, { align: 'center' })
                         state.y += 5
                         setFont(16, 'bold', [30, 30, 30])
                         doc.text('HASIL ASSESSMENT', pageW / 2, state.y, { align: 'center' })
@@ -442,7 +442,7 @@ function OrderStatus() {
                         for (let i = 1; i <= total; i++) {
                           doc.setPage(i)
                           setFont(7.5, 'normal', [160, 160, 160])
-                          doc.text('zoya.id', mx, pageH - 8)
+                          doc.text('Azezmen', mx, pageH - 8)
                           doc.text(`Halaman ${i} dari ${total}`, pageW / 2, pageH - 8, { align: 'center' })
                           doc.text(new Date().toLocaleDateString('id-ID'), pageW - mx, pageH - 8, { align: 'right' })
                         }

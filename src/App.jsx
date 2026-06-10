@@ -47,7 +47,7 @@ function PageLoader() {
     <div className="min-h-screen flex items-center justify-center bg-bg">
       <div className="bg-card border border-border rounded-xl shadow-sm p-8 flex flex-col items-center gap-4">
         <Logo size={32} />
-        <div className="font-heading font-semibold text-fg">Zoya</div>
+        <div className="font-heading font-semibold text-fg">Azezmen</div>
         <div className="w-32 h-2 bg-surface rounded animate-pulse"></div>
         <div className="flex items-center gap-1">
           <div className="w-1.5 h-1.5 bg-muted/40 rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>

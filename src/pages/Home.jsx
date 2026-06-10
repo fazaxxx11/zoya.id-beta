@@ -192,7 +192,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Logo />
-              <span className="text-xl font-heading font-semibold">Zoya</span>
+              <span className="text-xl font-heading font-semibold">Azezmen</span>
             </div>
 
             <nav className="hidden md:flex items-center gap-8">
@@ -493,7 +493,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col items-center text-center space-y-4">
             <div className="text-lg font-heading font-semibold">
-              Zoya — Platform Penelitian Akademik
+              Azezmen — Platform Penelitian Akademik
             </div>
             <p className="text-sm text-muted max-w-md">
               Mendukung penelitian kuantitatif, kualitatif, instrumen, assessment, referensi, dan penyusunan laporan akademik.

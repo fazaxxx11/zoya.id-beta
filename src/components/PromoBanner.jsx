@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react'
 import { X, Sparkles } from 'lucide-react'
 
-const DISMISS_KEY = 'zoya:promoBanner:dismissed'
+const DISMISS_KEY = 'azezmen:promoBanner:dismissed'
 
 export default function PromoBanner() {
   const [active, setActive] = useState(false)

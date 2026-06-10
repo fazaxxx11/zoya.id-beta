@@ -4,7 +4,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 const ThemeContext = createContext(null)
-const STORAGE_KEY = 'zoya_theme'
+const STORAGE_KEY = 'azezmen_theme'
 
 function getSystemTheme() {
   if (typeof window === 'undefined') return 'light'

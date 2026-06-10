@@ -986,7 +986,7 @@ async function buildBatchPDF({ column, matrix, assumptions, inferential, method 
     doc.setPage(i)
     doc.setFontSize(8)
     doc.setTextColor('#9ca3af')
-    doc.text('zoya.id', mx, pageH - 10)
+    doc.text('Azezmen', mx, pageH - 10)
     doc.text('Batch Comparison Report', pageW / 2, pageH - 10, { align: 'center' })
     doc.text(`Halaman ${i} dari ${totalPages}`, pageW - mx, pageH - 10, { align: 'right' })
   }

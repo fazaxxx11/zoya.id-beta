@@ -1,7 +1,7 @@
 // Theme management. Default ke 'dark'.
 // Persist via localStorage. Apply class .dark ke <html>.
 
-const THEME_KEY = 'zoya_theme'
+const THEME_KEY = 'azezmen_theme'
 const DEFAULT_THEME = 'dark' // user prefer
 
 const listeners = new Set()

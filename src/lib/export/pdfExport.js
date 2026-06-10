@@ -121,7 +121,7 @@ export async function exportToPDF(result, containerEl) {
 
   // Header
   setFont(8, 'normal', [150, 150, 150])
-  doc.text('zoya.id · Modul Statistik', pageW / 2, state.y, { align: 'center' }); state.y += 5
+  doc.text('Azezmen · Modul Statistik', pageW / 2, state.y, { align: 'center' }); state.y += 5
   setFont(15, 'bold', [30, 30, 30])
   doc.text(result.toolName || 'Hasil Analisis', pageW / 2, state.y, { align: 'center' }); state.y += 5
   setFont(8, 'normal', [120, 120, 120])
@@ -185,7 +185,7 @@ export async function exportToPDF(result, containerEl) {
     setFont(7.5, 'normal', [160, 160, 160])
     doc.text(`Halaman ${i} dari ${total}`, pageW / 2, pageH - 8, { align: 'center' })
     doc.text(new Date().toLocaleDateString('id-ID'), pageW - mx, pageH - 8, { align: 'right' })
-    doc.text('zoya.id', mx, pageH - 8)
+    doc.text('Azezmen', mx, pageH - 8)
   }
 
   doc.save(`${result.tool}_${Date.now()}.pdf`)

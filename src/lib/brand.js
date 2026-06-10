@@ -1,8 +1,8 @@
 // Brand config — baca dari env vars (Vite akan replace saat build).
 // Default fallback aman kalau env belum di-set.
 
-export const BRAND_NAME = import.meta.env.VITE_BRAND_NAME || 'zoya.id'
-export const BRAND_TAGLINE = import.meta.env.VITE_BRAND_TAGLINE || 'AI Tools for Research & Education'
+export const BRAND_NAME = import.meta.env.VITE_BRAND_NAME || 'Azezmen'
+export const BRAND_TAGLINE = import.meta.env.VITE_BRAND_TAGLINE || 'Assessment akademik, olah data, dan laporan penelitian.'
 export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'zoya.id1432@gmail.com'
 
 // Admin authentication now uses Supabase profiles.role instead of password
@@ -15,7 +15,7 @@ export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'zoya.id1432@gmai
 export const PAYMENT_INFO = {
   bankName: import.meta.env.VITE_BANK_NAME || 'BCA',
   bankAccount: import.meta.env.VITE_BANK_ACCOUNT || '1234567890',
-  bankHolder: import.meta.env.VITE_BANK_HOLDER || 'Zoya Research',
+  bankHolder: import.meta.env.VITE_BANK_HOLDER || 'Azezmen Research',
   ewallet: {
     name: import.meta.env.VITE_EWALLET_NAME || 'DANA',
     number: import.meta.env.VITE_EWALLET_NUMBER || '081234567890',

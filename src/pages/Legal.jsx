@@ -134,7 +134,7 @@ function TermsContent() {
              style={{ color: 'rgb(var(--fg) / 0.9)' }}>
 
       <Section title="1. Penerimaan syarat">
-        <p>Dengan menggunakan zoya.id, Anda menyetujui syarat-syarat di bawah ini. Jika tidak setuju, mohon tidak menggunakan layanan.</p>
+        <p>Dengan menggunakan Azezmen, Anda menyetujui syarat-syarat di bawah ini. Jika tidak setuju, mohon tidak menggunakan layanan.</p>
       </Section>
 
       <Section title="2. Layanan yang disediakan">

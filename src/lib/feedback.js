@@ -6,7 +6,7 @@
 
 import { ADMIN_EMAIL, BRAND_NAME } from './brand'
 
-const KEY = 'zoya_feedback_v1'
+const KEY = 'azezmen_feedback_v1'
 
 /** @typedef {{ id:string, type:string, rating:number|null, message:string, email:string, page:string, ua:string, createdAt:number, sent:boolean }} FeedbackEntry */
 
