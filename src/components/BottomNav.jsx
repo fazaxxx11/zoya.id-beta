@@ -20,8 +20,8 @@ export default function BottomNav() {
   const path = location.pathname
 
   // Hide on certain routes (auth, payment, admin, assessment)
-  const HIDDEN_PATHS = ['/', '/auth', '/login', '/register', '/payment', '/admin', '/assessment', '/order', '/result']
-  if (HIDDEN_PATHS.some(p => path.startsWith(p))) return null
+  const HIDDEN_PREFIXES = ['/auth', '/login', '/register', '/payment', '/admin', '/assessment', '/order', '/result']
+  if (path === '/' || HIDDEN_PREFIXES.some(p => path.startsWith(p))) return null
 
   return (
     <nav

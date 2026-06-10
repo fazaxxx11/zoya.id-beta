@@ -51,9 +51,10 @@ export default function OnboardingTour() {
     const completed = localStorage.getItem(STORAGE_KEY)
     if (completed) return
 
-    // Disable auto-open on public Home (/)
-    // Tour only shows on explicit trigger or authenticated pages
-    if (window.location.pathname === '/') return
+    // Disable auto-open on public/service routes
+    // Tour only shows on explicit trigger or authenticated/dashboard routes
+    const PUBLIC_ROUTES = ['/', '/statistik', '/kuesioner', '/assessment', '/kualitatif', '/referensi', '/wizard', '/sampling', '/mediasi']
+    if (PUBLIC_ROUTES.some(r => window.location.pathname === r || window.location.pathname.startsWith(r + '?'))) return
 
     const t = setTimeout(() => setOpen(true), 600)
     return () => clearTimeout(t)

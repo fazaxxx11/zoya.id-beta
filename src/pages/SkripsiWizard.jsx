@@ -247,7 +247,7 @@ export default function SkripsiWizard() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
-        title="Skripsi Wizard"
+        title="Panduan Skripsi"
         subtitle="Panduan terstruktur dari nol sampai sidang"
         breadcrumbs={[
           { path: '/', label: 'Beranda' },
@@ -263,7 +263,7 @@ export default function SkripsiWizard() {
               <Compass className="w-5 h-5" />
             </div>
             <div className="flex-1">
-              <h2 className="font-semibold text-indigo-900 mb-1">Wizard Pengerjaan Skripsi</h2>
+              <h2 className="font-semibold text-fg mb-1">Panduan Pengerjaan Skripsi</h2>
               <p className="text-xs text-indigo-800">
                 Ikuti langkah demi langkah. Centang yang sudah selesai, klik link tool untuk mengerjakan.
                 Progress tersimpan otomatis di browser Anda.

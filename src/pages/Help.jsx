@@ -29,7 +29,7 @@ const FAQ = [
     keywords: 'newbie, awal, baru, mulai, pertama',
     a: (
       <>
-        <p>Cara tercepat: buka <Link to="/wizard" className="link">Skripsi Wizard</Link> — checklist
+        <p>Cara tercepat: buka <Link to="/wizard" className="link">Panduan Skripsi</Link> — checklist
           terstruktur yang membimbing dari penyusunan instrumen sampai pelaporan. Atau pilih langsung
           tool yang Anda butuhkan dari <Link to="/" className="link">Beranda</Link>.</p>
         <p className="mt-2">Setiap tool menyediakan tombol <em>"Muat Contoh"</em> atau dataset
@@ -89,7 +89,7 @@ const FAQ = [
           <li><strong>Pengaruh tidak langsung (X→M→Y):</strong> Mediasi (Hayes Model 4).</li>
           <li><strong>Efek X→Y berbeda berdasar W:</strong> Moderasi (Hayes Model 1).</li>
         </ul>
-        <p className="mt-2">Buka <Link to="/wizard" className="link">Skripsi Wizard</Link> →
+        <p className="mt-2">Buka <Link to="/wizard" className="link">Panduan Skripsi</Link> →
           tab <em>Decision Tree</em> untuk panduan visual lengkap.</p>
       </>
     ),
@@ -357,13 +357,13 @@ export default function Help() {
                 Butuh bantuan menggunakan {BRAND_NAME}?
               </h2>
               <p className="text-sm" style={{ color: 'rgb(var(--muted))' }}>
-                Cari di FAQ di bawah, atau mulai dari panduan terstruktur Skripsi Wizard.
+                Cari di FAQ di bawah, atau mulai dari panduan terstruktur Panduan Skripsi.
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
                 <Link to="/wizard"
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white"
                       style={{ background: 'linear-gradient(135deg, rgb(99 102 241), rgb(168 85 247))' }}>
-                  <Compass className="w-3.5 h-3.5" /> Skripsi Wizard
+                  <Compass className="w-3.5 h-3.5" /> Panduan Skripsi
                 </Link>
                 <a href={`mailto:${ADMIN_EMAIL}`}
                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border hover:opacity-80"
@@ -484,7 +484,7 @@ export default function Help() {
           <FooterLink to="/privasi" icon={CheckCircle2}>Kebijakan Privasi</FooterLink>
           <FooterLink to="/syarat" icon={CheckCircle2}>Syarat Penggunaan</FooterLink>
           <FooterLink to="/pengaturan" icon={CheckCircle2}>Pengaturan / Backup</FooterLink>
-          <FooterLink to="/wizard" icon={CheckCircle2}>Skripsi Wizard</FooterLink>
+          <FooterLink to="/wizard" icon={CheckCircle2}>Panduan Skripsi</FooterLink>
           <FooterLink to="/feedback" icon={CheckCircle2}>Kritik &amp; Saran</FooterLink>
         </div>
       </div>
