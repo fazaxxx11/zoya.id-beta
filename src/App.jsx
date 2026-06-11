@@ -42,6 +42,7 @@ const SkripsiWizard       = lazy(() => import('./pages/SkripsiWizard'))
 const Legal               = lazy(() => import('./pages/Legal'))
 const Help                = lazy(() => import('./pages/Help'))
 const Feedback            = lazy(() => import('./pages/Feedback'))
+const PanelData           = lazy(() => import('./pages/PanelData'))
 
 function PageLoader() {
   return (
@@ -93,6 +94,7 @@ function App() {
           <Route path="/syarat" element={<Legal kind="terms" />} />
           <Route path="/help" element={<Help />} />
           <Route path="/bantuan" element={<Help />} />
+          <Route path="/panel-data" element={<PanelData />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/saran" element={<Feedback />} />
           <Route path="/assessment" element={<Assessment />} />
