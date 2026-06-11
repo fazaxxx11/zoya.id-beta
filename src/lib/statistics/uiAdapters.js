@@ -292,6 +292,7 @@ import { itemValidity as engineItemValidity } from './itemValidity.js';
 import { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
 import { chiSquareIndependence, chiSquareGoodnessOfFit } from './chisquare.js';
 import { pooledOLS as enginePooledOLS, fixedEffects as engineFE, randomEffects as engineRE, hausmanTest as engineHausman, breuschPaganLM as engineBP, breuschPagan as engineBP2, whiteTest as engineWhite, wooldridgeTest as engineWooldridge } from './panel.js';
+import { adfTest as engineADF, grangerCausality as engineGranger, engleGrangerCointegration as engineEG } from './timeseries.js';
 
 /**
  * Adapter for Mann-Whitney U.
@@ -409,6 +410,18 @@ export function whiteTestAdapter(modelResult, data, xCols) {
 
 export function wooldridgeTestAdapter(data, yCol, xCols, entityCol = 'id', timeCol = 'time') {
   return engineWooldridge(data, yCol, xCols, entityCol, timeCol);
+}
+
+export function adfTestAdapter(series, options = {}) {
+  return engineADF(series, options);
+}
+
+export function grangerCausalityAdapter(y, x, options = {}) {
+  return engineGranger(y, x, options);
+}
+
+export function engleGrangerCointegrationAdapter(y, x, options = {}) {
+  return engineEG(y, x, options);
 }
 
 // ── Helper functions ──────────────────────────────────────────────

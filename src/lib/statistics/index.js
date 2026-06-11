@@ -43,6 +43,7 @@ export {
   chiSquareIndependenceAdapter, chiSquareGoodnessOfFitAdapter,
   pooledOLSAdapter, fixedEffectsAdapter, randomEffectsAdapter, hausmanTestAdapter, breuschPaganLMAdapter,
   breuschPaganAdapter, whiteTestAdapter, wooldridgeTestAdapter,
+  adfTestAdapter, grangerCausalityAdapter, engleGrangerCointegrationAdapter,
 } from './uiAdapters.js';
 
 export { shapiroWilk, kolmogorovSmirnov, testNormality } from './normality.js';
@@ -53,3 +54,4 @@ export { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
 // Legacy re-exports
 export { chiSquareIndependence, chiSquareGoodnessOfFit } from './chisquare.js';
 export { pooledOLS, fixedEffects, randomEffects, hausmanTest, breuschPaganLM, breuschPagan, whiteTest, wooldridgeTest, validatePanel } from './panel.js';
+export { adfTest, grangerCausality, engleGrangerCointegration } from './timeseries.js';
