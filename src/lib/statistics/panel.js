@@ -4,7 +4,7 @@
  */
 
 import { matMul, matVecMul, invertMatrix, transpose } from './regression.js';
-import { tPValue, fPValue } from './distributions.js';
+import { tPValue, fPValue, chi2PValue } from './distributions.js';
 
 // ── Panel data validation ─────────────────────────────────────────
 
@@ -521,3 +521,275 @@ export function fixedEffects(data, yCol, xCols, options = {}) {
 }
 
 // fCDF removed — using fPValue from distributions.js
+// ── Matrix helpers for Hausman test ──────────────────────────────
+
+/**
+ * Eigenvalue decomposition of symmetric matrix via Jacobi rotation.
+ * Returns { eigenvalues, eigenvectors }.
+ */
+function jacobiEig(A, maxIter = 200, tol = 1e-12) {
+  const n = A.length;
+  let V = A.map((row, i) => row.map((_, j) => (i === j ? 1 : 0))); // identity
+  let S = A.map(row => [...row]); // copy
+
+  for (let iter = 0; iter < maxIter; iter++) {
+    // Find largest off-diagonal element
+    let maxVal = 0, p = 0, q = 1;
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        if (Math.abs(S[i][j]) > maxVal) {
+          maxVal = Math.abs(S[i][j]);
+          p = i; q = j;
+        }
+      }
+    }
+    if (maxVal < tol) break;
+
+    // Compute rotation angle
+    const theta = S[p][p] === S[q][q]
+      ? Math.PI / 4
+      : 0.5 * Math.atan2(2 * S[p][q], S[p][p] - S[q][q]);
+    const c = Math.cos(theta), s = Math.sin(theta);
+
+    // Apply rotation: S' = G' * S * G
+    const Sp = S[p], Sq = S[q];
+    const Spq = Sp[q];
+    S[p][p] = c * c * Sp[p] + 2 * s * c * Spq + s * s * Sq[q];
+    S[q][q] = s * s * Sp[p] - 2 * s * c * Spq + c * c * Sq[q];
+    S[p][q] = 0;
+    S[q][p] = 0;
+    for (let i = 0; i < n; i++) {
+      if (i !== p && i !== q) {
+        const Sip = S[i][p], Siq = S[i][q];
+        S[i][p] = c * Sip + s * Siq;
+        S[p][i] = S[i][p];
+        S[i][q] = -s * Sip + c * Siq;
+        S[q][i] = S[i][q];
+      }
+    }
+
+    // Update eigenvectors
+    for (let i = 0; i < n; i++) {
+      const Vip = V[i][p], Viq = V[i][q];
+      V[i][p] = c * Vip + s * Viq;
+      V[i][q] = -s * Vip + c * Viq;
+    }
+  }
+
+  const eigenvalues = Array.from({ length: n }, (_, i) => S[i][i]);
+  return { eigenvalues, eigenvectors: V };
+}
+
+/**
+ * Moore-Penrose pseudo-inverse via eigendecomposition (symmetric matrix).
+ */
+function generalizedInverse(A, tol = 1e-10) {
+  const n = A.length;
+  const { eigenvalues, eigenvectors: V } = jacobiEig(A);
+  const maxEig = Math.max(...eigenvalues.map(Math.abs));
+  const threshold = tol * maxEig;
+
+  // D+ = diag(1/λᵢ) for significant eigenvalues
+  const Dplus = Array.from({ length: n }, () => new Array(n).fill(0));
+  for (let i = 0; i < n; i++) {
+    if (Math.abs(eigenvalues[i]) > threshold) {
+      Dplus[i][i] = 1 / eigenvalues[i];
+    }
+  }
+
+  // A+ = V * D+ * V'
+  const Vt = transpose(V);
+  return matMul(matMul(V, Dplus), Vt);
+}
+
+/**
+ * Matrix rank via eigenvalue decomposition.
+ */
+function matrixRank(A, tol = 1e-10) {
+  const { eigenvalues } = jacobiEig(A);
+  const maxEig = Math.max(...eigenvalues.map(Math.abs));
+  return eigenvalues.filter(e => Math.abs(e) > tol * maxEig).length;
+}
+
+// ── Random Effects (GLS estimator) ───────────────────────────────
+
+export function randomEffects(data, yCol, xCols, options = {}) {
+  const { alpha = 0.05, entityCol = 'id' } = options;
+
+  // Step 1: Run pooled OLS and FE
+  const pooled = pooledOLS(data, yCol, xCols, options);
+  const fe = fixedEffects(data, yCol, xCols, options);
+
+  // Step 2: Variance components
+  const n = pooled.nobs;
+  const nEntities = Object.keys(fe.entityMeans).length;
+  const Tbar = n / nEntities;
+
+  const sigma2_e = fe.df > 0
+    ? fe.residuals.reduce((s, r) => s + r * r, 0) / fe.df
+    : 0;
+
+  // σ²_u from pooled - FE: (σ²_pooled - σ²_e) / T̄
+  const sigma2_pooled = pooled.df > 0
+    ? pooled.residuals.reduce((s, r) => s + r * r, 0) / pooled.df
+    : 0;
+  let sigma2_u = (sigma2_pooled - sigma2_e) / Tbar;
+  if (sigma2_u < 0) sigma2_u = 0;
+
+  // If σ²_u = 0, RE collapses to pooledOLS
+  if (sigma2_u === 0) {
+    return {
+      ...pooled,
+      modelType: 'randomEffects',
+      varianceComponents: { sigma2_u: 0, sigma2_e },
+      theta: null,
+      notes: 'σ²_u clamped to 0 — RE collapsed to pooledOLS.',
+    };
+  }
+
+  // Step 3: θ per entity
+  const entityCounts = new Map();
+  for (const row of data) {
+    const e = row[entityCol];
+    if (e === undefined) continue;
+    entityCounts.set(e, (entityCounts.get(e) || 0) + 1);
+  }
+
+  const theta = {};
+  for (const [entity, Ti] of entityCounts) {
+    theta[entity] = 1 - Math.sqrt(sigma2_e / (sigma2_e + Ti * sigma2_u));
+  }
+
+  // Step 4: Quasi-demean and run OLS
+  const transformed = data.map(row => {
+    const entity = row[entityCol];
+    const th = theta[entity] || 0;
+    const newRow = { ...row };
+    // Transform y
+    if (typeof row[yCol] === 'number' && isFinite(row[yCol])) {
+      newRow[`_re_${yCol}`] = row[yCol] - th * (fe.entityMeans[entity] || 0);
+    }
+    // Transform x (use entity mean from FE if available, else compute)
+    for (const col of xCols) {
+      if (typeof row[col] === 'number' && isFinite(row[col])) {
+        // Compute entity mean for this column
+        const entityRows = data.filter(r => r[entityCol] === entity);
+        const entityMean = entityRows.reduce((s, r) => s + (r[col] || 0), 0) / entityRows.length;
+        newRow[`_re_${col}`] = row[col] - th * entityMean;
+      }
+    }
+    return newRow;
+  });
+
+  const reResult = pooledOLS(transformed, `_re_${yCol}`, xCols.map(c => `_re_${c}`), { alpha });
+
+  return {
+    ...reResult,
+    modelType: 'randomEffects',
+    varianceComponents: { sigma2_u, sigma2_e },
+    theta,
+    notes: 'Random effects (GLS). Quasi-demeaned. σ²_u clamped to 0 if negative.',
+  };
+}
+
+// ── Hausman Test ─────────────────────────────────────────────────
+
+export function hausmanTest(feResult, reResult) {
+  // Shared coefficients (exclude intercept)
+  const feNames = feResult.coefNames || [];
+  const reNames = reResult.coefNames || [];
+  const shared = feNames.filter(n => n !== '(Intercept)' && reNames.includes(n));
+
+  if (shared.length === 0) {
+    return { statistic: 0, df: 0, pValue: 1, isSignificant: false, recommendation: 'RE', modelType: 'hausmanTest', warning: 'No shared coefficients' };
+  }
+
+  const feIdx = shared.map(n => feNames.indexOf(n));
+  const reIdx = shared.map(n => reNames.indexOf(n));
+
+  const d = feIdx.map((fi, i) => feResult.beta[fi] - reResult.beta[reIdx[i]]);
+
+  // V = covFE - covRE (shared subset)
+  const k = shared.length;
+  const V = Array.from({ length: k }, (_, i) =>
+    Array.from({ length: k }, (_, j) => {
+      const vij = (feResult.cov?.[feIdx[i]]?.[feIdx[j]] || 0) - (reResult.cov?.[reIdx[i]]?.[reIdx[j]] || 0);
+      return vij;
+    })
+  );
+
+  // Check positive definiteness via eigenvalues
+  let Vinv, df, warning = null;
+  const { eigenvalues } = jacobiEig(V);
+  const allPositive = eigenvalues.every(e => e > 1e-12);
+
+  if (allPositive) {
+    Vinv = invertMatrix(V);
+    df = k;
+  } else {
+    // Use generalized inverse
+    Vinv = generalizedInverse(V);
+    df = matrixRank(V);
+    warning = 'V not positive definite — using generalized inverse (pseudo-inverse). df = rank(V).';
+  }
+
+  if (!Vinv) {
+    return { statistic: 0, df: 0, pValue: 1, isSignificant: false, recommendation: 'RE', modelType: 'hausmanTest', warning: 'Cannot invert V' };
+  }
+
+  // H = d' * V⁻¹ * d
+  const Vinv_d = matVecMul(Vinv, d);
+  const H = d.reduce((s, di, i) => s + di * Vinv_d[i], 0);
+  const pValue = chi2PValue(Math.max(0, H), df);
+
+  return {
+    statistic: H,
+    df,
+    pValue,
+    isSignificant: pValue < 0.05,
+    recommendation: pValue < 0.05 ? 'FE' : 'RE',
+    warning,
+    modelType: 'hausmanTest',
+  };
+}
+
+// ── Breusch-Pagan LM ────────────────────────────────────────────
+
+export function breuschPaganLM(pooledResult, data, entityCol = 'id') {
+  const residuals = pooledResult.residuals;
+  const n = residuals.length;
+
+  // Group residuals by entity
+  const entityResiduals = new Map();
+  for (let i = 0; i < n; i++) {
+    const entity = data[i]?.[entityCol];
+    if (entity === undefined) continue;
+    if (!entityResiduals.has(entity)) entityResiduals.set(entity, []);
+    entityResiduals.get(entity).push(residuals[i]);
+  }
+
+  const N = entityResiduals.size;
+  const Tbar = n / N;
+
+  // S1 = ΣᵢΣₜ eᵢₜ²
+  const S1 = residuals.reduce((s, e) => s + e * e, 0);
+
+  // S2 = Σᵢ (Σₜ eᵢₜ)²
+  let S2 = 0;
+  for (const [, resids] of entityResiduals) {
+    const sum = resids.reduce((s, e) => s + e, 0);
+    S2 += sum * sum;
+  }
+
+  // LM = N*T̄ / (2*(T̄-1)) * (S2/S1 - 1)²
+  const LM = (N * Tbar) / (2 * (Tbar - 1)) * Math.pow(S2 / S1 - 1, 2);
+  const pValue = chi2PValue(Math.max(0, LM), 1);
+
+  return {
+    statistic: LM,
+    df: 1,
+    pValue,
+    isSignificant: pValue < 0.05,
+    modelType: 'breuschPaganLM',
+  };
+}

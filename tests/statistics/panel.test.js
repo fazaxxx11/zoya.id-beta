@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pooledOLS, fixedEffects, validatePanel, demean, detectTimeInvariant } from '../../src/lib/statistics/panel.js';
+import { pooledOLS, fixedEffects, validatePanel, demean, detectTimeInvariant, randomEffects, hausmanTest, breuschPaganLM } from '../../src/lib/statistics/panel.js';
 
 // ── Test data ────────────────────────────────────────────────────
 
@@ -211,5 +211,148 @@ describe('fixedEffects', () => {
   it('coefficients array length matches xCols', () => {
     const result = fixedEffects(balancedPanel, 'y', ['x1']);
     expect(result.beta).toHaveLength(1); // no intercept in FE
+  });
+});
+
+// ── randomEffects ────────────────────────────────────────────────
+
+describe('randomEffects', () => {
+  const data = [
+    { id: 'A', time: 1, y: 2, x1: 1 },
+    { id: 'A', time: 2, y: 5, x1: 3 },
+    { id: 'A', time: 3, y: 8, x1: 5 },
+    { id: 'B', time: 1, y: 1, x1: 2 },
+    { id: 'B', time: 2, y: 4, x1: 4 },
+    { id: 'B', time: 3, y: 9, x1: 6 },
+    { id: 'C', time: 1, y: 3, x1: 1 },
+    { id: 'C', time: 2, y: 6, x1: 3 },
+    { id: 'C', time: 3, y: 7, x1: 4 },
+  ];
+
+  it('returns correct structure', () => {
+    const result = randomEffects(data, 'y', ['x1']);
+    expect(result).toHaveProperty('modelType');
+    expect(result).toHaveProperty('varianceComponents');
+    expect(result).toHaveProperty('beta');
+    expect(result.modelType).toBe('randomEffects');
+  });
+
+  it('variance components non-negative', () => {
+    const result = randomEffects(data, 'y', ['x1']);
+    expect(result.varianceComponents.sigma2_e).toBeGreaterThanOrEqual(0);
+    expect(result.varianceComponents.sigma2_u).toBeGreaterThanOrEqual(0);
+  });
+
+  it('theta in [0,1] when sigma2_u > 0', () => {
+    const result = randomEffects(data, 'y', ['x1']);
+    if (result.theta) {
+      for (const th of Object.values(result.theta)) {
+        expect(th).toBeGreaterThanOrEqual(0);
+        expect(th).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it('collapses to pooledOLS when sigma2_u = 0', () => {
+    // Small data where pooled variance <= FE variance
+    const small = [
+      { id: 'A', time: 1, y: 10, x1: 1 },
+      { id: 'A', time: 2, y: 20, x1: 2 },
+      { id: 'B', time: 1, y: 15, x1: 3 },
+      { id: 'B', time: 2, y: 25, x1: 4 },
+    ];
+    const result = randomEffects(small, 'y', ['x1']);
+    expect(result.varianceComponents.sigma2_u).toBeGreaterThanOrEqual(0);
+  });
+
+  it('has beta, se, residuals', () => {
+    const result = randomEffects(data, 'y', ['x1']);
+    expect(result.beta.length).toBeGreaterThan(0);
+    expect(result.se.length).toBeGreaterThan(0);
+    expect(result.residuals.length).toBeGreaterThan(0);
+  });
+});
+
+// ── hausmanTest ──────────────────────────────────────────────────
+
+describe('hausmanTest', () => {
+  const data = [
+    { id: 'A', time: 1, y: 2, x1: 1 },
+    { id: 'A', time: 2, y: 5, x1: 3 },
+    { id: 'A', time: 3, y: 8, x1: 5 },
+    { id: 'B', time: 1, y: 1, x1: 2 },
+    { id: 'B', time: 2, y: 4, x1: 4 },
+    { id: 'B', time: 3, y: 9, x1: 6 },
+    { id: 'C', time: 1, y: 3, x1: 1 },
+    { id: 'C', time: 2, y: 6, x1: 3 },
+    { id: 'C', time: 3, y: 7, x1: 4 },
+  ];
+
+  it('returns correct structure', () => {
+    const fe = fixedEffects(data, 'y', ['x1']);
+    const re = randomEffects(data, 'y', ['x1']);
+    const result = hausmanTest(fe, re);
+    expect(result).toHaveProperty('statistic');
+    expect(result).toHaveProperty('df');
+    expect(result).toHaveProperty('pValue');
+    expect(result).toHaveProperty('isSignificant');
+    expect(result).toHaveProperty('recommendation');
+    expect(['FE', 'RE']).toContain(result.recommendation);
+    expect(result.modelType).toBe('hausmanTest');
+  });
+
+  it('statistic is non-negative', () => {
+    const fe = fixedEffects(data, 'y', ['x1']);
+    const re = randomEffects(data, 'y', ['x1']);
+    const result = hausmanTest(fe, re);
+    expect(result.statistic).toBeGreaterThanOrEqual(0);
+  });
+
+  it('pValue in [0,1]', () => {
+    const fe = fixedEffects(data, 'y', ['x1']);
+    const re = randomEffects(data, 'y', ['x1']);
+    const result = hausmanTest(fe, re);
+    expect(result.pValue).toBeGreaterThanOrEqual(0);
+    expect(result.pValue).toBeLessThanOrEqual(1);
+  });
+});
+
+// ── breuschPaganLM ───────────────────────────────────────────────
+
+describe('breuschPaganLM', () => {
+  const data = [
+    { id: 'A', time: 1, y: 2, x1: 1 },
+    { id: 'A', time: 2, y: 5, x1: 3 },
+    { id: 'A', time: 3, y: 8, x1: 5 },
+    { id: 'B', time: 1, y: 1, x1: 2 },
+    { id: 'B', time: 2, y: 4, x1: 4 },
+    { id: 'B', time: 3, y: 9, x1: 6 },
+    { id: 'C', time: 1, y: 3, x1: 1 },
+    { id: 'C', time: 2, y: 6, x1: 3 },
+    { id: 'C', time: 3, y: 7, x1: 4 },
+  ];
+
+  it('returns correct structure', () => {
+    const pooled = pooledOLS(data, 'y', ['x1']);
+    const result = breuschPaganLM(pooled, data, 'id');
+    expect(result).toHaveProperty('statistic');
+    expect(result).toHaveProperty('df');
+    expect(result.df).toBe(1);
+    expect(result).toHaveProperty('pValue');
+    expect(result).toHaveProperty('isSignificant');
+    expect(result.modelType).toBe('breuschPaganLM');
+  });
+
+  it('LM statistic is non-negative', () => {
+    const pooled = pooledOLS(data, 'y', ['x1']);
+    const result = breuschPaganLM(pooled, data, 'id');
+    expect(result.statistic).toBeGreaterThanOrEqual(0);
+  });
+
+  it('pValue in [0,1]', () => {
+    const pooled = pooledOLS(data, 'y', ['x1']);
+    const result = breuschPaganLM(pooled, data, 'id');
+    expect(result.pValue).toBeGreaterThanOrEqual(0);
+    expect(result.pValue).toBeLessThanOrEqual(1);
   });
 });

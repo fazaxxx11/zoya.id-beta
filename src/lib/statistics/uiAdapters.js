@@ -291,7 +291,7 @@ import { mannWhitneyU as engineMWU, wilcoxonSignedRank as engineWilcoxon, kruska
 import { itemValidity as engineItemValidity } from './itemValidity.js';
 import { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
 import { chiSquareIndependence, chiSquareGoodnessOfFit } from './chisquare.js';
-import { pooledOLS as enginePooledOLS, fixedEffects as engineFE } from './panel.js';
+import { pooledOLS as enginePooledOLS, fixedEffects as engineFE, randomEffects as engineRE, hausmanTest as engineHausman, breuschPaganLM as engineBP } from './panel.js';
 
 /**
  * Adapter for Mann-Whitney U.
@@ -385,6 +385,18 @@ export function pooledOLSAdapter(data, yCol, xCols, options = {}) {
 
 export function fixedEffectsAdapter(data, yCol, xCols, options = {}) {
   return engineFE(data, yCol, xCols, options);
+}
+
+export function randomEffectsAdapter(data, yCol, xCols, options = {}) {
+  return engineRE(data, yCol, xCols, options);
+}
+
+export function hausmanTestAdapter(feResult, reResult) {
+  return engineHausman(feResult, reResult);
+}
+
+export function breuschPaganLMAdapter(pooledResult, data, entityCol = 'id') {
+  return engineBP(pooledResult, data, entityCol);
 }
 
 // ── Helper functions ──────────────────────────────────────────────
