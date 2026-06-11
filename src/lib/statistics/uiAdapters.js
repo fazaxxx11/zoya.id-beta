@@ -291,7 +291,7 @@ import { mannWhitneyU as engineMWU, wilcoxonSignedRank as engineWilcoxon, kruska
 import { itemValidity as engineItemValidity } from './itemValidity.js';
 import { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
 import { chiSquareIndependence, chiSquareGoodnessOfFit } from './chisquare.js';
-import { pooledOLS as enginePooledOLS, fixedEffects as engineFE, randomEffects as engineRE, hausmanTest as engineHausman, breuschPaganLM as engineBP } from './panel.js';
+import { pooledOLS as enginePooledOLS, fixedEffects as engineFE, randomEffects as engineRE, hausmanTest as engineHausman, breuschPaganLM as engineBP, breuschPagan as engineBP2, whiteTest as engineWhite, wooldridgeTest as engineWooldridge } from './panel.js';
 
 /**
  * Adapter for Mann-Whitney U.
@@ -397,6 +397,18 @@ export function hausmanTestAdapter(feResult, reResult) {
 
 export function breuschPaganLMAdapter(pooledResult, data, entityCol = 'id') {
   return engineBP(pooledResult, data, entityCol);
+}
+
+export function breuschPaganAdapter(modelResult, data, xCols, options = {}) {
+  return engineBP2(modelResult, data, xCols, options);
+}
+
+export function whiteTestAdapter(modelResult, data, xCols) {
+  return engineWhite(modelResult, data, xCols);
+}
+
+export function wooldridgeTestAdapter(data, yCol, xCols, entityCol = 'id', timeCol = 'time') {
+  return engineWooldridge(data, yCol, xCols, entityCol, timeCol);
 }
 
 // ── Helper functions ──────────────────────────────────────────────

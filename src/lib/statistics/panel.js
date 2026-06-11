@@ -793,3 +793,385 @@ export function breuschPaganLM(pooledResult, data, entityCol = 'id') {
     modelType: 'breuschPaganLM',
   };
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// Phase 4C — Heteroscedasticity & Serial Correlation Tests
+// ═══════════════════════════════════════════════════════════════════
+
+// ── Helpers ──────────────────────────────────────────────────────
+
+/**
+ * Lightweight OLS for auxiliary regressions.
+ * y: array of length n, X: array of arrays [n][k]
+ * Returns { beta, residuals, r2, fitted }
+ */
+function olsAuxiliary(y, X) {
+  const n = y.length;
+  const k = X[0]?.length || 0;
+  if (n <= k) return null;
+
+  const Xt = transpose(X);
+  const XtX = matMul(Xt, X);
+  const XtXinv = invertMatrix(XtX);
+  if (!XtXinv) return null;
+
+  const Xty = matVecMul(Xt, y);
+  const beta = matVecMul(XtXinv, Xty);
+  const fitted = matVecMul(X, beta);
+  const residuals = y.map((yi, i) => yi - fitted[i]);
+
+  const RSS = residuals.reduce((s, r) => s + r * r, 0);
+  const yMean = y.reduce((a, b) => a + b, 0) / n;
+  const TSS = y.reduce((s, yi) => s + (yi - yMean) * (yi - yMean), 0);
+  const r2 = TSS === 0 ? 0 : 1 - RSS / TSS;
+
+  return { beta, residuals, r2, fitted, n, k, XtXinv, RSS };
+}
+
+/**
+ * Cluster-robust (sandwich) covariance matrix.
+ * residuals: array, X: [n][k], clusterVar: array of cluster ids (length n)
+ * V = (X'X)^-1 * Σ_g (X_g'e_g)(X_g'e_g)' * (X'X)^-1
+ */
+function clusterRobustSE(residuals, X, clusterVar) {
+  const n = residuals.length;
+  const k = X[0]?.length || 0;
+
+  const Xt = transpose(X);
+  const XtX = matMul(Xt, X);
+  const XtXinv = invertMatrix(XtX);
+  if (!XtXinv) return null;
+
+  // Group by cluster
+  const clusters = new Map();
+  for (let i = 0; i < n; i++) {
+    const g = clusterVar[i];
+    if (!clusters.has(g)) clusters.set(g, []);
+    clusters.get(g).push(i);
+  }
+
+  // Meat: Σ_g s_g * s_g' where s_g = Σᵢ∈g Xᵢ * eᵢ
+  const meat = Array.from({ length: k }, () => new Array(k).fill(0));
+  for (const [, indices] of clusters) {
+    const s = new Array(k).fill(0);
+    for (const i of indices) {
+      for (let j = 0; j < k; j++) {
+        s[j] += X[i][j] * residuals[i];
+      }
+    }
+    for (let a = 0; a < k; a++) {
+      for (let b = 0; b < k; b++) {
+        meat[a][b] += s[a] * s[b];
+      }
+    }
+  }
+
+  // V = (X'X)^-1 * meat * (X'X)^-1
+  const bread = XtXinv;
+  const temp = matMul(bread, meat);
+  return matMul(temp, bread);
+}
+
+/**
+ * Generate White test terms: squares + cross-products of non-intercept columns.
+ * X: [n][k] where column 0 is intercept.
+ * Returns: { terms: [n][df], df: number of new columns }
+ */
+function generateWhiteTerms(X) {
+  const n = X.length;
+  const k = X[0]?.length || 0;
+  if (k <= 1) return { terms: [], df: 0 };
+
+  // Non-intercept columns (indices 1..k-1)
+  const nonConst = [];
+  for (let j = 1; j < k; j++) {
+    // Check if column is constant
+    const vals = X.map(row => row[j]);
+    const first = vals[0];
+    const isConst = vals.every(v => v === first);
+    if (!isConst) nonConst.push(j);
+  }
+
+  const p = nonConst.length;
+  // df = p(p+3)/2 (squares + cross-products)
+  const terms = [];
+  const colNames = [];
+
+  // Squares
+  for (const j of nonConst) {
+    terms.push(X.map(row => row[j] * row[j]));
+    colNames.push(`x${j}²`);
+  }
+
+  // Cross-products
+  for (let a = 0; a < nonConst.length; a++) {
+    for (let b = a + 1; b < nonConst.length; b++) {
+      terms.push(X.map((row, i) => row[nonConst[a]] * row[nonConst[b]]));
+      colNames.push(`x${nonConst[a]}*x${nonConst[b]}`);
+    }
+  }
+
+  // Build term matrix [n][terms.length]
+  const termMatrix = Array.from({ length: n }, (_, i) =>
+    terms.map(t => t[i])
+  );
+
+  return { terms: termMatrix, df: terms.length, colNames };
+}
+
+/**
+ * First-difference within entity. Skips gaps in time.
+ * Returns array of { entity, time, Δcols... }
+ */
+function firstDifference(data, cols, entityCol, timeCol) {
+  // Sort by entity, time
+  const sorted = [...data].sort((a, b) => {
+    const ea = a[entityCol], eb = b[entityCol];
+    if (ea !== eb) return ea < eb ? -1 : 1;
+    return (a[timeCol] || 0) - (b[timeCol] || 0);
+  });
+
+  // Group by entity
+  const groups = new Map();
+  for (const row of sorted) {
+    const e = row[entityCol];
+    if (!groups.has(e)) groups.set(e, []);
+    groups.get(e).push(row);
+  }
+
+  const result = [];
+  for (const [entity, rows] of groups) {
+    for (let i = 1; i < rows.length; i++) {
+      const prev = rows[i - 1], curr = rows[i];
+      // Skip if gap in time (not consecutive)
+      const prevTime = prev[timeCol], currTime = curr[timeCol];
+      if (typeof prevTime === 'number' && typeof currTime === 'number' && currTime - prevTime !== 1) continue;
+
+      const diff = { entity, time: currTime };
+      for (const col of cols) {
+        const pv = prev[col], cv = curr[col];
+        if (typeof pv === 'number' && isFinite(pv) && typeof cv === 'number' && isFinite(cv)) {
+          diff[`Δ${col}`] = cv - pv;
+        } else {
+          diff[`Δ${col}`] = NaN;
+        }
+      }
+      result.push(diff);
+    }
+  }
+  return result;
+}
+
+// ── Breusch-Pagan Test ───────────────────────────────────────────
+
+export function breuschPagan(modelResult, data, xCols, options = {}) {
+  const { variant = 'BP' } = options; // 'BP' or 'Koenker'
+  const residuals = modelResult.residuals;
+  const n = residuals.length;
+
+  // Build X matrix with intercept
+  const X = data.map(row => {
+    const xRow = [1];
+    for (const col of xCols) {
+      xRow.push(typeof row[col] === 'number' && isFinite(row[col]) ? row[col] : 0);
+    }
+    return xRow;
+  });
+
+  // Dependent variable: e² (BP) or studentized e² (Koenker)
+  let yAux;
+  if (variant === 'Koenker') {
+    // Studentized: e² / mean(e²)
+    const meanE2 = residuals.reduce((s, e) => s + e * e, 0) / n;
+    yAux = residuals.map(e => (e * e) / meanE2);
+  } else {
+    yAux = residuals.map(e => e * e);
+  }
+
+  // Auxiliary OLS: e² ~ 1 + X
+  const aux = olsAuxiliary(yAux, X);
+  if (!aux) return { statistic: NaN, df: NaN, pValue: NaN, isSignificant: false, variant, modelType: 'breuschPagan', error: 'Auxiliary regression failed' };
+
+  // LM = n * R² ~ χ²(k)
+  const k = xCols.length; // excludes intercept
+  const LM = n * aux.r2;
+  const pValue = chi2PValue(Math.max(0, LM), k);
+
+  return {
+    statistic: LM,
+    df: k,
+    pValue,
+    isSignificant: pValue < 0.05,
+    variant,
+    modelType: 'breuschPagan',
+  };
+}
+
+// ── White Test ───────────────────────────────────────────────────
+
+export function whiteTest(modelResult, data, xCols) {
+  const residuals = modelResult.residuals;
+  const n = residuals.length;
+
+  // Build X matrix with intercept
+  const X = data.map(row => {
+    const xRow = [1];
+    for (const col of xCols) {
+      xRow.push(typeof row[col] === 'number' && isFinite(row[col]) ? row[col] : 0);
+    }
+    return xRow;
+  });
+
+  // Generate White terms (squares + cross-products)
+  const { terms, df: rawDf } = generateWhiteTerms(X);
+  if (rawDf === 0) return { statistic: 0, df: 0, pValue: 1, isSignificant: false, nTerms: 0, nTermsAfterRank: 0, modelType: 'whiteTest' };
+
+  // Build augmented X: [1, X, White terms]
+  const Xaug = X.map((row, i) => [1, ...row.slice(1), ...terms[i]]);
+
+  // Check rank and drop collinear columns
+  const kAug = Xaug[0].length;
+  const keep = [];
+  for (let j = 0; j < kAug; j++) {
+    // Check if this column adds rank
+    const testCols = [...keep, j].filter((v, i, a) => a.indexOf(v) === i);
+    const Xtest = Xaug.map(row => testCols.map(c => row[c]));
+    const Xt = transpose(Xtest);
+    const XtX = matMul(Xt, Xtest);
+    const XtXinv = invertMatrix(XtX);
+    if (XtXinv) keep.push(j);
+  }
+
+  // Reduced X
+  const Xred = Xaug.map(row => keep.map(j => row[j]));
+  const dfAfter = keep.length - 1; // minus intercept
+
+  // Auxiliary OLS: e² ~ reduced X
+  const e2 = residuals.map(e => e * e);
+  const aux = olsAuxiliary(e2, Xred);
+  if (!aux) return { statistic: NaN, df: dfAfter, pValue: NaN, isSignificant: false, nTerms: rawDf, nTermsAfterRank: dfAfter, modelType: 'whiteTest', error: 'Auxiliary regression failed' };
+
+  const LM = n * aux.r2;
+  const pValue = chi2PValue(Math.max(0, LM), dfAfter);
+
+  return {
+    statistic: LM,
+    df: dfAfter,
+    pValue,
+    isSignificant: pValue < 0.05,
+    nTerms: rawDf,
+    nTermsAfterRank: dfAfter,
+    modelType: 'whiteTest',
+  };
+}
+
+// ── Wooldridge First-Difference Test ─────────────────────────────
+
+export function wooldridgeTest(data, yCol, xCols, entityCol = 'id', timeCol = 'time') {
+  // Step 1: First-difference
+  const diffData = firstDifference(data, [yCol, ...xCols], entityCol, timeCol);
+
+  // Group diffs by entity
+  const entityDiffs = new Map();
+  for (const row of diffData) {
+    const e = row.entity;
+    if (!entityDiffs.has(e)) entityDiffs.set(e, []);
+    entityDiffs.get(e).push(row);
+  }
+
+  // Filter entities with ≥2 diffs (need lag)
+  const validEntities = [];
+  for (const [entity, rows] of entityDiffs) {
+    if (rows.length >= 2) validEntities.push(entity);
+  }
+
+  if (validEntities.length === 0) {
+    return { statistic: NaN, pValue: NaN, rho: NaN, isSignificant: false, nEntities: 0, modelType: 'wooldridgeTest', error: 'No entities with ≥3 consecutive observations' };
+  }
+
+  // Step 2: OLS Δy ~ ΔX (no intercept)
+  const dyCol = `Δ${yCol}`;
+  const dxCols = xCols.map(c => `Δ${c}`);
+  const validDiffs = diffData.filter(row => validEntities.includes(row.entity));
+
+  const yDiffs = [];
+  const XDiffs = [];
+  for (const row of validDiffs) {
+    const dy = row[dyCol];
+    if (typeof dy !== 'number' || !isFinite(dy)) continue;
+    const dxRow = dxCols.map(c => {
+      const v = row[c];
+      return typeof v === 'number' && isFinite(v) ? v : 0;
+    });
+    yDiffs.push(dy);
+    XDiffs.push(dxRow);
+  }
+
+  const olsDiff = olsAuxiliary(yDiffs, XDiffs);
+  if (!olsDiff) return { statistic: NaN, pValue: NaN, rho: NaN, isSignificant: false, nEntities: validEntities.length, modelType: 'wooldridgeTest', error: 'First-difference OLS failed' };
+
+  // Step 3: Get residuals v_it and build lag pairs
+  const vPairs = []; // [v_it, v_i,t-1]
+  let idx = 0;
+  for (const entity of validEntities) {
+    const rows = entityDiffs.get(entity).filter(r => validDiffs.includes(r));
+    for (let i = 1; i < rows.length; i++) {
+      const vCurr = olsDiff.residuals[idx + i];
+      const vPrev = olsDiff.residuals[idx + i - 1];
+      if (typeof vCurr === 'number' && isFinite(vCurr) && typeof vPrev === 'number' && isFinite(vPrev)) {
+        vPairs.push([vCurr, vPrev]);
+      }
+    }
+    idx += rows.length;
+  }
+
+  if (vPairs.length < 3) {
+    return { statistic: NaN, pValue: NaN, rho: NaN, isSignificant: false, nEntities: validEntities.length, modelType: 'wooldridgeTest', error: 'Too few lag pairs' };
+  }
+
+  // Step 4: Regress v_it on v_i,t-1 with intercept
+  const yLag = vPairs.map(p => p[0]);
+  const XLag = vPairs.map(p => [1, p[1]]);
+  const lagOls = olsAuxiliary(yLag, XLag);
+  if (!lagOls) return { statistic: NaN, pValue: NaN, rho: NaN, isSignificant: false, nEntities: validEntities.length, modelType: 'wooldridgeTest', error: 'Lag regression failed' };
+
+  const rho = lagOls.beta[1];
+
+  // Step 5: Cluster-robust SE by entity for H₀: ρ = -0.5
+  // Build cluster variable for vPairs
+  const clusterIds = [];
+  let cidx = 0;
+  for (const entity of validEntities) {
+    const rows = entityDiffs.get(entity).filter(r => validDiffs.includes(r));
+    for (let i = 1; i < rows.length; i++) {
+      clusterIds.push(entity);
+    }
+  }
+
+  const covCluster = clusterRobustSE(lagOls.residuals, XLag, clusterIds);
+  const seRho = covCluster ? Math.sqrt(Math.max(0, covCluster[1][1])) : Math.sqrt(Math.max(0, (lagOls.XtXinv?.[1]?.[1] || 0) * (lagOls.RSS / (lagOls.n - lagOls.k))));
+  const tStat = seRho > 0 ? (rho - (-0.5)) / seRho : 0;
+  // Use normal approximation for large n
+  const pValue = 2 * (1 - normalCDF(Math.abs(tStat)));
+
+  return {
+    statistic: tStat,
+    pValue,
+    rho,
+    isSignificant: pValue < 0.05,
+    nEntities: validEntities.length,
+    modelType: 'wooldridgeTest',
+  };
+}
+
+// Normal CDF helper (import if not already available, else inline)
+function normalCDF(x) {
+  // Abramowitz & Stegun approximation
+  const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+  const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+  const sign = x < 0 ? -1 : 1;
+  x = Math.abs(x);
+  const t = 1 / (1 + p * x);
+  const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+  return 0.5 * (1 + sign * y);
+}

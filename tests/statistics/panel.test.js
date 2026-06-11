@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pooledOLS, fixedEffects, validatePanel, demean, detectTimeInvariant, randomEffects, hausmanTest, breuschPaganLM } from '../../src/lib/statistics/panel.js';
+import { pooledOLS, fixedEffects, validatePanel, demean, detectTimeInvariant, randomEffects, hausmanTest, breuschPaganLM, breuschPagan, whiteTest, wooldridgeTest } from '../../src/lib/statistics/panel.js';
 
 // ── Test data ────────────────────────────────────────────────────
 
@@ -354,5 +354,152 @@ describe('breuschPaganLM', () => {
     const result = breuschPaganLM(pooled, data, 'id');
     expect(result.pValue).toBeGreaterThanOrEqual(0);
     expect(result.pValue).toBeLessThanOrEqual(1);
+  });
+});
+
+// ── breuschPagan ─────────────────────────────────────────────────
+
+describe('breuschPagan', () => {
+  const data = [
+    { id: 'A', time: 1, y: 2, x1: 1 },
+    { id: 'A', time: 2, y: 5, x1: 3 },
+    { id: 'A', time: 3, y: 8, x1: 5 },
+    { id: 'B', time: 1, y: 1, x1: 2 },
+    { id: 'B', time: 2, y: 4, x1: 4 },
+    { id: 'B', time: 3, y: 9, x1: 6 },
+    { id: 'C', time: 1, y: 3, x1: 1 },
+    { id: 'C', time: 2, y: 6, x1: 3 },
+    { id: 'C', time: 3, y: 7, x1: 4 },
+  ];
+
+  it('returns correct structure (BP variant)', () => {
+    const model = pooledOLS(data, 'y', ['x1']);
+    const result = breuschPagan(model, data, ['x1']);
+    expect(result).toHaveProperty('statistic');
+    expect(result).toHaveProperty('df');
+    expect(result).toHaveProperty('pValue');
+    expect(result).toHaveProperty('isSignificant');
+    expect(result.variant).toBe('BP');
+    expect(result.modelType).toBe('breuschPagan');
+  });
+
+  it('Koenker variant works', () => {
+    const model = pooledOLS(data, 'y', ['x1']);
+    const result = breuschPagan(model, data, ['x1'], { variant: 'Koenker' });
+    expect(result.variant).toBe('Koenker');
+    expect(result.statistic).toBeGreaterThanOrEqual(0);
+  });
+
+  it('LM statistic is non-negative', () => {
+    const model = pooledOLS(data, 'y', ['x1']);
+    const result = breuschPagan(model, data, ['x1']);
+    expect(result.statistic).toBeGreaterThanOrEqual(0);
+  });
+
+  it('df equals number of regressors', () => {
+    const model = pooledOLS(data, 'y', ['x1']);
+    const result = breuschPagan(model, data, ['x1']);
+    expect(result.df).toBe(1);
+  });
+});
+
+// ── whiteTest ────────────────────────────────────────────────────
+
+describe('whiteTest', () => {
+  const data = [
+    { id: 'A', time: 1, y: 2, x1: 1 },
+    { id: 'A', time: 2, y: 5, x1: 3 },
+    { id: 'A', time: 3, y: 8, x1: 5 },
+    { id: 'B', time: 1, y: 1, x1: 2 },
+    { id: 'B', time: 2, y: 4, x1: 4 },
+    { id: 'B', time: 3, y: 9, x1: 6 },
+    { id: 'C', time: 1, y: 3, x1: 1 },
+    { id: 'C', time: 2, y: 6, x1: 3 },
+    { id: 'C', time: 3, y: 7, x1: 4 },
+  ];
+
+  it('returns correct structure', () => {
+    const model = pooledOLS(data, 'y', ['x1']);
+    const result = whiteTest(model, data, ['x1']);
+    expect(result).toHaveProperty('statistic');
+    expect(result).toHaveProperty('df');
+    expect(result).toHaveProperty('pValue');
+    expect(result).toHaveProperty('nTerms');
+    expect(result).toHaveProperty('nTermsAfterRank');
+    expect(result.modelType).toBe('whiteTest');
+  });
+
+  it('LM statistic is non-negative', () => {
+    const model = pooledOLS(data, 'y', ['x1']);
+    const result = whiteTest(model, data, ['x1']);
+    expect(result.statistic).toBeGreaterThanOrEqual(0);
+  });
+
+  it('df is non-negative', () => {
+    const model = pooledOLS(data, 'y', ['x1']);
+    const result = whiteTest(model, data, ['x1']);
+    expect(result.df).toBeGreaterThanOrEqual(0);
+  });
+});
+
+// ── wooldridgeTest ───────────────────────────────────────────────
+
+describe('wooldridgeTest', () => {
+  // Panel with enough consecutive observations
+  const panelData = [];
+  for (let id = 1; id <= 5; id++) {
+    for (let t = 1; t <= 10; t++) {
+      panelData.push({
+        id: `E${id}`,
+        time: t,
+        y: 10 + id + t * 0.5 + Math.sin(t + id) * 2,
+        x1: 5 + t + id * 0.3,
+      });
+    }
+  }
+
+  it('returns correct structure', () => {
+    const result = wooldridgeTest(panelData, 'y', ['x1'], 'id', 'time');
+    expect(result).toHaveProperty('statistic');
+    expect(result).toHaveProperty('pValue');
+    expect(result).toHaveProperty('rho');
+    expect(result).toHaveProperty('isSignificant');
+    expect(result).toHaveProperty('nEntities');
+    expect(result.modelType).toBe('wooldridgeTest');
+  });
+
+  it('rho is between -1 and 1', () => {
+    const result = wooldridgeTest(panelData, 'y', ['x1'], 'id', 'time');
+    if (isFinite(result.rho)) {
+      expect(result.rho).toBeGreaterThanOrEqual(-1);
+      expect(result.rho).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('nEntities > 0 for valid data', () => {
+    const result = wooldridgeTest(panelData, 'y', ['x1'], 'id', 'time');
+    expect(result.nEntities).toBeGreaterThan(0);
+  });
+
+  it('handles entity with <3 consecutive obs gracefully', () => {
+    const shortData = [
+      { id: 'A', time: 1, y: 1, x1: 1 },
+      { id: 'A', time: 2, y: 2, x1: 2 },
+    ];
+    const result = wooldridgeTest(shortData, 'y', ['x1'], 'id', 'time');
+    expect(result.nEntities).toBe(0);
+  });
+
+  it('handles gap in time', () => {
+    const gapData = [
+      { id: 'A', time: 1, y: 1, x1: 1 },
+      { id: 'A', time: 2, y: 2, x1: 2 },
+      { id: 'A', time: 5, y: 5, x1: 5 }, // gap
+      { id: 'A', time: 6, y: 6, x1: 6 },
+      { id: 'A', time: 7, y: 7, x1: 7 },
+    ];
+    const result = wooldridgeTest(gapData, 'y', ['x1'], 'id', 'time');
+    // Should skip the gap, only use consecutive pairs
+    expect(result).toHaveProperty('rho');
   });
 });
