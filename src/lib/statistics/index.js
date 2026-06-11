@@ -40,6 +40,7 @@ export {
   normalityAdapter,
   mannWhitneyAdapter, wilcoxonAdapter, kruskalWallisAdapter,
   itemValidityAdapter, analyzeNGainAdapter,
+  chiSquareIndependenceAdapter, chiSquareGoodnessOfFitAdapter,
 } from './uiAdapters.js';
 
 export { shapiroWilk, kolmogorovSmirnov, testNormality } from './normality.js';
@@ -48,5 +49,4 @@ export { itemValidity } from './itemValidity.js';
 export { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
 
 // Legacy re-exports
-import { chiSquareIndependence } from '../stats/chisquare.js';
-export { chiSquareIndependence };
+export { chiSquareIndependence, chiSquareGoodnessOfFit } from './chisquare.js';

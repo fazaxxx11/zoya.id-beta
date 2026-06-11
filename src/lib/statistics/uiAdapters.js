@@ -290,6 +290,7 @@ export function oneSampleTTestAdapter(values, mu0 = 0, alpha = 0.05) {
 import { mannWhitneyU as engineMWU, wilcoxonSignedRank as engineWilcoxon, kruskalWallis as engineKW } from './nonparametric.js';
 import { itemValidity as engineItemValidity } from './itemValidity.js';
 import { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
+import { chiSquareIndependence, chiSquareGoodnessOfFit } from './chisquare.js';
 
 /**
  * Adapter for Mann-Whitney U.
@@ -355,6 +356,24 @@ export function multipleLinearRegressionAdapter(X, y, predictorNames, alpha = 0.
  */
 export function twoWayANOVAAdapter(args) {
   return engineTwoWay(args);
+}
+
+// ── Chi-Square ──────────────────────────────────────────────────────
+
+/**
+ * Adapter for chi-square test of independence.
+ * Matches old chiSquareIndependence() output shape.
+ */
+export function chiSquareIndependenceAdapter(col1, col2, alpha = 0.05) {
+  return chiSquareIndependence(col1, col2, alpha);
+}
+
+/**
+ * Adapter for chi-square goodness of fit.
+ * Matches old chiSquareGoodnessOfFit() output shape.
+ */
+export function chiSquareGoodnessOfFitAdapter(observed, expected = null, alpha = 0.05) {
+  return chiSquareGoodnessOfFit(observed, expected, alpha);
 }
 
 // ── Helper functions ──────────────────────────────────────────────
