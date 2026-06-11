@@ -30,15 +30,16 @@ function gamma(z) {
 
 // ── Regularized incomplete beta function ───────────────────────────
 // I_x(a,b) via continued fraction (Lentz's method)
-function betaIncomplete(x, a, b) {
+function betaIncomplete(x, a, b, depth = 0) {
   if (x <= 0) return 0;
   if (x >= 1) return 1;
-  if (x < (a + 1) / (a + b + 2)) {
+  if (depth > 200) return 0; // safety guard
+  if (x <= (a + 1) / (a + b + 2)) {
     return betaCF(x, a, b) * Math.exp(
       a * Math.log(x) + b * Math.log(1 - x) - Math.log(a) - gammaLn(a) - gammaLn(b) + gammaLn(a + b)
     );
   }
-  return 1 - betaIncomplete(1 - x, b, a);
+  return 1 - betaIncomplete(1 - x, b, a, depth + 1);
 }
 
 function betaCF(x, a, b) {

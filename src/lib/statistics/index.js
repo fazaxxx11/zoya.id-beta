@@ -41,6 +41,7 @@ export {
   mannWhitneyAdapter, wilcoxonAdapter, kruskalWallisAdapter,
   itemValidityAdapter, analyzeNGainAdapter,
   chiSquareIndependenceAdapter, chiSquareGoodnessOfFitAdapter,
+  pooledOLSAdapter, fixedEffectsAdapter,
 } from './uiAdapters.js';
 
 export { shapiroWilk, kolmogorovSmirnov, testNormality } from './normality.js';
@@ -50,3 +51,4 @@ export { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
 
 // Legacy re-exports
 export { chiSquareIndependence, chiSquareGoodnessOfFit } from './chisquare.js';
+export { pooledOLS, fixedEffects, validatePanel } from './panel.js';

@@ -121,7 +121,7 @@ export function simpleRegression(x, y, alpha = 0.05) {
 
 // ── Matrix utilities ──────────────────────────────────────────────
 
-function transpose(M) {
+export function transpose(M) {
   const rows = M.length, cols = M[0].length;
   const T = Array.from({ length: cols }, () => new Array(rows));
   for (let i = 0; i < rows; i++)
@@ -129,7 +129,7 @@ function transpose(M) {
   return T;
 }
 
-function matMul(A, B) {
+export function matMul(A, B) {
   const rows = A.length, cols = B[0].length, inner = B.length;
   const C = Array.from({ length: rows }, () => new Array(cols).fill(0));
   for (let i = 0; i < rows; i++)
@@ -139,12 +139,12 @@ function matMul(A, B) {
   return C;
 }
 
-function matVecMul(A, v) {
+export function matVecMul(A, v) {
   return A.map(row => row.reduce((s, a, i) => s + a * v[i], 0));
 }
 
 /** Invert n×n matrix via Gauss-Jordan. Return null if singular. */
-function invertMatrix(M) {
+export function invertMatrix(M) {
   const n = M.length;
   const A = M.map((row, i) => [...row, ...row.map((_, j) => (i === j ? 1 : 0))]);
   for (let i = 0; i < n; i++) {
