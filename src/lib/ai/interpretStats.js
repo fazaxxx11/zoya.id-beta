@@ -47,12 +47,13 @@ export async function generateInterpretation(result) {
 // =====================================================================
 function localTemplate(r) {
   if (!r || !r.type) return null
+  // Indonesian thesis convention: comma as decimal separator
   const fmt = (v, d = 3) => {
     if (v == null || (typeof v === 'number' && !isFinite(v))) return '—'
-    if (typeof v === 'number') return Number(v).toFixed(d)
+    if (typeof v === 'number') return Number(v).toFixed(d).replace('.', ',')
     return String(v)
   }
-  const pf = (p) => p == null ? '—' : (p < 0.001 ? '< 0.001' : Number(p).toFixed(3))
+  const pf = (p) => p == null ? '—' : (p < 0.001 ? '< 0,001' : Number(p).toFixed(3).replace('.', ','))
   const sig = (b) => b ? 'signifikan secara statistik' : 'tidak signifikan secara statistik'
   const concl = (b, alt) => b
     ? `Dengan demikian, hipotesis nol ditolak dan ${alt} didukung oleh data.`
@@ -188,6 +189,51 @@ function localTemplate(r) {
         `${sig
           ? `Dengan demikian, hipotesis nol ditolak dan terdapat bukti bahwa variabel ${r.column} berbeda di antara file/dataset yang dibandingkan. Ukuran efek ${isANOVA ? 'eta-squared' : 'eta-squared H'} memberi gambaran kekuatan praktis perbedaan tersebut, yang dapat menjadi dasar interpretasi substansif lanjutan (mis. perbandingan kelas, kohort, periode, atau kondisi penelitian).`
           : `Dengan demikian, hipotesis nol tidak dapat ditolak; bukti empiris belum cukup untuk menyatakan adanya perbedaan ${r.column} antar file pada ukuran sampel saat ini. Hal ini bukan berarti tidak ada perbedaan sama sekali, melainkan sinyalnya belum cukup kuat dibandingkan variasi within-grup.`}`,
+      ].join('\n\n')
+    }
+
+    case 'dunn': {
+      const pairs = r.significantPairs || []
+      const comps = (r.comparisons || []).slice(0, 5).map(c =>
+        `${c.group1} vs ${c.group2}: z = ${fmt(c.z)}, p = ${pf(c.pBonferroni)} ${c.significant ? '(signifikan)' : '(tidak signifikan)'}`
+      ).join('; ')
+      const meanRanks = (r.meanRanks || []).map(m => `${m.group} (mean rank = ${fmt(m.meanRank, 2)}, n = ${m.n})`).join('; ')
+      return [
+        `Analisis post-hoc Dunn dengan koreksi Bonferroni dilakukan untuk mengidentifikasi pasangan kelompok yang berbeda signifikan setelah uji Kruskal-Wallis (N = ${r.N}, k = ${r.k}).`,
+        `Mean rank per kelompok: ${meanRanks}. Dari ${r.numPairs} perbandingan berpasangan, ditemukan ${pairs.length} pasangan yang signifikan pada α = ${r.alpha ?? '0,05'} setelah koreksi Bonferroni.`,
+        `${pairs.length > 0
+          ? `Pasangan signifikan meliputi: ${comps}. Kelompok dengan mean rank lebih tinggi memiliki kecenderungan nilai lebih besar pada variabel dependen.`
+          : `Tidak ditemukan pasangan yang berbeda signifikan setelah koreksi, menunjukkan bahwa perbedaan yang teramati pada uji omnibus Kruskal-Wallis berasal dari kombinasi pasangan yang tidak cukup kuat setelah disesuaikan untuk jumlah perbandingan.`}`,
+      ].join('\n\n')
+    }
+
+    case 'friedman': {
+      const conds = (r.conditionStats || []).map(c => `${c.name} (sum rank = ${fmt(c.sumRank, 1)}, mean rank = ${fmt(c.meanRank, 2)}, Mdn = ${fmt(c.median)})`).join('; ')
+      return [
+        `Uji Friedman dilakukan sebagai alternatif non-parametrik one-way ANOVA repeated measures pada ${r.n} blok/subjek dengan ${r.k} kondisi pengukuran berulang.`,
+        `Hasil memperoleh χ²(${r.df}) = ${fmt(r.chi2)}, p = ${pf(r.pValue)}, Kendall's W = ${fmt(r.W)} (${r.WLabel?.toLowerCase() || '—'}). Statistik per kondisi: ${conds}. Perbedaan antar kondisi ${sig(r.isSignificant)}.`,
+        `${concl(r.isSignificant, 'adanya perbedaan peringkat antar kondisi')} Kendall's W sebesar ${fmt(r.W)} mengindikasikan tingkat keselarasan ${r.WLabel?.toLowerCase() || '—'} antar subjek dalam memberikan peringkat pada kondisi.`,
+      ].join('\n\n')
+    }
+
+    case 'mcnemar': {
+      const or = typeof r.oddsRatio === 'string' ? r.oddsRatio : fmt(r.oddsRatio)
+      return [
+        `Uji McNemar dilakukan untuk menguji perubahan proporsi pada data dikotomi berpasangan (sebelum–sesudah) pada N = ${r.N} subjek.`,
+        `Tabel kontingensi 2×2: a (sebelum+, sesudah+) = ${r.a}, b (sebelum+, sesudah−) = ${r.b}, c (sebelum−, sesudah+) = ${r.c}, d (sebelum−, sesudah−) = ${r.d}. Pasangan diskordan b + c = ${r.discordant}.`,
+        `Hasil memperoleh χ²(1) = ${fmt(r.chi2)}, p = ${pf(r.exactP != null ? r.exactP : r.pValue)}${r.exactP != null ? ' (eksak binomial)' : ''} dengan koreksi kontinuitas. Odds ratio b/c = ${or}. Perubahan proporsi ${sig(r.isSignificant)}.${r.note ? ` Catatan: ${r.note}.` : ''}`,
+        `${concl(r.isSignificant, 'adanya perubahan proporsi yang signifikan')} Arah perubahan dapat dilihat dari sel b (sebelum+ menjadi sesudah−) dan c (sebelum− menjadi sesudah+).`,
+      ].join('\n\n')
+    }
+
+    case 'partial_correlation': {
+      const zc = r.r_xy != null && r.r_xz != null && r.r_yz != null
+        ? ` Korelasi zero-order: r_xy = ${fmt(r.r_xy)}, r_xz = ${fmt(r.r_xz)}, r_yz = ${fmt(r.r_yz)}.`
+        : ''
+      return [
+        `Analisis korelasi parsial orde-${r.order || 0} dilakukan untuk menguji hubungan antara variabel utama setelah mengontrol ${r.order || 0} variabel pengganggu (n = ${r.n}).`,
+        `Hasil memperoleh r parsial = ${fmt(r.rPartial)}, r² = ${fmt(r.r2)}, t(${fmt(r.df, 2)}) = ${fmt(r.t)}, p = ${pf(r.pValue)}.${zc} Hubungan parsial ${sig(r.pValue < (r.alpha || 0.05))} dengan arah ${r.direction || '—'} dan kekuatan ${r.strength || '—'}.`,
+        `${concl(r.pValue < (r.alpha || 0.05), 'adanya hubungan linier antara kedua variabel setelah mengontrol variabel pengganggu')} Koefisien korelasi parsial mengisolasi hubungan murni antara dua variabel dengan menghilangkan pengaruh bersama dari variabel kontrol.`,
       ].join('\n\n')
     }
 

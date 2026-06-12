@@ -82,13 +82,13 @@ const QUANT_STEPS = [
   },
   {
     id: 'q7', title: 'Analisis Inferensial Utama',
-    icon: Layers, color: 'bg-indigo-500',
+    icon: Layers, color: 'bg-accent',
     desc: 'Pilih sesuai hipotesis & jenis data — gunakan Decision Tree di bawah.',
     isAnalysisPicker: true,
   },
   {
     id: 'q8', title: 'Generate Bab IV',
-    icon: FileText, color: 'bg-gray-700',
+    icon: FileText, color: 'bg-muted',
     desc: 'Setelah semua analisis selesai dan disimpan, compile ke draft Bab IV otomatis.',
     tools: [
       { label: 'Generator Bab IV', href: '/statistik/report' },
@@ -257,14 +257,14 @@ export default function SkripsiWizard() {
 
       <div className="max-w-4xl mx-auto px-3 sm:px-5 py-4 space-y-4">
         {/* Hero */}
-        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-4">
+        <div className="bg-gradient-to-br from-accent/5 to-accent-soft/50 border border-accent/30 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-accent text-white flex items-center justify-center flex-shrink-0">
               <Compass className="w-5 h-5" />
             </div>
             <div className="flex-1">
               <h2 className="font-semibold text-fg mb-1">Panduan Pengerjaan Skripsi</h2>
-              <p className="text-xs text-indigo-800">
+              <p className="text-xs text-accent">
                 Ikuti langkah demi langkah. Centang yang sudah selesai, klik link tool untuk mengerjakan.
                 Progress tersimpan otomatis di browser Anda.
               </p>
@@ -274,20 +274,20 @@ export default function SkripsiWizard() {
 
         {/* Type selector */}
         {!type && (
-          <div className="bg-white border border-gray-200 rounded-xl p-5 space-y-3">
+          <div className="bg-card border border-border rounded-xl p-5 space-y-3">
             <h3 className="font-semibold text-sm">Pilih jenis penelitian Anda:</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button onClick={() => setType('kuantitatif')}
-                      className="border-2 border-gray-200 hover:border-indigo-400 rounded-xl p-4 text-left transition-colors">
+                      className="border-2 border-border hover:border-accent/50 rounded-xl p-4 text-left transition-colors">
                 <div className="text-2xl mb-1">📊</div>
                 <div className="font-semibold text-sm mb-1">Kuantitatif</div>
-                <p className="text-xs text-gray-600">Pengujian hipotesis dengan angka & statistik. Cocok untuk: korelasi, perbandingan kelompok, prediksi.</p>
+                <p className="text-xs text-muted">Pengujian hipotesis dengan angka & statistik. Cocok untuk: korelasi, perbandingan kelompok, prediksi.</p>
               </button>
               <button onClick={() => setType('kualitatif')}
-                      className="border-2 border-gray-200 hover:border-indigo-400 rounded-xl p-4 text-left transition-colors">
+                      className="border-2 border-border hover:border-accent/50 rounded-xl p-4 text-left transition-colors">
                 <div className="text-2xl mb-1">📝</div>
                 <div className="font-semibold text-sm mb-1">Kualitatif</div>
-                <p className="text-xs text-gray-600">Eksplorasi makna, persepsi, pengalaman. Coding wawancara, observasi, dokumen.</p>
+                <p className="text-xs text-muted">Eksplorasi makna, persepsi, pengalaman. Coding wawancara, observasi, dokumen.</p>
               </button>
             </div>
           </div>
@@ -295,19 +295,19 @@ export default function SkripsiWizard() {
 
         {/* Progress bar */}
         {type && (
-          <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <div className="bg-card border border-border rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <div className="text-[10px] uppercase tracking-wide text-gray-500">Progress {type}</div>
+                <div className="text-[10px] uppercase tracking-wide text-muted">Progress {type}</div>
                 <div className="text-sm font-semibold">{completedCount} dari {steps.length} langkah selesai</div>
               </div>
               <button onClick={() => { setType(null); setProgress({}); saveProgress({}); localStorage.removeItem(TYPE_KEY) }}
-                      className="text-xs text-gray-500 hover:text-gray-700">
+                      className="text-xs text-muted hover:text-fg/80">
                 Ganti jenis
               </button>
             </div>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all"
+            <div className="h-2 bg-muted/15 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-accent/50 to-accent-soft/500 transition-all"
                    style={{ width: `${(completedCount / steps.length) * 100}%` }} />
             </div>
           </div>
@@ -320,12 +320,12 @@ export default function SkripsiWizard() {
               const done = !!progress[step.id]
               const Icon = step.icon
               return (
-                <div key={step.id} className={`bg-white border rounded-xl p-4 transition-all ${done ? 'border-emerald-200 bg-emerald-50/30' : 'border-gray-200'}`}>
+                <div key={step.id} className={`bg-card border rounded-xl p-4 transition-all ${done ? 'border-emerald-200 bg-emerald-50/30' : 'border-border'}`}>
                   <div className="flex items-start gap-3">
                     <button onClick={() => toggleStep(step.id)} className="flex-shrink-0 mt-0.5">
                       {done
                         ? <CheckCircle2 className="w-6 h-6 text-emerald-600" />
-                        : <Circle className="w-6 h-6 text-gray-300 hover:text-gray-500" />}
+                        : <Circle className="w-6 h-6 text-muted/40 hover:text-muted" />}
                     </button>
 
                     <div className="flex-1 min-w-0">
@@ -333,18 +333,18 @@ export default function SkripsiWizard() {
                         <div className={`w-7 h-7 rounded-lg ${step.color} text-white flex items-center justify-center flex-shrink-0`}>
                           <Icon className="w-3.5 h-3.5" />
                         </div>
-                        <h3 className={`font-semibold text-sm flex-1 ${done ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                        <h3 className={`font-semibold text-sm flex-1 ${done ? 'text-muted line-through' : 'text-fg'}`}>
                           {i + 1}. {step.title}
                         </h3>
                       </div>
-                      <p className="text-xs text-gray-600 ml-9 mb-2">{step.desc}</p>
+                      <p className="text-xs text-muted ml-9 mb-2">{step.desc}</p>
 
                       {/* Tools */}
                       {step.tools && (
                         <div className="ml-9 flex flex-wrap gap-1.5 mb-2">
                           {step.tools.map((t, ti) => (
                             <Link key={ti} to={t.href}
-                                  className="inline-flex items-center gap-1 text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-md font-medium border border-indigo-100">
+                                  className="inline-flex items-center gap-1 text-xs bg-accent/5 hover:bg-accent/15 text-accent px-2.5 py-1 rounded-md font-medium border border-accent/20">
                               {t.label} <ChevronRight className="w-3 h-3" />
                             </Link>
                           ))}
@@ -358,12 +358,12 @@ export default function SkripsiWizard() {
                       {step.tips && step.tips.length > 0 && (
                         <div className="ml-9 mt-2">
                           <button onClick={() => setOpenTip(openTip === step.id ? null : step.id)}
-                                  className="text-[11px] text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                                  className="text-[11px] text-muted hover:text-fg/80 flex items-center gap-1">
                             <ChevronDown className={`w-3 h-3 transition-transform ${openTip === step.id ? 'rotate-0' : '-rotate-90'}`} />
                             Tips ({step.tips.length})
                           </button>
                           {openTip === step.id && (
-                            <ul className="mt-1 space-y-0.5 list-disc list-inside text-[11px] text-gray-600">
+                            <ul className="mt-1 space-y-0.5 list-disc list-inside text-[11px] text-muted">
                               {step.tips.map((tip, ti) => <li key={ti}>{tip}</li>)}
                             </ul>
                           )}
@@ -396,13 +396,13 @@ export default function SkripsiWizard() {
 function DecisionTreePicker() {
   const [openIdx, setOpenIdx] = useState(null)
   return (
-    <div className="ml-9 mt-2 bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1">
-      <div className="text-[11px] font-semibold text-gray-700 mb-1">🧭 Decision Tree — Pilih Analisis:</div>
+    <div className="ml-9 mt-2 bg-card/60 border border-border rounded-lg p-3 space-y-1">
+      <div className="text-[11px] font-semibold text-fg/80 mb-1">🧭 Decision Tree — Pilih Analisis:</div>
       {DECISION_TREE.map((q, qi) => (
         <div key={qi}>
           <button
             onClick={() => setOpenIdx(openIdx === qi ? null : qi)}
-            className="w-full text-left flex items-center gap-1.5 text-xs font-medium text-gray-800 hover:text-indigo-700 py-1"
+            className="w-full text-left flex items-center gap-1.5 text-xs font-medium text-fg hover:text-accent py-1"
           >
             <ChevronDown className={`w-3 h-3 transition-transform ${openIdx === qi ? 'rotate-0' : '-rotate-90'}`} />
             {q.q}
@@ -411,16 +411,16 @@ function DecisionTreePicker() {
             <div className="ml-4 space-y-2 pb-1">
               {q.branches.map((br, bi) => (
                 <div key={bi}>
-                  <div className="text-[11px] font-semibold text-gray-600 mb-0.5">{br.cond}</div>
+                  <div className="text-[11px] font-semibold text-muted mb-0.5">{br.cond}</div>
                   <div className="space-y-0.5">
                     {br.items.map((item, ii) => (
                       <Link key={ii} to={item.href}
-                            className="flex items-start justify-between gap-2 hover:bg-white px-2 py-1 rounded">
+                            className="flex items-start justify-between gap-2 hover:bg-card px-2 py-1 rounded">
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-medium text-indigo-700">{item.test}</div>
-                          <div className="text-[10.5px] text-gray-500">{item.when}</div>
+                          <div className="text-xs font-medium text-accent">{item.test}</div>
+                          <div className="text-[10.5px] text-muted">{item.when}</div>
                         </div>
-                        <ChevronRight className="w-3.5 h-3.5 text-gray-300 mt-0.5 flex-shrink-0" />
+                        <ChevronRight className="w-3.5 h-3.5 text-muted/40 mt-0.5 flex-shrink-0" />
                       </Link>
                     ))}
                   </div>

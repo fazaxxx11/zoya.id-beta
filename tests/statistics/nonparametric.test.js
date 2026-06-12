@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mannWhitneyU, wilcoxonSignedRank, kruskalWallis, averageRank } from '../../src/lib/statistics/nonparametric.js'
+import { mannWhitneyU, wilcoxonSignedRank, kruskalWallis, averageRank, dunnTest, friedmanTest } from '../../src/lib/statistics/nonparametric.js'
 
 describe('averageRank', () => {
   it('ranks without ties', () => {
@@ -203,5 +203,135 @@ describe('kruskalWallis', () => {
     const g2 = [11, 21, 31]
     const r = kruskalWallis([g1, g2])
     expect(r.etaSquared).toBeGreaterThanOrEqual(0)
+  })
+})
+
+// ── Dunn Post-hoc ─────────────────────────────────────────────────
+
+describe('dunnTest', () => {
+  it('identifies post-hoc pairs after Kruskal-Wallis', () => {
+    const g1 = [10, 11, 12, 13, 14]
+    const g2 = [20, 21, 22, 23, 24]
+    const g3 = [15, 16, 17, 18, 19]
+    const r = dunnTest([g1, g2, g3])
+    expect(r.error).toBeUndefined()
+    expect(r.test).toBe('Dunn post-hoc')
+    expect(r.k).toBe(3)
+    expect(r.numPairs).toBe(3)
+    expect(r.N).toBe(15)
+    expect(r.comparisons).toHaveLength(3)
+    expect(r.comparisons[0].z).toBeDefined()
+    expect(r.comparisons[0].pBonferroni).toBeGreaterThanOrEqual(0)
+    expect(r.comparisons[0].pBonferroni).toBeLessThanOrEqual(1)
+  })
+
+  it('returns error for < 2 groups', () => {
+    const r = dunnTest([[1, 2, 3]])
+    expect(r.error).toBe('Butuh minimal 2 grup')
+  })
+
+  it('Bonferroni correction inflates p-value', () => {
+    const g1 = [1, 2, 3, 4, 5]
+    const g2 = [2, 3, 4, 5, 6]
+    const g3 = [3, 4, 5, 6, 7]
+    const g4 = [100, 101, 102, 103, 104]
+    const r = dunnTest([g1, g2, g3, g4])
+    expect(r.numPairs).toBe(6)
+    for (const c of r.comparisons) {
+      expect(c.pBonferroni).toBeGreaterThanOrEqual(c.pRaw - 1e-12)
+    }
+  })
+
+  it('mean ranks reflect group values', () => {
+    const low = [1, 2, 3]
+    const high = [100, 101, 102]
+    const r = dunnTest([low, high])
+    expect(r.meanRanks[0].meanRank).toBeLessThan(r.meanRanks[1].meanRank)
+  })
+
+  it('interpretation is non-empty', () => {
+    const r = dunnTest([[1,2,3], [4,5,6], [7,8,9]])
+    expect(r.interpretation).toBeTypeOf('string')
+    expect(r.interpretation.length).toBeGreaterThan(0)
+  })
+})
+
+// ── Friedman ──────────────────────────────────────────────────────
+
+describe('friedmanTest', () => {
+  it('computes Friedman with 3 conditions × 5 blocks', () => {
+    const data = [
+      [7, 8, 9],
+      [6, 7, 8],
+      [8, 9, 7],
+      [5, 6, 7],
+      [9, 8, 8],
+    ]
+    const r = friedmanTest(data)
+    expect(r.error).toBeUndefined()
+    expect(r.test).toBe('Friedman')
+    expect(r.n).toBe(5)
+    expect(r.k).toBe(3)
+    expect(r.df).toBe(2)
+    expect(r.chi2).toBeGreaterThan(0)
+    expect(r.pValue).toBeGreaterThan(0)
+    expect(r.pValue).toBeLessThan(1)
+    expect(r.W).toBeGreaterThanOrEqual(0)
+    expect(r.W).toBeLessThanOrEqual(1)
+    expect(r.conditionStats).toHaveLength(3)
+    expect(r.isSignificant).toBeTypeOf('boolean')
+    expect(r.interpretation).toBeTypeOf('string')
+  })
+
+  it('returns error if < 3 blocks', () => {
+    const r = friedmanTest([[1, 2], [3, 4]])
+    expect(r.error).toContain('Butuh minimal 3 blok')
+  })
+
+  it('returns error if < 2 conditions', () => {
+    const r = friedmanTest([[1], [2], [3], [4]])
+    expect(r.error).toContain('Butuh minimal 2 kondisi')
+  })
+
+  it('returns error for uneven columns', () => {
+    const r = friedmanTest([[1, 2], [3, 4], [5, 6, 7]])
+    expect(r.error).toContain('tidak memiliki')
+  })
+
+  it('ties do not break computation', () => {
+    const data = [
+      [3, 3, 5],
+      [2, 2, 4],
+      [5, 5, 3],
+      [4, 4, 5],
+    ]
+    const r = friedmanTest(data)
+    expect(r.error).toBeUndefined()
+    expect(r.chi2).toBeGreaterThan(0)
+  })
+
+  it('Kendall W close to 1 with perfect agreement', () => {
+    const data = [
+      [1, 2, 3],
+      [1, 2, 3],
+      [1, 2, 3],
+      [1, 2, 3],
+    ]
+    const r = friedmanTest(data)
+    expect(r.W).toBeCloseTo(1, 3)
+    expect(r.WLabel).toBe('Besar')
+  })
+
+  it('conditionStats contain correct structure', () => {
+    const data = [
+      [10, 20, 30],
+      [12, 22, 32],
+      [11, 21, 31],
+    ]
+    const r = friedmanTest(data, ['Pre', 'Post', 'FollowUp'])
+    expect(r.conditionStats[0].name).toBe('Pre')
+    expect(r.conditionStats[0]).toHaveProperty('sumRank')
+    expect(r.conditionStats[0]).toHaveProperty('meanRank')
+    expect(r.conditionStats[0]).toHaveProperty('median')
   })
 })

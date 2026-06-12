@@ -15,7 +15,7 @@
  */
 
 import { describe as engineDescribe } from './descriptive.js';
-import { pearson, spearman } from './correlation.js';
+import { pearson, spearman, partialCorrelation as enginePartialCorr } from './correlation.js';
 import { cronbachAlpha as engineCronbach } from './reliability.js';
 import { oneSampleTTest as engineOneSampleT, independentTTest as engineIndepT, pairedTTest as enginePairedT } from './ttest.js';
 import { oneWayANOVA as engineAnova, twoWayANOVA as engineTwoWay } from './anova.js';
@@ -287,10 +287,10 @@ export function oneSampleTTestAdapter(values, mu0 = 0, alpha = 0.05) {
 
 // ── Non-parametric tests ─────────────────────────────────────────
 
-import { mannWhitneyU as engineMWU, wilcoxonSignedRank as engineWilcoxon, kruskalWallis as engineKW } from './nonparametric.js';
+import { mannWhitneyU as engineMWU, wilcoxonSignedRank as engineWilcoxon, kruskalWallis as engineKW, dunnTest as engineDunn, friedmanTest as engineFriedman } from './nonparametric.js';
 import { itemValidity as engineItemValidity } from './itemValidity.js';
 import { calcNGain, categorizeNGain, analyzeNGain } from './ngain.js';
-import { chiSquareIndependence, chiSquareGoodnessOfFit } from './chisquare.js';
+import { chiSquareIndependence, chiSquareGoodnessOfFit, mcnemarTest as engineMcNemar } from './chisquare.js';
 import { pooledOLS as enginePooledOLS, fixedEffects as engineFE, randomEffects as engineRE, hausmanTest as engineHausman, breuschPaganLM as engineBP, breuschPagan as engineBP2, whiteTest as engineWhite, wooldridgeTest as engineWooldridge } from './panel.js';
 import { adfTest as engineADF, grangerCausality as engineGranger, engleGrangerCointegration as engineEG } from './timeseries.js';
 
@@ -316,6 +316,26 @@ export function wilcoxonAdapter(before, post, alpha = 0.05) {
  */
 export function kruskalWallisAdapter(groups, groupNames = null, alpha = 0.05) {
   return engineKW(groups, groupNames, alpha);
+}
+
+// ── Dunn Post-hoc ─────────────────────────────────────────────────
+
+/**
+ * Adapter for Dunn's post-hoc test.
+ * Matches Dunn (1964) — pairwise comparisons after Kruskal-Wallis.
+ */
+export function dunnTestAdapter(groups, groupNames = null, alpha = 0.05) {
+  return engineDunn(groups, groupNames, alpha);
+}
+
+// ── Friedman ──────────────────────────────────────────────────────
+
+/**
+ * Adapter for Friedman test.
+ * Matches Friedman (1937) — non-parametric repeated measures.
+ */
+export function friedmanTestAdapter(data, conditionNames = null, alpha = 0.05) {
+  return engineFriedman(data, conditionNames, alpha);
 }
 
 // ── Item Validity ─────────────────────────────────────────────────
@@ -378,6 +398,16 @@ export function chiSquareGoodnessOfFitAdapter(observed, expected = null, alpha =
   return chiSquareGoodnessOfFit(observed, expected, alpha);
 }
 
+// ── McNemar ───────────────────────────────────────────────────────
+
+/**
+ * Adapter for McNemar test.
+ * Matches McNemar (1947) — paired dichotomous 2×2.
+ */
+export function mcnemarTestAdapter(table, alpha = 0.05) {
+  return engineMcNemar(table, alpha);
+}
+
 // ── Panel data ────────────────────────────────────────────────────
 
 export function pooledOLSAdapter(data, yCol, xCols, options = {}) {
@@ -422,6 +452,16 @@ export function grangerCausalityAdapter(y, x, options = {}) {
 
 export function engleGrangerCointegrationAdapter(y, x, options = {}) {
   return engineEG(y, x, options);
+}
+
+// ── Partial Correlation ───────────────────────────────────────────
+
+/**
+ * Adapter for partial correlation.
+ * Controls for one or more variables using recursive formula.
+ */
+export function partialCorrelationAdapter(x, y, controls = []) {
+  return enginePartialCorr(x, y, controls);
 }
 
 // ── Helper functions ──────────────────────────────────────────────

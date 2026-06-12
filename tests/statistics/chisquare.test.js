@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { chiSquareIndependence, chiSquareGoodnessOfFit } from '../../src/lib/statistics/chisquare.js'
+import { chiSquareIndependence, chiSquareGoodnessOfFit, mcnemarTest } from '../../src/lib/statistics/chisquare.js'
 
 describe('chiSquareIndependence', () => {
   it('2x2 independence with significant result', () => {
@@ -198,5 +198,77 @@ describe('chiSquareGoodnessOfFit', () => {
     const result = chiSquareGoodnessOfFit(observed, expected, 0.05)
     
     expect(result.error).toBe('Panjang observed dan expected harus sama')
+  })
+})
+
+// ── McNemar ───────────────────────────────────────────────────────
+
+describe('mcnemarTest', () => {
+  it('computes McNemar with 2×2 array input', () => {
+    // 30 subjects: a=12 (++, b=8 (+-), c=3 (-+), d=7 (--)
+    const table = [[12, 8], [3, 7]]
+    const r = mcnemarTest(table)
+    expect(r.error).toBeUndefined()
+    expect(r.test).toBe('McNemar')
+    expect(r.a).toBe(12)
+    expect(r.b).toBe(8)
+    expect(r.c).toBe(3)
+    expect(r.d).toBe(7)
+    expect(r.N).toBe(30)
+    expect(r.discordant).toBe(11)
+    expect(r.df).toBe(1)
+    expect(r.chi2).toBeGreaterThan(0)
+    expect(r.pValue).toBeGreaterThan(0)
+    expect(r.pValue).toBeLessThan(1)
+    expect(r.isSignificant).toBeTypeOf('boolean')
+    expect(r.interpretation).toBeTypeOf('string')
+  })
+
+  it('computes McNemar with object input', () => {
+    const r = mcnemarTest({ a: 20, b: 5, c: 12, d: 3 })
+    expect(r.error).toBeUndefined()
+    expect(r.a).toBe(20)
+    expect(r.b).toBe(5)
+    expect(r.c).toBe(12)
+  })
+
+  it('returns error for non-2×2 array', () => {
+    const r = mcnemarTest([[10, 20, 30], [5, 10, 15]])
+    expect(r.error).toBe('Tabel harus 2x2')
+  })
+
+  it('returns error when b + c = 0', () => {
+    const r = mcnemarTest([[10, 0], [0, 5]])
+    expect(r.error).toContain('Diskordan (b + c) = 0')
+  })
+
+  it('continuity correction applied (b-c adjusted by 1)', () => {
+    // Without correction: chi2 = (b-c)²/(b+c) = 1/11 = 0.0909
+    // With correction: chi2 = (|b-c|-1)²/(b+c) = 0/11 = 0
+    const r = mcnemarTest([[12, 8], [3, 7]])
+    // |8-3| - 1 = 4, 4²/11 = 1.4545...
+    expect(r.chi2).toBeCloseTo(16 / 11, 3)
+  })
+
+  it('significant result when discordant difference large', () => {
+    // Large discordance: b=40, c=10 → clear change
+    const r = mcnemarTest([[10, 40], [10, 10]])
+    expect(r.isSignificant).toBe(true)
+    expect(r.discordant).toBe(50)
+  })
+
+  it('odds ratio computed correctly', () => {
+    const r = mcnemarTest([[10, 20], [5, 15]])
+    // b/c = 20/5 = 4
+    expect(r.oddsRatio).toBeCloseTo(4, 1)
+  })
+
+  it('binomial exact when b+c < 25', () => {
+    const r = mcnemarTest([[5, 12], [1, 2]])
+    // b + c = 13 < 25 → exactP computed
+    expect(r.exactP).not.toBeNull()
+    expect(r.exactP).toBeGreaterThan(0)
+    expect(r.exactP).toBeLessThanOrEqual(1)
+    expect(r.note).toContain('b + c < 25')
   })
 })

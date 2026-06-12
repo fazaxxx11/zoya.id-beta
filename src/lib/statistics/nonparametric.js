@@ -260,3 +260,196 @@ export function kruskalWallis(groups, groupNames = null, alpha = 0.05) {
       : `Tidak ada perbedaan signifikan antar ${k} grup (H(${df}) = ${H.toFixed(3)}, p = ${pValue.toFixed(4)} > α = ${alpha}).`,
   }
 }
+
+// ── Dunn's Post-hoc Test ──────────────────────────────────────────
+
+/**
+ * Dunn's (1964) post-hoc pairwise comparisons after Kruskal-Wallis.
+ * Compares each pair with Bonferroni-adjusted z-test.
+ *
+ * @param {number[][]} groups - array of arrays (raw values)
+ * @param {string[]|null} groupNames
+ * @param {number} alpha
+ * @returns {Object}
+ */
+export function dunnTest(groups, groupNames = null, alpha = 0.05) {
+  const cleaned = groups.map(g => cleanNumeric(g))
+  const k = cleaned.length
+  if (k < 2) return { error: 'Butuh minimal 2 grup' }
+
+  const names = groupNames || cleaned.map((_, i) => `Grup ${i + 1}`)
+  const ni = cleaned.map(g => g.length)
+  const N = ni.reduce((s, n) => s + n, 0)
+
+  // Rank all data
+  const flat = []
+  cleaned.forEach(g => g.forEach(v => flat.push(v)))
+  const { ranks, tieCounts } = averageRank(flat)
+
+  // Compute mean ranks per group
+  let pos = 0, meanRanks = []
+  for (let i = 0; i < k; i++) {
+    const sumR = ranks.slice(pos, pos + ni[i]).reduce((s, r) => s + r, 0)
+    meanRanks.push(sumR / ni[i])
+    pos += ni[i]
+  }
+
+  // Tie correction
+  let tieCorr = 1
+  if (tieCounts.length > 0) {
+    let sumT = 0
+    for (const t of tieCounts) sumT += (t ** 3 - t)
+    tieCorr = 1 - sumT / (N ** 3 - N)
+    if (tieCorr <= 0) tieCorr = 1
+  }
+
+  // Denominator constant: sqrt((N(N+1)/12) * (1/ni + 1/nj))
+  const comparisons = []
+  const numPairs = k * (k - 1) / 2
+
+  for (let i = 0; i < k; i++) {
+    for (let j = i + 1; j < k; j++) {
+      const diff = meanRanks[i] - meanRanks[j]
+      const se = Math.sqrt((N * (N + 1) / 12) * (1 / ni[i] + 1 / ni[j]) / tieCorr)
+      const z = diff / se
+      const pRaw = 2 * (1 - normalCDF(Math.abs(z)))
+      const pAdj = Math.min(pRaw * numPairs, 1) // Bonferroni
+
+      // Effect size: r = z / sqrt(N)
+      const r = Math.abs(z) / Math.sqrt(N)
+
+      comparisons.push({
+        group1: names[i],
+        group2: names[j],
+        idx1: i,
+        idx2: j,
+        meanRank1: meanRanks[i],
+        meanRank2: meanRanks[j],
+        z,
+        pRaw,
+        pBonferroni: pAdj,
+        significant: pAdj < alpha,
+        effectSize: r,
+        effectSizeLabel: effectSizeLabelR(r),
+      })
+    }
+  }
+
+  const significantPairs = comparisons.filter(c => c.significant)
+  return {
+    test: 'Dunn post-hoc',
+    N,
+    k,
+    numPairs,
+    tieCorrection: tieCorr < 1 ? tieCorr : null,
+    alpha,
+    correction: 'Bonferroni',
+    meanRanks: names.map((n, i) => ({ group: n, n: ni[i], meanRank: meanRanks[i] })),
+    comparisons,
+    significantPairs,
+    interpretation: significantPairs.length > 0
+      ? `Post-hoc Dunn (Bonferroni) mengidentifikasi ${significantPairs.length} pasangan signifikan: ${significantPairs.map(p => `${p.group1} vs ${p.group2} (p = ${p.pBonferroni.toFixed(4)})`).join('; ')}.`
+      : `Post-hoc Dunn (Bonferroni) tidak menemukan pasangan yang berbeda signifikan setelah koreksi (α = ${alpha}).`,
+  }
+}
+
+// ── Friedman Test ─────────────────────────────────────────────────
+
+/**
+ * Friedman test — non-parametric repeated measures (k related samples).
+ * Each row = one block/subject; columns = k conditions.
+ *
+ * @param {number[][]} data - matrix [n_blocks][k_conditions]
+ * @param {string[]|null} conditionNames
+ * @param {number} alpha
+ * @returns {Object}
+ */
+export function friedmanTest(data, conditionNames = null, alpha = 0.05) {
+  const n = data.length
+  if (n < 3) return { error: `Butuh minimal 3 blok/subjek (n=${n})` }
+  const k = data[0]?.length || 0
+  if (k < 2) return { error: `Butuh minimal 2 kondisi (k=${k})` }
+
+  // Verify all rows have same length
+  for (let i = 0; i < n; i++) {
+    if (!data[i] || data[i].length !== k) {
+      return { error: `Baris ${i + 1} tidak memiliki ${k} kolom (punya ${data[i]?.length || 0})` }
+    }
+  }
+
+  const names = conditionNames || Array.from({ length: k }, (_, i) => `Kondisi ${i + 1}`)
+
+  // Rank within each block
+  const blockRanks = []
+  for (let i = 0; i < n; i++) {
+    const { ranks } = averageRank(data[i])
+    blockRanks.push(ranks)
+  }
+
+  // Sum ranks per condition
+  const Rj = new Array(k).fill(0)
+  for (let j = 0; j < k; j++) {
+    for (let i = 0; i < n; i++) {
+      Rj[j] += blockRanks[i][j]
+    }
+  }
+
+  // Friedman test statistic
+  const meanR = n * (k + 1) / 2
+  let sumSqDev = 0
+  for (let j = 0; j < k; j++) {
+    sumSqDev += (Rj[j] - meanR) ** 2
+  }
+  const chi2 = (12 / (n * k * (k + 1))) * sumSqDev
+
+  // Tie correction
+  let chi2Adj = chi2
+  let tieCorr = null
+  let totalTies = 0
+  for (let i = 0; i < n; i++) {
+    const { tieCounts } = averageRank(data[i])
+    for (const t of tieCounts) {
+      totalTies += (t ** 3 - t)
+    }
+  }
+  if (totalTies > 0) {
+    tieCorr = 1 - totalTies / (n * k * (k ** 2 - 1))
+    if (tieCorr > 0) chi2Adj = chi2 / tieCorr
+  }
+
+  const df = k - 1
+  const pValue = chi2PValue(chi2Adj, df)
+
+  // Kendall's W (coefficient of concordance)
+  const W = totalTies > 0
+    ? chi2Adj / (n * (k - 1))
+    : chi2 / (n * (k - 1))
+
+  // Effect size labels for W
+  const wLabel = W < 0.1 ? 'Sangat kecil' : W < 0.3 ? 'Kecil' : W < 0.5 ? 'Sedang' : 'Besar'
+
+  const conditionStats = names.map((name, j) => ({
+    name,
+    sumRank: Rj[j],
+    meanRank: Rj[j] / n,
+    median: median(data.map(row => row[j])),
+  }))
+
+  return {
+    test: 'Friedman',
+    chi2: chi2Adj,
+    df,
+    pValue,
+    n,
+    k,
+    W,
+    WLabel: wLabel,
+    tieCorrection: tieCorr,
+    conditionStats,
+    isSignificant: pValue < alpha,
+    alpha,
+    interpretation: pValue < alpha
+      ? `Terdapat perbedaan signifikan antar ${k} kondisi (χ²(${df}) = ${chi2Adj.toFixed(3)}, p = ${pValue.toFixed(4)} < α = ${alpha}). Kendall's W = ${W.toFixed(3)} (${wLabel.toLowerCase()}), menunjukkan keselarasan peringkat antar blok.`
+      : `Tidak ada perbedaan signifikan antar ${k} kondisi (χ²(${df}) = ${chi2Adj.toFixed(3)}, p = ${pValue.toFixed(4)} > α = ${alpha}). Kendall's W = ${W.toFixed(3)} (${wLabel.toLowerCase()}).`,
+  }
+}

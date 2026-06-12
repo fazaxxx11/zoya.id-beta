@@ -180,3 +180,88 @@ export function chiSquareGoodnessOfFit(observed, expected = null, alpha = 0.05) 
       : `Distribusi observed sesuai dengan expected (χ²(${df}) = ${chi2.toFixed(3)}, p = ${pValue.toFixed(4)} > α = ${alpha}).`,
   };
 }
+
+// ── McNemar Test ─────────────────────────────────────────────────
+
+/**
+ * McNemar's test for paired dichotomous data (2x2 contingency).
+ * Tests marginal homogeneity — whether row total equals col total.
+ *
+ * Table layout:       After
+ *                    Yes   No
+ * Before  Yes        a     b
+ *         No         c     d
+ *
+ * χ² = (b - c)² / (b + c)  with continuity correction
+ *
+ * @param {number[][]|Object} table - 2x2 array [[a,b],[c,d]] or {a,b,c,d}
+ * @param {number} alpha
+ * @returns {Object}
+ */
+export function mcnemarTest(table, alpha = 0.05) {
+  let a, b, c, d
+
+  if (Array.isArray(table) && Array.isArray(table[0])) {
+    // [[a, b], [c, d]]
+    if (table.length !== 2 || table[0].length !== 2 || table[1].length !== 2) {
+      return { error: 'Tabel harus 2x2' }
+    }
+    [[a, b], [c, d]] = table.map(r => r.map(v => {
+      const n = Number(v)
+      if (!Number.isFinite(n) || n < 0) return { error: `Nilai sel harus non-negatif: ${v}` }
+      return n
+    }))
+    if (a?.error || b?.error || c?.error || d?.error) {
+      return a?.error || b?.error || c?.error || d?.error
+    }
+  } else if (table && typeof table === 'object') {
+    ({ a, b, c, d } = table)
+  } else {
+    return { error: 'Input harus array 2x2 atau object {a,b,c,d}' }
+  }
+
+  const N = a + b + c + d
+  if (N === 0) return { error: 'Total observasi = 0' }
+  if (b + c === 0) return { error: 'Diskordan (b + c) = 0 — tidak dapat dihitung' }
+
+  // McNemar with continuity correction (Edwards 1948)
+  const chi2 = ((Math.abs(b - c) - 1) ** 2) / (b + c)
+  const df = 1
+  const pValue = chi2PValue(chi2, df)
+
+  // Also compute exact binomial if b+c < 25
+  let exactP = null
+  if (b + c < 25) {
+    // Binomial test: P(X ≥ max(b,c) | p=0.5) × 2
+    const k = Math.max(b, c)
+    const nDisc = b + c
+    let prob = 0
+    for (let x = k; x <= nDisc; x++) {
+      // Binomial coefficient via multiplicative formula (safe for small n)
+      let binom = 1
+      for (let r = 1; r <= x; r++) binom = binom * (nDisc - r + 1) / r
+      prob += binom * (0.5 ** nDisc)
+    }
+    exactP = Math.min(2 * prob, 1)
+  }
+
+  const oddsRatio = b > 0 && c > 0 ? b / c : (b > 0 ? Infinity : 0)
+
+  return {
+    test: 'McNemar',
+    chi2,
+    df,
+    pValue,
+    exactP: b + c < 25 ? exactP : null,
+    N,
+    a, b, c, d,
+    discordant: b + c,
+    oddsRatio: isFinite(oddsRatio) ? oddsRatio : (oddsRatio === Infinity ? '∞ (b = ' + b + ', c = 0)' : '0 (b = 0, c = ' + c + ')'),
+    note: exactP != null ? 'Binomial exact (b + c < 25): dua-sisi' : 'Asimtotik chi-square (b + c ≥ 25)',
+    isSignificant: (exactP != null ? exactP : pValue) < alpha,
+    alpha,
+    interpretation: pValue < alpha
+      ? `Terdapat perubahan signifikan antara sebelum dan sesudah (McNemar χ²(1) = ${chi2.toFixed(3)}, p = ${pValue.toFixed(4)} < α = ${alpha}). Proporsi berubah dari ${c} ke ${b}.`
+      : `Tidak ada perubahan signifikan (McNemar χ²(1) = ${chi2.toFixed(3)}, p = ${pValue.toFixed(4)} > α = ${alpha}).`,
+  }
+}

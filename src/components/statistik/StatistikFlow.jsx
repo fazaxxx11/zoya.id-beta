@@ -7,6 +7,7 @@ import {
   Upload, Table, BarChart3, Brain, Download, CheckCircle,
   ChevronRight, AlertCircle, FileSpreadsheet, ArrowRight,
 } from 'lucide-react'
+import DataPreview from '../DataPreview'
 
 const STEPS = [
   { id: 'upload',   label: 'Upload',    icon: Upload },
@@ -655,6 +656,13 @@ export default function StatistikFlow({
             onCellCancel={handleCellCancel}
             onReset={handleReset}
           />
+        </div>
+      )}
+
+      {/* Data Preview — compact summary */}
+      {data && columns.length > 0 && (
+        <div className="mt-4">
+          <DataPreview data={data} columns={columns} compact />
         </div>
       )}
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pearson, spearman } from '../../src/lib/statistics/correlation.js';
+import { pearson, spearman, partialCorrelation } from '../../src/lib/statistics/correlation.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -69,3 +69,94 @@ describe('correlation', () => {
     });
   });
 });
+
+// ── Partial Correlation ───────────────────────────────────────────
+
+describe('partialCorrelation', () => {
+  it('order-0 falls back to Pearson', () => {
+    const x = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    const y = [2, 4, 6, 8, 10, 12, 14, 16, 18]
+    const r = partialCorrelation(x, y)
+    expect(r.error).toBeUndefined()
+    expect(r.order).toBe(0)
+    expect(r.rPartial).toBeCloseTo(1, 4)
+    expect(r.controlVars).toEqual([])
+  })
+
+  it('first-order partial removes control effect', () => {
+    // x, y highly correlated because both correlated with z
+    const z = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    const x = [2, 4, 6, 8, 10, 12, 14, 16, 18]  // = 2*z
+    const y = [3, 6, 9, 12, 15, 18, 21, 24, 27]  // = 3*z
+    // x and y are perfectly correlated via z, so partial r ≈ 0
+    const r = partialCorrelation(x, y, [z])
+    expect(r.order).toBe(1)
+    // After controlling z, correlation should be near 0
+    expect(Math.abs(r.rPartial)).toBeLessThan(0.001)
+  })
+
+  it('preserves genuine correlation when control unrelated', () => {
+    const x = [1, 2, 3, 4, 5]
+    const y = [2, 4, 6, 8, 10]  // = 2*x
+    const z = [7, 1, 3, 9, 5]    // random, unrelated
+    const r = partialCorrelation(x, y, [z])
+    // Genuine r≈1 stays high after controlling random z
+    expect(Math.abs(r.rPartial)).toBeGreaterThan(0.9)
+  })
+
+  it('returns correct structure for first-order', () => {
+    // Non-collinear data
+    const x = [10, 20, 15, 30, 25]
+    const y = [12, 18, 14, 35, 30]
+    const z = [5, 10, 8, 20, 15]
+    const r = partialCorrelation(x, y, [z])
+    expect(r.method).toBe('partial')
+    expect(r.order).toBe(1)
+    expect(r.rPartial).toBeGreaterThan(-1)
+    expect(r.rPartial).toBeLessThan(1)
+    expect(r.r2).toBeGreaterThanOrEqual(0)
+    expect(r.r2).toBeLessThanOrEqual(1)
+    expect(r.t).toBeDefined()
+    expect(r.df).toBe(5 - 2 - 1) // n - 2 - order
+    expect(r.pValue).toBeGreaterThan(0)
+    expect(r.pValue).toBeLessThan(1)
+    expect(r.n).toBeGreaterThan(0)
+    expect(r.zeroOrder).toBeDefined()
+    expect(r.r_xy).toBeDefined()
+    expect(r.r_xz).toBeDefined()
+    expect(r.r_yz).toBeDefined()
+  })
+
+  it('higher-order partial with 2 controls', () => {
+    // Non-collinear data with 3 variables
+    const x = [1, 3, 2, 5, 4, 7, 6, 8, 10, 9]
+    const y = [2, 5, 3, 8, 7, 10, 9, 12, 15, 13]
+    const z1 = [3, 1, 5, 2, 7, 4, 9, 6, 8, 10]
+    const z2 = [5, 6, 2, 9, 1, 8, 4, 10, 7, 3]
+    const r = partialCorrelation(x, y, [z1, z2])
+    expect(r.error).toBeUndefined()
+    expect(r.order).toBe(2)
+    expect(r.rPartial).toBeGreaterThan(-1)
+    expect(r.rPartial).toBeLessThan(1)
+    expect(r.df).toBe(10 - 2 - 2) // n - 2 - order
+  })
+
+  it('strength and direction labels present', () => {
+    const x = [1, 2, 3, 4, 5]
+    const y = [5, 4, 3, 2, 1]
+    const z = [3, 1, 4, 2, 5]
+    const r = partialCorrelation(x, y, [z])
+    expect(r.strength).toBeTypeOf('string')
+    expect(r.direction).toBeTypeOf('string')
+  })
+
+  it('clamps r to [-0.999999, 0.999999]', () => {
+    // Perfect multicollinearity in higher-order may produce r > 1
+    const x = [1, 2, 3, 4, 5]
+    const y = [2, 4, 6, 8, 10]
+    const z = [3, 6, 9, 12, 15]
+    const r = partialCorrelation(x, y, [z])
+    expect(r.rPartial).toBeGreaterThanOrEqual(-1)
+    expect(r.rPartial).toBeLessThanOrEqual(1)
+  })
+})
