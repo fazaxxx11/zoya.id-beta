@@ -43,6 +43,7 @@ const Legal               = lazy(() => import('./pages/Legal'))
 const Help                = lazy(() => import('./pages/Help'))
 const Feedback            = lazy(() => import('./pages/Feedback'))
 const EViews              = lazy(() => import('./pages/EViews'))
+const NotFound            = lazy(() => import('./pages/NotFound'))
 
 function PageLoader() {
   return (
@@ -110,6 +111,7 @@ function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>
         <BottomNav />

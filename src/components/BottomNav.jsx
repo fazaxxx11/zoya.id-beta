@@ -33,7 +33,7 @@ export default function BottomNav() {
         boxShadow: '0 -1px 0 rgb(var(--border) / 0.3), 0 -4px 16px -8px rgb(0 0 0 / 0.06)',
       }}
     >
-      <div className="grid grid-cols-5 max-w-screen-md mx-auto">
+      <div className="grid grid-cols-6 max-w-screen-md mx-auto">
         {ITEMS.map((item) => {
           const Icon = item.icon
           const isActive = item.exact

@@ -171,3 +171,15 @@ export function fPValue(f, df1, df2) {
 export function chi2PValue(x, df) {
   return 1 - chi2CDF(x, df);
 }
+
+export function tCriticalTwoTailed(alpha, df) {
+  const target = 1 - alpha / 2;
+  let lo = 0, hi = 1;
+  while (tCDF(hi, df) < target && hi < 1e6) hi *= 2;
+  for (let i = 0; i < 80; i++) {
+    const mid = (lo + hi) / 2;
+    if (tCDF(mid, df) < target) lo = mid;
+    else hi = mid;
+  }
+  return hi;
+}

@@ -4,7 +4,7 @@
  */
 
 import { listwisePair } from './data.js';
-import { tPValue, fPValue } from './distributions.js';
+import { tPValue, fPValue, tCriticalTwoTailed } from './distributions.js';
 
 /**
  * Simple linear regression: y = b0 + b1*x
@@ -63,10 +63,10 @@ export function simpleRegression(x, y, alpha = 0.05) {
   // F-test (overall model significance)
   const msReg = ssTot - ssRes; // same as ssBetween for simple regression
   const F = msReg > 0 ? (msReg / 1) / (ssRes / (n - 2)) : 0;
-  const pF = 1 - (F > 0 ? 1 : 0); // simplified — use distribution CDF in practice
+  const pF = fPValue(F, 1, n - 2);
 
   // Confidence intervals
-  const tCrit = 1.96; // approximate for large n; replace with t-distribution for exact
+  const tCrit = tCriticalTwoTailed(alpha, n - 2);
   const ci_b1 = [b1 - tCrit * se_b1, b1 + tCrit * se_b1];
   const ci_b0 = [b0 - tCrit * se_b0, b0 + tCrit * se_b0];
 
