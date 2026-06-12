@@ -24,6 +24,11 @@
   @media (min-width: 1024px) {
     .pb-bottomnav { padding-bottom: 0; }
   }
+
+  /* Hero gold gradient — brand identity Azezmen */
+  .bg-hero-gold {
+    background: linear-gradient(135deg, #B58B45 0%, #D4A853 100%);
+  }
 }
 
 /* =====================================================
@@ -37,9 +42,9 @@
   --surface:   252 250 246;   /* #FCFAF6 */
   --border:    216 208 195;   /* warm beige-gray #D8D0C3 */
   --muted:     98 95 88;      /* warm gray #625F58 */
-  --accent:    15 118 110;    /* deep teal #0F766E */
+  --accent:    181 139 69;    /* scholarly gold #B58B45 */
   --accent-fg: 255 255 255;   /* white on accent */
-  --accent-soft: 230 243 241; /* #E6F3F1 */
+  --accent-soft: 245 238 220; /* #F5EEDC */
   --table-head: 239 232 220;  /* #EFE8DC */
   --input:     255 255 255;   /* white input */
   --accent-2:  79 70 229;     /* indigo soft */
@@ -59,9 +64,9 @@
   --surface:   29 35 41;      /* #1D2329 */
   --border:    52 59 67;      /* #343B43 */
   --muted:     184 176 163;   /* #B8B0A3 */
-  --accent:    45 212 191;    /* teal bright #2DD4BF */
-  --accent-fg: 8 47 42;       /* dark on accent */
-  --accent-soft: 18 59 54;    /* #123B36 */
+  --accent:    200 165 95;    /* scholarly gold #C8A55F */
+  --accent-fg: 16 20 24;       /* dark on accent */
+  --accent-soft: 45 38 20;    /* #2D2614 */
   --table-head: 34 42 49;     /* #222A31 */
   --input:     17 22 27;      /* #11161B */
   --accent-2:  129 140 248;   /* indigo lighter */
