@@ -9,6 +9,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { Copy, Download, CheckSquare, Square, RefreshCw, AlertCircle, FileText, Printer } from 'lucide-react'
 import { listAnalyses, getAnalysis } from '../lib/savedAnalyses'
 import { buildReport, reportToText, reportToHTML } from '../lib/reportBuilder'
+import { reportToDocx, downloadDocx } from '../lib/docxExporter'
 import { toast } from '../lib/toast'
 import PageHeader from '../components/PageHeader'
 import ResultSummary from '../components/design/ResultSummary'
@@ -140,6 +141,21 @@ export default function StatistikReport() {
     URL.revokeObjectURL(url)
   }
 
+  const [downloadingDocx, setDownloadingDocx] = useState(false)
+  const downloadDOCX = async () => {
+    if (!report) return
+    setDownloadingDocx(true)
+    try {
+      const blob = await reportToDocx(report)
+      downloadDocx(blob, `Bab_IV_Hasil_Pembahasan_${Date.now()}.docx`)
+    } catch (e) {
+      console.error('DOCX export gagal:', e)
+      toast.error('Ekspor DOCX gagal')
+    } finally {
+      setDownloadingDocx(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#fafafa] pb-bottomnav">
       <PageHeader
@@ -228,6 +244,12 @@ export default function StatistikReport() {
                         className="text-xs bg-gray-900 hover:bg-black text-white px-3 py-2 rounded-lg flex items-center gap-1.5">
                   <Download className="w-3.5 h-3.5" />
                   Download HTML
+                </button>
+                <button onClick={downloadDOCX}
+                        disabled={downloadingDocx}
+                        className="text-xs bg-blue-700 hover:bg-blue-800 text-white px-3 py-2 rounded-lg flex items-center gap-1.5 disabled:opacity-60">
+                  <FileText className="w-3.5 h-3.5" />
+                  {downloadingDocx ? '...' : 'Download DOCX'}
                 </button>
                 <button onClick={downloadText}
                         className="text-xs text-gray-600 border border-gray-200 hover:bg-gray-50 px-3 py-2 rounded-lg">
