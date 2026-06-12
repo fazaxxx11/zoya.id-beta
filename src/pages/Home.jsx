@@ -12,6 +12,7 @@ import {
   FlaskConical,
   Brain,
   GraduationCap,
+  LayoutGrid,
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
 import Logo from "../components/Logo";
@@ -63,6 +64,13 @@ const SERVICE_GROUPS = [
         path: "/statistik?tool=regresi",
         description: "Menganalisis pengaruh antar variabel: regresi linear/logistik, koefisien, signifikansi, R², dan diagnostik model.",
         tags: ["Linear", "Logistik", "Multivariat"],
+        primary: false,
+      },
+      {
+        title: "EViews",
+        path: "/eviews",
+        description: "Panel data, regresi panel, uji diagnostik, dan time series untuk analisis data longitudinal.",
+        tags: ["Panel Data", "Regresi Panel", "Time Series", "Diagnostik"],
         primary: false,
       },
       {

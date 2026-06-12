@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
   BarChart3, Upload, FileSpreadsheet, CheckCircle,
   Sparkles, Download, FileType, File as FileIcon, AlertCircle,
-  Layers, Sigma, Clock, FileText, BookOpen, X,
+  Layers, Sigma, Clock, FileText, BookOpen, X, LayoutGrid,
 } from 'lucide-react'
 import { getCurrentUser } from '../lib/auth'
 import { getWallet, deductWallet } from '../lib/wallet'
@@ -667,6 +667,7 @@ function Statistik() {
           { path: '/statistik/history', label: 'Riwayat',  icon: Clock },
           { path: '/statistik/report',  label: 'Bab IV',   icon: FileText },
           { path: '/statistik/start',   label: 'Panduan',  icon: BookOpen },
+          { path: '/eviews',            label: 'EViews',   icon: LayoutGrid },
         ]}
       />
 
