@@ -10,7 +10,7 @@ import ThemeToggle from './ThemeToggle'
 const ITEMS = [
   { path: '/', label: 'Home', icon: Home, exact: true },
   { path: '/statistik', label: 'Analisis', icon: BarChart3, match: ['/statistik'] },
-  { path: '/panel-data', label: 'Panel', icon: LayoutGrid },
+  { path: '/eviews', label: 'EViews', icon: LayoutGrid },
   { path: '/statistik/history', label: 'Riwayat', icon: Clock },
   { path: '/statistik/report', label: 'Bab IV', icon: FileText },
 ]
