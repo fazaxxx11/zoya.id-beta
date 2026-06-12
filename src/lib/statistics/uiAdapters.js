@@ -19,7 +19,7 @@ import { pearson, spearman, partialCorrelation as enginePartialCorr } from './co
 import { cronbachAlpha as engineCronbach } from './reliability.js';
 import { oneSampleTTest as engineOneSampleT, independentTTest as engineIndepT, pairedTTest as enginePairedT } from './ttest.js';
 import { oneWayANOVA as engineAnova, twoWayANOVA as engineTwoWay } from './anova.js';
-import { simpleRegression as engineRegression, multipleLinearRegression as engineMLR } from './regression.js';
+import { simpleRegression as engineRegression, multipleLinearRegression as engineMLR, stepwiseRegression as engineStepwise } from './regression.js';
 import { testNormality as engineNormality, shapiroWilk as engineShapiro, kolmogorovSmirnov as engineKS } from './normality.js';
 
 // ── Descriptive ───────────────────────────────────────────────────
@@ -368,6 +368,13 @@ export function analyzeNGainAdapter(data) {
  */
 export function multipleLinearRegressionAdapter(X, y, predictorNames, alpha = 0.05) {
   return engineMLR(X, y, predictorNames, alpha);
+}
+
+/**
+ * Adapter for stepwise regression (forward/backward, AIC/BIC).
+ */
+export function stepwiseRegressionAdapter(X, y, options = {}) {
+  return engineStepwise(X, y, options);
 }
 
 // ── Two-Way ANOVA ───────────────────────────────────────────────

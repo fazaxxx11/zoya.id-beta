@@ -165,6 +165,34 @@ export function invertMatrix(M) {
   return A.map(row => row.slice(n));
 }
 
+// ── Model Selection Criteria ──────────────────────────────────────
+
+/**
+ * Akaike Information Criterion.
+ * AIC = n * ln(RSS/n) + 2k
+ * @param {number} rss - residual sum of squares
+ * @param {number} n - sample size
+ * @param {number} k - number of parameters (including intercept)
+ * @returns {number}
+ */
+export function calculateAIC(rss, n, k) {
+  if (n < 2) return Infinity;
+  return n * Math.log(Math.max(rss / n, 1e-15)) + 2 * k;
+}
+
+/**
+ * Bayesian Information Criterion.
+ * BIC = n * ln(RSS/n) + k * ln(n)
+ * @param {number} rss - residual sum of squares
+ * @param {number} n - sample size
+ * @param {number} k - number of parameters (including intercept)
+ * @returns {number}
+ */
+export function calculateBIC(rss, n, k) {
+  if (n < 2) return Infinity;
+  return n * Math.log(Math.max(rss / n, 1e-15)) + k * Math.log(n);
+}
+
 // ── Multiple Linear Regression ────────────────────────────────────
 
 function effectSizeLabelR(r) {
@@ -300,5 +328,294 @@ export function multipleLinearRegression(X, y, predictorNames = null, alpha = 0.
     alpha,
     missing: y.length - n,
     notes: 'OLS via matrix algebra. Listwise deletion. VIF for multicollinearity. Durbin-Watson for autocorrelation.',
+  };
+}
+
+// ── Stepwise Regression ──────────────────────────────────────────
+
+/**
+ * Stepwise multiple regression — otomatis pilih variabel terbaik.
+ *
+ * Forward: mulai dari model kosong, tambah variabel yang paling
+ *   menurunkan AIC/BIC, stop kalau tidak ada perbaikan.
+ * Backward: mulai dari semua variabel, buang yang p-value > alpha_remove,
+ *   satu per satu (yang paling tinggi duluan), stop kalau semua signifikan.
+ *
+ * @param {Array<number[]>} X - predictor columns [p][n]
+ * @param {number[]} y - outcome
+ * @param {Object} options
+ * @param {'forward'|'backward'} [options.method='forward']
+ * @param {'aic'|'bic'} [options.criterion='aic']
+ * @param {number} [options.alpha_enter=0.05] - p-value threshold to enter (forward)
+ * @param {number} [options.alpha_remove=0.10] - p-value threshold to stay (backward)
+ * @param {string[]} [options.columnNames] - optional predictor names
+ * @returns {Object}
+ */
+export function stepwiseRegression(X, y, options = {}) {
+  const {
+    method = 'forward',
+    criterion = 'aic',
+    alpha_enter = 0.05,
+    alpha_remove = 0.10,
+    columnNames = null,
+  } = options;
+
+  const p = X.length;
+  const names = columnNames || X.map((_, i) => `X${i + 1}`);
+
+  const critFn = criterion === 'bic' ? calculateBIC : calculateAIC;
+
+  // Filter to valid observations (listwise)
+  const valid = [];
+  for (let i = 0; i < y.length; i++) {
+    const row = X.map(col => col[i]);
+    if (
+      row.every(v => typeof v === 'number' && isFinite(v) && !isNaN(v)) &&
+      typeof y[i] === 'number' && isFinite(y[i]) && !isNaN(y[i])
+    ) {
+      valid.push({ x: row, y: y[i] });
+    }
+  }
+  const n = valid.length;
+  const validY = valid.map(r => r.y);
+
+  // Helper: extract selected columns from valid data
+  function selectedX(indices) {
+    return indices.map(j => valid.map(r => r.x[j]));
+  }
+
+  // Helper: fit model with given predictor indices, return AIC/BIC + full result
+  function fit(indices) {
+    if (indices.length === 0) {
+      // Intercept-only model
+      const meanY = validY.reduce((a, b) => a + b, 0) / n;
+      const ssRes = validY.reduce((s, v) => s + (v - meanY) ** 2, 0);
+      const criterionValue = critFn(ssRes, n, 1);
+      return {
+        criterionValue,
+        rSquared: 0,
+        adjRSquared: 0,
+        ssRes,
+      };
+    }
+    const Xcols = selectedX(indices);
+    const result = multipleLinearRegression(Xcols, validY, indices.map(i => names[i]));
+    if (result.error) {
+      return { criterionValue: Infinity, rSquared: 0, adjRSquared: 0, ssRes: Infinity };
+    }
+    const k = indices.length + 1; // +1 for intercept
+    const criterionValue = critFn(result.ssRes, n, k);
+    return {
+      criterionValue,
+      rSquared: result.rSquared,
+      adjRSquared: result.adjustedR2,
+      ssRes: result.ssRes,
+      result,
+    };
+  }
+
+  const steps = [];
+  let selected = [];
+  let bestFit;
+
+  // ── Forward Selection ───────────────────────────────────
+  if (method === 'forward') {
+    const remaining = Array.from({ length: p }, (_, i) => i);
+    bestFit = fit([]);
+    steps.push({ step: 0, action: 'start', selected: [], aic: bestFit.criterionValue, r2: 0 });
+
+    while (remaining.length > 0) {
+      let bestIndex = -1;
+      let bestCriterion = Infinity;
+      let bestFitCandidate = null;
+
+      for (const idx of remaining) {
+        const candidate = [...selected, idx];
+        const f = fit(candidate);
+        if (f.criterionValue < bestCriterion) {
+          bestCriterion = f.criterionValue;
+          bestIndex = idx;
+          bestFitCandidate = f;
+        }
+      }
+
+      // Check if adding improves criterion
+      if (bestIndex >= 0 && bestCriterion < bestFit.criterionValue) {
+        remaining.splice(remaining.indexOf(bestIndex), 1);
+        selected.push(bestIndex);
+        bestFit = bestFitCandidate;
+        steps.push({
+          step: steps.length,
+          action: 'added',
+          predictor: names[bestIndex],
+          predictorIndex: bestIndex,
+          aic: bestCriterion,
+          r2: bestFit.rSquared,
+        });
+      } else {
+        // Also check if best candidate passes alpha_enter threshold
+        if (bestIndex >= 0 && bestFitCandidate) {
+          // If criterion didn't improve but all remaining are individually significant,
+          // try adding by p-value criterion
+          const f = bestFitCandidate;
+          if (f.result && f.result.coefficients) {
+            const lastCoeff = f.result.coefficients[f.result.coefficients.length - 1];
+            if (lastCoeff && lastCoeff.p < alpha_enter) {
+              remaining.splice(remaining.indexOf(bestIndex), 1);
+              selected.push(bestIndex);
+              bestFit = bestFitCandidate;
+              steps.push({
+                step: steps.length,
+                action: 'added',
+                predictor: names[bestIndex],
+                predictorIndex: bestIndex,
+                aic: bestCriterion,
+                r2: bestFit.rSquared,
+              });
+              continue; // skip Stop and continue trying
+            }
+          }
+        }
+        steps.push({
+          step: steps.length,
+          action: 'stop',
+          reason: `Tidak ada prediktor yang menurunkan ${criterion.toUpperCase()}`,
+        });
+        break;
+      }
+    }
+
+    if (selected.length === 0) {
+      steps.push({
+        step: steps.length,
+        action: 'stop',
+        reason: 'Model kosong (tidak ada prediktor yang memenuhi kriteria masuk)',
+      });
+    }
+  }
+
+  // ── Backward Elimination ────────────────────────────────
+  if (method === 'backward') {
+    selected = Array.from({ length: p }, (_, i) => i);
+    bestFit = fit(selected);
+    steps.push({
+      step: 0,
+      action: 'start',
+      selected: [...selected],
+      aic: bestFit.criterionValue,
+      r2: bestFit.rSquared,
+    });
+
+    while (selected.length > 0) {
+      // Find predictor with highest p-value
+      if (!bestFit.result || bestFit.result.error) break;
+      const coeffs = bestFit.result.coefficients.slice(1); // skip intercept
+      let worstP = -1;
+      let worstIdx = -1;
+      for (let i = 0; i < selected.length; i++) {
+        if (coeffs[i] && coeffs[i].p > worstP) {
+          worstP = coeffs[i].p;
+          worstIdx = i;
+        }
+      }
+
+      if (worstIdx >= 0 && worstP > alpha_remove) {
+        const removedIdx = selected[worstIdx];
+        const removedName = names[removedIdx];
+        selected.splice(worstIdx, 1);
+        const newFit = fit(selected);
+        const action = 'removed';
+
+        steps.push({
+          step: steps.length,
+          action,
+          predictor: removedName,
+          predictorIndex: removedIdx,
+          pValue: worstP,
+          aic: newFit.criterionValue,
+          r2: newFit.rSquared,
+        });
+        bestFit = newFit;
+      } else {
+        steps.push({
+          step: steps.length,
+          action: 'stop',
+          reason: `Semua prediktor signifikan (p < ${alpha_remove})`,
+        });
+        break;
+      }
+    }
+
+    if (selected.length === 0) {
+      steps.push({
+        step: steps.length,
+        action: 'stop',
+        reason: 'Semua prediktor dieliminasi (tidak ada yang signifikan)',
+      });
+    }
+  }
+
+  // ── Final model ─────────────────────────────────────────
+  let finalResult = null;
+  let finalR2 = 0;
+  let finalAdjR2 = 0;
+  let finalAic = Infinity;
+  let finalBic = Infinity;
+  let coefficients = null;
+
+  if (selected.length > 0) {
+    const Xcols = selectedX(selected);
+    finalResult = multipleLinearRegression(Xcols, validY, selected.map(i => names[i]));
+    if (!finalResult.error) {
+      finalR2 = finalResult.rSquared;
+      finalAdjR2 = finalResult.adjustedR2;
+      const k = selected.length + 1;
+      finalAic = calculateAIC(finalResult.ssRes, n, k);
+      finalBic = calculateBIC(finalResult.ssRes, n, k);
+      coefficients = finalResult.coefficients;
+    }
+  } else {
+    // Intercept-only final model
+    const meanY = validY.reduce((a, b) => a + b, 0) / n;
+    const ssRes = validY.reduce((s, v) => s + (v - meanY) ** 2, 0);
+    finalAic = calculateAIC(ssRes, n, 1);
+    finalBic = calculateBIC(ssRes, n, 1);
+    coefficients = [{
+      name: '(Intercept)',
+      b: meanY,
+      se: Math.sqrt(ssRes / (n - 1)) / Math.sqrt(n),
+      t: meanY / (Math.sqrt(ssRes / (n - 1)) / Math.sqrt(n)),
+      p: 1,
+    }];
+  }
+
+  const selectedNames = selected.map(i => names[i]);
+  const equation = coefficients
+    ? 'Y = ' + coefficients.map((c, i) =>
+      i === 0
+        ? c.b.toFixed(3)
+        : `${c.b >= 0 ? '+ ' : '- '}${Math.abs(c.b).toFixed(3)} × ${c.name}`
+    ).join(' ')
+    : 'Model tidak teridentifikasi';
+
+  const summary = selected.length > 0
+    ? `Model terbaik (${method}, ${criterion.toUpperCase()}): ${equation} dengan R² = ${finalR2.toFixed(4)}, Adjusted R² = ${finalAdjR2.toFixed(4)}, AIC = ${finalAic.toFixed(2)}, BIC = ${finalBic.toFixed(2)}`
+    : `Tidak ada model yang memenuhi kriteria (${method}, ${criterion.toUpperCase()})`;
+
+  return {
+    method,
+    criterion,
+    n,
+    totalPredictors: p,
+    selectedVariables: selected,
+    selectedNames,
+    coefficients,
+    rSquared: finalR2,
+    adjRSquared: finalAdjR2,
+    aic: finalAic,
+    bic: finalBic,
+    steps,
+    equation,
+    summary,
   };
 }
