@@ -43,6 +43,7 @@ const Legal               = lazy(() => import('./pages/Legal'))
 const Help                = lazy(() => import('./pages/Help'))
 const Feedback            = lazy(() => import('./pages/Feedback'))
 const PanelData           = lazy(() => import('./pages/PanelData'))
+const TimeSeries          = lazy(() => import('./pages/TimeSeries'))
 
 function PageLoader() {
   return (
@@ -97,6 +98,7 @@ function App() {
           <Route path="/panel-data" element={<PanelData />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/saran" element={<Feedback />} />
+          <Route path="/time-series" element={<TimeSeries />} />
           <Route path="/assessment" element={<Assessment />} />
           <Route path="/assessment/report" element={<AssessmentReport />} />
           <Route path="/payment" element={<Payment />} />
