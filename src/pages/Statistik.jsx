@@ -4,7 +4,7 @@ import {
   BarChart3, Upload, FileSpreadsheet, CheckCircle,
   Sparkles, Download, FileType, File as FileIcon, AlertCircle,
   Layers, Sigma, Clock, FileText, BookOpen, X, LayoutGrid,
-  ArrowRight, RotateCcw,
+  ArrowRight, RotateCcw, AlertTriangle,
 } from 'lucide-react'
 import { getCurrentUser } from '../lib/auth'
 import { getWallet, deductWallet } from '../lib/wallet'
@@ -728,6 +728,16 @@ function Statistik() {
               />
             )}
 
+            {/* Data quality badge — shown after upload, before test selection */}
+            {data && !result && (
+              <DataValidationBadge
+                data={data}
+                columns={columns}
+                numericColumns={numericColumns}
+                sampleSize={sampleSize}
+              />
+            )}
+
             {/* Tool-specific params — hidden when result is showing */}
             {data && !result && (
               <ParamPanel
@@ -739,6 +749,27 @@ function Statistik() {
                 params={params}
                 setParams={setParams}
               />
+            )}
+
+            {/* Shimmer loading skeleton */}
+            {analyzing && (
+              <div className="border border-border bg-card rounded-xl overflow-hidden p-5 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full shimmer" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-4 w-48 rounded shimmer" />
+                    <div className="h-3 w-32 rounded shimmer" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[...Array(4)].map((_, i) => <div key={i} className="h-16 rounded-lg shimmer" />)}
+                </div>
+                <div className="h-24 rounded-lg shimmer" />
+                <div className="flex items-center gap-2 text-sm text-muted">
+                  <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                  Menganalisis data...
+                </div>
+              </div>
             )}
 
             {/* Result */}
@@ -811,7 +842,7 @@ function FilterPanel({
               className="w-full px-5 py-3 flex items-center justify-between hover:bg-card/50 transition-colors">
         <div className="flex items-center gap-2 text-sm">
           <span>🔎</span>
-          <span className="font-medium text-gray-700">Filter Data</span>
+          <span className="font-medium text-fg">Filter Data</span>
           <span className="text-xs text-muted">(opsional — analisis tetap jalan tanpa ini)</span>
           {isFiltered && (
             <span className="ml-2 px-2 py-0.5 bg-accent/10 text-accent rounded-full text-xs font-semibold">
@@ -823,7 +854,7 @@ function FilterPanel({
       </button>
 
       {open && (
-        <div className="px-5 pb-5 pt-1 border-t border-gray-100">
+        <div className="px-5 pb-5 pt-1 border-t border-border">
           <p className="text-xs text-muted mb-3">
             Saring baris berdasarkan kategori. Misal: pilih hanya kelas A, atau gender = Perempuan.
           </p>
@@ -892,24 +923,24 @@ function DataGuideModal({ open, onClose }) {
   return (
     <Modal open={open} onClose={onClose}
       panelClassName="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
-      <div className="flex-shrink-0 flex items-center justify-between p-6 pb-4 border-b border-gray-100">
+      <div className="flex-shrink-0 flex items-center justify-between p-6 pb-4 border-b border-border">
         <h2 className="text-xl font-bold text-fg">📖 Panduan Format Data</h2>
         <button onClick={onClose} className="text-muted hover:text-muted text-2xl leading-none">×</button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-5 text-sm text-gray-700">
+      <div className="flex-1 overflow-y-auto p-6 space-y-5 text-sm text-fg">
           <section>
             <h3 className="font-semibold text-base text-gray-900 mb-2">1. Format File yang Didukung</h3>
             <ul className="list-disc pl-5 space-y-1">
-              <li><code className="bg-gray-100 px-1 rounded">.xlsx</code> / <code className="bg-gray-100 px-1 rounded">.xls</code> — Excel</li>
-              <li><code className="bg-gray-100 px-1 rounded">.csv</code> — Comma-separated values</li>
+              <li><code className="bg-surface px-1 rounded">.xlsx</code> / <code className="bg-surface px-1 rounded">.xls</code> — Excel</li>
+              <li><code className="bg-surface px-1 rounded">.csv</code> — Comma-separated values</li>
             </ul>
           </section>
 
           <section>
             <h3 className="font-semibold text-base text-gray-900 mb-2">2. Struktur Data</h3>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong>Baris pertama = nama variabel/kolom</strong> (header). Contoh: <code className="bg-gray-100 px-1 rounded">nama, umur, skor_pre, skor_post, kelas</code></li>
+              <li><strong>Baris pertama = nama variabel/kolom</strong> (header). Contoh: <code className="bg-surface px-1 rounded">nama, umur, skor_pre, skor_post, kelas</code></li>
               <li><strong>Tiap baris berikutnya = 1 responden / observasi</strong></li>
               <li><strong>Tiap kolom = 1 variabel</strong> (jangan campur 2 variabel di 1 kolom)</li>
               <li>Hindari <strong>merged cells</strong>, baris kosong di tengah, atau judul tabel sebelum header</li>
@@ -952,7 +983,7 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
             <h3 className="font-semibold text-base text-gray-900 mb-2">4. Tips Penting</h3>
             <ul className="list-disc pl-5 space-y-1.5">
               <li>🔹 <strong>Missing values</strong>: kosongkan saja sel-nya (jangan tulis "tidak ada", "-", "N/A"). Sistem akan abaikan otomatis.</li>
-              <li>🔹 <strong>Desimal</strong>: pakai titik <code className="bg-gray-100 px-1 rounded">3.14</code>, bukan koma <code className="bg-gray-100 px-1 rounded">3,14</code></li>
+              <li>🔹 <strong>Desimal</strong>: pakai titik <code className="bg-surface px-1 rounded">3.14</code>, bukan koma <code className="bg-surface px-1 rounded">3,14</code></li>
               <li>🔹 <strong>Tidak ada satuan di angka</strong>: tulis <code>175</code> bukan <code>175 cm</code> atau <code>Rp 5000</code></li>
               <li>🔹 <strong>Nama kolom</strong> sebaiknya tanpa spasi atau karakter aneh. Pakai <code>skor_pre</code> bukan <code>skor pre (test 1)</code></li>
               <li>🔹 <strong>Banyak grup?</strong> Pakai 1 kolom kategorik (misal <code>kelas</code> = A/B/C), bukan 1 kolom per grup.</li>
@@ -987,7 +1018,7 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
           </section>
       </div>
 
-      <div className="flex-shrink-0 px-6 py-4 border-t border-gray-100 flex justify-end">
+      <div className="flex-shrink-0 px-6 py-4 border-t border-border flex justify-end">
         <button onClick={onClose} className="btn-primary">Mengerti</button>
       </div>
     </Modal>
@@ -1009,7 +1040,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
 
   const Select = ({ label, value, onChange, options, placeholder = '— pilih —' }) => (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-fg mb-1">{label}</label>
       <select value={value || ''} onChange={e => onChange(e.target.value)}
               className="input-field text-sm">
         <option value="">{placeholder}</option>
@@ -1025,7 +1056,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
     return (
       <div>
         <div className="flex items-center justify-between mb-1">
-          <label className="block text-sm font-medium text-gray-700">{label}</label>
+          <label className="block text-sm font-medium text-fg">{label}</label>
           {options.length > 0 && (
             <div className="flex items-center gap-2 text-xs">
               <button
@@ -1041,7 +1072,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
                   <button
                     type="button"
                     onClick={() => onChange([])}
-                    className="text-muted hover:text-gray-700"
+                    className="text-muted hover:text-fg"
                   >
                     Reset
                   </button>
@@ -1090,7 +1121,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
             <Select label="Variabel Y" value={params.y} onChange={v => update('y', v)} options={numericColumns} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Metode</label>
+            <label className="block text-sm font-medium text-fg mb-1">Metode</label>
             <div className="flex gap-2">
               {[['pearson', 'Pearson (parametrik)'], ['spearman', 'Spearman (non-parametrik)']].map(([id, lbl]) => (
                 <button key={id} onClick={() => update('method', id)}
@@ -1109,7 +1140,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
       {tool === 'ttest' && (
         <>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Jenis t-test</label>
+            <label className="block text-sm font-medium text-fg mb-1">Jenis t-test</label>
             <div className="grid grid-cols-3 gap-2">
               {[
                 ['oneSample', 'One-sample'],
@@ -1130,7 +1161,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Select label="Kolom" value={params.column1} onChange={v => update('column1', v)} options={numericColumns} />
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">μ₀ (nilai hipotesis)</label>
+                <label className="block text-sm font-medium text-fg mb-1">μ₀ (nilai hipotesis)</label>
                 <input type="number" value={params.mu0 || ''} onChange={e => update('mu0', e.target.value)}
                        className="input-field text-sm" placeholder="e.g. 75" />
               </div>
@@ -1281,6 +1312,46 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
 }
 
 // ============================================================
+// Data Validation Badge — shows data quality issues
+// ============================================================
+function DataValidationBadge({ data, columns, numericColumns, sampleSize }) {
+  const issues = useMemo(() => {
+    const list = []
+    if (sampleSize < 30) list.push(`Sampel kecil (${sampleSize} < 30) — hasil mungkin kurang stabil`)
+    if (numericColumns.length === 0) list.push('Tidak ditemukan kolom numerik')
+    let totalMissing = 0, totalCells = 0
+    for (const col of columns) {
+      const vals = data[col] || []
+      totalCells += vals.length
+      totalMissing += vals.filter(v => v === null || v === undefined || v === '').length
+    }
+    const pct = totalCells > 0 ? (totalMissing / totalCells * 100) : 0
+    if (pct > 5) list.push(`${pct.toFixed(1)}% missing values — pertimbangkan data cleaning`)
+    if (pct > 0 && pct <= 5) list.push(`${pct.toFixed(1)}% missing values (masih aman)`)
+    return list
+  }, [data, columns, numericColumns, sampleSize])
+
+  if (issues.length === 0) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-3 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 rounded-xl text-sm">
+        <CheckCircle className="w-4 h-4 text-emerald-600" />
+        <span className="text-emerald-700 dark:text-emerald-300 font-medium">Data valid — {sampleSize} baris, {columns.length} kolom siap analisis</span>
+      </div>
+    )
+  }
+  return (
+    <div className="space-y-2">
+      {issues.map((issue, i) => (
+        <div key={i} className="flex items-center gap-2 px-4 py-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl text-sm">
+          <AlertTriangle className="w-4 h-4 text-amber-600" />
+          <span className="text-amber-700 dark:text-amber-300">{issue}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ============================================================
 // Result Display — render based on result type
 // ============================================================
 function ResultDisplay({ result, onReset, onBackToAnalysis }) {
@@ -1296,7 +1367,7 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
 
   return (
     <div className="border border-border bg-card rounded-xl overflow-hidden animate-fade-in-up">
-      <div className="p-5 border-b border-gray-100 flex items-center justify-between flex-wrap gap-3">
+      <div className="p-5 border-b border-border flex items-center justify-between flex-wrap gap-3">
         <div>
           <h3 className="font-bold text-fg text-lg">Hasil: {result.toolName}</h3>
           <p className="text-sm text-muted">{result.sampleSize} sampel · {result.analyzedAt}</p>
@@ -1306,7 +1377,7 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
             className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border transition-colors ${
               savedId
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                : 'bg-white border-border text-gray-700 hover:bg-card/50'
+                : 'bg-white border-border text-fg hover:bg-card/50'
             }`}>
             <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3.5L3 18V4z" /></svg>
             {savedId ? 'Tersimpan' : 'Simpan'}
@@ -1433,7 +1504,7 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2 mt-5 pt-5 border-t border-gray-100">
+        <div className="flex items-center justify-end gap-2 mt-5 pt-5 border-t border-border">
           <button onClick={onClose} disabled={saving}
             className="px-4 py-2 text-sm font-medium text-muted hover:text-gray-900 rounded-lg disabled:opacity-50">
             Batal
@@ -1484,7 +1555,7 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
   }
 
   return (
-    <div className="mt-6 border-t border-gray-100 pt-5">
+    <div className="mt-6 border-t border-border pt-5">
       <div className="flex items-center justify-between mb-3">
         <div>
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-0.5">Interpretasi AI</div>
@@ -1512,7 +1583,7 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
 
       {loading && (
         <div className="bg-card/50 border border-border/80 rounded-lg p-4 text-sm text-muted flex items-center gap-2">
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" />
+          <span className="w-2 h-2 bg-muted rounded-full animate-pulse" />
           Menulis interpretasi… (biasanya 5-15 detik)
         </div>
       )}
@@ -1635,7 +1706,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
 
       <Modal open={open} onClose={() => setOpen(false)}
              panelClassName="bg-white rounded-2xl shadow-2xl max-w-2xl w-full h-[80vh] flex flex-col">
-        <div className="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <div className="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-9 h-9 rounded-full bg-surface0 text-white flex items-center justify-center flex-shrink-0">💬</div>
             <div className="min-w-0">
@@ -1643,7 +1714,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
               <div className="text-xs text-muted">{result.toolName} · sisa {remaining}/{MAX_TURNS} pertanyaan</div>
             </div>
           </div>
-          <button onClick={() => setOpen(false)} className="p-1.5 rounded hover:bg-gray-100 text-muted">
+          <button onClick={() => setOpen(false)} className="p-1.5 rounded hover:bg-surface text-muted">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -1665,7 +1736,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
           )}
         </div>
 
-        <div className="flex-shrink-0 border-t border-gray-100 p-3">
+        <div className="flex-shrink-0 border-t border-border p-3">
           {limitReached ? (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800 text-center">
               Kamu sudah pakai {MAX_TURNS}/{MAX_TURNS} pertanyaan untuk hasil ini.<br />
