@@ -15,7 +15,7 @@
  */
 
 import { describe as engineDescribe } from './descriptive.js';
-import { pearson, spearman, partialCorrelation as enginePartialCorr } from './correlation.js';
+import { pearson, spearman, partialCorrelation as enginePartialCorr, kendallTau as engineKendallTau } from './correlation.js';
 import { cronbachAlpha as engineCronbach } from './reliability.js';
 import { oneSampleTTest as engineOneSampleT, independentTTest as engineIndepT, pairedTTest as enginePairedT } from './ttest.js';
 import { oneWayANOVA as engineAnova, twoWayANOVA as engineTwoWay, repeatedMeasuresANOVA as engineRMAnova } from './anova.js';
@@ -478,6 +478,14 @@ export function engleGrangerCointegrationAdapter(y, x, options = {}) {
  */
 export function partialCorrelationAdapter(x, y, controls = []) {
   return enginePartialCorr(x, y, controls);
+}
+
+/**
+ * Adapter for Kendall's Tau-b.
+ * Ordinal variables (e.g., Likert 1-5). Two-tailed z-test.
+ */
+export function kendallTauAdapter(x, y, alpha = 0.05) {
+  return engineKendallTau(x, y, alpha);
 }
 
 // ── Helper functions ──────────────────────────────────────────────

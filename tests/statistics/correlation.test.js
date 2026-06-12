@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pearson, spearman, partialCorrelation } from '../../src/lib/statistics/correlation.js';
+import { pearson, spearman, partialCorrelation, kendallTau } from '../../src/lib/statistics/correlation.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -160,3 +160,91 @@ describe('partialCorrelation', () => {
     expect(r.rPartial).toBeLessThanOrEqual(1)
   })
 })
+
+// ── Kendall's Tau-b ─────────────────────────────────────────────
+
+describe('kendallTau', () => {
+  it('perfect positive (no ties)', () => {
+    const x = [1, 2, 3, 4, 5];
+    const y = [2, 4, 6, 8, 10];
+    const r = kendallTau(x, y);
+    expect(r.method).toBe('kendall_tau');
+    expect(r.tau).toBeCloseTo(1, 5);
+    expect(r.concordant).toBe(10);
+    expect(r.discordant).toBe(0);
+    expect(r.direction).toBe('positif');
+    expect(r.significant).toBe(true);
+  });
+
+  it('perfect negative (no ties)', () => {
+    const x = [1, 2, 3, 4, 5];
+    const y = [10, 9, 8, 7, 6];
+    const r = kendallTau(x, y);
+    expect(r.tau).toBeCloseTo(-1, 5);
+    expect(r.concordant).toBe(0);
+    expect(r.discordant).toBe(10);
+    expect(r.direction).toBe('negatif');
+    expect(r.significant).toBe(true);
+  });
+
+  it('no correlation (random)', () => {
+    const x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const y = [5, 1, 9, 3, 8, 2, 7, 4, 10, 6];
+    const r = kendallTau(x, y);
+    expect(Math.abs(r.tau)).toBeLessThan(0.5);
+  });
+
+  it('handles tied ranks correctly', () => {
+    // Likert-style data with ties
+    const x = [1, 2, 2, 3, 3, 3, 4, 4, 5];
+    const y = [1, 2, 2, 3, 3, 3, 4, 4, 5];
+    const r = kendallTau(x, y);
+    expect(r.tau).toBeCloseTo(1, 5);
+    expect(r.tied).toBeGreaterThan(0);
+  });
+
+  it('tau < 1 with discordant or different tie patterns', () => {
+    // Different tie patterns between x and y reduce tau-b
+    const x = [1, 1, 2, 3, 3];
+    const y = [1, 2, 2, 3, 3];
+    const r = kendallTau(x, y);
+    expect(r.tau).toBeLessThan(1);
+    expect(r.tau).toBeGreaterThan(0);
+    expect(r.concordant).toBeGreaterThan(r.discordant);
+  });
+
+  it('reports z-statistic and p-value', () => {
+    const x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const y = [2, 1, 4, 3, 6, 5, 8, 7, 10, 9];
+    const r = kendallTau(x, y);
+    expect(r.z).toBeDefined();
+    expect(r.pValue).toBeGreaterThan(0);
+    expect(r.pValue).toBeLessThan(1);
+    expect(typeof r.conclusion).toBe('string');
+    expect(r.conclusion).toContain('Kendall');
+  });
+
+  it('handles missing values', () => {
+    const x = [1, 2, NaN, 4, 5, 6, 7, 8, 9, 10];
+    const y = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+    const r = kendallTau(x, y);
+    expect(r.n).toBe(9);
+    expect(r.missing).toBe(1);
+  });
+
+  it('returns error for n < 3', () => {
+    const r = kendallTau([1, 2], [3, 4]);
+    expect(r.error).toBeDefined();
+  });
+
+  it('ordinal Likert data with moderate correlation', () => {
+    // Realistic Likert 1-5 dataset
+    const x = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 3, 3, 4, 4, 2];
+    const y = [2, 3, 3, 4, 5, 1, 2, 4, 4, 5, 3, 2, 5, 4, 3];
+    const r = kendallTau(x, y);
+    expect(r.tau).toBeGreaterThan(0);
+    expect(r.tau).toBeLessThan(1);
+    expect(r.pValue).toBeGreaterThan(0);
+    expect(r.n).toBe(15);
+  });
+});

@@ -4,7 +4,7 @@
  */
 
 import { listwisePair } from './data.js';
-import { tCDF, tPValue } from './distributions.js';
+import { tCDF, tPValue, normalCDF } from './distributions.js';
 
 /**
  * Pearson product-moment correlation.
@@ -308,4 +308,121 @@ function invertMatrix(M) {
   }
 
   return aug.map(row => row.slice(n))
+}
+
+// ── Kendall's Tau-b ─────────────────────────────────────────────────
+
+/**
+ * Compute tie groups: for each unique value, count its frequency.
+ * @param {number[]} arr
+ * @returns {number[]} frequencies > 1
+ */
+function tieGroups(arr) {
+  const freq = new Map();
+  for (const v of arr) {
+    freq.set(v, (freq.get(v) || 0) + 1);
+  }
+  return [...freq.values()].filter(t => t > 1);
+}
+
+/**
+ * Kendall's Tau-b correlation (rank correlation, handles tied ranks).
+ * SPSS-compatible: pairwise deletion, two-tailed z-test.
+ *
+ * τb = (C - D) / sqrt((n0 - n1)(n0 - n2))
+ *   C = concordant, D = discordant
+ *   n0 = n(n-1)/2
+ *   n1 = Σ ti(ti-1)/2  (ties in x)
+ *   n2 = Σ uj(uj-1)/2  (ties in y)
+ *
+ * Significance via Var(S) with tie correction (Kendall & Gibbons, 1975).
+ *
+ * @param {number[]} x
+ * @param {number[]} y
+ * @param {number} [alpha=0.05]
+ * @returns {Object}
+ */
+export function kendallTau(x, y, alpha = 0.05) {
+  const pair = listwisePair(x, y);
+  const n = pair.nClean;
+  if (n < 3) return { method: 'kendall_tau', error: 'n < 3', n };
+
+  const a = pair.x;
+  const b = pair.y;
+
+  let C = 0;
+  let D = 0;
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const dx = a[i] - a[j];
+      const dy = b[i] - b[j];
+      if (dx === 0 && dy === 0) {
+        // tied on both — neutral
+      } else if (dx * dy > 0) {
+        C++;
+      } else if (dx * dy < 0) {
+        D++;
+      }
+    }
+  }
+
+  const S = C - D;
+  const tiedPairs = n * (n - 1) / 2 - C - D;
+
+  const tX = tieGroups(a);
+  const tY = tieGroups(b);
+
+  const n0 = n * (n - 1) / 2;
+  const n1 = tX.reduce((s, t) => s + t * (t - 1) / 2, 0);
+  const n2 = tY.reduce((s, t) => s + t * (t - 1) / 2, 0);
+
+  const denom = Math.sqrt(Math.max((n0 - n1) * (n0 - n2), 1e-12));
+  const tau = denom > 0 ? S / denom : 0;
+
+  // Variance of S with tie correction (Kendall, 1975)
+  const v0 = n * (n - 1) * (2 * n + 5);
+  const v1 = tX.reduce((s, t) => s + t * (t - 1) * (2 * t + 5), 0);
+  const v2 = tY.reduce((s, t) => s + t * (t - 1) * (2 * t + 5), 0);
+
+  let varS = (v0 - v1 - v2) / 18;
+
+  const sumT1_X = tX.reduce((s, t) => s + t * (t - 1), 0);
+  const sumT1_Y = tY.reduce((s, t) => s + t * (t - 1), 0);
+  const sumT2_X = tX.filter(t => t >= 3).reduce((s, t) => s + t * (t - 1) * (t - 2), 0);
+  const sumT2_Y = tY.filter(t => t >= 3).reduce((s, t) => s + t * (t - 1) * (t - 2), 0);
+
+  if (n > 2) varS += (sumT1_X * sumT1_Y) / (2 * n * (n - 1));
+  if (n > 3) varS += (sumT2_X * sumT2_Y) / (9 * n * (n - 1) * (n - 2));
+
+  varS = Math.max(varS, 1e-12);
+
+  const z = S / Math.sqrt(varS);
+  const pValue = 2 * (1 - normalCDF(Math.abs(z)));
+
+  const absTau = Math.abs(tau);
+  const strength = absTau >= 0.5 ? 'kuat' : absTau >= 0.3 ? 'sedang' : 'lemah';
+  const direction = tau > 0 ? 'positif' : tau < 0 ? 'negatif' : 'tidak ada';
+
+  const significant = pValue < alpha;
+  const conclusion = significant
+    ? `Korelasi Kendall's Tau ${direction} yang signifikan (τb = ${tau.toFixed(4)}, z = ${z.toFixed(3)}, p = ${pValue.toFixed(4)}).`
+    : `Tidak terdapat korelasi yang signifikan (τb = ${tau.toFixed(4)}, z = ${z.toFixed(3)}, p = ${pValue.toFixed(4)}).`;
+
+  return {
+    method: 'kendall_tau',
+    tau: Number(tau.toFixed(6)),
+    z: Number(z.toFixed(4)),
+    pValue: Number(pValue.toFixed(6)),
+    n,
+    concordant: C,
+    discordant: D,
+    tied: tiedPairs,
+    strength,
+    direction,
+    significant,
+    alpha,
+    missing: pair.excluded,
+    conclusion,
+    notes: 'Kendall Tau-b. Pairwise deletion. Two-tailed z-test. Tie correction via Kendall & Gibbons (1975).',
+  };
 }
