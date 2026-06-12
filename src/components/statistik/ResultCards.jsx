@@ -24,6 +24,29 @@ export const InterpBox = ({ children }) => (
   </div>
 )
 
+export const ResultHeader = ({ title, significant, testLabel }) => (
+  <div className={`flex items-center justify-between p-3 rounded-xl mb-4 ${
+    significant ? 'bg-accent/10 border border-accent/30' : 'bg-muted/10 border border-border'
+  }`}>
+    <div className="flex items-center gap-2">
+      <span className="text-sm font-heading font-semibold text-fg">{title}</span>
+      {testLabel && <span className="text-xs text-muted px-2 py-0.5 rounded bg-surface">{testLabel}</span>}
+    </div>
+    <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
+      significant ? 'bg-accent text-white' : 'bg-muted/20 text-muted'
+    }`}>
+      {significant ? 'Signifikan ✓' : 'Tidak Signifikan'}
+    </span>
+  </div>
+)
+
+export const KeyMetric = ({ label, value, highlight }) => (
+  <div className={`text-center px-4 py-3 rounded-xl ${highlight ? 'bg-accent/10' : 'bg-card/50'}`}>
+    <div className="text-xs text-muted mb-1">{label}</div>
+    <div className={`text-xl font-bold font-mono ${highlight ? 'text-accent' : 'text-fg'}`}>{value}</div>
+  </div>
+)
+
 export function DescriptiveResult({ r }) {
   return (
     <div>
@@ -68,8 +91,11 @@ export function DescriptiveResult({ r }) {
 
 export function NormalityResult({ r }) {
   const rows = r.results || [{ column: r.column, ...r }]
+  const anyNotNormal = rows.some(row => !row.isNormal)
   return (
-    <div className="overflow-x-auto">
+    <div>
+      <ResultHeader title="Uji Normalitas" significant={anyNotNormal} />
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="bg-card/50">
           <tr>
@@ -105,21 +131,27 @@ export function NormalityResult({ r }) {
           </ChartGrid>
         </div>
       ))}
+      </div>
     </div>
   )
 }
 
 export function CorrelationResult({ r }) {
+  const methodLabel = r.method === 'spearman' ? 'Spearman' : r.method === 'kendall' ? "Kendall's τ" : 'Pearson'
   return (
     <div>
+      <ResultHeader title="Korelasi" significant={r.significant} testLabel={r.tau !== undefined ? "Kendall's τ-b" : undefined} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="Metode" value={r.method === 'spearman' ? 'Spearman' : 'Pearson'} />
-        <Stat label="r / ρ" value={num(r.r ?? r.rho, 3)} accent="text-accent" term={r.method === 'spearman' ? 'spearman_rho' : 'pearson_r'} />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.pValue < 0.05 ? 'text-accent' : 'text-fg'} term="p_value" />
-        <Stat label="n" value={r.n} />
-        <Stat label="t" value={num(r.t)} />
-        <Stat label="df" value={r.df} />
-        <Stat label="Kekuatan" value={r.strength} />
+        <KeyMetric label="p-value" value={pct(r.pValue)} highlight={r.significant} />
+        <KeyMetric label={r.method === 'spearman' ? 'ρ' : r.tau !== undefined ? 'τb' : 'r'} value={num(r.r ?? r.rho ?? r.tau, 3)} highlight={r.significant} />
+        <KeyMetric label="n" value={r.n} />
+        <Stat label="Metode" value={methodLabel} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        {r.t !== undefined && <Stat label="t" value={num(r.t)} />}
+        {r.z !== undefined && <Stat label="z" value={num(r.z, 3)} />}
+        {r.df !== undefined && <Stat label="df" value={r.df} />}
+        <Stat label="Kekuatan" value={r.strength} accent={r.significant ? 'text-accent' : 'text-muted'} />
         <Stat label="Arah" value={r.direction} />
         {r.ci95 && <Stat label="95% CI" value={`[${num(r.ci95[0])}, ${num(r.ci95[1])}]`} />}
       </div>
@@ -137,12 +169,14 @@ export function CorrelationResult({ r }) {
 export function TTestResult({ r }) {
   return (
     <div>
+      <ResultHeader title="T-Test" significant={r.significant} testLabel={r.test} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="Test" value={r.test} />
-        <Stat label="t" value={num(r.t)} term="t_statistic" />
-        <Stat label="df" value={typeof r.df === 'number' ? r.df.toFixed(2) : r.df} term="df" />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.significant ? 'text-accent' : 'text-fg'} term="p_value" />
-        <Stat label="Cohen's d" value={num(r.cohensD)} term="cohens_d" />
+        <KeyMetric label="p-value" value={pct(r.pValue)} highlight={r.significant} />
+        <KeyMetric label="t" value={num(r.t)} />
+        <KeyMetric label="df" value={typeof r.df === 'number' ? r.df.toFixed(2) : r.df} />
+        <KeyMetric label="Cohen's d" value={num(r.cohensD)} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="Effect Size" value={r.effectSize} />
         {r.ci95 && <Stat label="95% CI" value={`[${num(r.ci95[0])}, ${num(r.ci95[1])}]`} />}
         <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'} accent={r.significant ? 'text-accent' : 'text-red-600'} />
@@ -181,10 +215,10 @@ export function ValidityResult({ r }) {
   return (
     <div className="space-y-5">
       <div>
-        <h4 className="font-semibold mb-2">Reliabilitas (Cronbach's α)</h4>
+        <ResultHeader title="Reliabilitas" significant={r.reliability.alpha >= 0.7} />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-          <Stat label="Cronbach's α" value={num(r.reliability.alpha)} accent="text-accent" term="cronbach_alpha" />
-          <Stat label="N item" value={r.reliability.k} />
+          <KeyMetric label="Cronbach's α" value={num(r.reliability.alpha)} highlight={r.reliability.alpha >= 0.7} />
+          <KeyMetric label="N item" value={r.reliability.k} />
           <Stat label="N responden" value={r.reliability.n} />
           <Stat label="Status" value={r.reliability.alpha >= 0.7 ? 'Reliabel ✅' : 'Kurang Reliabel ⚠️'}
                 accent={r.reliability.alpha >= 0.7 ? 'text-accent' : 'text-amber-600'} />
@@ -234,6 +268,15 @@ export function ValidityResult({ r }) {
 export function ANOVAResult({ r }) {
   return (
     <div>
+      <ResultHeader title="ANOVA" significant={r.significant} />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <KeyMetric label="p-value" value={pct(r.pValue)} highlight={r.significant} />
+        <KeyMetric label="F" value={num(r.F)} highlight={r.significant} />
+        <KeyMetric label="η²" value={num(r.etaSquared)} />
+        <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'}
+              accent={r.significant ? 'text-accent' : 'text-red-600'} />
+      </div>
+
       <h4 className="font-semibold mb-2">Statistik Per Grup</h4>
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm">
@@ -268,11 +311,8 @@ export function ANOVAResult({ r }) {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="η² (Eta-squared)" value={num(r.etaSquared)} term="eta_squared" />
         <Stat label="ω² (Omega-squared)" value={num(r.omegaSquared)} term="omega_squared" />
         <Stat label="Effect Size" value={r.effectSize} />
-        <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'}
-              accent={r.significant ? 'text-accent' : 'text-red-600'} />
       </div>
 
       {r.postHoc && (
@@ -314,15 +354,18 @@ export function ANOVAResult({ r }) {
 export function SimpleRegressionResult({ r }) {
   return (
     <div>
+      <ResultHeader title="Regresi Linear Sederhana" significant={r.significant} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="R²" value={num(r.rSquared)} accent="text-accent" term="r_squared" />
+        <KeyMetric label="p-value" value={pct(r.pF)} highlight={r.significant} />
+        <KeyMetric label="R²" value={num(r.rSquared)} highlight={r.significant} />
+        <KeyMetric label="F" value={num(r.F)} />
+        <KeyMetric label="N" value={r.n} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="Adj. R²" value={num(r.adjustedR2)} term="adjusted_r_squared" />
-        <Stat label="F" value={num(r.F)} term="f_statistic" />
-        <Stat label="p (F)" value={pct(r.pF)} accent={r.significant ? 'text-accent' : 'text-fg'} term="p_value" />
         <Stat label="SE Estimate" value={num(r.standardErrorOfEstimate)} />
         <Stat label="β (standardized)" value={num(r.standardizedBeta)} />
         <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'} accent={r.significant ? 'text-accent' : 'text-red-600'} />
-        <Stat label="N" value={r.n} />
       </div>
 
       <div className="overflow-x-auto mb-4">
@@ -354,11 +397,14 @@ export function SimpleRegressionResult({ r }) {
 export function MultipleRegressionResult({ r }) {
   return (
     <div>
+      <ResultHeader title="Regresi Linear Berganda" significant={r.significant} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="R²" value={num(r.rSquared)} accent="text-accent" term="r_squared" />
-        <Stat label="Adj. R²" value={num(r.adjustedR2)} term="adjusted_r_squared" />
-        <Stat label="F" value={num(r.F)} term="f_statistic" />
-        <Stat label="p (F)" value={pct(r.pF)} accent={r.significant ? 'text-accent' : 'text-fg'} term="p_value" />
+        <KeyMetric label="p-value" value={pct(r.pF)} highlight={r.significant} />
+        <KeyMetric label="R²" value={num(r.rSquared)} highlight={r.significant} />
+        <KeyMetric label="F" value={num(r.F)} />
+        <KeyMetric label="Adj. R²" value={num(r.adjustedR2)} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="SE Estimate" value={num(r.standardErrorOfEstimate)} />
         <Stat label="N" value={r.n} />
         <Stat label="p (predictors)" value={r.p} />
@@ -407,14 +453,17 @@ export function MultipleRegressionResult({ r }) {
 export function ChiSquareResult({ r }) {
   return (
     <div>
+      <ResultHeader title="Chi-Square" significant={r.isSignificant} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="χ²" value={num(r.chi2)} accent="text-accent" />
+        <KeyMetric label="p-value" value={pct(r.pValue)} highlight={r.isSignificant} />
+        <KeyMetric label="χ²" value={num(r.chi2)} highlight={r.isSignificant} />
+        <KeyMetric label="Cramér's V" value={num(r.cramersV)} />
+        <KeyMetric label="N" value={r.N} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="df" value={r.df} term="df" />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-accent' : 'text-fg'} term="p_value" />
-        <Stat label="N" value={r.N} />
-        <Stat label="Cramer's V" value={num(r.cramersV)} accent="text-accent" term="cramers_v" />
-        <Stat label="Effect Size" value={r.effectSizeLabel} />
         {r.phi !== null && <Stat label="Phi (φ)" value={num(r.phi)} />}
+        <Stat label="Effect Size" value={r.effectSizeLabel} />
         <Stat label="Status" value={r.isSignificant ? 'Signifikan ✅' : 'Tidak signifikan'}
               accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
       </div>
@@ -466,15 +515,18 @@ export function ChiSquareResult({ r }) {
 export function MannWhitneyResult({ r }) {
   return (
     <div>
+      <ResultHeader title="Mann-Whitney U" significant={r.isSignificant} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="U" value={num(r.U, 2)} accent="text-accent" term="mann_whitney_u" />
-        <Stat label="z" value={num(r.z, 3)} />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-accent' : 'text-fg'} term="p_value" />
+        <KeyMetric label="p-value" value={pct(r.pValue)} highlight={r.isSignificant} />
+        <KeyMetric label="U" value={num(r.U, 2)} highlight={r.isSignificant} />
+        <KeyMetric label="z" value={num(r.z, 3)} />
+        <KeyMetric label="Effect r" value={num(r.effectSize, 3)} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <Stat label="N total" value={r.N} />
+        <Stat label="Magnitude" value={r.effectSizeLabel} />
         <Stat label="Status" value={r.isSignificant ? 'Signifikan ✅' : 'Tidak signifikan'}
               accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
-        <Stat label="N total" value={r.N} />
-        <Stat label="Effect size r" value={num(r.effectSize, 3)} accent="text-accent" />
-        <Stat label="Magnitude" value={r.effectSizeLabel} />
       </div>
 
       <h4 className="font-semibold mb-2">Statistik per Grup</h4>
@@ -503,15 +555,18 @@ export function MannWhitneyResult({ r }) {
 export function WilcoxonResult({ r }) {
   return (
     <div>
+      <ResultHeader title="Wilcoxon Signed-Rank" significant={r.isSignificant} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="W" value={num(r.W, 2)} accent="text-accent" term="wilcoxon_signed_rank" />
-        <Stat label="z" value={num(r.z, 3)} />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-accent' : 'text-fg'} term="p_value" />
+        <KeyMetric label="p-value" value={pct(r.pValue)} highlight={r.isSignificant} />
+        <KeyMetric label="W" value={num(r.W, 2)} highlight={r.isSignificant} />
+        <KeyMetric label="z" value={num(r.z, 3)} />
+        <KeyMetric label="Effect r" value={num(r.effectSize, 3)} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="N pasangan" value={r.n} />
         <Stat label="W+ (positif)" value={num(r.Wpos, 1)} />
         <Stat label="W− (negatif)" value={num(r.Wneg, 1)} />
         <Stat label="Mean diff" value={num(r.meanDiff, 3)} />
-        <Stat label="Effect size r" value={num(r.effectSize, 3)} accent="text-accent" />
       </div>
       {r.beforeValues && r.afterValues && (
         <div className="mb-4">
@@ -529,16 +584,19 @@ export function WilcoxonResult({ r }) {
 export function KruskalResult({ r }) {
   return (
     <div>
+      <ResultHeader title="Kruskal-Wallis" significant={r.isSignificant} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="H" value={num(r.H, 3)} accent="text-accent" />
+        <KeyMetric label="p-value" value={pct(r.pValue)} highlight={r.isSignificant} />
+        <KeyMetric label="H" value={num(r.H, 3)} highlight={r.isSignificant} />
+        <KeyMetric label="η²" value={num(r.etaSquared, 3)} />
+        <KeyMetric label="N" value={r.N} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="df" value={r.df} />
-        <Stat label="p-value" value={pct(r.pValue)} accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
+        <Stat label="k grup" value={r.k} />
+        <Stat label="Magnitude" value={r.effectSizeLabel} />
         <Stat label="Status" value={r.isSignificant ? 'Signifikan ✅' : 'Tidak signifikan'}
               accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
-        <Stat label="N total" value={r.N} />
-        <Stat label="k grup" value={r.k} />
-        <Stat label="η² (eta²)" value={num(r.etaSquared, 3)} accent="text-accent" />
-        <Stat label="Magnitude" value={r.effectSizeLabel} />
       </div>
 
       <h4 className="font-semibold mb-2">Statistik per Grup</h4>
@@ -573,28 +631,24 @@ export function KruskalResult({ r }) {
 export function NGainResult({ r }) {
   const sig = r.signifTest
   const totalKategori = r.distribusi.Tinggi + r.distribusi.Sedang + r.distribusi.Rendah
+  const isHigh = r.kategoriKelas === 'Tinggi'
   return (
     <div>
+      <ResultHeader title="N-Gain" significant={isHigh} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="N pasangan" value={r.n} />
+        <KeyMetric label="N-Gain Mean" value={num(r.nGainMean, 3)} highlight={isHigh} />
+        <KeyMetric label="Efektivitas" value={`${num(r.efektivitasPersen, 2)}%`} highlight={isHigh} />
+        <KeyMetric label="N" value={r.n} />
         <Stat label="Skor Maks" value={r.maxScore} />
-        <Stat
-          label="Rata-rata N-Gain"
-          value={num(r.nGainMean, 3)}
-          accent={r.nGainMean >= 0.7 ? 'text-accent' : r.nGainMean >= 0.3 ? 'text-amber-600' : 'text-red-600'}
-        />
-        <Stat
-          label="Kategori Kelas"
-          value={r.kategoriKelas}
-          accent={r.kategoriKelas === 'Tinggi' ? 'text-accent' : r.kategoriKelas === 'Sedang' ? 'text-amber-600' : 'text-red-600'}
-        />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="SD N-Gain" value={num(r.nGainSD, 3)} />
         <Stat label="Min" value={num(r.nGainMin, 3)} />
         <Stat label="Max" value={num(r.nGainMax, 3)} />
         <Stat
-          label="Efektivitas"
-          value={`${num(r.efektivitasPersen, 2)}%`}
-          accent="text-accent"
+          label="Kategori Kelas"
+          value={r.kategoriKelas}
+          accent={r.kategoriKelas === 'Tinggi' ? 'text-accent' : r.kategoriKelas === 'Sedang' ? 'text-amber-600' : 'text-red-600'}
         />
       </div>
 
@@ -750,20 +804,24 @@ export function TwoWayANOVAResult({ r }) {
       </div>
     )
   }
+  const anySignificant = r.significantA || r.significantB || r.significantInteraction
+  const fmtP = (p) => p === null ? '—' : (p < 0.001 ? '< 0.001' : num(p, 4))
   const verdict = (sig, name) => sig
     ? `✅ Pengaruh ${name} signifikan`
     : `❌ Pengaruh ${name} tidak signifikan`
-  const fmtP = (p) => p === null ? '—' : (p < 0.001 ? '< 0.001' : num(p, 4))
   return (
     <div>
+      <ResultHeader title="Two-Way ANOVA" significant={anySignificant} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat label="N total" value={r.N} />
-        <Stat label={`Level ${r.nameA}`} value={r.levelsA.length} />
-        <Stat label={`Level ${r.nameB}`} value={r.levelsB.length} />
+        <KeyMetric label={`F ${r.nameA}`} value={num(r.factorA.F, 3)} highlight={r.significantA} />
+        <KeyMetric label={`F ${r.nameB}`} value={num(r.factorB.F, 3)} highlight={r.significantB} />
+        <KeyMetric label={`F ${r.nameA}×${r.nameB}`} value={num(r.interaction.F, 3)} highlight={r.significantInteraction} />
+        <KeyMetric label="N" value={r.N} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <Stat label={`p ${r.nameA}`} value={fmtP(r.factorA.pValue)} accent={r.significantA ? 'text-accent' : 'text-muted'} />
+        <Stat label={`p ${r.nameB}`} value={fmtP(r.factorB.pValue)} accent={r.significantB ? 'text-accent' : 'text-muted'} />
         <Stat label="Grand Mean" value={num(r.grandMean, 3)} />
-        <Stat label={`F ${r.nameA}`} value={num(r.factorA.F, 3)} accent={r.significantA ? 'text-accent' : 'text-muted'} />
-        <Stat label={`F ${r.nameB}`} value={num(r.factorB.F, 3)} accent={r.significantB ? 'text-accent' : 'text-muted'} />
-        <Stat label={`F ${r.nameA}×${r.nameB}`} value={num(r.interaction.F, 3)} accent={r.significantInteraction ? 'text-accent' : 'text-muted'} />
         <Stat label="Desain" value={r.isBalanced ? 'Balanced' : 'Unbalanced'} accent={r.isBalanced ? 'text-accent' : 'text-amber-600'} />
       </div>
 
@@ -772,9 +830,9 @@ export function TwoWayANOVAResult({ r }) {
       }`}>
         <strong>Ringkasan:</strong>
         <ul className="mt-1 space-y-0.5 list-disc list-inside">
-          <li>{verdict(r.significantA, r.nameA)} (p = {fmtP(r.factorA.pValue)}, partial η² = {num(r.factorA.partialEtaSquared, 3)} · {r.factorA.effectSize})</li>
-          <li>{verdict(r.significantB, r.nameB)} (p = {fmtP(r.factorB.pValue)}, partial η² = {num(r.factorB.partialEtaSquared, 3)} · {r.factorB.effectSize})</li>
-          <li>{verdict(r.significantInteraction, `interaksi ${r.nameA}×${r.nameB}`)} (p = {fmtP(r.interaction.pValue)}, partial η² = {num(r.interaction.partialEtaSquared, 3)} · {r.interaction.effectSize})</li>
+          <li>{verdict(r.significantA, r.nameA)} (partial η² = {num(r.factorA.partialEtaSquared, 3)} · {r.factorA.effectSize})</li>
+          <li>{verdict(r.significantB, r.nameB)} (partial η² = {num(r.factorB.partialEtaSquared, 3)} · {r.factorB.effectSize})</li>
+          <li>{verdict(r.significantInteraction, `interaksi ${r.nameA}×${r.nameB}`)} (partial η² = {num(r.interaction.partialEtaSquared, 3)} · {r.interaction.effectSize})</li>
         </ul>
         {r.significantInteraction && (
           <p className="mt-2 text-xs italic">
