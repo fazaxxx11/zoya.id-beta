@@ -4,7 +4,7 @@
  */
 
 import { groupBy } from './data.js';
-import { fCDF, fPValue } from './distributions.js';
+import { fCDF, fPValue, tPValue } from './distributions.js';
 
 /**
  * One-way ANOVA (between-subjects).
@@ -329,5 +329,271 @@ export function twoWayANOVA({ y, a, b, nameA = 'A', nameB = 'B', alpha = 0.05 })
     significantB: p_B < alpha,
     significantInteraction: p_AB < alpha,
     notes: 'Cell-means approach. Balanced: F-test exact. Unbalanced: approximates Type III.',
+  };
+}
+
+// ── Repeated Measures ANOVA ────────────────────────────────────────
+
+/**
+ * Compute eigenvalues of a symmetric k×k matrix using power iteration
+ * with deflation. Suitable for small k (≤ 10).
+ */
+function eigenvaluesSymmetric(M) {
+  const k = M.length;
+  const vals = [];
+  let B = M.map(row => [...row]);
+
+  for (let r = 0; r < k; r++) {
+    let v = Array.from({ length: k }, (_, i) => i === 0 ? 1 : 0);
+    for (let iter = 0; iter < 200; iter++) {
+      const w = Array(k).fill(0);
+      for (let i = 0; i < k; i++) {
+        for (let j = 0; j < k; j++) {
+          w[i] += B[i][j] * v[j];
+        }
+      }
+      const norm = Math.sqrt(w.reduce((s, x) => s + x * x, 0));
+      if (norm < 1e-15) break;
+      const newV = w.map(x => x / norm);
+      // Check convergence
+      const dot = v.reduce((s, vi, i) => s + vi * newV[i], 0);
+      v = newV;
+      if (Math.abs(dot) > 0.999999) break;
+    }
+    // Rayleigh quotient
+    const Bv = Array(k).fill(0);
+    for (let i = 0; i < k; i++) {
+      for (let j = 0; j < k; j++) Bv[i] += B[i][j] * v[j];
+    }
+    const lambda = v.reduce((s, vi, i) => s + vi * Bv[i], 0);
+    vals.push(lambda);
+    // Deflate
+    for (let i = 0; i < k; i++) {
+      for (let j = 0; j < k; j++) B[i][j] -= lambda * v[i] * v[j];
+    }
+  }
+  return vals;
+}
+
+/**
+ * Repeated Measures ANOVA (within-subjects).
+ * SPSS-compatible: SS decomposition, Greenhouse-Geisser correction,
+ * paired t-tests with Bonferroni post-hoc.
+ *
+ * @param {number[][]} data - [subjects × conditions] 2D array
+ * @param {string[]} [conditionNames] - optional labels
+ * @param {number} [alpha=0.05]
+ * @returns {Object}
+ */
+export function repeatedMeasuresANOVA(data, conditionNames = null, alpha = 0.05) {
+  // Validate & clean
+  if (!Array.isArray(data) || data.length < 2) {
+    return { method: 'repeated_measures_anova', error: 'Minimal 2 subjek' };
+  }
+  const k = data[0]?.length;
+  if (!k || k < 2) {
+    return { method: 'repeated_measures_anova', error: 'Minimal 2 kondisi' };
+  }
+
+  // Verify equal row lengths
+  for (let i = 0; i < data.length; i++) {
+    if (!Array.isArray(data[i]) || data[i].length !== k) {
+      return { method: 'repeated_measures_anova', error: `Baris ${i}: panjang kolom tidak konsisten` };
+    }
+  }
+
+  // Listwise deletion: keep only complete rows
+  const complete = [];
+  for (const row of data) {
+    if (row.every(v => typeof v === 'number' && isFinite(v) && !isNaN(v))) {
+      complete.push([...row]);
+    }
+  }
+  const n = complete.length;
+  if (n < 3) {
+    return { method: 'repeated_measures_anova', error: `Hanya ${n} subjek lengkap — butuh minimal 3` };
+  }
+
+  const names = conditionNames || Array.from({ length: k }, (_, i) => `Kondisi ${i + 1}`);
+
+  // ── Descriptives per condition ───────────────────────────────
+  const conditionMeans = Array(k).fill(0);
+  const conditionSDs = Array(k).fill(0);
+  for (let j = 0; j < k; j++) {
+    let sum = 0, sumSq = 0;
+    for (let i = 0; i < n; i++) {
+      sum += complete[i][j];
+      sumSq += complete[i][j] ** 2;
+    }
+    conditionMeans[j] = sum / n;
+    conditionSDs[j] = n > 1 ? Math.sqrt((sumSq - sum * sum / n) / (n - 1)) : 0;
+  }
+
+  // Subject means
+  const subjectMeans = Array(n).fill(0);
+  for (let i = 0; i < n; i++) {
+    subjectMeans[i] = complete[i].reduce((a, b) => a + b, 0) / k;
+  }
+
+  // Grand mean
+  const grandMean = conditionMeans.reduce((a, b) => a + b, 0) / k;
+
+  // ── Sum of Squares ──────────────────────────────────────────
+  // SS_total (deviation of each score from grand mean)
+  let ssTotal = 0;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < k; j++) {
+      ssTotal += (complete[i][j] - grandMean) ** 2;
+    }
+  }
+
+  // SS_between_subjects (individual differences)
+  let ssSubjects = 0;
+  for (let i = 0; i < n; i++) {
+    ssSubjects += k * (subjectMeans[i] - grandMean) ** 2;
+  }
+
+  // SS_within_subjects = SS_total - SS_subjects
+  const ssWithinSubjects = ssTotal - ssSubjects;
+
+  // SS_conditions (effect of condition)
+  let ssConditions = 0;
+  for (let j = 0; j < k; j++) {
+    ssConditions += n * (conditionMeans[j] - grandMean) ** 2;
+  }
+
+  // SS_error = SS_within - SS_conditions
+  const ssError = ssWithinSubjects - ssConditions;
+
+  // ── Degrees of Freedom ──────────────────────────────────────
+  const dfConditions = k - 1;
+  const dfError = (n - 1) * (k - 1);
+  const dfSubjects = n - 1;
+  const dfWithinSubjects = n * (k - 1); // or dfConditions + dfError
+  const dfTotal = n * k - 1;
+
+  // ── Mean Squares ────────────────────────────────────────────
+  const msConditions = dfConditions > 0 ? ssConditions / dfConditions : 0;
+  const msError = dfError > 0 ? ssError / dfError : 0;
+
+  // ── F-test ──────────────────────────────────────────────────
+  const fStatistic = msError > 0 ? msConditions / msError : 0;
+  let pValue = 1;
+  if (dfConditions > 0 && dfError > 0 && isFinite(fStatistic) && fStatistic >= 0) {
+    pValue = fPValue(fStatistic, dfConditions, dfError);
+    pValue = Math.max(0, Math.min(1, pValue));
+  }
+
+  // ── Effect Size: Partial Eta Squared ────────────────────────
+  const partialEtaSquared = (ssConditions + ssError) > 0
+    ? ssConditions / (ssConditions + ssError)
+    : 0;
+
+  // ── Sphericity: Greenhouse-Geisser epsilon ──────────────────
+  // Compute k×k covariance matrix of conditions
+  const cov = Array.from({ length: k }, () => Array(k).fill(0));
+  for (let c1 = 0; c1 < k; c1++) {
+    for (let c2 = 0; c2 < k; c2++) {
+      let sum = 0;
+      for (let i = 0; i < n; i++) {
+        sum += (complete[i][c1] - conditionMeans[c1]) * (complete[i][c2] - conditionMeans[c2]);
+      }
+      cov[c1][c2] = sum / (n - 1);
+    }
+  }
+
+  const eigenvals = eigenvaluesSymmetric(cov);
+  const sumEig = eigenvals.reduce((s, v) => s + Math.max(0, v), 0);
+  const sumSqEig = eigenvals.reduce((s, v) => s + Math.max(0, v) ** 2, 0);
+  const ggEpsilon = sumSqEig > 0
+    ? Math.min(1, sumEig ** 2 / ((k - 1) * sumSqEig))
+    : 1;
+  const ggEpsilonLowerBound = k > 1 ? 1 / (k - 1) : 1;
+  const ggEpsilonClamped = Math.max(ggEpsilonLowerBound, Math.min(1, ggEpsilon));
+  const sphericityAssumed = ggEpsilonClamped >= 0.75;
+
+  // Apply GG correction to p-value if sphericity violated
+  let pValueGG = pValue;
+  let dfConditionsGG = dfConditions;
+  let dfErrorGG = dfError;
+  if (!sphericityAssumed) {
+    dfConditionsGG = Math.max(1, ggEpsilonClamped * dfConditions);
+    dfErrorGG = Math.max(1, ggEpsilonClamped * dfError);
+    if (dfConditionsGG > 0 && dfErrorGG > 0 && isFinite(fStatistic) && fStatistic >= 0) {
+      pValueGG = fPValue(fStatistic, dfConditionsGG, dfErrorGG);
+      pValueGG = Math.max(0, Math.min(1, pValueGG));
+    }
+  }
+
+  // ── Post-hoc: paired t-tests with Bonferroni ────────────────
+  const m = k * (k - 1) / 2; // number of pairwise comparisons
+  const postHoc = [];
+  for (let j1 = 0; j1 < k; j1++) {
+    for (let j2 = j1 + 1; j2 < k; j2++) {
+      const diffs = complete.map(row => row[j1] - row[j2]);
+      const meanDiff = diffs.reduce((s, d) => s + d, 0) / n;
+      const sdDiff = n > 1
+        ? Math.sqrt(diffs.reduce((s, d) => s + (d - meanDiff) ** 2, 0) / (n - 1))
+        : 0;
+      const seDiff = sdDiff / Math.sqrt(n);
+      const t = seDiff > 0 ? meanDiff / seDiff : 0;
+      const df = n - 1;
+      const pRaw = tPValue(Math.abs(t), df);
+      const pAdj = Math.min(pRaw * m, 1);
+      postHoc.push({
+        group1: names[j1],
+        group2: names[j2],
+        meanDiff: Number(meanDiff.toFixed(4)),
+        t: Number(t.toFixed(4)),
+        df,
+        pRaw: Number(pRaw.toFixed(6)),
+        pAdj: Number(pAdj.toFixed(6)),
+        significant: pAdj < alpha,
+      });
+    }
+  }
+
+  // ── Groups (descriptive per condition) ──────────────────────
+  const groups = names.map((name, j) => ({
+    name,
+    mean: Number(conditionMeans[j].toFixed(4)),
+    sd: Number(conditionSDs[j].toFixed(4)),
+    n,
+  }));
+
+  // ── Conclusion ──────────────────────────────────────────────
+  const usedP = !sphericityAssumed ? pValueGG : pValue;
+  const sig = usedP < alpha;
+  const conclusion = sig
+    ? `Terdapat perbedaan signifikan antar kondisi (F(${dfConditions},${dfError}) = ${fStatistic.toFixed(3)}, p = ${usedP.toFixed(4)}, η²p = ${partialEtaSquared.toFixed(4)}). ${sphericityAssumed ? 'Asumsi sphericity terpenuhi.' : `Asumsi sphericity tidak terpenuhi (ε = ${ggEpsilonClamped.toFixed(4)}), digunakan koreksi Greenhouse-Geisser.`}`
+    : `Tidak terdapat perbedaan signifikan antar kondisi (F(${dfConditions},${dfError}) = ${fStatistic.toFixed(3)}, p = ${usedP.toFixed(4)}).`;
+
+  return {
+    method: 'repeated_measures_anova',
+    n,
+    k,
+    fStatistic: Number(fStatistic.toFixed(4)),
+    df1: dfConditions,
+    df2: dfError,
+    pValue: Number(pValue.toFixed(6)),
+    pValueGG: Number(pValueGG.toFixed(6)),
+    partialEtaSquared: Number(partialEtaSquared.toFixed(4)),
+    sphericityAssumed,
+    greenhouseGeisserEpsilon: Number(ggEpsilonClamped.toFixed(4)),
+    ggLowerBound: Number(ggEpsilonLowerBound.toFixed(4)),
+    ssConditions: Number(ssConditions.toFixed(4)),
+    ssError: Number(ssError.toFixed(4)),
+    ssSubjects: Number(ssSubjects.toFixed(4)),
+    ssTotal: Number(ssTotal.toFixed(4)),
+    msConditions: Number(msConditions.toFixed(4)),
+    msError: Number(msError.toFixed(4)),
+    groups,
+    conditionNames: names,
+    postHoc,
+    significant: sig,
+    alpha,
+    missing: data.length - n,
+    conclusion,
+    notes: 'Repeated measures one-way ANOVA. GG epsilon via power iteration. Post-hoc: paired t-tests dengan koreksi Bonferroni.',
   };
 }

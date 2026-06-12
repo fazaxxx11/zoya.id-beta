@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { oneWayANOVA, twoWayANOVA } from '../../src/lib/statistics/anova.js';
+import { oneWayANOVA, twoWayANOVA, repeatedMeasuresANOVA } from '../../src/lib/statistics/anova.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -160,5 +160,118 @@ describe('two-way ANOVA', () => {
     });
     // Missing A-Y cell
     expect(result.error).toBeDefined();
+  });
+});
+
+// ── Repeated Measures ANOVA ────────────────────────────────────────
+
+describe('repeated measures ANOVA', () => {
+  // 10 subjects × 3 timepoints (pre, post, follow-up)
+  // Pre: 5-7, Post: 7-9, Follow-up: 6-8 → clear effect of time
+  const data = [
+    [5, 8, 6],
+    [6, 9, 7],
+    [5, 7, 6],
+    [7, 9, 8],
+    [6, 8, 7],
+    [5, 7, 6],
+    [6, 9, 8],
+    [7, 9, 7],
+    [5, 8, 6],
+    [6, 8, 7],
+  ];
+
+  it('returns correct shape', () => {
+    const result = repeatedMeasuresANOVA(data, ['Pre', 'Post', 'FU']);
+    expect(result.method).toBe('repeated_measures_anova');
+    expect(result.n).toBe(10);
+    expect(result.k).toBe(3);
+    expect(result.df1).toBe(2);
+    expect(result.df2).toBe(18);
+    expect(result.groups).toHaveLength(3);
+    expect(result.postHoc).toHaveLength(3);
+    expect(result.conditionNames).toEqual(['Pre', 'Post', 'FU']);
+  });
+
+  it('detects significant condition effect', () => {
+    const result = repeatedMeasuresANOVA(data, ['Pre', 'Post', 'FU']);
+    expect(result.fStatistic).toBeGreaterThan(5);
+    expect(result.pValue).toBeLessThan(0.01);
+    expect(result.significant).toBe(true);
+    expect(result.conclusion).toContain('signifikan');
+  });
+
+  it('computes partial eta squared', () => {
+    const result = repeatedMeasuresANOVA(data);
+    expect(result.partialEtaSquared).toBeGreaterThan(0.3);
+    expect(result.partialEtaSquared).toBeLessThanOrEqual(1);
+  });
+
+  it('computes GG epsilon', () => {
+    const result = repeatedMeasuresANOVA(data);
+    expect(result.greenhouseGeisserEpsilon).toBeGreaterThan(0);
+    expect(result.greenhouseGeisserEpsilon).toBeLessThanOrEqual(1);
+    expect(result.ggLowerBound).toBeCloseTo(0.5, 1);
+  });
+
+  it('reports condition descriptive stats', () => {
+    const result = repeatedMeasuresANOVA(data, ['Pre', 'Post', 'FU']);
+    expect(result.groups[0].name).toBe('Pre');
+    expect(result.groups[0].mean).toBeGreaterThan(5);
+    expect(result.groups[0].sd).toBeGreaterThan(0);
+    expect(result.groups[1].name).toBe('Post');
+    expect(result.groups[2].name).toBe('FU');
+  });
+
+  it('computes post-hoc pairwise with Bonferroni', () => {
+    const result = repeatedMeasuresANOVA(data, ['Pre', 'Post', 'FU']);
+    // Pre vs Post should be significant
+    const prePost = result.postHoc.find(p => p.group1 === 'Pre' && p.group2 === 'Post');
+    expect(prePost).toBeTruthy();
+    expect(prePost.meanDiff).toBeLessThan(0);
+    expect(prePost.pAdj).toBeLessThan(0.05);
+    expect(prePost.significant).toBe(true);
+    // All pairs have pAdj >= pRaw (or equal)
+    result.postHoc.forEach(p => {
+      expect(p.pAdj).toBeGreaterThanOrEqual(p.pRaw - 1e-10);
+      expect(p.pAdj).toBeLessThanOrEqual(1.0001);
+    });
+  });
+
+  it('handles missing values via listwise deletion', () => {
+    const withNA = [...data];
+    withNA[0] = [NaN, 8, 6];
+    const result = repeatedMeasuresANOVA(withNA);
+    expect(result.n).toBe(9);
+    expect(result.missing).toBe(1);
+  });
+
+  it('returns error for < 3 subjects', () => {
+    const small = [[5, 6], [7, 8]];
+    const result = repeatedMeasuresANOVA(small);
+    expect(result.error).toBeDefined();
+  });
+
+  it('returns error for < 2 conditions', () => {
+    const result = repeatedMeasuresANOVA([[5], [6], [7]]);
+    expect(result.error).toBeDefined();
+  });
+
+  it('returns error for inconsistent row lengths', () => {
+    const bad = [[5, 6], [7, 8, 9]];
+    const result = repeatedMeasuresANOVA(bad);
+    expect(result.error).toBeDefined();
+  });
+
+  it('returns SS decomposition that sums correctly', () => {
+    const result = repeatedMeasuresANOVA(data);
+    // SS_total ≈ SS_subjects + SS_conditions + SS_error
+    const sumParts = result.ssSubjects + result.ssConditions + result.ssError;
+    expect(sumParts).toBeCloseTo(result.ssTotal, 1);
+  });
+
+  it('uses default condition names when none provided', () => {
+    const result = repeatedMeasuresANOVA(data);
+    expect(result.conditionNames).toEqual(['Kondisi 1', 'Kondisi 2', 'Kondisi 3']);
   });
 });

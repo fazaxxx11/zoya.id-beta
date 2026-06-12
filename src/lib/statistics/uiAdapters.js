@@ -18,7 +18,7 @@ import { describe as engineDescribe } from './descriptive.js';
 import { pearson, spearman, partialCorrelation as enginePartialCorr } from './correlation.js';
 import { cronbachAlpha as engineCronbach } from './reliability.js';
 import { oneSampleTTest as engineOneSampleT, independentTTest as engineIndepT, pairedTTest as enginePairedT } from './ttest.js';
-import { oneWayANOVA as engineAnova, twoWayANOVA as engineTwoWay } from './anova.js';
+import { oneWayANOVA as engineAnova, twoWayANOVA as engineTwoWay, repeatedMeasuresANOVA as engineRMAnova } from './anova.js';
 import { simpleRegression as engineRegression, multipleLinearRegression as engineMLR, stepwiseRegression as engineStepwise } from './regression.js';
 import { testNormality as engineNormality, shapiroWilk as engineShapiro, kolmogorovSmirnov as engineKS } from './normality.js';
 
@@ -385,6 +385,15 @@ export function stepwiseRegressionAdapter(X, y, options = {}) {
  */
 export function twoWayANOVAAdapter(args) {
   return engineTwoWay(args);
+}
+
+/**
+ * Adapter for repeated measures ANOVA.
+ * Matches SPSS Repeated Measures — within-subjects one-way.
+ * Input: data = [subjects × conditions] 2D array.
+ */
+export function repeatedMeasuresAdapter(data, conditionNames = null, alpha = 0.05) {
+  return engineRMAnova(data, conditionNames, alpha);
 }
 
 // ── Chi-Square ──────────────────────────────────────────────────────
