@@ -1,13 +1,14 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
-  BarChart3,
-  ClipboardList,
-  FileText,
-  CheckCircle,
-  Upload,
-  SlidersHorizontal,
-  FileDown,
+  Activity,
+  ClipboardCheck,
+  BookOpen,
+  Award,
+  FileUp,
+  Crosshair,
+  Download,
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
 import Logo from "../components/Logo";
@@ -20,9 +21,9 @@ const TRUST_ITEMS = [
 ];
 
 const WORKFLOW_STEPS = [
-  { label: "Upload Data", icon: Upload },
-  { label: "Analisis", icon: BarChart3 },
-  { label: "Export", icon: FileDown },
+  { label: "Upload Data", icon: FileUp },
+  { label: "Analisis", icon: Activity },
+  { label: "Export", icon: Download },
 ];
 
 const SERVICES = [
@@ -30,7 +31,7 @@ const SERVICES = [
     id: "statistik",
     title: "Analisis Statistik",
     desc: "Upload data, pilih uji, dapat hasil + interpretasi. t-test, ANOVA, regresi, korelasi, non-parametrik — semua ada.",
-    icon: BarChart3,
+    icon: Activity,
     path: "/statistik",
     tags: ["70+ uji", "Interpretasi AI", "Export DOCX"],
     accent: "gold",
@@ -40,7 +41,7 @@ const SERVICES = [
     id: "kuesioner",
     title: "Kuesioner & Instrumen",
     desc: "Buat blueprint, indikator, butir Likert, dan validasi instrumen penelitianmu.",
-    icon: ClipboardList,
+    icon: ClipboardCheck,
     path: "/kuesioner",
     tags: ["Blueprint", "Likert", "Validasi"],
     accent: "teal",
@@ -49,7 +50,7 @@ const SERVICES = [
     id: "wizard",
     title: "Panduan Skripsi",
     desc: "Dampingan dari topik sampai laporan. Metode, instrumen, analisis — step by step.",
-    icon: FileText,
+    icon: BookOpen,
     path: "/wizard",
     tags: ["Bab 1-5", "Template", "Rujukan"],
     accent: "indigo",
@@ -58,7 +59,7 @@ const SERVICES = [
     id: "assessment",
     title: "Assessment & Rubrik",
     desc: "Buat rubrik penilaian, skoring otomatis, dan laporan hasil assessment.",
-    icon: CheckCircle,
+    icon: Award,
     path: "/assessment",
     tags: ["Rubrik AI", "Skoring", "Laporan"],
     accent: "emerald",
@@ -66,9 +67,9 @@ const SERVICES = [
 ];
 
 const CARA_KERJA = [
-  { step: 1, title: "Upload", desc: "Upload file CSV/Excel atau paste data kamu langsung", icon: Upload },
-  { step: 2, title: "Pilih Analisis", desc: "Pilih uji statistik atau layanan yang sesuai kebutuhan penelitianmu", icon: SlidersHorizontal },
-  { step: 3, title: "Dapat Hasil + Interpretasi", desc: "Hasil perhitungan, tabel, interpretasi AI, siap export DOCX", icon: FileDown },
+  { step: 1, title: "Upload", desc: "Upload file CSV/Excel atau paste data kamu langsung", icon: FileUp },
+  { step: 2, title: "Pilih Analisis", desc: "Pilih uji statistik atau layanan yang sesuai kebutuhan penelitianmu", icon: Crosshair },
+  { step: 3, title: "Dapat Hasil + Interpretasi", desc: "Hasil perhitungan, tabel, interpretasi AI, siap export DOCX", icon: Download },
 ];
 
 const accentStyle = {
@@ -125,10 +126,15 @@ export default function Home() {
 
       <main>
         {/* Hero */}
-        <section className="container mx-auto px-4 py-12 md:py-20">
-          <div className="max-w-3xl mx-auto text-center">
+        <section className="container mx-auto px-4 py-12 md:py-20 relative paper-texture">
+          {/* Decorative blurs — human imperfections */}
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="max-w-3xl mx-auto text-center relative z-10">
             <h1 className="text-4xl md:text-5xl font-heading font-bold leading-tight mb-6">
-              Olah data penelitian dari dataset ke laporan akademik.
+              Olah data penelitian dari dataset ke{' '}
+              <span className="text-accent">laporan akademik</span>.
             </h1>
             <p className="text-lg text-muted mb-8 max-w-2xl mx-auto">
               Analisis statistik, interpretasi hasil, dan susun laporan —
@@ -175,7 +181,7 @@ export default function Home() {
                   key={svc.id}
                   to={svc.path}
                   className={`group rounded-xl p-6 transition-all hover:shadow-md hover:-translate-y-0.5 ${s.card} ${
-                    svc.primary ? "" : "border border-border bg-card"
+                    svc.primary ? "min-h-[180px]" : "border border-border bg-card"
                   }`}
                 >
                   <svc.icon className={`w-10 h-10 mb-4 ${s.icon}`} />
@@ -221,25 +227,30 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Cara Kerja — 3 Steps */}
+        {/* Cara Kerja — 3 Steps with dashed connectors */}
         <section id="cara-kerja" className="container mx-auto px-4 py-16">
           <h2 className="text-3xl font-heading font-bold text-center mb-4">Cara Kerja</h2>
           <p className="text-muted text-center mb-12 max-w-lg mx-auto">
             Tiga langkah simpel menuju hasil analisis
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {CARA_KERJA.map((ck) => (
-              <div key={ck.step} className="text-center p-6 border border-border bg-card rounded-xl">
-                <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center mx-auto mb-4">
-                  <ck.icon className="w-6 h-6 text-accent" />
+          <div className="flex flex-col md:flex-row items-center max-w-4xl mx-auto">
+            {CARA_KERJA.map((ck, idx) => (
+              <React.Fragment key={ck.step}>
+                <div className="flex-1 text-center p-6 border border-border bg-card rounded-xl">
+                  <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center mx-auto mb-4">
+                    <ck.icon className="w-6 h-6 text-accent" />
+                  </div>
+                  <span className="text-xs text-accent font-semibold tracking-wider uppercase mb-2 block">
+                    Langkah {ck.step}
+                  </span>
+                  <h3 className="font-heading font-semibold text-base mb-2">{ck.title}</h3>
+                  <p className="text-sm text-muted">{ck.desc}</p>
                 </div>
-                <span className="text-xs text-accent font-semibold tracking-wider uppercase mb-2 block">
-                  Langkah {ck.step}
-                </span>
-                <h3 className="font-heading font-semibold text-base mb-2">{ck.title}</h3>
-                <p className="text-sm text-muted">{ck.desc}</p>
-              </div>
+                {idx < CARA_KERJA.length - 1 && (
+                  <div className="hidden md:block w-10 border-t-2 border-dashed border-border mx-2 flex-shrink-0" />
+                )}
+              </React.Fragment>
             ))}
           </div>
         </section>
@@ -263,6 +274,9 @@ export default function Home() {
               <Link to="/login" className="text-muted hover:text-accent">Masuk</Link>
               <Link to="/register" className="px-4 py-1.5 bg-accent text-white rounded-lg hover:opacity-90 text-sm">Daftar</Link>
             </div>
+            <p className="text-xs text-muted/70 mt-3">
+              Dibuat dengan hati untuk mahasiswa Indonesia 🇮🇩
+            </p>
           </div>
         </div>
       </footer>

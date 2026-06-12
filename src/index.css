@@ -48,6 +48,8 @@
   --table-head: 239 232 220;  /* #EFE8DC */
   --input:     255 255 255;   /* white input */
   --accent-2:  79 70 229;     /* indigo soft */
+  --warm-rose: 190 120 110;   /* soft terracotta */
+  --deep-teal: 15 118 110;    /* original teal, for variety */
   /* Typography */
   --heading-font: 'Source Serif 4', 'Georgia', serif;
   --body-font: 'IBM Plex Sans', 'Segoe UI', sans-serif;
@@ -70,6 +72,8 @@
   --table-head: 34 42 49;     /* #222A31 */
   --input:     17 22 27;      /* #11161B */
   --accent-2:  129 140 248;   /* indigo lighter */
+  --warm-rose: 210 145 135;   /* soft terracotta, brightened */
+  --deep-teal: 45 212 191;    /* teal, brightened for dark */
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -805,6 +809,13 @@ body::before { display: none; }
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+}
+
+/* =====================================================
+   Paper texture — subtle grain for human feel
+===================================================== */
+.paper-texture {
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* =====================================================
