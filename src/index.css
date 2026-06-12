@@ -947,3 +947,15 @@ code, .tabular {
   background: rgb(var(--surface));
   border-color: rgb(var(--border));
 }
+
+/* =====================================================
+   Animations
+===================================================== */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out;
+}

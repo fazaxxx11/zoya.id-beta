@@ -4,6 +4,7 @@ import {
   BarChart3, Upload, FileSpreadsheet, CheckCircle,
   Sparkles, Download, FileType, File as FileIcon, AlertCircle,
   Layers, Sigma, Clock, FileText, BookOpen, X, LayoutGrid,
+  ArrowRight, RotateCcw,
 } from 'lucide-react'
 import { getCurrentUser } from '../lib/auth'
 import { getWallet, deductWallet } from '../lib/wallet'
@@ -650,6 +651,24 @@ function Statistik() {
     runAnalysis({ paidAmount: pricing.price, paymentMethod: 'wallet' })
   }
 
+  // Handle "Analisis Lain" — reset result but keep data
+  const handleBackToAnalysis = useCallback(() => {
+    setResult(null)
+  }, [])
+
+  // Handle "Upload Ulang" — reset everything
+  const handleReset = useCallback(() => {
+    setResult(null)
+    setParams({})
+    setData(null)
+    setColumns([])
+    setFile(null)
+    setError(null)
+    setFilterColumn('')
+    setFilterValues([])
+    setCleaningReport(null)
+  }, [])
+
   // ============================================================
   // Render
   // ============================================================
@@ -695,8 +714,8 @@ function Statistik() {
 
 
 
-            {/* Filter panel — pilih subset data berdasarkan kategori */}
-            {data && categoricalColumns.length > 0 && (
+            {/* Filter panel — hidden when result is showing */}
+            {data && categoricalColumns.length > 0 && !result && (
               <FilterPanel
                 categoricalColumns={categoricalColumns}
                 filterColumn={filterColumn}
@@ -709,8 +728,8 @@ function Statistik() {
               />
             )}
 
-            {/* Tool-specific params */}
-            {data && (
+            {/* Tool-specific params — hidden when result is showing */}
+            {data && !result && (
               <ParamPanel
                 tool={activeTool}
                 columns={columns}
@@ -726,7 +745,8 @@ function Statistik() {
             {result && (
               <ResultDisplay
                 result={result}
-                onReset={() => { setResult(null); setParams({}) }}
+                onReset={handleReset}
+                onBackToAnalysis={handleBackToAnalysis}
               />
             )}
         </StatistikFlow>
@@ -1263,7 +1283,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
 // ============================================================
 // Result Display — render based on result type
 // ============================================================
-function ResultDisplay({ result, onReset }) {
+function ResultDisplay({ result, onReset, onBackToAnalysis }) {
   const contentRef = useRef(null)
 
   const [aiInterpretation, setAiInterpretation] = useState('')
@@ -1275,7 +1295,7 @@ function ResultDisplay({ result, onReset }) {
 
 
   return (
-    <div className="border border-border bg-card rounded-xl overflow-hidden">
+    <div className="border border-border bg-card rounded-xl overflow-hidden animate-fade-in-up">
       <div className="p-5 border-b border-gray-100 flex items-center justify-between flex-wrap gap-3">
         <div>
           <h3 className="font-bold text-fg text-lg">Hasil: {result.toolName}</h3>
@@ -1292,7 +1312,14 @@ function ResultDisplay({ result, onReset }) {
             {savedId ? 'Tersimpan' : 'Simpan'}
           </button>
           <ExportActions result={result} containerRef={contentRef} />
-          <button onClick={onReset} className="btn-ghost text-sm">Analisis Baru</button>
+          <button onClick={onBackToAnalysis}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-accent text-white hover:bg-accent/90 transition-colors flex items-center gap-2">
+            <ArrowRight className="w-4 h-4" /> Analisis Lain
+          </button>
+          <button onClick={onReset}
+            className="px-4 py-2 rounded-lg text-sm text-muted hover:text-fg border border-border hover:bg-surface transition-colors flex items-center gap-2">
+            <RotateCcw className="w-4 h-4" /> Upload Ulang
+          </button>
         </div>
       </div>
 
