@@ -2,14 +2,16 @@
 // Export buttons (Excel + PDF) — lazy-loads export libs
 
 import { useState } from 'react'
-import { Download } from 'lucide-react'
+import { Download, FileText } from 'lucide-react'
 import { exportToExcel } from '../../lib/export/excelExport'
 import { exportToPDF } from '../../lib/export/pdfExport'
 import { generateRSyntax } from '../../lib/export/rSyntaxGenerator'
 import { toast } from '../../lib/toast'
+import ReportPreviewModal from './ReportPreviewModal'
 
 export default function ExportActions({ result, containerRef }) {
   const [exportingPdf, setExportingPdf] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
 
   const handleExcel = () => {
     try {
@@ -61,6 +63,13 @@ export default function ExportActions({ result, containerRef }) {
       {dl('Excel', handleExcel)}
       {dl(exportingPdf ? 'Membuat PDF…' : 'PDF', handlePdf, exportingPdf)}
       {dl('R Syntax', handleR)}
+      <button onClick={() => setShowReportModal(true)}
+        className="px-3 sm:px-4 py-2 bg-emerald-600 hover:opacity-90 text-white rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+        <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 📝 Laporan AI
+      </button>
+      {showReportModal && (
+        <ReportPreviewModal result={result} onClose={() => setShowReportModal(false)} />
+      )}
     </>
   )
 }
