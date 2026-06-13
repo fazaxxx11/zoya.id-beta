@@ -655,9 +655,9 @@ export default function EViewsPage() {
                       {/* BP, White, Wooldridge */}
                       <div className="flex flex-wrap gap-2">
                         {[
-                          { key: 'bp', label: 'Breusch-Pagan' },
-                          { key: 'white', label: "White's Test" },
-                          { key: 'wooldridge', label: 'Wooldridge' },
+                          { key: 'bp', label: 'Breusch-Pagan', desc: 'Uji heteroskedastisitas — apakah varians error konstan?' },
+                          { key: 'white', label: "White's Test", desc: 'Uji heteroskedastisitas umum — tanpa asumsi distribusi tertentu' },
+                          { key: 'wooldridge', label: 'Wooldridge', desc: 'Uji autokorelasi pada data panel — apakah error berkorelasi lintas waktu?' },
                         ].map(d => (
                           <button
                             key={d.key}
@@ -667,6 +667,7 @@ export default function EViewsPage() {
                             style={{ borderColor: 'rgb(var(--border))', backgroundColor: 'rgb(var(--surface))', color: 'rgb(var(--fg))' }}
                           >
                             {diagnosticResults[d.key] ? '✓ ' : ''}{d.label}
+                            <span className="ml-1 opacity-60 cursor-help" title={d.desc}>ⓘ</span>
                           </button>
                         ))}
                       </div>
@@ -748,9 +749,9 @@ export default function EViewsPage() {
                   {/* Test selector tabs */}
                   <div className="flex border-b" style={{ borderColor: 'rgb(var(--border))' }}>
                     {[
-                      { id: 'adf', label: 'ADF Unit Root', icon: TrendingUp },
-                      { id: 'granger', label: 'Granger', icon: ArrowRightLeft },
-                      { id: 'cointegration', label: 'Cointegration', icon: Link2 },
+                      { id: 'adf', label: 'ADF Unit Root', desc: 'Uji stasioneritas — apakah data punya tren/unit root?', icon: TrendingUp },
+                      { id: 'granger', label: 'Granger', desc: 'Uji kausalitas — apakah X bisa prediksi Y di masa depan?', icon: ArrowRightLeft },
+                      { id: 'cointegration', label: 'Cointegration', desc: 'Uji hubungan jangka panjang — apakah X dan Y bergerak bersama?', icon: Link2 },
                     ].map(tab => {
                       const Icon = tab.icon
                       const active = tsConfig.tsTest === tab.id
@@ -767,6 +768,7 @@ export default function EViewsPage() {
                         >
                           <Icon className="w-4 h-4" />
                           <span className="hidden sm:inline">{tab.label}</span>
+                          <span className="ml-1 opacity-60 cursor-help hidden sm:inline" title={tab.desc}>ⓘ</span>
                         </button>
                       )
                     })}
