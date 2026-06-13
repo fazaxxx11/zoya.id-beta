@@ -32,11 +32,16 @@ export const ResultHeader = ({ title, significant, testLabel }) => (
       <span className="text-sm font-heading font-semibold text-fg">{title}</span>
       {testLabel && <span className="text-xs text-muted px-2 py-0.5 rounded bg-surface">{testLabel}</span>}
     </div>
-    <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-      significant ? 'bg-accent text-white' : 'bg-muted/20 text-muted'
-    }`}>
-      {significant ? 'Signifikan ✓' : 'Tidak Signifikan'}
-    </span>
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+        ✓ Sesuai SPSS
+      </span>
+      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
+        significant ? 'bg-accent text-white' : 'bg-muted/20 text-muted'
+      }`}>
+        {significant ? 'Signifikan ✓' : 'Tidak Signifikan'}
+      </span>
+    </div>
   </div>
 )
 

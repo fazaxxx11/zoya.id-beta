@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Download } from 'lucide-react'
 import { exportToExcel } from '../../lib/export/excelExport'
 import { exportToPDF } from '../../lib/export/pdfExport'
+import { generateRSyntax } from '../../lib/export/rSyntaxGenerator'
 import { toast } from '../../lib/toast'
 
 export default function ExportActions({ result, containerRef }) {
@@ -32,6 +33,22 @@ export default function ExportActions({ result, containerRef }) {
     }
   }
 
+  const handleR = () => {
+    try {
+      const code = generateRSyntax(result)
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${result.tool}_syntax.R`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast.success('R syntax berhasil di-download')
+    } catch (e) {
+      toast.error('Gagal: ' + e.message)
+    }
+  }
+
   const dl = (label, fn, disabled = false) => (
     <button onClick={fn} disabled={disabled}
       className="px-3 sm:px-4 py-2 bg-accent hover:opacity-90 disabled:opacity-50 text-white rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
@@ -43,6 +60,7 @@ export default function ExportActions({ result, containerRef }) {
     <>
       {dl('Excel', handleExcel)}
       {dl(exportingPdf ? 'Membuat PDF…' : 'PDF', handlePdf, exportingPdf)}
+      {dl('R Syntax', handleR)}
     </>
   )
 }
