@@ -556,6 +556,40 @@ export default function EViewsPage() {
               })}
             </div>
 
+            {/* Tab descriptions */}
+            {activeTab === 'estimasi' && (
+              <div className="px-1 pt-3 pb-1">
+                <h4 className="text-sm font-semibold text-fg mb-1">Estimasi Panel Data</h4>
+                <p className="text-xs text-muted leading-relaxed">
+                  Cocok untuk data dengan struktur cross-section + time (misal: 30 provinsi × 10 tahun).
+                  Pilih entitas (ID), waktu, variabel Y dan X, lalu pilih metode estimasi.
+                  Hausman test otomatis tersedia setelah Fixed Effects & Random Effects dijalankan.
+                </p>
+              </div>
+            )}
+            {activeTab === 'diagnostik' && (
+              <div className="px-1 pt-3 pb-1">
+                <h4 className="text-sm font-semibold text-fg mb-1">Diagnostik Model</h4>
+                <p className="text-xs text-muted leading-relaxed">
+                  Jalankan estimasi panel terlebih dahulu, lalu cek asumsi model di sini:
+                  <strong> Breusch-Pagan</strong> (heteroskedastisitas),
+                  <strong> White</strong> (heteroskedastisitas umum),
+                  <strong> Wooldridge</strong> (autokorelasi panel).
+                </p>
+              </div>
+            )}
+            {activeTab === 'timeseries' && (
+              <div className="px-1 pt-3 pb-1">
+                <h4 className="text-sm font-semibold text-fg mb-1">Time Series Analysis</h4>
+                <p className="text-xs text-muted leading-relaxed">
+                  Untuk data deret waktu (misal: GDP bulanan, harga saham harian).
+                  <strong> ADF</strong> — uji stasioneritas (unit root),
+                  <strong> Granger</strong> — uji kausalitas antar variabel,
+                  <strong> Cointegration</strong> — uji hubungan jangka panjang.
+                </p>
+              </div>
+            )}
+
             <div className="p-4">
               {/* ═══════════ TAB 1: ESTIMASI ═══════════ */}
               {activeTab === 'estimasi' && (
