@@ -461,19 +461,19 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
 // Shows all 13 tests even before upload
 // ============================================================
 const ALL_TESTS = [
-  { id: 'deskriptif', label: 'Deskriptif', desc: 'Mean, median, SD, skewness, kurtosis' },
-  { id: 'normalitas', label: 'Normalitas', desc: 'Shapiro-Wilk / Kolmogorov-Smirnov' },
-  { id: 'korelasi', label: 'Korelasi', desc: 'Pearson / Spearman' },
-  { id: 'ttest', label: 'T-Test', desc: 'Bandingkan rata-rata antar grup' },
-  { id: 'anova', label: 'ANOVA', desc: 'Bandingkan rata-rata ≥3 grup' },
-  { id: 'regresi', label: 'Regresi Sederhana', desc: '1 prediktor → 1 outcome' },
-  { id: 'regresiganda', label: 'Regresi Berganda', desc: '≥2 prediktor → 1 outcome' },
-  { id: 'chisquare', label: 'Chi-Square', desc: 'Asosiasi antar variabel kategorik' },
-  { id: 'validitas', label: 'Validitas & Reliabilitas', desc: 'Cronbach Alpha + korelasi item' },
-  { id: 'mannwhitney', label: 'Mann-Whitney U', desc: 'Non-parametrik, 2 grup' },
-  { id: 'wilcoxon', label: 'Wilcoxon', desc: 'Non-parametrik, berpasangan' },
-  { id: 'kruskal', label: 'Kruskal-Wallis', desc: 'Non-parametrik, ≥3 grup' },
-  { id: 'ngain', label: 'N-Gain', desc: 'Efektivitas pre-post' },
+  { id: 'deskriptif', label: 'Deskriptif', desc: 'Mean, median, SD, skewness, kurtosis', tooltip: 'Gunakan untuk gambaran umum data. Langkah pertama sebelum analisis lanjutan.' },
+  { id: 'normalitas', label: 'Normalitas', desc: 'Shapiro-Wilk / Kolmogorov-Smirnov', tooltip: 'Cek apakah data berdistribusi normal. Syarat wajib sebelum pakai uji parametrik.' },
+  { id: 'korelasi', label: 'Korelasi', desc: 'Pearson / Spearman', tooltip: 'Uji hubungan antar 2 variabel numerik. Pearson untuk data normal, Spearman untuk non-parametrik.' },
+  { id: 'ttest', label: 'T-Test', desc: 'Bandingkan rata-rata antar grup', tooltip: 'Independent untuk 2 grup berbeda, Paired untuk sebelum-sesudah. Syarat: data normal.' },
+  { id: 'anova', label: 'ANOVA', desc: 'Bandingkan rata-rata ≥3 grup', tooltip: 'Uji F untuk 3+ grup. Jika signifikan, lanjut post-hoc (Tukey). Syarat: normal + homogen.' },
+  { id: 'regresi', label: 'Regresi Sederhana', desc: '1 prediktor → 1 outcome', tooltip: 'Prediksi Y dari 1 variabel X. Output: R², koefisien β, persamaan garis.' },
+  { id: 'regresiganda', label: 'Regresi Berganda', desc: '≥2 prediktor → 1 outcome', tooltip: 'Prediksi Y dari beberapa X. Cek VIF untuk multikolinearitas. Output: R², adj-R², F.' },
+  { id: 'chisquare', label: 'Chi-Square', desc: 'Asosiasi antar variabel kategorik', tooltip: 'Uji hubungan antar 2 variabel kategori (Laki-laki/Perempuan × Setuju/Tidak).' },
+  { id: 'validitas', label: 'Validitas & Reliabilitas', desc: 'Cronbach Alpha + korelasi item', tooltip: 'Untuk instrumen kuesioner. Validitas = korelasi item-total. Reliabilitas = Cronbach α ≥ 0.7.' },
+  { id: 'mannwhitney', label: 'Mann-Whitney U', desc: 'Non-parametrik, 2 grup', tooltip: 'Alternatif T-Test jika data tidak normal. Cocok untuk data ordinal atau skewed.' },
+  { id: 'wilcoxon', label: 'Wilcoxon', desc: 'Non-parametrik, berpasangan', tooltip: 'Alternatif Paired T-Test jika data tidak normal. Cocok untuk pre-test/post-test.' },
+  { id: 'kruskal', label: 'Kruskal-Wallis', desc: 'Non-parametrik, ≥3 grup', tooltip: 'Alternatif ANOVA jika data tidak normal. Jika signifikan, lanjut Dunn test.' },
+  { id: 'ngain', label: 'N-Gain', desc: 'Efektivitas pre-post', tooltip: 'Skor gain ternormalisasi. Cocok untuk skripsi pendidikan. Interpretasi: rendah/sedang/tinggi.' },
 ]
 
 function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
@@ -510,7 +510,12 @@ function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
                 : 'border-border hover:border-accent/30 bg-card'
             }`}
           >
-            <div className="font-medium text-fg">{test.label}</div>
+            <div className="flex items-center gap-1.5">
+              <div className="font-medium text-fg">{test.label}</div>
+              {test.tooltip && (
+                <span className="opacity-50 cursor-help text-xs" title={test.tooltip}>ⓘ</span>
+              )}
+            </div>
             <div className="text-muted mt-0.5 leading-tight">{test.desc}</div>
           </button>
         ))}
