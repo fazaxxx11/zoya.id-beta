@@ -80,6 +80,11 @@ export default function PanelConfig({ columns, onEstimate, loading }) {
             <option value="fixedEffects">Fixed Effects (Within)</option>
             <option value="randomEffects">Random Effects (GLS)</option>
           </select>
+          <p className="text-xs text-muted mt-1">
+            {modelType === 'pooledOLS' && 'Estimasi biasa — cocok jika entitas dianggap homogen'}
+            {modelType === 'fixedEffects' && 'Mengontrol heterogenitas tetap per entitas — hilangkan bias omitted variable'}
+            {modelType === 'randomEffects' && 'Lebih efisien — tapi asumsi error tidak berkorelasi dengan X'}
+          </p>
         </div>
       </div>
 
