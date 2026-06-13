@@ -389,6 +389,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
 
   return (
     <div className="border border-border bg-card rounded-xl p-6">
+      <GuideSection />
       <h2 className="text-lg font-semibold text-fg mb-1">Analisis apa yang ingin kamu lakukan?</h2>
       <p className="text-sm text-muted mb-5">Azezmen merekomendasikan analisis berdasarkan tipe data yang terdeteksi.</p>
 
@@ -460,6 +461,51 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
 // Always-visible Test Selection Panel
 // Shows all 13 tests even before upload
 // ============================================================
+// ============================================================
+// Guide Section (collapsible how-to)
+// ============================================================
+function GuideSection() {
+  const [open, setOpen] = useState(false)
+
+  const steps = [
+    { num: '1', title: 'Upload Data', desc: 'Siapkan file CSV atau Excel. Baris pertama = nama kolom, isi = data.' },
+    { num: '2', title: 'Cek Variabel', desc: 'Azezmen otomatis deteksi kolom numerik dan kategori. Pastikan benar.' },
+    { num: '3', title: 'Pilih Uji', desc: 'Pilih analisis yang sesuai. Kalau bingung, gunakan rekomendasi otomatis.' },
+    { num: '4', title: 'Lihat Hasil', desc: 'Hasil perhitungan + interpretasi muncul langsung. Bisa download.' },
+  ]
+
+  return (
+    <div className="mb-6">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 text-sm text-muted hover:text-fg transition-colors"
+      >
+        <span>{open ? '▾' : '▸'}</span>
+        <span className="font-medium">Cara Menggunakan Azezmen</span>
+      </button>
+
+      {open && (
+        <div className="mt-4 pl-4 border-l-2 border-accent/20">
+          {steps.map((step) => (
+            <div key={step.num} className="mb-4 last:mb-0">
+              <div className="flex items-baseline gap-2">
+                <span className="text-xs font-mono text-accent">{step.num}.</span>
+                <div>
+                  <div className="text-sm font-medium text-fg">{step.title}</div>
+                  <div className="text-xs text-muted mt-0.5">{step.desc}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+          <p className="text-xs text-muted mt-4 italic">
+            Tips: Mulai dari Statistik Deskriptif dulu untuk lihat gambaran umum data kamu.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const ALL_TESTS = [
   { id: 'deskriptif', label: 'Deskriptif', desc: 'Mean, median, SD, skewness, kurtosis', tooltip: 'Gunakan untuk gambaran umum data. Langkah pertama sebelum analisis lanjutan.' },
   { id: 'normalitas', label: 'Normalitas', desc: 'Shapiro-Wilk / Kolmogorov-Smirnov', tooltip: 'Cek apakah data berdistribusi normal. Syarat wajib sebelum pakai uji parametrik.' },
@@ -489,6 +535,7 @@ function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
 
   return (
     <div className="border border-border bg-card rounded-xl p-6">
+      <GuideSection />
       <h2 className="text-base font-semibold text-fg mb-1">Pilih Uji Statistik</h2>
       <p className="text-xs text-muted mb-4">Klik uji yang ingin dijalankan. {data ? 'Pilih kolom yang sesuai di data Anda.' : 'Upload dataset terlebih dahulu untuk menjalankan analisis.'}</p>
 
