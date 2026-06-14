@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
+import Fuse from 'fuse.js'
 import { Link, useNavigate } from 'react-router-dom'
 import { 
   ChevronLeft, Plus, Trash2, FileText, Users, Sparkles, Award,
@@ -955,16 +956,22 @@ function HasilPenilaian({
   // Sort & filter state — local karena cuma view-level
   const [sortBy, setSortBy] = useState('default')   // default | high | low | name
   const [filterBy, setFilterBy] = useState('all')   // all | pass | fail
+  const [studentSearch, setStudentSearch] = useState('')
+  const studentFuse = useMemo(() => new Fuse(results, { keys: ['name'], threshold: 0.3 }), [results])
 
   const sortedResults = useMemo(() => {
     const arr = [...results]
     if (sortBy === 'high') arr.sort((a, b) => calcTotal(b.scores, rubrik) - calcTotal(a.scores, rubrik))
     else if (sortBy === 'low') arr.sort((a, b) => calcTotal(a.scores, rubrik) - calcTotal(b.scores, rubrik))
     else if (sortBy === 'name') arr.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
-    if (filterBy === 'pass') return arr.filter(r => r.scores && calcTotal(r.scores, rubrik) >= 6)
-    if (filterBy === 'fail') return arr.filter(r => r.scores && calcTotal(r.scores, rubrik) < 6)
+    if (filterBy === 'pass') arr = arr.filter(r => r.scores && calcTotal(r.scores, rubrik) >= 6)
+    if (filterBy === 'fail') arr = arr.filter(r => r.scores && calcTotal(r.scores, rubrik) < 6)
+    if (studentSearch.trim()) {
+      const ids = new Set(studentFuse.search(studentSearch).map(r => r.item.id))
+      arr = arr.filter(r => ids.has(r.id))
+    }
     return arr
-  }, [results, rubrik, sortBy, filterBy])
+  }, [results, rubrik, sortBy, filterBy, studentSearch, studentFuse])
 
   const handleExport = () => {
     try {
@@ -1010,6 +1017,15 @@ function HasilPenilaian({
       {/* Sort & filter toolbar */}
       {hasAnyResult && results.length > 1 && (
         <div className="flex items-center gap-2 flex-wrap text-sm">
+          <div className="flex-1 min-w-[140px]">
+            <input
+              type="text"
+              value={studentSearch}
+              onChange={e => setStudentSearch(e.target.value)}
+              placeholder="Cari siswa..."
+              className="w-full px-2.5 py-1 text-xs border border-border rounded-lg bg-white text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-sky-300"
+            />
+          </div>
           <div className="flex items-center gap-1.5 text-gray-600">
             <ArrowUpDown className="w-4 h-4"/>
             <select value={sortBy} onChange={e => setSortBy(e.target.value)}
@@ -1381,6 +1397,7 @@ function Assessment() {
     // Notify hasil siap
     if (apiSuccess) {
       toast.success(`Penilaian selesai untuk ${students.length} siswa`)
+      trackEvent('assess', { count: students.length })
     } else {
       toast.warning('AI tidak tersedia — hasil pakai estimasi otomatis. Coba lagi nanti untuk hasil real.', {
         duration: 7000,

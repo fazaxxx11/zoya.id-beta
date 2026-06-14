@@ -691,6 +691,7 @@ function PreviewPanel({ survey, onSubmit }) {
   const setAnswer = (id, val) => setAnswers(a => ({ ...a, [id]: val }))
 
   const handleSubmit = () => {
+    trackEvent('survey_submit', { sections: draft.sections.length })
     const err = validateResponse(survey, answers)
     if (err) { toast.warning(err); return }
     onSubmit(answers, name)

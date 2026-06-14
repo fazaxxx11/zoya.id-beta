@@ -1,4 +1,7 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts'
+import { trackPageview, trackEvent } from './lib/analytics'
 import { lazy, Suspense } from 'react'
 import { ThemeProvider } from './lib/ThemeContext'
 import Home from './pages/Home'
@@ -64,12 +67,23 @@ function PageLoader() {
   )
 }
 
+function RouteTracker() {
+  const location = useLocation()
+  useEffect(() => { trackPageview() }, [location.pathname])
+  return null
+}
+
+// Expose trackEvent globally for pages
+export { trackEvent }
+
 function App() {
+  useKeyboardShortcuts()
   return (
     <ErrorBoundary>
       <ThemeProvider>
       <Aurora />
       <BrowserRouter>
+        <RouteTracker />
         <PromoBanner />
         <Suspense fallback={<PageLoader />}>
         <Routes>

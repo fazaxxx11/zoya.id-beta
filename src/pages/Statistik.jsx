@@ -599,6 +599,7 @@ function Statistik() {
           })
         }
         toast.success('Analisis selesai!')
+    trackEvent('analyze', { method: selectedMethod || 'unknown' })
       } catch (err) {
         console.error('Analysis error:', err)
         setError(err.message)

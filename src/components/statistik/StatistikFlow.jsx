@@ -1,5 +1,6 @@
 // src/components/statistik/StatistikFlow.jsx
 // Guided step-based flow for Statistik page
+import Fuse from 'fuse.js'
 // Wraps existing logic, presents as Upload → Review → Select → Results → Interpret → Export
 
 import { useState, useMemo, useCallback } from 'react'
@@ -524,6 +525,9 @@ const ALL_TESTS = [
 
 function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
   const [notify, setNotify] = useState(null)
+  const [search, setSearch] = useState('')
+  const fuse = useMemo(() => new Fuse(ALL_TESTS, { keys: ['label', 'desc', 'tooltip'], threshold: 0.3 }), [])
+  const filtered = search.trim() ? fuse.search(search).map(r => r.item) : ALL_TESTS
 
   const handleClick = (id) => {
     if (!data) {
@@ -546,8 +550,17 @@ function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
         </div>
       )}
 
+      <div className="mb-3">
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Cari uji statistik... (tekan /)"
+          className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {ALL_TESTS.map(test => (
+        {filtered.map(test => (
           <button
             key={test.id}
             onClick={() => handleClick(test.id)}
