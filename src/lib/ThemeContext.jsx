@@ -1,30 +1,17 @@
 // src/lib/ThemeContext.jsx
-// Light/dark mode provider with localStorage persistence + system preference
+// React context wrapper around theme.js — single source of truth.
+// Provides { mode, resolved, setMode } to all consumers.
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { getStoredMode, getSystemTheme, applyTheme } from './theme'
 
 const ThemeContext = createContext(null)
 const STORAGE_KEY = 'azezmen_theme'
 
-function getSystemTheme() {
-  if (typeof window === 'undefined') return 'light'
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
-function getStoredTheme() {
-  if (typeof window === 'undefined') return 'system'
-  return localStorage.getItem(STORAGE_KEY) || 'system'
-}
-
-function applyTheme(mode) {
-  const resolved = mode === 'system' ? getSystemTheme() : mode
-  const root = document.documentElement
-  root.classList.remove('light', 'dark')
-  root.classList.add(resolved)
-}
-
 export function ThemeProvider({ children }) {
-  const [mode, setModeState] = useState(getStoredTheme)
+  const [mode, setModeState] = useState(getStoredMode)
+  // Force re-render when OS preference changes while in 'system' mode
+  const [, setTick] = useState(0)
 
   const setMode = useCallback((newMode) => {
     setModeState(newMode)
@@ -32,7 +19,7 @@ export function ThemeProvider({ children }) {
     applyTheme(newMode)
   }, [])
 
-  // Apply on mount
+  // Apply on mount (safety net kalau initTheme belum jalan)
   useEffect(() => {
     applyTheme(mode)
   }, [])
@@ -41,15 +28,14 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const handler = () => {
-      if (getStoredTheme() === 'system') {
-        applyTheme('system')
-      }
+      // Re-apply & force re-render supaya resolved ikut berubah
+      applyTheme('system')
+      setTick(t => t + 1)
     }
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  // Resolve actual theme for display
   const resolved = mode === 'system' ? getSystemTheme() : mode
 
   return (
