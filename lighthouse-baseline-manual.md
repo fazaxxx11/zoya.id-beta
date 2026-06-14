@@ -1,33 +1,37 @@
-# Lighthouse Baseline (Manual)
+# Lighthouse Baseline
 
 Date: 2026-06-14
 URL: https://azezmen.vercel.app
 
-## Automated run failed (VPS Chrome deps missing)
+## Scores (from automated run)
 
-Manual check via:
-1. Chrome DevTools → Lighthouse tab
-2. https://pagespeed.web.dev/?url=https://azezmen.vercel.app
+| Metric | Score |
+|---|---|
+| Performance | 17 |
+| Accessibility | 96 |
+| Best Practices | 100 |
+| SEO | 100 |
 
-## Expected metrics (from build analysis):
+> Performance rendah karena: SPA blank initial load + vendor chunks besar + no SSR.
+> VPS CPU throttled → score lebih rendah dari production Vercel edge.
 
-### Bundle size (post-split):
+## Bundle Analysis (post code-split)
+
 - Main: 90KB (29KB gzip)
-- Largest vendor: vendor-pdf 722KB (221KB gzip)
-- Precache total: 4.8MB (70 entries)
+- vendor-pdf: 722KB (221KB gzip)
+- vendor-mammoth: 493KB (129KB gzip)
+- vendor-xlsx: 428KB (143KB gzip)
+- vendor-docx: 352KB (101KB gzip) ← NEW
+- vendor-supabase: 202KB (52KB gzip)
+- html2canvas: 201KB (48KB gzip)
+- vendor-ui: 194KB (56KB gzip)
+- vendor-stats: 53KB (18KB gzip)
+- Precache total: 4.5MB (70 entries)
 
-### Critical metrics to track:
-- **Performance**: target 85+ (large vendors hurt initial load)
-- **Accessibility**: target 95+ (semantic HTML + contrast)
-- **Best Practices**: target 95+ (HTTPS + no console.error in prod)
-- **SEO**: target 95+ (meta tags + SSR placeholders)
+## Next Improvements
 
-### Known issues:
-- Large PDF/XLSX vendors (lazy-loaded but still in bundle)
-- No SSR (Vite SPA → initial load = blank)
-- Service worker precache = 4.8MB
-
-### Next improvements:
-- SSR/SSG for landing pages (Vite SSR or migrate to Next.js)
-- CDN for heavy vendors
-- Route-based code split (React.lazy for pages)
+1. Lazy load html2canvas (dynamic import)
+2. Route-based code split (React.lazy for pages)
+3. SSR/SSG for landing page (Next.js migration or Vite SSR)
+4. CDN for heavy vendors
+5. Re-run Lighthouse on Vercel edge for accurate score
