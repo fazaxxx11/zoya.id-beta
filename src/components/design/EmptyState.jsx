@@ -18,13 +18,13 @@ const EmptyState = ({
       )}
       
       {title && (
-        <h3 className="font-heading text-xl font-semibold text-gray-900 mb-3">
+        <h3 className="font-heading text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
           {title}
         </h3>
       )}
       
       {description && (
-        <p className="text-gray-600 max-w-md mx-auto mb-6">
+        <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6">
           {description}
         </p>
       )}

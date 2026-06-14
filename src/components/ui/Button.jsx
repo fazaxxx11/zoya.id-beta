@@ -5,8 +5,8 @@ import { cn } from '../../lib/cn'
 const variants = {
   default: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow',
   destructive: 'bg-red-600 text-white hover:bg-red-700 shadow',
-  outline: 'border border-gray-300 bg-white hover:bg-surface text-gray-700',
-  ghost: 'hover:bg-surface text-gray-700',
+  outline: 'border border-border bg-card hover:bg-surface text-gray-700 dark:text-gray-300',
+  ghost: 'hover:bg-surface text-gray-700 dark:text-gray-300',
   link: 'text-indigo-600 underline-offset-4 hover:underline',
 }
 

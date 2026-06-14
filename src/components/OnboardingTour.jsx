@@ -112,7 +112,7 @@ export default function OnboardingTour() {
       className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto animate-in"
       onClick={(e) => { if (e.target === e.currentTarget) handleSkip() }}
     >
-      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden animate-scale-in">
+      <div className="bg-card rounded-3xl shadow-2xl max-w-md w-full overflow-hidden animate-scale-in">
         {/* Skip button */}
         <button
           onClick={handleSkip}

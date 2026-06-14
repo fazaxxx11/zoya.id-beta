@@ -247,7 +247,7 @@ export default function Kuesioner() {
                 className={`group rounded-lg border px-3 py-2 cursor-pointer transition-colors ${
                   s.id === activeId
                     ? 'bg-sky-50 border-sky-300'
-                    : 'bg-white border-border hover:bg-surface'
+                    : 'bg-card border-border hover:bg-surface'
                 }`}
                 onClick={() => handleSelect(s.id)}
               >
@@ -294,7 +294,7 @@ export default function Kuesioner() {
               <StepFlowBanner tab={tab} responses={responses.length} />
 
               {/* Top toolbar */}
-              <div className="bg-white border border-border rounded-xl p-3 mb-3 flex flex-wrap items-center gap-2">
+              <div className="bg-card border border-border rounded-xl p-3 mb-3 flex flex-wrap items-center gap-2">
                 <input
                   type="text"
                   value={draft.title}
@@ -325,7 +325,7 @@ export default function Kuesioner() {
                       className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px flex items-center gap-1.5 transition-colors ${
                         tab === t.id
                           ? 'border-sky-500 text-sky-700'
-                          : 'border-transparent text-muted hover:text-gray-700'
+                          : 'border-transparent text-muted hover:text-gray-700 dark:text-gray-300'
                       }`}
                     >
                       <Ic className="w-4 h-4" /> {t.label}
@@ -461,11 +461,11 @@ function BuilderPanel({ draft, setDraft }) {
         onChange={e => setDraft({ ...draft, description: e.target.value })}
         placeholder="Deskripsi / pengantar kuesioner (opsional)..."
         rows={2}
-        className="w-full bg-white border border-border rounded-xl px-3 py-2 text-sm"
+        className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm"
       />
 
       {draft.sections.map((sec, sIdx) => (
-        <div key={sec.id} className="bg-white border border-border rounded-xl p-3 sm:p-4">
+        <div key={sec.id} className="bg-card border border-border rounded-xl p-3 sm:p-4">
           <div className="flex items-start gap-2 mb-3 pb-3 border-b border-border">
             <GripVertical className="w-4 h-4 text-muted mt-2.5" />
             <div className="flex-1 space-y-1.5">
@@ -541,7 +541,7 @@ function BuilderPanel({ draft, setDraft }) {
 
       <button
         onClick={addSection}
-        className="w-full bg-white border-2 border-dashed border-gray-300 hover:border-sky-400 hover:bg-sky-50/30 rounded-xl py-3 text-sm font-medium text-gray-600 hover:text-sky-700 transition-colors flex items-center justify-center gap-2"
+        className="w-full bg-card border-2 border-dashed border-border hover:border-sky-400 hover:bg-sky-50/30 rounded-xl py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-sky-700 transition-colors flex items-center justify-center gap-2"
       >
         <Plus className="w-4 h-4" /> Tambah Bagian
       </button>
@@ -703,9 +703,9 @@ function PreviewPanel({ survey, onSubmit }) {
   }
 
   return (
-    <div className="bg-white border border-border rounded-xl p-4 sm:p-6 max-w-3xl mx-auto">
+    <div className="bg-card border border-border rounded-xl p-4 sm:p-6 max-w-3xl mx-auto">
       <h2 className="text-xl font-bold mb-1">{survey.title}</h2>
-      {survey.description && <p className="text-sm text-gray-600 mb-4 whitespace-pre-wrap">{survey.description}</p>}
+      {survey.description && <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 whitespace-pre-wrap">{survey.description}</p>}
 
       <div className="mb-4 pb-4 border-b border-border">
         <label className="text-xs text-muted block mb-1">Nama responden (opsional)</label>
@@ -869,8 +869,8 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
             <ClipboardList className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Selamat datang di Kuesioner Builder</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">Selamat datang di Kuesioner Builder</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Bikin angket online → kumpulkan jawaban → analisis (Cronbach α, validitas).
               <br />Pilih cara mulai di bawah ⬇️
             </p>
@@ -905,11 +905,11 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
             const Ic = s.icon
             return (
               <div key={s.n} className="text-center">
-                <div className="w-10 h-10 mx-auto rounded-full bg-white border-2 border-sky-300 flex items-center justify-center mb-1.5">
+                <div className="w-10 h-10 mx-auto rounded-full bg-card border-2 border-sky-300 flex items-center justify-center mb-1.5">
                   <Ic className="w-4 h-4 text-sky-600" />
                 </div>
                 <div className="text-[10px] font-bold text-sky-700">LANGKAH {s.n}</div>
-                <div className="text-xs text-gray-700">{s.label}</div>
+                <div className="text-xs text-gray-700 dark:text-gray-300">{s.label}</div>
               </div>
             )
           })}
@@ -938,7 +938,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
         </button>
 
         {/* Templates */}
-        <div className="bg-white border-2 border-border rounded-xl p-5">
+        <div className="bg-card border-2 border-border rounded-xl p-5">
           <div className="flex items-center gap-2 mb-3">
             <BookOpen className="w-5 h-5 text-sky-600" />
             <span className="font-semibold">Mulai dari Template</span>
@@ -950,7 +950,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
                 onClick={() => onTemplate(tpl.id)}
                 className="w-full text-left px-3 py-2 rounded-lg bg-surface hover:bg-sky-50 border border-border hover:border-sky-300 transition-colors"
               >
-                <div className="text-sm font-medium text-gray-900">{tpl.name}</div>
+                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{tpl.name}</div>
                 <div className="text-xs text-muted">{tpl.desc}</div>
               </button>
             ))}
@@ -959,15 +959,15 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
       </div>
 
       {/* Instrumen Teruji (Validated Scales) */}
-      <details className="bg-white border-2 border-emerald-200 rounded-xl overflow-hidden" open>
+      <details className="bg-card border-2 border-emerald-200 rounded-xl overflow-hidden" open>
         <summary className="px-5 py-3 cursor-pointer flex items-center gap-2 hover:bg-emerald-50/50 transition-colors">
           <Library className="w-5 h-5 text-emerald-600" />
-          <span className="font-semibold text-gray-900">Instrumen Teruji (Validated Scales)</span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100">Instrumen Teruji (Validated Scales)</span>
           <span className="text-[10px] uppercase tracking-wide bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Akademik</span>
           <span className="ml-auto text-xs text-muted">{INSTRUMENT_TEMPLATES.length} instrumen</span>
         </summary>
         <div className="px-5 pb-4 pt-1">
-          <p className="text-xs text-gray-600 mb-3">
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
             Instrumen klasik yang sudah divalidasi internasional, di-translate ke Bahasa Indonesia. Pakai untuk skripsi/tesis dengan tetap mencantumkan sitasi yang tertera.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -978,10 +978,10 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
                 className="text-left p-3 rounded-lg bg-emerald-50/50 hover:bg-emerald-50 border border-emerald-200 hover:border-emerald-400 transition-colors group"
               >
                 <div className="flex items-start justify-between gap-2 mb-1">
-                  <div className="text-sm font-semibold text-gray-900">{inst.name}</div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{inst.name}</div>
                   <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-medium whitespace-nowrap">{inst.dimensions}D · {inst.items} item</span>
                 </div>
-                <div className="text-xs text-gray-600 mb-1.5">{inst.desc}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 mb-1.5">{inst.desc}</div>
                 <div className="text-[10px] text-emerald-700 flex items-center gap-1">
                   <BookOpen className="w-3 h-3" /> {inst.citation} · {inst.domain}
                 </div>
@@ -992,7 +992,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
       </details>
 
       {/* Other options */}
-      <div className="bg-white border border-border rounded-xl p-4 flex flex-wrap items-center gap-3 text-sm">
+      <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap items-center gap-3 text-sm">
         <span className="text-muted">Atau:</span>
         <button onClick={onBlank} className="text-sky-600 hover:text-sky-700 font-medium flex items-center gap-1">
           <FilePlus2 className="w-4 h-4" /> Buat dari nol
@@ -1030,7 +1030,7 @@ function StepFlowBanner({ tab, responses }) {
     { id: 'responses', n: 3, label: 'Analisis', desc: `${responses} respons` },
   ]
   return (
-    <div className="bg-white border border-border rounded-xl p-2 mb-3 flex items-center justify-between gap-2 text-xs overflow-x-auto">
+    <div className="bg-card border border-border rounded-xl p-2 mb-3 flex items-center justify-between gap-2 text-xs overflow-x-auto">
       {steps.map((s, i) => {
         const active = s.id === tab
         const done = (tab === 'preview' && s.id === 'builder') ||
@@ -1040,12 +1040,12 @@ function StepFlowBanner({ tab, responses }) {
             <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-[11px] ${
               active ? 'bg-sky-500 text-white' :
               done   ? 'bg-green-500 text-white' :
-                       'bg-gray-200 text-muted'
+                       'bg-gray-200 dark:bg-gray-700 text-muted'
             }`}>
               {done ? <Check className="w-3 h-3" /> : s.n}
             </div>
             <div className="min-w-0">
-              <div className={`font-semibold truncate ${active ? 'text-sky-700' : 'text-gray-700'}`}>{s.label}</div>
+              <div className={`font-semibold truncate ${active ? 'text-sky-700' : 'text-gray-700 dark:text-gray-300'}`}>{s.label}</div>
               <div className="text-[10px] text-muted truncate">{s.desc}</div>
             </div>
             {i < steps.length - 1 && <ArrowRight className="w-3 h-3 text-muted flex-shrink-0" />}
@@ -1134,14 +1134,14 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
   if (responses.length === 0) {
     return (
       <div className="space-y-3">
-        <div className="bg-white border border-border rounded-xl p-8 text-center">
+        <div className="bg-card border border-border rounded-xl p-8 text-center">
           <ListChecks className="w-12 h-12 text-muted mx-auto mb-2" />
           <p className="text-sm text-muted mb-4">
             Belum ada respons. Pilih cara mengisi:
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             <span className="text-xs text-muted self-center">Cara 1:</span>
-            <span className="text-xs text-gray-700 self-center">Buka tab <strong>Preview & Isi</strong> untuk isi manual</span>
+            <span className="text-xs text-gray-700 dark:text-gray-300 self-center">Buka tab <strong>Preview & Isi</strong> untuk isi manual</span>
           </div>
           <div className="my-3 text-xs text-muted">— atau —</div>
           <div className="flex flex-wrap justify-center gap-2">
@@ -1164,7 +1164,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
   return (
     <div className="space-y-3">
       {fileInput}
-      <div className="bg-white border border-border rounded-xl p-3 flex flex-wrap items-center gap-2">
+      <div className="bg-card border border-border rounded-xl p-3 flex flex-wrap items-center gap-2">
         <span className="text-sm font-medium mr-2">{responses.length} respons</span>
         <button onClick={exportCSV} className="btn-secondary text-xs py-1.5">
           <Download className="w-3.5 h-3.5" /> Export
@@ -1189,7 +1189,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
 
       {/* Section means */}
       {sectionStats.length > 0 && (
-        <div className="bg-white border border-border rounded-xl p-3">
+        <div className="bg-card border border-border rounded-xl p-3">
           <h4 className="text-sm font-semibold mb-2">Rata-rata Skor per Bagian (Likert/Rating)</h4>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {sectionStats.map(s => (
@@ -1204,12 +1204,12 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
       )}
 
       {/* Per-respondent list */}
-      <div className="bg-white border border-border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-surface">
             <tr>
               {['#', 'Nama', 'Waktu', 'Item terisi', ''].map(h =>
-                <th key={h} className="px-3 py-2 text-left text-xs font-medium text-gray-600">{h}</th>)}
+                <th key={h} className="px-3 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-400">{h}</th>)}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -1237,7 +1237,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
       </div>
 
       {showRaw && (
-        <div className="bg-white border border-border rounded-xl p-3 overflow-x-auto">
+        <div className="bg-card border border-border rounded-xl p-3 overflow-x-auto">
           <table className="w-full text-xs">
             <thead className="bg-surface">
               <tr>{matrix.headers.map(h => <th key={h} className="px-2 py-1.5 text-left">{h}</th>)}</tr>
@@ -1324,7 +1324,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
             <Wand2 className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900">Generate Kuesioner dengan AI</h3>
+            <h3 className="font-bold text-gray-900 dark:text-gray-100">Generate Kuesioner dengan AI</h3>
             <p className="text-xs text-muted">Powered by OpenRouter / Groq / Kimi</p>
           </div>
         </div>
@@ -1346,14 +1346,14 @@ function AIGenerateModal({ open, onClose, onResult }) {
             className={`p-3 rounded-lg border-2 text-left transition-colors ${
               mode === 'quick'
                 ? 'border-accent bg-surface'
-                : 'border-border bg-white hover:border-gray-300'
+                : 'border-border bg-card hover:border-border'
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
               <Wand2 className="w-4 h-4 text-accent" />
               <span className="font-semibold text-sm">Quick Generate</span>
             </div>
-            <div className="text-xs text-gray-600">Cepat — cukup deskripsi topik, AI buatkan items.</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400">Cepat — cukup deskripsi topik, AI buatkan items.</div>
           </button>
           <button
             onClick={() => { if (mode !== 'blueprint') { setMode('blueprint'); setPreview(null) } }}
@@ -1361,14 +1361,14 @@ function AIGenerateModal({ open, onClose, onResult }) {
             className={`p-3 rounded-lg border-2 text-left transition-colors ${
               mode === 'blueprint'
                 ? 'border-accent bg-surface'
-                : 'border-border bg-white hover:border-gray-300'
+                : 'border-border bg-card hover:border-border'
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
               <BookOpen className="w-4 h-4 text-accent" />
               <span className="font-semibold text-sm">Blueprint + Items</span>
             </div>
-            <div className="text-xs text-gray-600">Lengkap — definisi operasional, indikator, kisi-kisi (untuk skripsi).</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400">Lengkap — definisi operasional, indikator, kisi-kisi (untuk skripsi).</div>
           </button>
         </div>
 
@@ -1376,32 +1376,32 @@ function AIGenerateModal({ open, onClose, onResult }) {
         <div className="space-y-3">
           {mode === 'quick' ? (
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Topik penelitian *</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Topik penelitian *</label>
               <input
                 type="text"
                 value={topic}
                 onChange={e => setTopic(e.target.value)}
                 placeholder="Mis. Kepuasan layanan perpustakaan kampus"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm"
                 disabled={loading}
               />
             </div>
           ) : (
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Variabel utama *</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Variabel utama *</label>
               <input
                 type="text"
                 value={variable}
                 onChange={e => setVariable(e.target.value)}
                 placeholder="Mis. Kepuasan kerja, Motivasi belajar, Self-efficacy"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm"
                 disabled={loading}
               />
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Dimensi (opsional, pisahkan dengan koma)
             </label>
             <input
@@ -1409,7 +1409,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
               value={dimensions}
               onChange={e => setDimensions(e.target.value)}
               placeholder="Mis. Tangibles, Reliability, Responsiveness, Assurance, Empathy"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm"
               disabled={loading}
             />
             <p className="text-[10px] text-muted mt-1">Kosongkan untuk biarkan AI menentukan dimensi berdasarkan teori.</p>
@@ -1417,11 +1417,11 @@ function AIGenerateModal({ open, onClose, onResult }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Skala Likert</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Skala Likert</label>
               <select
                 value={scale}
                 onChange={e => setScale(Number(e.target.value))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm"
                 disabled={loading}
               >
                 <option value={4}>4 poin</option>
@@ -1431,11 +1431,11 @@ function AIGenerateModal({ open, onClose, onResult }) {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Item per dimensi</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Item per dimensi</label>
               <select
                 value={itemsPerDimension}
                 onChange={e => setItemsPerDimension(Number(e.target.value))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm"
                 disabled={loading}
               >
                 {[3, 4, 5, 6, 7, 8, 10].map(n => (
@@ -1445,7 +1445,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
             </div>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
             <input
               type="checkbox"
               checked={includeDemografi}
@@ -1481,8 +1481,8 @@ function AIGenerateModal({ open, onClose, onResult }) {
           <div className="bg-surface border border-border rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="font-semibold text-sm text-gray-900">{preview.survey.title}</div>
-                <div className="text-xs text-gray-600 mt-0.5">{preview.survey.description}</div>
+                <div className="font-semibold text-sm text-gray-900 dark:text-gray-100">{preview.survey.title}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{preview.survey.description}</div>
               </div>
               <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
                 {preview.survey.sections.length} bagian · {totalItems} item
@@ -1508,7 +1508,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
                         <li key={i}>
                           <span className="font-medium">{d.name}</span>
                           {d.indicators?.length > 0 && (
-                            <span className="text-gray-700"> — {d.indicators.join('; ')}</span>
+                            <span className="text-gray-700 dark:text-gray-300"> — {d.indicators.join('; ')}</span>
                           )}
                         </li>
                       ))}
@@ -1520,10 +1520,10 @@ function AIGenerateModal({ open, onClose, onResult }) {
 
             <div className="space-y-2">
               {preview.survey.sections.map((sec, si) => (
-                <div key={si} className="bg-white border border-border rounded p-2.5">
-                  <div className="font-semibold text-sm text-gray-900">{sec.title}</div>
+                <div key={si} className="bg-card border border-border rounded p-2.5">
+                  <div className="font-semibold text-sm text-gray-900 dark:text-gray-100">{sec.title}</div>
                   {sec.description && <div className="text-xs text-muted mb-1.5">{sec.description}</div>}
-                  <ol className="list-decimal pl-5 text-xs text-gray-700 space-y-0.5">
+                  <ol className="list-decimal pl-5 text-xs text-gray-700 dark:text-gray-300 space-y-0.5">
                     {sec.items.slice(0, 8).map((it, ii) => (
                       <li key={ii}>
                         {it.label}
@@ -1640,30 +1640,30 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
         <button
           onClick={() => setOpen(false)}
           disabled={loading}
-          className="text-muted hover:text-gray-700 disabled:opacity-50"
+          className="text-muted hover:text-gray-700 dark:text-gray-300 disabled:opacity-50"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
       <div className="flex flex-wrap items-end gap-2">
         <div>
-          <label className="block text-[10px] text-gray-600 mb-0.5">Jumlah item</label>
+          <label className="block text-[10px] text-gray-600 dark:text-gray-400 mb-0.5">Jumlah item</label>
           <select
             value={count}
             onChange={e => setCount(Number(e.target.value))}
             disabled={loading}
-            className="border border-gray-300 rounded px-2 py-1 text-xs"
+            className="border border-border rounded px-2 py-1 text-xs"
           >
             {[3, 4, 5, 6, 7, 8, 10].map(n => <option key={n} value={n}>{n}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-[10px] text-gray-600 mb-0.5">Skala</label>
+          <label className="block text-[10px] text-gray-600 dark:text-gray-400 mb-0.5">Skala</label>
           <select
             value={scale}
             onChange={e => setScale(Number(e.target.value))}
             disabled={loading}
-            className="border border-gray-300 rounded px-2 py-1 text-xs"
+            className="border border-border rounded px-2 py-1 text-xs"
           >
             {[4, 5, 6, 7].map(n => <option key={n} value={n}>{n}-poin</option>)}
           </select>
@@ -1672,7 +1672,7 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
           <button
             onClick={() => generate('append')}
             disabled={loading}
-            className="text-xs px-2.5 py-1.5 rounded-md bg-white hover:bg-surface border border-border text-fg font-medium disabled:opacity-50 flex items-center gap-1"
+            className="text-xs px-2.5 py-1.5 rounded-md bg-card hover:bg-surface border border-border text-fg font-medium disabled:opacity-50 flex items-center gap-1"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
             Tambah
@@ -1687,7 +1687,7 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
           </button>
         </div>
       </div>
-      <p className="text-[10px] text-gray-600 leading-relaxed">
+      <p className="text-[10px] text-gray-600 dark:text-gray-400 leading-relaxed">
         AI akan generate item Likert berdasarkan judul bagian sebagai dimensi. Konteks topik diambil dari judul kuesioner.
       </p>
     </div>
@@ -1760,13 +1760,13 @@ function BlueprintCard({ blueprint }) {
           {blueprint.teoriRujukan && (
             <div>
               <div className="text-[10px] uppercase tracking-wide font-bold text-accent mb-0.5">Teori Rujukan</div>
-              <p className="text-gray-800">{blueprint.teoriRujukan}</p>
+              <p className="text-gray-800 dark:text-gray-200">{blueprint.teoriRujukan}</p>
             </div>
           )}
           {blueprint.definisiOperasional && (
             <div>
               <div className="text-[10px] uppercase tracking-wide font-bold text-accent mb-0.5">Definisi Operasional</div>
-              <p className="text-gray-800 leading-relaxed">{blueprint.definisiOperasional}</p>
+              <p className="text-gray-800 dark:text-gray-200 leading-relaxed">{blueprint.definisiOperasional}</p>
             </div>
           )}
           {blueprint.dimensions?.length > 0 && (
@@ -1775,12 +1775,12 @@ function BlueprintCard({ blueprint }) {
               <div className="space-y-2">
                 {blueprint.dimensions.map((d, i) => (
                   <div key={i} className="bg-white/70 border border-border rounded-lg p-2.5">
-                    <div className="font-semibold text-gray-900">{i + 1}. {d.name}</div>
+                    <div className="font-semibold text-gray-900 dark:text-gray-100">{i + 1}. {d.name}</div>
                     {d.definition && (
-                      <div className="text-xs text-gray-600 italic mt-0.5">{d.definition}</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400 italic mt-0.5">{d.definition}</div>
                     )}
                     {d.indicators?.length > 0 && (
-                      <ul className="mt-1.5 ml-4 list-disc text-xs text-gray-700 space-y-0.5">
+                      <ul className="mt-1.5 ml-4 list-disc text-xs text-gray-700 dark:text-gray-300 space-y-0.5">
                         {d.indicators.map((ind, ii) => <li key={ii}>{ind}</li>)}
                       </ul>
                     )}
@@ -1816,7 +1816,7 @@ function CitationBanner({ meta }) {
         <div className="text-xs font-bold text-emerald-900 uppercase tracking-wide mb-0.5">
           Instrumen Teruji — Wajib Cantumkan Sitasi
         </div>
-        <div className="text-sm text-gray-800 leading-snug">{meta.citation}</div>
+        <div className="text-sm text-gray-800 dark:text-gray-200 leading-snug">{meta.citation}</div>
         {(meta.domain || meta.dimensions || meta.items) && (
           <div className="text-[11px] text-emerald-700 mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
             {meta.domain && <span><strong>Domain:</strong> {meta.domain}</span>}

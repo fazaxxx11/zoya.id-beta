@@ -16,7 +16,7 @@ export default function AssumptionsPanel({ result, type }) {
   if (type === 'ttest_independent') {
     if (!result.student || !result.welch) return null
     return (
-      <div className="mt-5 border border-border/80 rounded-xl bg-white overflow-hidden">
+      <div className="mt-5 border border-border/80 rounded-xl bg-card overflow-hidden">
         <Header title="Diagnostik Asumsi & Keputusan Test" />
 
         {/* Levene */}
@@ -71,7 +71,7 @@ export default function AssumptionsPanel({ result, type }) {
   // ----- ANOVA -----
   if (type === 'anova') {
     return (
-      <div className="mt-5 border border-border/80 rounded-xl bg-white overflow-hidden">
+      <div className="mt-5 border border-border/80 rounded-xl bg-card overflow-hidden">
         <Header title="Diagnostik Asumsi & Post-hoc" />
 
         {result.levene && !result.levene.error && (
@@ -108,7 +108,7 @@ export default function AssumptionsPanel({ result, type }) {
           <div className="border-t border-border px-4 py-3">
             <div className="flex items-center gap-2 mb-2">
               <Info className="w-4 h-4 text-sky-600" />
-              <div className="text-xs font-semibold text-gray-800 uppercase tracking-wide">
+              <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">
                 Tukey HSD Post-hoc
               </div>
             </div>
@@ -126,10 +126,10 @@ export default function AssumptionsPanel({ result, type }) {
                 <tbody className="divide-y divide-gray-50">
                   {result.postHoc.comparisons.map((c, i) => (
                     <tr key={i}>
-                      <td className="py-1.5 text-gray-700">{c.group1} vs {c.group2}</td>
-                      <td className="py-1.5 text-right tabular-nums text-gray-800">{c.meanDiff.toFixed(3)}</td>
+                      <td className="py-1.5 text-gray-700 dark:text-gray-300">{c.group1} vs {c.group2}</td>
+                      <td className="py-1.5 text-right tabular-nums text-gray-800 dark:text-gray-200">{c.meanDiff.toFixed(3)}</td>
                       <td className="py-1.5 text-right tabular-nums text-muted">[{c.ci95[0].toFixed(2)}, {c.ci95[1].toFixed(2)}]</td>
-                      <td className="py-1.5 text-right tabular-nums text-gray-700">{c.pValue.toFixed(4)}</td>
+                      <td className="py-1.5 text-right tabular-nums text-gray-700 dark:text-gray-300">{c.pValue.toFixed(4)}</td>
                       <td className="py-1.5 text-center">
                         {c.significant
                           ? <span className="text-emerald-600 font-medium">✓</span>
@@ -155,7 +155,7 @@ export default function AssumptionsPanel({ result, type }) {
     const rn = a.residualNormality
 
     return (
-      <div className="mt-5 border border-border/80 rounded-xl bg-white overflow-hidden">
+      <div className="mt-5 border border-border/80 rounded-xl bg-card overflow-hidden">
         <Header title="Diagnostik Asumsi OLS" />
 
         {dw && !dw.error && (
@@ -192,14 +192,14 @@ export default function AssumptionsPanel({ result, type }) {
           <div className="border-t border-border px-4 py-3">
             <div className="flex items-center gap-2 mb-2">
               <Info className="w-4 h-4 text-sky-600" />
-              <div className="text-xs font-semibold text-gray-800 uppercase tracking-wide">
+              <div className="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">
                 VIF (Multikolinearitas)
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {result.vifs.map((v, i) => (
                 <div key={i} className={`flex items-center justify-between text-xs px-3 py-2 rounded border ${v.vif > 10 ? 'bg-red-50 border-red-200' : v.vif > 5 ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200'}`}>
-                  <span className="font-medium text-gray-700">{v.predictor}</span>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">{v.predictor}</span>
                   <span className={`tabular-nums font-mono ${v.vif > 10 ? 'text-red-700' : v.vif > 5 ? 'text-amber-700' : 'text-emerald-700'}`}>
                     {isFinite(v.vif) ? v.vif.toFixed(2) : '—'}
                   </span>
@@ -242,8 +242,8 @@ function Row({ badge, label, value, meaning }) {
     <div className="border-t border-border first:border-t-0 px-4 py-3 flex items-start gap-3">
       <div className={`${b.cls} rounded-md p-1.5 shrink-0 mt-0.5`}>{b.icon}</div>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-gray-800">{label}</div>
-        <div className="text-xs tabular-nums text-gray-600 mt-0.5 font-mono">{value}</div>
+        <div className="text-sm font-medium text-gray-800 dark:text-gray-200">{label}</div>
+        <div className="text-xs tabular-nums text-gray-600 dark:text-gray-400 mt-0.5 font-mono">{value}</div>
         <div className="text-xs text-muted mt-1">{meaning}</div>
       </div>
     </div>
@@ -252,13 +252,13 @@ function Row({ badge, label, value, meaning }) {
 
 function TestCard({ label, info, t, df, p, ci, recommended }) {
   return (
-    <div className={`px-4 py-3 ${recommended ? 'bg-amber-50/40' : 'bg-white'} relative`}>
+    <div className={`px-4 py-3 ${recommended ? 'bg-amber-50/40' : 'bg-card'} relative`}>
       {recommended && (
         <span className="absolute top-2 right-3 text-[10px] uppercase tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full font-semibold">
           ★ Recommended
         </span>
       )}
-      <div className="text-xs font-semibold text-gray-800">{label}</div>
+      <div className="text-xs font-semibold text-gray-800 dark:text-gray-200">{label}</div>
       <div className="text-[11px] text-muted mb-2">{info}</div>
       <div className="space-y-0.5 text-xs tabular-nums font-mono">
         <div><span className="text-muted">t</span> = {t.toFixed(3)} <span className="text-muted">·</span> <span className="text-muted">df</span> = {df.toFixed(2)}</div>

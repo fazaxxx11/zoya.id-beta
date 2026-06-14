@@ -160,16 +160,16 @@ export default function OnboardingStatistik() {
     <div className="min-h-screen bg-pattern">
       <header className="bg-white/85 backdrop-blur-md border-b border-border/70 sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 h-12 flex items-center gap-3">
-          <button onClick={() => navigate('/')} className="flex items-center gap-1.5 text-xs text-muted hover:text-gray-900">
+          <button onClick={() => navigate('/')} className="flex items-center gap-1.5 text-xs text-muted hover:text-gray-900 dark:text-gray-100">
             <ChevronLeft className="w-4 h-4" />Kembali
           </button>
           <div className="h-4 w-px bg-gray-300" />
           <div className="flex items-center gap-1.5">
-            <BarChart3 className="w-4 h-4 text-gray-700" />
-            <span className="text-sm font-medium text-gray-800 tracking-tight">Panduan</span>
+            <BarChart3 className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+            <span className="text-sm font-medium text-gray-800 dark:text-gray-200 tracking-tight">Panduan</span>
           </div>
           <button onClick={skipToTools}
-                  className="ml-auto text-xs text-muted hover:text-gray-900">
+                  className="ml-auto text-xs text-muted hover:text-gray-900 dark:text-gray-100">
             Lewati
           </button>
         </div>
@@ -203,9 +203,9 @@ export default function OnboardingStatistik() {
 // ============================================================
 function Welcome({ onStart, onSkip }) {
   return (
-    <div className="bg-white rounded-xl border border-border/80 p-6">
+    <div className="bg-card rounded-xl border border-border/80 p-6">
       <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Modul Statistik</div>
-      <h1 className="text-xl font-semibold text-gray-900 tracking-tight">Panduan memilih analisis</h1>
+      <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Panduan memilih analisis</h1>
       <p className="text-sm text-muted mt-1.5 leading-relaxed">
         Dua sampai tiga pertanyaan singkat, lalu kami rekomendasikan tool yang sesuai dengan tujuan dan tipe datamu.
       </p>
@@ -220,7 +220,7 @@ function Welcome({ onStart, onSkip }) {
           <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border/80">
             <s.icon className="w-3.5 h-3.5 text-muted" strokeWidth={1.75} />
             <div className="min-w-0">
-              <div className="text-xs font-medium text-gray-800 leading-tight">{s.label}</div>
+              <div className="text-xs font-medium text-gray-800 dark:text-gray-200 leading-tight">{s.label}</div>
               <div className="text-[11px] text-muted leading-tight">{s.desc}</div>
             </div>
           </div>
@@ -234,7 +234,7 @@ function Welcome({ onStart, onSkip }) {
           <ArrowRight className="w-4 h-4" strokeWidth={2} />
         </button>
         <button onClick={onSkip}
-                className="flex-1 border border-border hover:bg-surface text-sm text-gray-700 font-medium py-2.5 px-4 rounded-lg transition-colors">
+                className="flex-1 border border-border hover:bg-surface text-sm text-gray-700 dark:text-gray-300 font-medium py-2.5 px-4 rounded-lg transition-colors">
           Langsung ke tools
         </button>
       </div>
@@ -247,16 +247,16 @@ function Welcome({ onStart, onSkip }) {
 // ============================================================
 function WizardStep({ node, stepIndex, onChoose, onBack }) {
   return (
-    <div className="bg-white rounded-xl border border-border/80 p-6">
+    <div className="bg-card rounded-xl border border-border/80 p-6">
       <div className="flex items-center justify-between">
         <button onClick={onBack}
-                className="text-xs text-muted hover:text-gray-900 flex items-center gap-1">
+                className="text-xs text-muted hover:text-gray-900 dark:text-gray-100 flex items-center gap-1">
           <ChevronLeft className="w-3.5 h-3.5" /> Kembali
         </button>
         <div className="text-[11px] uppercase tracking-[0.16em] text-muted">Pertanyaan {stepIndex}</div>
       </div>
 
-      <h2 className="text-base font-semibold text-gray-900 tracking-tight mt-3">{node.question}</h2>
+      <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 tracking-tight mt-3">{node.question}</h2>
       {node.hint && (
         <p className="text-xs text-muted mt-1.5 leading-relaxed">{node.hint}</p>
       )}
@@ -265,8 +265,8 @@ function WizardStep({ node, stepIndex, onChoose, onBack }) {
         {node.options.map((opt, i) => (
           <button key={i} onClick={() => onChoose(opt)}
                   className="w-full text-left px-4 py-3 hover:bg-surface transition-colors flex items-center justify-between group">
-            <span className="text-sm text-gray-700 group-hover:text-gray-900">{opt.label}</span>
-            <ChevronRight className="w-4 h-4 text-muted group-hover:text-gray-600 flex-shrink-0 ml-3" strokeWidth={2} />
+            <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:text-gray-100">{opt.label}</span>
+            <ChevronRight className="w-4 h-4 text-muted group-hover:text-gray-600 dark:text-gray-400 flex-shrink-0 ml-3" strokeWidth={2} />
           </button>
         ))}
       </div>
@@ -282,18 +282,18 @@ function Recommendation({ toolKey, onGo, onRestart, onSkip }) {
   if (!info) return null
 
   return (
-    <div className="bg-white rounded-xl border border-border/80 p-6">
+    <div className="bg-card rounded-xl border border-border/80 p-6">
       <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-3">
-        <Check className="w-3.5 h-3.5 text-gray-700" strokeWidth={2.5} />
+        <Check className="w-3.5 h-3.5 text-gray-700 dark:text-gray-300" strokeWidth={2.5} />
         Rekomendasi
       </div>
 
-      <h3 className="text-xl font-semibold text-gray-900 tracking-tight">{info.name}</h3>
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">{info.name}</h3>
       <p className="text-sm text-muted mt-1.5 leading-relaxed">{info.desc}</p>
 
       <div className="mt-5 border-t border-border pt-4">
         <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium mb-2">Persiapan data</div>
-        <ul className="text-xs text-gray-600 space-y-1.5">
+        <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1.5">
           <li className="flex gap-2"><span className="text-muted">—</span>File Excel (.xlsx) atau CSV (.csv)</li>
           <li className="flex gap-2"><span className="text-muted">—</span>Header kolom di baris pertama</li>
           <li className="flex gap-2"><span className="text-muted">—</span>Setiap baris satu observasi / responden</li>
@@ -307,11 +307,11 @@ function Recommendation({ toolKey, onGo, onRestart, onSkip }) {
           Mulai analisis <ArrowRight className="w-4 h-4" strokeWidth={2} />
         </button>
         <button onClick={onRestart}
-                className="border border-border hover:bg-surface text-sm text-gray-700 font-medium py-2.5 px-4 rounded-lg">
+                className="border border-border hover:bg-surface text-sm text-gray-700 dark:text-gray-300 font-medium py-2.5 px-4 rounded-lg">
           Ulangi panduan
         </button>
         <button onClick={onSkip}
-                className="text-sm text-muted hover:text-gray-900 py-2.5 px-3">
+                className="text-sm text-muted hover:text-gray-900 dark:text-gray-100 py-2.5 px-3">
           Semua tools
         </button>
       </div>

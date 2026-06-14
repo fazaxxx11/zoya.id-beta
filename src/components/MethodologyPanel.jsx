@@ -36,7 +36,7 @@ export default function MethodologyPanel({ result }) {
   }
 
   return (
-    <div className="mt-5 bg-white rounded-2xl border border-border overflow-hidden">
+    <div className="mt-5 bg-card rounded-2xl border border-border overflow-hidden">
       {/* Validation badge header (Strategy C) */}
       <div className="px-5 py-3 bg-emerald-50 border-b border-emerald-100 flex items-start gap-2.5">
         <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
@@ -89,8 +89,8 @@ function TabButton({ active, onClick, icon: Icon, children }) {
     <button onClick={onClick}
       className={`px-5 py-3 text-sm font-medium flex items-center gap-2 border-b-2 transition-colors ${
         active
-          ? 'border-gray-900 text-gray-900 bg-white'
-          : 'border-transparent text-muted hover:text-gray-800'
+          ? 'border-gray-900 text-gray-900 dark:text-gray-100 bg-card'
+          : 'border-transparent text-muted hover:text-gray-800 dark:text-gray-200'
       }`}>
       <Icon className="w-4 h-4" />
       {children}
@@ -108,12 +108,12 @@ function CitationTab({ methodsParagraph, apaCitation, onCopy }) {
             <div className="text-[12px] text-muted mt-0.5">Salin paragraf ini ke bagian metode penelitian skripsi.</div>
           </div>
           <button onClick={() => onCopy(methodsParagraph, 'Paragraf metode')}
-            className="text-xs text-gray-700 border border-border hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+            className="text-xs text-gray-700 dark:text-gray-300 border border-border hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
             <Copy className="w-3.5 h-3.5" />
             Salin
           </button>
         </div>
-        <div className="bg-surface border border-border rounded-lg p-4 text-[13px] text-gray-800 leading-relaxed">
+        <div className="bg-surface border border-border rounded-lg p-4 text-[13px] text-gray-800 dark:text-gray-200 leading-relaxed">
           {methodsParagraph}
         </div>
       </div>
@@ -125,12 +125,12 @@ function CitationTab({ methodsParagraph, apaCitation, onCopy }) {
             <div className="text-[12px] text-muted mt-0.5">Referensi R untuk daftar pustaka.</div>
           </div>
           <button onClick={() => onCopy(apaCitation, 'Citation')}
-            className="text-xs text-gray-700 border border-border hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+            className="text-xs text-gray-700 dark:text-gray-300 border border-border hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
             <Copy className="w-3.5 h-3.5" />
             Salin
           </button>
         </div>
-        <div className="bg-surface border border-border rounded-lg p-4 text-[13px] text-gray-800 font-mono leading-relaxed">
+        <div className="bg-surface border border-border rounded-lg p-4 text-[13px] text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
           {apaCitation}
         </div>
       </div>
@@ -150,7 +150,7 @@ function RScriptTab({ rScript, showFull, onToggle, onCopy, onDownload }) {
 
   return (
     <div className="space-y-4">
-      <div className="text-[12px] text-gray-600 leading-relaxed">
+      <div className="text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed">
         Kode R reproducible — data sudah ter-embed sebagai vector, jadi bisa langsung di-Run di RStudio
         tanpa perlu file eksternal. Output Console akan persis seperti analisis R native.
       </div>

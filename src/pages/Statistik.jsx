@@ -887,7 +887,7 @@ function FilterPanel({
                 </div>
                 <div className="border border-border rounded-xl p-2 max-h-32 overflow-y-auto bg-card/50">
                   {uniqueValues.map(v => (
-                    <label key={v} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-white px-2 py-1 rounded">
+                    <label key={v} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-card px-2 py-1 rounded">
                       <input type="checkbox" checked={filterValues.includes(v)}
                              onChange={e => {
                                if (e.target.checked) setFilterValues([...filterValues, v])
@@ -924,7 +924,7 @@ function FilterPanel({
 function DataGuideModal({ open, onClose }) {
   return (
     <Modal open={open} onClose={onClose}
-      panelClassName="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
+      panelClassName="bg-card rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
       <div className="flex-shrink-0 flex items-center justify-between p-6 pb-4 border-b border-border">
         <h2 className="text-xl font-bold text-fg">📖 Panduan Format Data</h2>
         <button onClick={onClose} className="text-muted hover:text-muted text-2xl leading-none">×</button>
@@ -932,7 +932,7 @@ function DataGuideModal({ open, onClose }) {
 
       <div className="flex-1 overflow-y-auto p-6 space-y-5 text-sm text-fg">
           <section>
-            <h3 className="font-semibold text-base text-gray-900 mb-2">1. Format File yang Didukung</h3>
+            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">1. Format File yang Didukung</h3>
             <ul className="list-disc pl-5 space-y-1">
               <li><code className="bg-surface px-1 rounded">.xlsx</code> / <code className="bg-surface px-1 rounded">.xls</code> — Excel</li>
               <li><code className="bg-surface px-1 rounded">.csv</code> — Comma-separated values</li>
@@ -940,7 +940,7 @@ function DataGuideModal({ open, onClose }) {
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 mb-2">2. Struktur Data</h3>
+            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">2. Struktur Data</h3>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>Baris pertama = nama variabel/kolom</strong> (header). Contoh: <code className="bg-surface px-1 rounded">nama, umur, skor_pre, skor_post, kelas</code></li>
               <li><strong>Tiap baris berikutnya = 1 responden / observasi</strong></li>
@@ -967,7 +967,7 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 mb-2">3. Tipe Data per Kolom</h3>
+            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">3. Tipe Data per Kolom</h3>
             <table className="w-full text-xs border border-border rounded">
               <thead className="bg-card/50">
                 <tr><th className="p-2 text-left">Tipe</th><th className="p-2 text-left">Contoh</th><th className="p-2 text-left">Tool yang cocok</th></tr>
@@ -982,7 +982,7 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 mb-2">4. Tips Penting</h3>
+            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">4. Tips Penting</h3>
             <ul className="list-disc pl-5 space-y-1.5">
               <li>🔹 <strong>Missing values</strong>: kosongkan saja sel-nya (jangan tulis "tidak ada", "-", "N/A"). Sistem akan abaikan otomatis.</li>
               <li>🔹 <strong>Desimal</strong>: pakai titik <code className="bg-surface px-1 rounded">3.14</code>, bukan koma <code className="bg-surface px-1 rounded">3,14</code></li>
@@ -994,7 +994,7 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 mb-2">5. Contoh Skema per Tool</h3>
+            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">5. Contoh Skema per Tool</h3>
             <div className="space-y-2 text-xs">
               <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
                 <strong>Korelasi & Regresi Sederhana</strong> — minimal 2 kolom numerik (X dan Y).
@@ -1015,7 +1015,7 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 mb-2">6. Punya Subset Data?</h3>
+            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">6. Punya Subset Data?</h3>
             <p>Pakai fitur <strong>🔎 Filter Data</strong> di bawah upload. Misal data 150 baris (3 species), pilih species = <code>setosa</code> → analisis pakai 50 baris saja.</p>
           </section>
       </div>
@@ -1379,7 +1379,7 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
             className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border transition-colors ${
               savedId
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                : 'bg-white border-border text-fg hover:bg-card/50'
+                : 'bg-card border-border text-fg hover:bg-card/50'
             }`}>
             <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3.5L3 18V4z" /></svg>
             {savedId ? 'Tersimpan' : 'Simpan'}
@@ -1478,11 +1478,11 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
 
   return (
     <Modal open={true} onClose={onClose}
-      panelClassName="bg-white rounded-2xl  max-w-md w-full p-6">
+      panelClassName="bg-card rounded-2xl  max-w-md w-full p-6">
       <div>
         <div className="mb-4">
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Simpan Analisis</div>
-          <h3 className="text-lg font-bold text-gray-900">Simpan ke Riwayat</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Simpan ke Riwayat</h3>
           <p className="text-sm text-muted mt-1">Akses lagi kapan saja dari halaman Riwayat.</p>
         </div>
 
@@ -1508,7 +1508,7 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
 
         <div className="flex items-center justify-end gap-2 mt-5 pt-5 border-t border-border">
           <button onClick={onClose} disabled={saving}
-            className="px-4 py-2 text-sm font-medium text-muted hover:text-gray-900 rounded-lg disabled:opacity-50">
+            className="px-4 py-2 text-sm font-medium text-muted hover:text-gray-900 dark:text-gray-100 rounded-lg disabled:opacity-50">
             Batal
           </button>
           <button onClick={handleSave} disabled={saving || !title.trim()}
@@ -1572,11 +1572,11 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
         {text && (
           <div className="flex items-center gap-2">
             <button onClick={handleCopy}
-                    className="text-xs text-muted hover:text-gray-900 border border-border hover:bg-card/50 px-3 py-2 rounded-lg">
+                    className="text-xs text-muted hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-card/50 px-3 py-2 rounded-lg">
               Salin
             </button>
             <button onClick={handleGenerate} disabled={loading}
-                    className="text-xs text-muted hover:text-gray-900 border border-border hover:bg-card/50 px-3 py-2 rounded-lg disabled:opacity-50">
+                    className="text-xs text-muted hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-card/50 px-3 py-2 rounded-lg disabled:opacity-50">
               {loading ? 'Memproses…' : 'Regenerate'}
             </button>
           </div>
@@ -1707,12 +1707,12 @@ function ExplainChatPanel({ result, aiInterpretation }) {
       </div>
 
       <Modal open={open} onClose={() => setOpen(false)}
-             panelClassName="bg-white rounded-2xl shadow-2xl max-w-2xl w-full h-[80vh] flex flex-col">
+             panelClassName="bg-card rounded-2xl shadow-2xl max-w-2xl w-full h-[80vh] flex flex-col">
         <div className="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-9 h-9 rounded-full bg-surface0 text-white flex items-center justify-center flex-shrink-0">💬</div>
             <div className="min-w-0">
-              <div className="font-semibold text-gray-900 truncate">Tanya AI tentang Hasil</div>
+              <div className="font-semibold text-gray-900 dark:text-gray-100 truncate">Tanya AI tentang Hasil</div>
               <div className="text-xs text-muted">{result.toolName} · sisa {remaining}/{MAX_TURNS} pertanyaan</div>
             </div>
           </div>
@@ -1779,7 +1779,7 @@ function ChatBubble({ role, content }) {
   return (
     <div className="flex justify-start gap-2">
       <div className="w-8 h-8 rounded-full bg-surface text-accent flex items-center justify-center flex-shrink-0 text-base">💬</div>
-      <div className="bg-white border border-border rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed text-fg">
+      <div className="bg-card border border-border rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed text-fg">
         {content}
       </div>
     </div>

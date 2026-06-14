@@ -97,7 +97,7 @@ function UserDashboard() {
           <button onClick={() => navigate('/')} className="flex items-center gap-2 text-muted hover:text-sky-600">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h1 className="font-bold text-gray-800">Dashboard</h1>
+          <h1 className="font-bold text-gray-800 dark:text-gray-200">Dashboard</h1>
           <button onClick={handleLogout} className="text-muted hover:text-red-500">
             <LogOut className="w-5 h-5" />
           </button>
@@ -120,9 +120,9 @@ function UserDashboard() {
         </div>
 
         {/* Wallet Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
+        <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-gray-800 flex items-center gap-2">
+            <h3 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
               <Wallet className="w-5 h-5" />💰 Saldo
             </h3>
             <Link to="/auth" className="text-sm text-sky-600 hover:underline">
@@ -148,9 +148,9 @@ function UserDashboard() {
         </div>
 
         {/* Saved Analyses Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
+        <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-gray-800 flex items-center gap-2">
+            <h3 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
               <BarChart3 className="w-5 h-5" /> Riwayat Analisis Statistik
             </h3>
             <Link to="/statistik/history" className="text-sm text-sky-600 hover:underline flex items-center gap-1">
@@ -191,7 +191,7 @@ function UserDashboard() {
                   className="block px-3 py-2.5 rounded-lg hover:bg-surface border border-border transition-colors">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900 truncate">{item.title}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{item.title}</div>
                       <div className="text-xs text-muted mt-0.5 flex items-center gap-2">
                         <span>{item.tool_name}</span>
                         {item.sample_size && <><span className="text-muted">·</span><span>n={item.sample_size}</span></>}
@@ -213,7 +213,7 @@ function UserDashboard() {
           <button 
             onClick={() => setActiveTab('orders')}
             className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
-              activeTab === 'orders' ? 'bg-sky-500 text-white' : 'bg-white text-gray-600'
+              activeTab === 'orders' ? 'bg-sky-500 text-white' : 'bg-card text-gray-600 dark:text-gray-400'
             }`}
           >
             📦 Pesanan
@@ -221,7 +221,7 @@ function UserDashboard() {
           <button 
             onClick={() => setActiveTab('transactions')}
             className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
-              activeTab === 'transactions' ? 'bg-sky-500 text-white' : 'bg-white text-gray-600'
+              activeTab === 'transactions' ? 'bg-sky-500 text-white' : 'bg-card text-gray-600 dark:text-gray-400'
             }`}
           >
             💳 Transaksi
@@ -230,13 +230,13 @@ function UserDashboard() {
 
         {/* Orders List */}
         {activeTab === 'orders' && (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
             {orders.length === 0 ? (
               <div className="p-10 text-center">
                 <div className="w-16 h-16 bg-sky-50 rounded-2xl mx-auto mb-4 flex items-center justify-center">
                   <FileText className="w-8 h-8 text-sky-400" />
                 </div>
-                <h3 className="font-semibold text-gray-800 mb-1">Belum ada pesanan</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">Belum ada pesanan</h3>
                 <p className="text-sm text-muted mb-4">Mulai jalankan analisis atau penilaian untuk melihat history pesanan di sini.</p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   <Link to="/statistik" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium">
@@ -299,13 +299,13 @@ function UserDashboard() {
 
         {/* Transactions List */}
         {activeTab === 'transactions' && (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
             {wallet.transactions.length === 0 ? (
               <div className="p-10 text-center">
                 <div className="w-16 h-16 bg-emerald-50 rounded-2xl mx-auto mb-4 flex items-center justify-center">
                   <CreditCard className="w-8 h-8 text-emerald-400" />
                 </div>
-                <h3 className="font-semibold text-gray-800 mb-1">Belum ada transaksi</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">Belum ada transaksi</h3>
                 <p className="text-sm text-muted">Saat beta, semua tools gratis. Top-up & riwayat saldo akan tampil di sini setelah monetisasi dibuka.</p>
               </div>
             ) : (
@@ -313,7 +313,7 @@ function UserDashboard() {
                 {wallet.transactions.map(t => (
                   <div key={t.id} className="p-4 flex justify-between items-center">
                     <div>
-                      <p className="font-medium text-gray-800">{t.id}</p>
+                      <p className="font-medium text-gray-800 dark:text-gray-200">{t.id}</p>
                       <p className="text-xs text-muted">{t.date}</p>
                     </div>
                     <div className="text-right">
@@ -331,11 +331,11 @@ function UserDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
-          <Link to="/" className="bg-white p-4 rounded-xl border border-border text-center hover:bg-surface">
+          <Link to="/" className="bg-card p-4 rounded-xl border border-border text-center hover:bg-surface">
             <Zap className="w-6 h-6 mx-auto mb-2 text-sky-500" />
             <p className="text-sm font-medium">Pesan Layanan</p>
           </Link>
-          <Link to="/order" className="bg-white p-4 rounded-xl border border-border text-center hover:bg-surface">
+          <Link to="/order" className="bg-card p-4 rounded-xl border border-border text-center hover:bg-surface">
             <History className="w-6 h-6 mx-auto mb-2 text-sky-500" />
             <p className="text-sm font-medium">Cek Pesanan</p>
           </Link>

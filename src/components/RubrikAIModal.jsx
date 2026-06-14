@@ -76,7 +76,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
 
   return (
     <Modal open={open} onClose={handleClose}
-      panelClassName="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+      panelClassName="bg-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
       <div className="p-5 sm:p-6 space-y-5 overflow-y-auto">
         {/* Header */}
         <div className="flex items-start gap-3">
@@ -84,11 +84,11 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
             <Wand2 className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-bold text-gray-900">Auto-Buatkan Rubrik</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Auto-Buatkan Rubrik</h2>
             <p className="text-sm text-muted">AI akan generate kriteria penilaian sesuai topik & level</p>
           </div>
           <button onClick={handleClose} disabled={loading}
-            className="text-muted hover:text-gray-700 p-1 rounded disabled:opacity-30">
+            className="text-muted hover:text-gray-700 dark:text-gray-300 p-1 rounded disabled:opacity-30">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -97,7 +97,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
         {!preview && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Topik / Soal <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -112,7 +112,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Mata Pelajaran</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Mata Pelajaran</label>
                 <input
                   type="text"
                   value={mataPelajaran}
@@ -123,7 +123,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Jenjang</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Jenjang</label>
                 <select
                   value={level}
                   onChange={e => setLevel(e.target.value)}
@@ -138,7 +138,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipe Tugas</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Tipe Tugas</label>
               <div className="grid grid-cols-4 gap-2">
                 {TIPE_TUGAS.map(t => (
                   <button
@@ -149,7 +149,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
                     className={`px-3 py-2 rounded-lg text-xs font-medium border-2 transition-all ${
                       tipeTugas === t.id
                         ? 'border-purple-500 bg-purple-50 text-purple-700'
-                        : 'border-border bg-white text-gray-600 hover:border-gray-300'
+                        : 'border-border bg-card text-gray-600 dark:text-gray-400 hover:border-border'
                     } disabled:opacity-50`}
                   >
                     {t.label}
@@ -159,7 +159,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Jumlah Kriteria: <span className="text-purple-600 font-bold">{jumlah}</span>
               </label>
               <input
@@ -213,7 +213,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
           <div className="space-y-4">
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-xl p-3">
               <div className="text-xs font-semibold text-purple-700 mb-1">PREVIEW RUBRIK</div>
-              <div className="text-sm text-gray-700">
+              <div className="text-sm text-gray-700 dark:text-gray-300">
                 {preview.length} kriteria · Total bobot: <span className="font-bold">{preview.reduce((s, k) => s + k.bobot, 0)}%</span>
               </div>
             </div>
@@ -222,12 +222,12 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
               {preview.map((k, i) => (
                 <div key={i} className="bg-surface border border-border rounded-lg p-3">
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <div className="font-semibold text-sm text-gray-800">{i + 1}. {k.nama}</div>
+                    <div className="font-semibold text-sm text-gray-800 dark:text-gray-200">{i + 1}. {k.nama}</div>
                     <span className="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full shrink-0">
                       {k.bobot}%
                     </span>
                   </div>
-                  <div className="text-xs text-gray-600 leading-relaxed">{k.deskripsi}</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{k.deskripsi}</div>
                 </div>
               ))}
             </div>

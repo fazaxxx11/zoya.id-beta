@@ -97,18 +97,18 @@ function Payment() {
             <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <h1 className="font-bold text-gray-800">Beta Free</h1>
+            <h1 className="font-bold text-gray-800 dark:text-gray-200">Beta Free</h1>
             <div className="w-8"></div>
           </div>
         </header>
 
         <div className="max-w-2xl mx-auto px-4 py-10">
-          <div className="bg-white rounded-2xl shadow-sm p-8 border border-border text-center">
+          <div className="bg-card rounded-2xl shadow-sm p-8 border border-border text-center">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-4">
               <Sparkles className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Payment Coming Soon</h2>
-            <p className="text-gray-600 leading-relaxed">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">Payment Coming Soon</h2>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
               Semua tools inti sedang dibuka gratis selama beta untuk user terdaftar. Pricing, top-up, dan paket Pro/Premium akan diumumkan setelah payment selesai diaudit.
             </p>
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -320,7 +320,7 @@ function Payment() {
               <button onClick={() => navigate('/')} className="flex items-center gap-2 text-muted hover:text-sky-600">
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <h1 className="font-bold text-gray-800">Hasil {service?.name}</h1>
+              <h1 className="font-bold text-gray-800 dark:text-gray-200">Hasil {service?.name}</h1>
               <div className="w-8"></div>
             </div>
           </div>
@@ -328,11 +328,11 @@ function Payment() {
 
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
           {/* Success Badge */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border text-center">
+          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">🎉 Selesai!</h2>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">🎉 Selesai!</h2>
             <p className="text-muted">
               Pesanan Anda telah diproses.
             </p>
@@ -344,9 +344,9 @@ function Payment() {
           </div>
 
           {/* Next step card */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
-            <h3 className="font-bold text-gray-800 mb-2">Langkah Selanjutnya</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+            <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Langkah Selanjutnya</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               Pembayaran berhasil. Silakan lanjutkan ke halaman {serviceLabel} untuk
               menjalankan layanan dan mendapatkan hasil.
             </p>
@@ -366,7 +366,7 @@ function Payment() {
             </button>
             <button 
               onClick={() => navigate('/')}
-              className="w-full px-6 py-3 rounded-xl border-2 border-border text-gray-600 hover:bg-surface font-medium flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 rounded-xl border-2 border-border text-gray-600 dark:text-gray-400 hover:bg-surface font-medium flex items-center justify-center gap-2"
             >
               <Home className="w-5 h-5" />
               Kembali ke Home
@@ -386,7 +386,7 @@ function Payment() {
             <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <h1 className="font-bold text-gray-800">Pembayaran</h1>
+            <h1 className="font-bold text-gray-800 dark:text-gray-200">Pembayaran</h1>
             <div className="w-8"></div>
           </div>
         </div>
@@ -412,14 +412,14 @@ function Payment() {
         )}
 
         {/* Order Summary */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
-          <h2 className="text-lg font-bold text-gray-800 mb-4">Ringkasan Pesanan</h2>
+        <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">Ringkasan Pesanan</h2>
           
           <div className="flex items-center gap-4 p-4 bg-sky-50 rounded-xl">
             <div className="text-3xl">{service?.icon}</div>
             <div>
-              <p className="font-semibold text-gray-800">{service?.name}</p>
-              <p className="text-sm text-gray-600">{tier?.name}</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">{service?.name}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{tier?.name}</p>
             </div>
             <div className="ml-auto">
               <p className="text-2xl font-bold text-sky-600">Rp {tier?.price?.toLocaleString('id-ID')}</p>
@@ -456,8 +456,8 @@ function Payment() {
 
         {/* Payment Method Selection */}
         {!showQR && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Metode Pembayaran</h2>
+          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">Metode Pembayaran</h2>
             
             <div className="grid grid-cols-2 gap-3">
               {PAYMENT_METHODS.map(method => (
@@ -471,10 +471,10 @@ function Payment() {
                       : 'border-border hover:border-sky-300'
                   } ${method.id === 'wallet' && !currentUser ? 'opacity-50' : ''}`}
                 >
-                  <div className={`${paymentMethod === method.id ? 'text-sky-600' : 'text-gray-600'} mb-1`}>
+                  <div className={`${paymentMethod === method.id ? 'text-sky-600' : 'text-gray-600 dark:text-gray-400'} mb-1`}>
                     {method.icon}
                   </div>
-                  <p className="font-semibold text-gray-800">{method.name}</p>
+                  <p className="font-semibold text-gray-800 dark:text-gray-200">{method.name}</p>
                   <p className="text-xs text-muted">{method.desc}</p>
                 </button>
               ))}
@@ -502,12 +502,12 @@ function Payment() {
 
         {/* QRIS Display */}
         {showQR && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
+          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
             <div className="text-center">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-10 h-10 text-green-600" />
               </div>
-              <h2 className="text-xl font-bold text-gray-800 mb-2">Silakan Scan QRIS</h2>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Silakan Scan QRIS</h2>
               <p className="text-muted mb-4">Order ID: {orderId}</p>
               
               <div className="w-48 h-48 bg-surface rounded-xl mx-auto mb-4 flex items-center justify-center">

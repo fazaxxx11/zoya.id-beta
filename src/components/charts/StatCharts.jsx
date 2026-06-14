@@ -25,8 +25,8 @@ function ChartFrame({ title, width = 480, height = 280, padding = { t: 30, r: 20
   const innerW = width - padding.l - padding.r
   const innerH = height - padding.t - padding.b
   return (
-    <div className="bg-white rounded-lg border border-border p-3">
-      {title && <div className="text-xs font-semibold text-gray-700 mb-1 text-center">{title}</div>}
+    <div className="bg-card rounded-lg border border-border p-3">
+      {title && <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1 text-center">{title}</div>}
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto" style={{ maxHeight: 320 }}>
         <g transform={`translate(${padding.l}, ${padding.t})`}>
           {typeof children === 'function' ? children({ innerW, innerH }) : children}

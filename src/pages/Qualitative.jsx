@@ -128,7 +128,7 @@ export default function Qualitative() {
                 className={`px-4 py-2 text-sm flex items-center gap-1.5 whitespace-nowrap border-b-2 transition-colors ${
                   active
                     ? 'border-rose-500 text-rose-700 font-medium'
-                    : 'border-transparent text-muted hover:text-gray-700'
+                    : 'border-transparent text-muted hover:text-gray-700 dark:text-gray-300'
                 }`}
               >
                 <Icon className="w-4 h-4" /> {t.label}
@@ -245,7 +245,7 @@ function DocCard({ doc, onEdit, onDelete }) {
   const [expanded, setExpanded] = useState(false)
   const wordCount = doc.text.trim().split(/\s+/).length
   return (
-    <div className="bg-white border border-border rounded-xl p-3">
+    <div className="bg-card border border-border rounded-xl p-3">
       <div className="flex items-start gap-2">
         <FileText className="w-4 h-4 text-rose-500 mt-1 flex-shrink-0" />
         <div className="flex-1 min-w-0">
@@ -262,7 +262,7 @@ function DocCard({ doc, onEdit, onDelete }) {
           )}
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => setExpanded(!expanded)} className="text-muted hover:text-gray-700 p-1" title={expanded ? 'Tutup' : 'Lihat'}>
+          <button onClick={() => setExpanded(!expanded)} className="text-muted hover:text-gray-700 dark:text-gray-300 p-1" title={expanded ? 'Tutup' : 'Lihat'}>
             <Eye className="w-4 h-4" />
           </button>
           <button onClick={onEdit} className="text-muted hover:text-rose-600 p-1" title="Edit">
@@ -282,10 +282,10 @@ function DocEditor({ initial, onSave, onCancel }) {
   const update = (patch) => setDoc(d => ({ ...d, ...patch }))
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">{initial.title ? 'Edit Dokumen' : 'Tambah Dokumen'}</h3>
-          <button onClick={onCancel} className="text-muted hover:text-gray-700"><X className="w-5 h-5" /></button>
+          <button onClick={onCancel} className="text-muted hover:text-gray-700 dark:text-gray-300"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
           <input
@@ -344,7 +344,7 @@ function CodebookTab({ codes, refresh }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-gray-600">{codes.length} kode dalam codebook</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400">{codes.length} kode dalam codebook</p>
         <button onClick={handleAdd} className="btn-primary text-xs py-2">
           <Plus className="w-4 h-4" /> Tambah Kode
         </button>
@@ -359,11 +359,11 @@ function CodebookTab({ codes, refresh }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {codes.map(c => (
-            <div key={c.id} className="bg-white border border-border rounded-xl p-3 flex items-start gap-2">
+            <div key={c.id} className="bg-card border border-border rounded-xl p-3 flex items-start gap-2">
               <div className="w-3 h-3 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: c.color }} />
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-sm">{c.label}</div>
-                {c.description && <div className="text-xs text-gray-600 mt-0.5">{c.description}</div>}
+                {c.description && <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{c.description}</div>}
               </div>
               <button onClick={() => setEditing(c)} className="text-muted hover:text-rose-600 p-1"><Edit3 className="w-4 h-4" /></button>
               <button onClick={() => handleDelete(c.id)} className="text-muted hover:text-red-600 p-1"><Trash2 className="w-4 h-4" /></button>
@@ -382,14 +382,14 @@ function CodeEditor({ initial, onSave, onCancel }) {
   const update = (patch) => setCode(c => ({ ...c, ...patch }))
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full">
+      <div className="bg-card rounded-2xl max-w-md w-full">
         <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">{initial.label ? 'Edit Kode' : 'Tambah Kode'}</h3>
-          <button onClick={onCancel} className="text-muted hover:text-gray-700"><X className="w-5 h-5" /></button>
+          <button onClick={onCancel} className="text-muted hover:text-gray-700 dark:text-gray-300"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Label *</label>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Label *</label>
             <input
               type="text" value={code.label} onChange={e => update({ label: e.target.value })}
               placeholder="mis. 'motivasi intrinsik'"
@@ -397,7 +397,7 @@ function CodeEditor({ initial, onSave, onCancel }) {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Deskripsi</label>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi</label>
             <textarea
               value={code.description} onChange={e => update({ description: e.target.value })}
               rows={3} placeholder="Definisi operasional & kapan menggunakan kode ini..."
@@ -405,7 +405,7 @@ function CodeEditor({ initial, onSave, onCancel }) {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Warna</label>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Warna</label>
             <div className="flex gap-1.5 flex-wrap">
               {CODE_COLORS.map(col => (
                 <button
@@ -483,7 +483,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
     <div className="space-y-3">
       {/* Doc picker */}
       <div className="flex items-center gap-2">
-        <label className="text-xs font-medium text-gray-700">Dokumen:</label>
+        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Dokumen:</label>
         <select value={docId} onChange={e => { setDocId(e.target.value); setSelection(null) }} className="border border-border rounded-lg px-2 py-1.5 text-xs">
           {docs.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}
         </select>
@@ -512,7 +512,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
           {selection && (
             <div className="bg-rose-50 border border-rose-200 rounded-lg p-3">
               <div className="text-xs text-rose-900 mb-1">Segment dipilih ({selection.end - selection.start} karakter):</div>
-              <div className="bg-white rounded p-2 text-xs italic mb-2">"{selection.text}"</div>
+              <div className="bg-card rounded p-2 text-xs italic mb-2">"{selection.text}"</div>
               <div className="text-xs font-medium text-rose-900 mb-1">Pilih kode:</div>
               <div className="flex flex-wrap gap-1.5">
                 {codes.map(c => (
@@ -531,7 +531,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
 
           {/* Existing codings list */}
           {docCodings.length > 0 && (
-            <div className="bg-white border border-border rounded-xl p-3">
+            <div className="bg-card border border-border rounded-xl p-3">
               <div className="text-sm font-medium mb-2">Coding pada dokumen ini ({docCodings.length})</div>
               <div className="space-y-1.5 max-h-80 overflow-y-auto">
                 {docCodings.map(cd => {
@@ -542,7 +542,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0" style={{ backgroundColor: code.color + '22', color: code.color }}>
                         {code.label}
                       </span>
-                      <span className="flex-1 italic text-gray-700">"{cd.segment}"</span>
+                      <span className="flex-1 italic text-gray-700 dark:text-gray-300">"{cd.segment}"</span>
                       <button onClick={() => removeCoding(cd.id)} className="text-muted hover:text-red-600">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -592,26 +592,26 @@ function AnalysisTab({ docs, codes, codings }) {
   return (
     <div className="space-y-4">
       {/* Controls */}
-      <div className="bg-white border border-border rounded-xl p-3 flex flex-wrap items-center gap-3">
+      <div className="bg-card border border-border rounded-xl p-3 flex flex-wrap items-center gap-3">
         <div>
-          <label className="block text-[11px] font-medium text-gray-700 mb-0.5">Scope</label>
+          <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">Scope</label>
           <select value={scope} onChange={e => setScope(e.target.value)} className="border border-border rounded-lg px-2 py-1.5 text-xs">
             <option value="all">Semua dokumen ({docs.length})</option>
             {docs.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-[11px] font-medium text-gray-700 mb-0.5">Top N</label>
+          <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">Top N</label>
           <input type="number" min={5} max={100} value={topN} onChange={e => setTopN(Number(e.target.value) || 30)} className="border border-border rounded-lg px-2 py-1.5 text-xs w-20" />
         </div>
-        <label className="flex items-center gap-1.5 text-xs text-gray-700 mt-3">
+        <label className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300 mt-3">
           <input type="checkbox" checked={removeStop} onChange={e => setRemoveStop(e.target.checked)} />
           Hilangkan stopwords (ID + EN)
         </label>
       </div>
 
       {/* Word frequency */}
-      <div className="bg-white border border-border rounded-xl p-4">
+      <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-sm flex items-center gap-1.5">
             <BarChart2 className="w-4 h-4 text-rose-500" /> Frekuensi Kata
@@ -646,7 +646,7 @@ function AnalysisTab({ docs, codes, codings }) {
                   <span className="w-32 truncate font-mono">{w.word}</span>
                   <div className="flex-1 bg-surface rounded-full h-4 overflow-hidden relative">
                     <div className="h-full bg-rose-400" style={{ width: `${(w.count / maxCount) * 100}%` }} />
-                    <span className="absolute inset-0 flex items-center px-2 font-medium text-gray-800">
+                    <span className="absolute inset-0 flex items-center px-2 font-medium text-gray-800 dark:text-gray-200">
                       {w.count} ({w.percent.toFixed(1)}%)
                     </span>
                   </div>
@@ -659,7 +659,7 @@ function AnalysisTab({ docs, codes, codings }) {
 
       {/* Bigrams */}
       {bigrams.length > 0 && (
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-3">Frasa 2-Kata Teratas (bigrams)</h3>
           <div className="flex flex-wrap gap-1.5">
             {bigrams.map(b => (
@@ -673,7 +673,7 @@ function AnalysisTab({ docs, codes, codings }) {
 
       {/* Code stats */}
       {codes.length > 0 && (
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-3">Statistik Kode</h3>
           {codings.length === 0 ? (
             <p className="text-xs text-muted">Belum ada coding. Mulai di tab Coding.</p>
@@ -705,7 +705,7 @@ function AnalysisTab({ docs, codes, codings }) {
 
       {/* Co-occurrence */}
       {codes.length >= 2 && codings.length > 0 && (
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-1">Co-Occurrence Antar Kode</h3>
           <p className="text-[11px] text-muted mb-3">Berapa kali pasangan kode muncul bersama dalam dokumen yang sama. Diagonal = jumlah dokumen tempat kode itu muncul.</p>
           <div className="overflow-x-auto">
@@ -812,7 +812,7 @@ function KappaResult({ r }) {
   const interpretation = interpretKappaID(r.kappa)
   const color = r.kappa < 0.2 ? '#dc2626' : r.kappa < 0.4 ? '#f59e0b' : r.kappa < 0.6 ? '#eab308' : r.kappa < 0.8 ? '#10b981' : '#059669'
   return (
-    <div className="bg-white border border-border rounded-xl p-4 space-y-3">
+    <div className="bg-card border border-border rounded-xl p-4 space-y-3">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Metric label="Cohen's κ" value={r.kappa.toFixed(4)} color={color} />
         <Metric label="Interpretasi" value={interpretation} small />
@@ -873,7 +873,7 @@ function Metric({ label, value, color, small }) {
 // ============================================================
 function EmptyState({ icon: Icon, title, desc }) {
   return (
-    <div className="bg-white border border-border rounded-xl p-8 text-center">
+    <div className="bg-card border border-border rounded-xl p-8 text-center">
       <Icon className="w-12 h-12 text-muted mx-auto mb-2" />
       <p className="font-medium text-sm mb-1">{title}</p>
       <p className="text-xs text-muted max-w-md mx-auto">{desc}</p>

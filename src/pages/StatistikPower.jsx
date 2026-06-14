@@ -75,7 +75,7 @@ export default function StatistikPower() {
         {/* Input column */}
         <div className="space-y-4">
           {/* Test picker */}
-          <div className="bg-white rounded-2xl border border-border p-5">
+          <div className="bg-card rounded-2xl border border-border p-5">
             <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-3">Jenis Uji</div>
             <div className="flex flex-wrap gap-2">
               {TESTS.map(t => (
@@ -83,7 +83,7 @@ export default function StatistikPower() {
                         className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
                           testId === t.id
                             ? 'bg-gray-900 text-white border-gray-900'
-                            : 'bg-white text-gray-700 border-border hover:border-gray-400'
+                            : 'bg-card text-gray-700 dark:text-gray-300 border-border hover:border-gray-400'
                         }`}>
                   {t.name}
                 </button>
@@ -92,7 +92,7 @@ export default function StatistikPower() {
           </div>
 
           {/* What to solve */}
-          <div className="bg-white rounded-2xl border border-border p-5">
+          <div className="bg-card rounded-2xl border border-border p-5">
             <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-3">Hitung Apa?</div>
             <div className="grid grid-cols-3 gap-2">
               {SOLVE_OPTIONS.map(s => (
@@ -100,7 +100,7 @@ export default function StatistikPower() {
                         className={`text-xs px-3 py-2 rounded-lg border transition-colors ${
                           solve === s.id
                             ? 'bg-gray-900 text-white border-gray-900'
-                            : 'bg-white text-gray-700 border-border hover:border-gray-400'
+                            : 'bg-card text-gray-700 dark:text-gray-300 border-border hover:border-gray-400'
                         }`}>
                   {s.label}
                 </button>
@@ -109,7 +109,7 @@ export default function StatistikPower() {
           </div>
 
           {/* Parameters */}
-          <div className="bg-white rounded-2xl border border-border p-5 space-y-4">
+          <div className="bg-card rounded-2xl border border-border p-5 space-y-4">
             <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium">Parameter</div>
 
             {/* Effect size (hide if solving for it) */}
@@ -120,7 +120,7 @@ export default function StatistikPower() {
                 <div className="flex gap-2 mt-2">
                   {['small', 'medium', 'large'].map(level => (
                     <button key={level} onClick={() => setConvEs(level)}
-                            className="text-[10px] uppercase tracking-wider px-2 py-1 rounded bg-surface hover:bg-gray-200 text-gray-600 font-medium">
+                            className="text-[10px] uppercase tracking-wider px-2 py-1 rounded bg-surface hover:bg-surface text-gray-600 dark:text-gray-400 font-medium">
                       {level} ({conv[level]})
                     </button>
                   ))}
@@ -158,11 +158,11 @@ export default function StatistikPower() {
                 <Label>Hipotesis</Label>
                 <div className="flex gap-2">
                   <button onClick={() => setTwoTailed(true)}
-                          className={`text-xs px-3 py-1.5 rounded-lg border ${twoTailed ? 'bg-gray-900 text-white border-gray-900' : 'border-border text-gray-700'}`}>
+                          className={`text-xs px-3 py-1.5 rounded-lg border ${twoTailed ? 'bg-gray-900 text-white border-gray-900' : 'border-border text-gray-700 dark:text-gray-300'}`}>
                     Two-tailed
                   </button>
                   <button onClick={() => setTwoTailed(false)}
-                          className={`text-xs px-3 py-1.5 rounded-lg border ${!twoTailed ? 'bg-gray-900 text-white border-gray-900' : 'border-border text-gray-700'}`}>
+                          className={`text-xs px-3 py-1.5 rounded-lg border ${!twoTailed ? 'bg-gray-900 text-white border-gray-900' : 'border-border text-gray-700 dark:text-gray-300'}`}>
                     One-tailed
                   </button>
                 </div>
@@ -190,9 +190,9 @@ export default function StatistikPower() {
 
         {/* Output column */}
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-border p-5 sticky top-20">
+          <div className="bg-card rounded-2xl border border-border p-5 sticky top-20">
             <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Hasil</div>
-            <div className="text-base font-semibold text-gray-900 mb-4">{test.name}</div>
+            <div className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">{test.name}</div>
 
             {result?.error ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
@@ -212,7 +212,7 @@ export default function StatistikPower() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-border p-5">
+          <div className="bg-card rounded-2xl border border-border p-5">
             <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Tabel Konvensi Cohen</div>
             <ConventionsTable />
           </div>
@@ -283,7 +283,7 @@ function ResultDisplay({ result, solve, test }) {
       <div className="mt-4 pt-3 border-t border-border">
         <button
           onClick={() => navigator.clipboard.writeText(buildAPAReport(result, solve, test))}
-          className="text-xs text-gray-600 hover:text-gray-900 border border-border hover:bg-surface px-3 py-1.5 rounded-lg"
+          className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-surface px-3 py-1.5 rounded-lg"
         >
           Salin laporan APA
         </button>
@@ -296,13 +296,13 @@ function Row({ label, value }) {
   return (
     <>
       <dt className="text-muted">{label}</dt>
-      <dd className="text-right font-medium text-gray-800 tabular-nums">{value}</dd>
+      <dd className="text-right font-medium text-gray-800 dark:text-gray-200 tabular-nums">{value}</dd>
     </>
   )
 }
 
 function Label({ children }) {
-  return <div className="text-[12px] font-medium text-gray-700 mb-1.5">{children}</div>
+  return <div className="text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1.5">{children}</div>
 }
 
 function NumberInput({ value, onChange, step = 0.01, min, max }) {
@@ -344,10 +344,10 @@ function ConventionsTable() {
         <tbody className="divide-y divide-gray-100">
           {rows.map(r => (
             <tr key={r.label}>
-              <td className="py-1.5 pr-2 text-gray-700">{r.label}</td>
-              <td className="py-1.5 px-2 text-right tabular-nums text-gray-700">{r.small}</td>
-              <td className="py-1.5 px-2 text-right tabular-nums text-gray-700">{r.medium}</td>
-              <td className="py-1.5 pl-2 text-right tabular-nums text-gray-700">{r.large}</td>
+              <td className="py-1.5 pr-2 text-gray-700 dark:text-gray-300">{r.label}</td>
+              <td className="py-1.5 px-2 text-right tabular-nums text-gray-700 dark:text-gray-300">{r.small}</td>
+              <td className="py-1.5 px-2 text-right tabular-nums text-gray-700 dark:text-gray-300">{r.medium}</td>
+              <td className="py-1.5 pl-2 text-right tabular-nums text-gray-700 dark:text-gray-300">{r.large}</td>
             </tr>
           ))}
         </tbody>

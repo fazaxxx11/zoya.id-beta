@@ -52,7 +52,7 @@ export default function StatTooltip({ term, children, className = '' }) {
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         aria-label={`Info ${data.title}`}
-        className="inline-flex items-center justify-center text-muted hover:text-gray-600 focus:text-gray-700 focus:outline-none"
+        className="inline-flex items-center justify-center text-muted hover:text-gray-600 dark:text-gray-400 focus:text-gray-700 dark:text-gray-300 focus:outline-none"
       >
         <HelpCircle className="w-3.5 h-3.5" />
       </button>

@@ -32,7 +32,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
     return (
       <div className="border-2 border-border rounded-xl p-3 hover:border-sky-400 hover:bg-sky-50/40 transition-colors group">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h4 className="font-semibold text-sm text-gray-800 truncate">{tpl.name}</h4>
+          <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-200 truncate">{tpl.name}</h4>
           {deletable && (
             <button
               onClick={() => handleDelete(tpl.id, tpl.name)}
@@ -48,7 +48,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
         </div>
         <div className="flex flex-wrap gap-1 mb-2">
           {tpl.kriteria.slice(0, 4).map((k, i) => (
-            <span key={i} className="text-[10px] bg-surface px-1.5 py-0.5 rounded text-gray-600">
+            <span key={i} className="text-[10px] bg-surface px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400">
               {k.nama} ({k.bobot}%)
             </span>
           ))}
@@ -74,13 +74,13 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
       className="fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col animate-scale-in">
+      <div className="bg-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col animate-scale-in">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-sky-600" />
-            <h3 className="font-bold text-gray-900">Pilih Template Rubrik</h3>
+            <h3 className="font-bold text-gray-900 dark:text-gray-100">Pilih Template Rubrik</h3>
           </div>
-          <button onClick={onClose} className="text-muted hover:text-gray-700 p-1 rounded-lg hover:bg-surface">
+          <button onClick={onClose} className="text-muted hover:text-gray-700 dark:text-gray-300 p-1 rounded-lg hover:bg-surface">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -102,7 +102,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
             </h4>
             {userTpls.length === 0 ? (
               <div className="text-xs text-muted italic bg-surface rounded-lg p-3 text-center">
-                Belum ada template tersimpan. Pakai tombol <strong className="text-gray-600">Simpan sebagai Template</strong> di rubrik builder.
+                Belum ada template tersimpan. Pakai tombol <strong className="text-gray-600 dark:text-gray-400">Simpan sebagai Template</strong> di rubrik builder.
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

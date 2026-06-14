@@ -171,14 +171,14 @@ export default function StatistikReport() {
 
       <main className="max-w-6xl mx-auto px-5 py-6 grid lg:grid-cols-[320px_1fr] gap-5 print:block print:max-w-none print:p-0">
         {/* Sidebar: pilih analyses — hidden saat print */}
-        <aside className="bg-white rounded-2xl border border-border p-4 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-100px)] lg:overflow-y-auto print:hidden">
+        <aside className="bg-card rounded-2xl border border-border p-4 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-100px)] lg:overflow-y-auto print:hidden">
           <div className="flex items-center justify-between mb-3">
             <div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-muted font-medium">Pilih Analisis</div>
               <div className="text-xs text-muted mt-0.5">{selected.size} dari {items.length} dipilih</div>
             </div>
             <button onClick={toggleAll}
-                    className="text-[11px] text-gray-600 hover:text-gray-900 font-medium px-2 py-1 rounded">
+                    className="text-[11px] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 font-medium px-2 py-1 rounded">
               {selected.size === items.length ? 'Hapus semua' : 'Pilih semua'}
             </button>
           </div>
@@ -204,7 +204,7 @@ export default function StatistikReport() {
                       ? <CheckSquare className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                       : <Square className="w-4 h-4 text-muted mt-0.5 shrink-0" />}
                     <div className="flex-1 min-w-0">
-                      <div className="text-[12.5px] font-medium text-gray-800 truncate">{it.title || it.tool_name}</div>
+                      <div className="text-[12.5px] font-medium text-gray-800 dark:text-gray-200 truncate">{it.title || it.tool_name}</div>
                       <div className="text-[10.5px] text-muted mt-0.5">
                         {it.tool_name} · {new Date(it.created_at).toLocaleDateString('id-ID')}
                       </div>
@@ -219,10 +219,10 @@ export default function StatistikReport() {
         {/* Main: preview + actions */}
         <section className="space-y-4">
           {/* Action toolbar — hidden saat print */}
-          <div className="bg-white rounded-2xl border border-border p-4 flex items-center justify-between gap-3 flex-wrap print:hidden">
+          <div className="bg-card rounded-2xl border border-border p-4 flex items-center justify-between gap-3 flex-wrap print:hidden">
             <div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-muted font-medium">Preview Draft</div>
-              <div className="text-sm text-gray-600 mt-0.5">
+              <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
                 {report ? `${report.sections.length} sub-bab dari ${selected.size} analisis` : 'Pilih analisis di kiri untuk mulai'}
                 {loadingFull && <span className="ml-2 text-amber-600 inline-flex items-center gap-1"><RefreshCw className="w-3 h-3 animate-spin" />memuat…</span>}
               </div>
@@ -230,13 +230,13 @@ export default function StatistikReport() {
             {report && (
               <div className="flex items-center gap-2 flex-wrap">
                 <button onClick={() => window.print()}
-                        className="text-xs text-gray-700 border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5"
+                        className="text-xs text-gray-700 dark:text-gray-300 border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5"
                         title="Cetak atau simpan sebagai PDF (browser dialog)">
                   <Printer className="w-3.5 h-3.5" />
                   Cetak / PDF
                 </button>
                 <button onClick={copyHTML}
-                        className="text-xs text-gray-700 border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5">
+                        className="text-xs text-gray-700 dark:text-gray-300 border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5">
                   <Copy className="w-3.5 h-3.5" />
                   Salin (untuk Word)
                 </button>
@@ -252,7 +252,7 @@ export default function StatistikReport() {
                   {downloadingDocx ? '...' : 'Download DOCX'}
                 </button>
                 <button onClick={downloadText}
-                        className="text-xs text-gray-600 border border-border hover:bg-surface px-3 py-2 rounded-lg">
+                        className="text-xs text-gray-600 dark:text-gray-400 border border-border hover:bg-surface px-3 py-2 rounded-lg">
                   .txt
                 </button>
               </div>
@@ -261,7 +261,7 @@ export default function StatistikReport() {
 
           {/* Preview body */}
           {!report ? (
-            <div className="bg-white rounded-2xl border border-border p-12 text-center">
+            <div className="bg-card rounded-2xl border border-border p-12 text-center">
               <FileText className="w-10 h-10 text-gray-200 mx-auto mb-3" />
               <div className="text-sm text-muted">Pilih analisis di sidebar untuk men-generate draft</div>
             </div>
@@ -276,9 +276,9 @@ export default function StatistikReport() {
               />
 
               {/* Report preview with progressive disclosure for long content */}
-              <div ref={previewRef} className="bg-white rounded-2xl border border-border p-8 lg:p-10 prose prose-sm max-w-none report-page">
+              <div ref={previewRef} className="bg-card rounded-2xl border border-border p-8 lg:p-10 prose prose-sm max-w-none report-page">
                 <h1 className="text-center text-lg font-bold mb-6">{report.title}</h1>
-                <p className="text-justify indent-8 text-gray-800 leading-relaxed">{report.intro}</p>
+                <p className="text-justify indent-8 text-gray-800 dark:text-gray-200 leading-relaxed">{report.intro}</p>
                 {report.sections.map((sec, i) => (
                   <ReportSection key={i} section={sec} />
                 ))}
@@ -302,19 +302,19 @@ export default function StatistikReport() {
 function ReportSection({ section }) {
   return (
     <div className="mt-6">
-      <h2 className="text-base font-bold mt-6 mb-2 text-gray-900">{section.title}</h2>
+      <h2 className="text-base font-bold mt-6 mb-2 text-gray-900 dark:text-gray-100">{section.title}</h2>
       {section.paragraphs.map((p, i) => (
-        <p key={i} className="text-justify indent-8 text-gray-800 leading-relaxed mb-3">{p}</p>
+        <p key={i} className="text-justify indent-8 text-gray-800 dark:text-gray-200 leading-relaxed mb-3">{p}</p>
       ))}
       {section.tables.map((t, i) => (
         <div key={i} className="my-4">
-          <div className="text-sm font-semibold text-gray-800 mb-1.5">{t.caption}</div>
+          <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1.5">{t.caption}</div>
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse">
               <thead>
                 <tr>
                   {t.headers.map((h, j) => (
-                    <th key={j} className="border border-gray-300 bg-surface px-2 py-1.5 text-left font-semibold text-gray-700">{h}</th>
+                    <th key={j} className="border border-border bg-surface px-2 py-1.5 text-left font-semibold text-gray-700 dark:text-gray-300">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -322,7 +322,7 @@ function ReportSection({ section }) {
                 {t.rows.map((row, ri) => (
                   <tr key={ri}>
                     {row.map((c, ci) => (
-                      <td key={ci} className="border border-border px-2 py-1.5 text-gray-800 tabular-nums">{c}</td>
+                      <td key={ci} className="border border-border px-2 py-1.5 text-gray-800 dark:text-gray-200 tabular-nums">{c}</td>
                     ))}
                   </tr>
                 ))}

@@ -211,7 +211,7 @@ function Auth() {
             <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <h1 className="font-bold text-gray-800">Akun Saya</h1>
+            <h1 className="font-bold text-gray-800 dark:text-gray-200">Akun Saya</h1>
             <div className="w-8"></div>
           </div>
         </header>
@@ -237,9 +237,9 @@ function Auth() {
           </div>
 
           {/* Wallet Card */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
+          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-800">💰 Saldo Saya</h3>
+              <h3 className="font-bold text-gray-800 dark:text-gray-200">💰 Saldo Saya</h3>
               <button 
                 onClick={() => setMode('topup')}
                 className="text-sm text-sky-600 hover:underline"
@@ -261,7 +261,7 @@ function Auth() {
             
             <div className="mt-4 pt-4 border-t">
               <p className="text-sm text-muted">
-                Total: <span className="font-bold text-gray-800">Rp {(wallet.balance + wallet.bonus).toLocaleString('id-ID')}</span>
+                Total: <span className="font-bold text-gray-800 dark:text-gray-200">Rp {(wallet.balance + wallet.bonus).toLocaleString('id-ID')}</span>
               </p>
             </div>
           </div>
@@ -292,9 +292,9 @@ function Auth() {
 
           {/* Top-up packages */}
           {mode === 'topup' && (
-            <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
+            <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-gray-800">📦 Paket Top-up</h3>
+                <h3 className="font-bold text-gray-800 dark:text-gray-200">📦 Paket Top-up</h3>
                 <span className={`text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 ${BETA_FREE ? 'text-sky-600 bg-sky-50' : 'text-emerald-600 bg-emerald-50'}`}>
                   <Sparkles className="w-3 h-3" /> {BETA_FREE ? 'Coming Soon' : 'Bonus 2× untuk semua paket'}
                 </span>
@@ -305,8 +305,8 @@ function Auth() {
                 </div>
               )}
               {BETA_FREE ? (
-                <div className="rounded-xl border-2 border-dashed border-sky-200 bg-white p-5 text-center">
-                  <p className="font-bold text-gray-800">Top-up belum dibuka</p>
+                <div className="rounded-xl border-2 border-dashed border-sky-200 bg-card p-5 text-center">
+                  <p className="font-bold text-gray-800 dark:text-gray-200">Top-up belum dibuka</p>
                   <p className="text-sm text-muted mt-1">
                     Semua fitur beta saat ini gratis setelah login. Informasi paket Pro/Premium akan diumumkan saat payment siap.
                   </p>
@@ -328,7 +328,7 @@ function Auth() {
                         REKOMENDASI
                       </span>
                     )}
-                    <p className="font-bold text-gray-800">Paket {pkg.label}</p>
+                    <p className="font-bold text-gray-800 dark:text-gray-200">Paket {pkg.label}</p>
                     <div className="mt-2 flex items-baseline gap-1">
                       <span className="text-xs text-muted">Bayar</span>
                       <span className="text-xl font-bold text-sky-700">{formatIDR(pkg.pay)}</span>
@@ -370,13 +370,13 @@ function Auth() {
 
           {/* Transaction History */}
           {wallet.transactions.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
-              <h3 className="font-bold text-gray-800 mb-4">📜 Riwayat Transaksi</h3>
+            <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+              <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-4">📜 Riwayat Transaksi</h3>
               <div className="space-y-3">
                 {wallet.transactions.slice(0, 10).map(t => (
                   <div key={t.id} className="flex justify-between items-center p-3 bg-surface rounded-lg">
                     <div>
-                      <p className="font-medium text-gray-800">{t.id}</p>
+                      <p className="font-medium text-gray-800 dark:text-gray-200">{t.id}</p>
                       <p className="text-xs text-muted">{t.date}</p>
                     </div>
                     <div className="text-right">
@@ -398,13 +398,13 @@ function Auth() {
   // Login/Register Forms
   return (
     <div className="min-h-screen bg-pattern flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+      <div className="bg-card rounded-2xl shadow-lg p-8 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Zap className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
             {mode === 'login' ? 'Login'
               : mode === 'register' ? 'Daftar'
               : mode === 'otp' ? 'Login dengan Kode'
@@ -634,7 +634,7 @@ function Auth() {
             </button>
             <button
               onClick={() => { setMode('register'); setError(''); }}
-              className="w-full bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 font-semibold px-6 py-3 rounded-xl"
+              className="w-full bg-card border-2 border-sky-500 text-sky-600 hover:bg-sky-50 font-semibold px-6 py-3 rounded-xl"
             >
               Daftar Akun Baru
             </button>
@@ -698,15 +698,15 @@ function AltLoginMethods({ loading, onGoogle, onOtp, variant = 'login' }) {
   return (
     <div className="pt-2">
       <div className="flex items-center gap-3 my-3">
-        <div className="flex-1 h-px bg-gray-200" />
+        <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
         <span className="text-xs text-muted uppercase tracking-wider">atau</span>
-        <div className="flex-1 h-px bg-gray-200" />
+        <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
       </div>
       <button
         type="button"
         onClick={onGoogle}
         disabled={loading}
-        className="w-full bg-white border-2 border-border hover:border-gray-300 hover:bg-surface text-gray-700 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+        className="w-full bg-card border-2 border-border hover:border-border hover:bg-surface text-gray-700 dark:text-gray-300 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
       >
         <GoogleIcon className="w-5 h-5" />
         {variant === 'signup' ? 'Daftar dengan Google' : 'Login dengan Google'}
@@ -715,7 +715,7 @@ function AltLoginMethods({ loading, onGoogle, onOtp, variant = 'login' }) {
         type="button"
         onClick={onOtp}
         disabled={loading}
-        className="mt-2 w-full bg-white border-2 border-border hover:border-sky-300 hover:bg-sky-50 text-gray-700 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+        className="mt-2 w-full bg-card border-2 border-border hover:border-sky-300 hover:bg-sky-50 text-gray-700 dark:text-gray-300 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
       >
         <KeyRound className="w-5 h-5 text-sky-600" />
         Login pakai kode OTP (tanpa password)

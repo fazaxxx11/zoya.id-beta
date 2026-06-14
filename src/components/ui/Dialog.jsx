@@ -20,7 +20,7 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
   React.createElement(DialogPortal, null,
     React.createElement(DialogOverlay),
     React.createElement(DialogPrimitive.Content, {
-      className: cn('fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-xl border bg-white p-6 shadow-lg focus:outline-none', className),
+      className: cn('fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-xl border bg-card p-6 shadow-lg focus:outline-none', className),
       ref,
       ...props
     }, children)

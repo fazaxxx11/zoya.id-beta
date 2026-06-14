@@ -113,7 +113,7 @@ export default function EFAPage() {
         </div>
 
         {/* Input */}
-        <div className="bg-white border border-border rounded-xl p-4 space-y-3">
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Data CSV (item per kolom, responden per baris)</span>
             <button onClick={() => fileRef.current?.click()} className="text-xs text-violet-600 hover:text-violet-700 flex items-center gap-1">
@@ -135,7 +135,7 @@ export default function EFAPage() {
             <div className="space-y-2 pt-2 border-t border-border">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-medium text-gray-700">Item yang dimasukkan</label>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Item yang dimasukkan</label>
                   <button
                     onClick={() => setSelectedItems(itemsToUse.length === parsed.headers.length ? [] : parsed.headers)}
                     className="text-xs text-violet-600 hover:text-violet-700 font-medium"
@@ -156,7 +156,7 @@ export default function EFAPage() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Jumlah Faktor</label>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Jumlah Faktor</label>
                   <select value={nFactorsInput} onChange={e => setNFactorsInput(e.target.value)}
                           className="w-full border border-border rounded-lg px-3 py-2 text-sm">
                     <option value="auto">Otomatis (Kaiser λ ≥ 1)</option>
@@ -227,7 +227,7 @@ function SamplingAdequacySection({ result }) {
   const bartlettOk = b.p < 0.05
 
   return (
-    <div className="bg-white border border-border rounded-xl p-4">
+    <div className="bg-card border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Sampling Adequacy</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="bg-surface rounded-lg p-3">
@@ -297,7 +297,7 @@ function ScreePlotSection({ result }) {
   const sy = (e) => m.top + (1 - e / maxEig) * innerH
 
   return (
-    <div className="bg-white border border-border rounded-xl p-4">
+    <div className="bg-card border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Scree Plot</h3>
       <div className="bg-surface rounded-lg p-2 overflow-x-auto">
         <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="max-w-full h-auto">
@@ -359,7 +359,7 @@ function VarianceTableSection({ result }) {
   const eigs = result.eigenvalues
   const p = result.p
   return (
-    <div className="bg-white border border-border rounded-xl p-4">
+    <div className="bg-card border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Variance Explained</h3>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
@@ -402,7 +402,7 @@ function LoadingsSection({ result }) {
   const showRotated = result.rotationApplied
   const matrix = showRotated ? result.loadingsRotated : result.loadingsUnrotated
   return (
-    <div className="bg-white border border-border rounded-xl p-4">
+    <div className="bg-card border border-border rounded-xl p-4">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-violet-600" />
@@ -468,13 +468,13 @@ function ReportText({ result }) {
 Berdasarkan kriteria Kaiser (eigenvalue ≥ 1), terbentuk ${result.nFactors} faktor yang menjelaskan ${(cumVar * 100).toFixed(1)}% varians total. ${result.rotationApplied ? 'Setelah rotasi Varimax, struktur loadings menunjukkan setiap item memuat dominan pada satu faktor (loading ≥ 0.4).' : 'Tanpa rotasi diterapkan.'} Communalities (h²) berkisar dari ${Math.min(...result.communalities).toFixed(3)} hingga ${Math.max(...result.communalities).toFixed(3)}.`
 
   return (
-    <div className="bg-white border border-border rounded-xl p-4">
+    <div className="bg-card border border-border rounded-xl p-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }}
                 className="text-xs text-violet-600 hover:text-violet-700">Salin</button>
       </div>
-      <p className="text-xs leading-relaxed text-gray-700 whitespace-pre-wrap">{text}</p>
+      <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{text}</p>
     </div>
   )
 }

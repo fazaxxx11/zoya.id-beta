@@ -39,13 +39,13 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'}}>
-      <header className="bg-white shadow-sm sticky top-0 z-50">
+      <header className="bg-card shadow-sm sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/" className="text-muted hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </Link>
-            <span className="font-bold text-xl text-gray-800">Dashboard</span>
+            <span className="font-bold text-xl text-gray-800 dark:text-gray-200">Dashboard</span>
           </div>
           <div className="flex items-center gap-2">
             {isAdmin && (
@@ -62,13 +62,13 @@ function Dashboard() {
 
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* User Info Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+        <div className="bg-card rounded-2xl shadow-sm p-6 mb-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-2xl flex items-center justify-center">
               <User className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
                 {isAdmin ? 'Administrator' : 'Pengguna'}
               </h2>
               <p className="text-muted">
@@ -86,13 +86,13 @@ function Dashboard() {
         <div className="flex gap-2 mb-6">
           <button 
             onClick={() => setActiveTab('history')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'history' ? 'bg-sky-500 text-white' : 'bg-white text-gray-600 hover:bg-surface'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'history' ? 'bg-sky-500 text-white' : 'bg-card text-gray-600 dark:text-gray-400 hover:bg-surface'}`}
           >
             <History className="w-4 h-4" /> Riwayat
           </button>
           <button 
             onClick={() => setActiveTab('profile')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'profile' ? 'bg-sky-500 text-white' : 'bg-white text-gray-600 hover:bg-surface'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'profile' ? 'bg-sky-500 text-white' : 'bg-card text-gray-600 dark:text-gray-400 hover:bg-surface'}`}
           >
             <User className="w-4 h-4" /> Profil
           </button>
@@ -100,9 +100,9 @@ function Dashboard() {
 
         {/* History Tab */}
         {activeTab === 'history' && (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
             <div className="p-4 border-b">
-              <h3 className="font-semibold text-gray-800">Riwayat Transaksi</h3>
+              <h3 className="font-semibold text-gray-800 dark:text-gray-200">Riwayat Transaksi</h3>
             </div>
             <div className="divide-y">
               {MOCK_HISTORY.map((item) => (
@@ -114,12 +114,12 @@ function Dashboard() {
                         <BarChart3 className="w-5 h-5 text-sky-500" />
                       }
                       <div>
-                        <p className="font-medium text-gray-800">{item.service} - {item.type}</p>
+                        <p className="font-medium text-gray-800 dark:text-gray-200">{item.service} - {item.type}</p>
                         <p className="text-sm text-muted">{item.date}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-800">{formatCurrency(item.amount)}</p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">{formatCurrency(item.amount)}</p>
                       {getStatusBadge(item.status)}
                     </div>
                   </div>
@@ -141,14 +141,14 @@ function Dashboard() {
 
         {/* Profile Tab */}
         {activeTab === 'profile' && (
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            <h3 className="font-semibold text-gray-800 mb-4">Informasi Profil</h3>
+          <div className="bg-card rounded-2xl shadow-sm p-6">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4">Informasi Profil</h3>
             
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-muted mb-1">Email</label>
                 <input type="email" value={isAdmin ? ADMIN_EMAIL : 'akun@test.com'} disabled 
-                  className="w-full px-4 py-2 border rounded-lg bg-surface text-gray-600" />
+                  className="w-full px-4 py-2 border rounded-lg bg-surface text-gray-600 dark:text-gray-400" />
               </div>
               
               {isAdmin && (
@@ -158,7 +158,7 @@ function Dashboard() {
               )}
               
               <div className="pt-4 border-t">
-                <h4 className="font-medium text-gray-800 mb-2">Statistik Penggunaan</h4>
+                <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Statistik Penggunaan</h4>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center p-3 bg-surface rounded-lg">
                     <p className="text-2xl font-bold text-sky-600">{MOCK_HISTORY.length}</p>

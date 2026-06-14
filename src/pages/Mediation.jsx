@@ -150,7 +150,7 @@ export default function MediationPage() {
         </div>
 
         {/* Input */}
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Data (CSV dengan header)</span>
             <button
@@ -185,7 +185,7 @@ export default function MediationPage() {
             )}
             <ColumnPicker label="Y (outcome)" value={colY} setValue={setColY} options={parsed.headers} />
             <div>
-              <label className="block text-[11px] font-medium text-gray-700 mb-0.5">α</label>
+              <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">α</label>
               <select value={alpha} onChange={e => setAlpha(e.target.value)} className="w-full border border-border rounded-lg px-2 py-1.5 text-xs">
                 <option value={0.10}>0.10</option>
                 <option value={0.05}>0.05</option>
@@ -196,7 +196,7 @@ export default function MediationPage() {
 
           {model === 'mediation' && (
             <div className="mt-2">
-              <label className="block text-[11px] font-medium text-gray-700 mb-0.5">
+              <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">
                 Bootstrap resamples: <span className="text-indigo-600">{bootstrap.toLocaleString()}</span>
               </label>
               <input
@@ -259,14 +259,14 @@ function ModelCard({ active, onClick, icon: Icon, title, desc, example }) {
       className={`text-left p-4 rounded-xl border-2 transition-all ${
         active
           ? 'border-indigo-500 bg-indigo-50 shadow-md'
-          : 'border-border bg-white hover:border-indigo-300'
+          : 'border-border bg-card hover:border-indigo-300'
       }`}
     >
       <div className="flex items-center gap-2 mb-1">
         <Icon className={`w-4 h-4 ${active ? 'text-indigo-600' : 'text-muted'}`} />
         <span className="font-semibold text-sm">{title}</span>
       </div>
-      <p className="text-xs text-gray-600 mb-1">{desc}</p>
+      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{desc}</p>
       <p className="text-[11px] italic text-muted">{example}</p>
     </button>
   )
@@ -275,7 +275,7 @@ function ModelCard({ active, onClick, icon: Icon, title, desc, example }) {
 function ColumnPicker({ label, value, setValue, options }) {
   return (
     <div>
-      <label className="block text-[11px] font-medium text-gray-700 mb-0.5">{label}</label>
+      <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">{label}</label>
       <select value={value} onChange={e => setValue(e.target.value)} className="w-full border border-border rounded-lg px-2 py-1.5 text-xs">
         {(options || []).map(o => <option key={o} value={o}>{o}</option>)}
       </select>
@@ -289,7 +289,7 @@ function ColumnPicker({ label, value, setValue, options }) {
 function MediationResult({ r }) {
   return (
     <>
-      <div className="bg-white border border-border rounded-xl p-4">
+      <div className="bg-card border border-border rounded-xl p-4">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-indigo-600" /> Hasil Mediasi (Model 4)
         </h3>
@@ -322,7 +322,7 @@ function MediationResult({ r }) {
           <div className="text-xs font-semibold text-indigo-900 mb-1">Indirect Effect (a · b)</div>
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <div className="text-gray-600">Estimate</div>
+              <div className="text-gray-600 dark:text-gray-400">Estimate</div>
               <div className="font-mono text-base font-bold">{r.indirect.ab.toFixed(4)}</div>
               {r.indirect.standardized !== null && (
                 <div className="text-[10px] text-muted">
@@ -331,7 +331,7 @@ function MediationResult({ r }) {
               )}
             </div>
             <div>
-              <div className="text-gray-600">
+              <div className="text-gray-600 dark:text-gray-400">
                 Bootstrap {((1 - r.indirect.bootstrap.alpha) * 100).toFixed(0)}% CI
               </div>
               <div className="font-mono text-base">
@@ -341,7 +341,7 @@ function MediationResult({ r }) {
                 {r.indirect.bootstrap.significant ? (
                   <span className="text-green-700">✓ Signifikan (CI tidak melewati 0)</span>
                 ) : (
-                  <span className="text-gray-600">CI mencakup 0 → tidak signifikan</span>
+                  <span className="text-gray-600 dark:text-gray-400">CI mencakup 0 → tidak signifikan</span>
                 )}
               </div>
             </div>
@@ -402,7 +402,7 @@ function PathDiagram({ paths, indirect }) {
         <PathArrow label={`b = ${paths.b.coef.toFixed(2)}`} sig={paths.b.p < 0.05} />
         <Box label="Y" />
       </div>
-      <div className="text-center mt-2 text-xs text-gray-600">
+      <div className="text-center mt-2 text-xs text-gray-600 dark:text-gray-400">
         <span>c' (direct) = </span>
         <span className={`font-mono font-bold ${paths.cp.p < 0.05 ? 'text-green-700' : ''}`}>
           {paths.cp.coef.toFixed(3)}
@@ -418,7 +418,7 @@ function PathDiagram({ paths, indirect }) {
 function Box({ label, highlight }) {
   return (
     <div className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold text-lg ${
-      highlight ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-700' : 'bg-white border-2 border-gray-300'
+      highlight ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-700' : 'bg-card border-2 border-border'
     }`}>
       {label}
     </div>
@@ -440,14 +440,14 @@ function ReportTextMediation({ r }) {
   const text = `Hasil analisis mediasi (Hayes Model 4) menunjukkan bahwa jalur a (X→M) sebesar ${r.paths.a.coef.toFixed(3)} (SE = ${r.paths.a.se.toFixed(3)}, p = ${r.paths.a.p.toFixed(3)}), dan jalur b (M→Y, mengontrol X) sebesar ${r.paths.b.coef.toFixed(3)} (SE = ${r.paths.b.se.toFixed(3)}, p = ${r.paths.b.p.toFixed(3)}). Efek total c sebesar ${r.paths.c.coef.toFixed(3)} (p = ${r.paths.c.p.toFixed(3)}); efek langsung c' sebesar ${r.paths.cp.coef.toFixed(3)} (p = ${r.paths.cp.p.toFixed(3)}). Efek tidak langsung (a·b) = ${r.indirect.ab.toFixed(3)} dengan ${((1 - r.indirect.bootstrap.alpha)*100).toFixed(0)}% bootstrap CI [${r.indirect.bootstrap.ciLow.toFixed(3)}, ${r.indirect.bootstrap.ciHigh.toFixed(3)}] berdasarkan ${r.indirect.bootstrap.n} resamples. ${r.indirect.bootstrap.significant ? 'Mediasi signifikan' : 'Mediasi tidak signifikan'}: ${r.mediationType}.`
 
   return (
-    <div className="bg-white border border-border rounded-xl p-4">
+    <div className="bg-card border border-border rounded-xl p-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }} className="text-xs text-indigo-600 hover:text-indigo-700">
           Salin
         </button>
       </div>
-      <p className="text-xs leading-relaxed text-gray-700 whitespace-pre-wrap">{text}</p>
+      <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{text}</p>
     </div>
   )
 }
@@ -458,7 +458,7 @@ function ReportTextMediation({ r }) {
 function ModerationResult({ r }) {
   return (
     <>
-      <div className="bg-white border border-border rounded-xl p-4">
+      <div className="bg-card border border-border rounded-xl p-4">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-indigo-600" /> Hasil Moderasi (Model 1)
         </h3>
@@ -490,7 +490,7 @@ function ModerationResult({ r }) {
         <div className={`mt-3 rounded-lg p-3 text-xs ${
           r.interactionSignificant
             ? 'bg-green-50 border border-green-200 text-green-900'
-            : 'bg-surface border border-border text-gray-700'
+            : 'bg-surface border border-border text-gray-700 dark:text-gray-300'
         }`}>
           <div className="font-semibold mb-1">
             {r.interactionSignificant
@@ -726,14 +726,14 @@ function ReportTextModeration({ r }) {
   const text = `Hasil analisis moderasi (Hayes Model 1) menunjukkan koefisien interaksi X·W sebesar ${r.coefficients.XW.coef.toFixed(3)} (SE = ${r.coefficients.XW.se.toFixed(3)}, t = ${r.coefficients.XW.t.toFixed(2)}, p = ${r.coefficients.XW.p.toFixed(3)}). ${r.interactionSignificant ? 'W secara signifikan memoderasi efek X terhadap Y.' : 'W tidak signifikan memoderasi efek X→Y.'} Efek X pada level rendah W adalah ${r.conditionalEffects.atLow.effect.toFixed(3)} (p = ${r.conditionalEffects.atLow.p.toFixed(3)}); pada rata-rata W: ${r.conditionalEffects.atMean.effect.toFixed(3)} (p = ${r.conditionalEffects.atMean.p.toFixed(3)}); pada level tinggi W: ${r.conditionalEffects.atHigh.effect.toFixed(3)} (p = ${r.conditionalEffects.atHigh.p.toFixed(3)}). Model menjelaskan ${(r.rSquared * 100).toFixed(1)}% varians Y (R² = ${r.rSquared.toFixed(3)}, n = ${r.n}).`
 
   return (
-    <div className="bg-white border border-border rounded-xl p-4">
+    <div className="bg-card border border-border rounded-xl p-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }} className="text-xs text-indigo-600 hover:text-indigo-700">
           Salin
         </button>
       </div>
-      <p className="text-xs leading-relaxed text-gray-700 whitespace-pre-wrap">{text}</p>
+      <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{text}</p>
     </div>
   )
 }

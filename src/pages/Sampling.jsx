@@ -63,7 +63,7 @@ export default function Sampling() {
                 className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px flex items-center gap-1.5 whitespace-nowrap transition-colors ${
                   tab === t.id
                     ? 'border-emerald-500 text-emerald-700'
-                    : 'border-transparent text-muted hover:text-gray-700'
+                    : 'border-transparent text-muted hover:text-gray-700 dark:text-gray-300'
                 }`}
               >
                 <Ic className="w-4 h-4" /> {t.label}
@@ -128,13 +128,13 @@ function SizeCalculator() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Input panel */}
-      <div className="bg-white border border-border rounded-xl p-4 space-y-3">
+      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Calculator className="w-4 h-4 text-emerald-600" /> Parameter
         </h3>
 
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Rumus</label>
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Rumus</label>
           <select
             value={formula}
             onChange={e => setFormula(e.target.value)}
@@ -151,7 +151,7 @@ function SizeCalculator() {
 
         {showN && (
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Populasi (N)
               {formula === 'cochran' && (
                 <label className="ml-2 text-[10px] font-normal">
@@ -177,7 +177,7 @@ function SizeCalculator() {
 
         {showE && (
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Margin of Error / e (mis. 0.05 = 5%)
             </label>
             <input
@@ -192,7 +192,7 @@ function SizeCalculator() {
 
         {showD && (
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Presisi (d) — proporsi mutlak
             </label>
             <input
@@ -207,7 +207,7 @@ function SizeCalculator() {
 
         {showConfidence && (
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Tingkat Kepercayaan
             </label>
             <select
@@ -224,7 +224,7 @@ function SizeCalculator() {
 
         {showP && (
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Proporsi (p) — gunakan 0.5 jika tidak diketahui (paling konservatif)
             </label>
             <input
@@ -239,7 +239,7 @@ function SizeCalculator() {
       </div>
 
       {/* Result panel */}
-      <div className="bg-white border border-border rounded-xl p-4">
+      <div className="bg-card border border-border rounded-xl p-4">
         <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
           <Users className="w-4 h-4 text-emerald-600" /> Hasil
         </h3>
@@ -258,14 +258,14 @@ function SizeCalculator() {
 
             <div className="text-xs space-y-2">
               <div>
-                <div className="font-semibold text-gray-700">Rumus</div>
-                <code className="text-[11px] bg-surface px-2 py-1 rounded block mt-1 text-gray-700">
+                <div className="font-semibold text-gray-700 dark:text-gray-300">Rumus</div>
+                <code className="text-[11px] bg-surface px-2 py-1 rounded block mt-1 text-gray-700 dark:text-gray-300">
                   {result.formula}
                 </code>
               </div>
               <div>
-                <div className="font-semibold text-gray-700">Catatan</div>
-                <p className="text-gray-600 leading-relaxed">{result.note}</p>
+                <div className="font-semibold text-gray-700 dark:text-gray-300">Catatan</div>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{result.note}</p>
               </div>
 
               <button
@@ -290,17 +290,17 @@ function SizeCalculator() {
             <Info className="w-3.5 h-3.5" /> Pedoman umum nilai e (margin of error)
           </div>
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-white rounded p-2">
+            <div className="bg-card rounded p-2">
               <div className="font-semibold">e = 1%</div>
-              <div className="text-gray-600">Sangat presisi, n besar</div>
+              <div className="text-gray-600 dark:text-gray-400">Sangat presisi, n besar</div>
             </div>
-            <div className="bg-white rounded p-2">
+            <div className="bg-card rounded p-2">
               <div className="font-semibold">e = 5%</div>
-              <div className="text-gray-600">Standar skripsi</div>
+              <div className="text-gray-600 dark:text-gray-400">Standar skripsi</div>
             </div>
-            <div className="bg-white rounded p-2">
+            <div className="bg-card rounded p-2">
               <div className="font-semibold">e = 10%</div>
-              <div className="text-gray-600">Eksplorasi cepat</div>
+              <div className="text-gray-600 dark:text-gray-400">Eksplorasi cepat</div>
             </div>
           </div>
         </div>
@@ -339,7 +339,7 @@ function StratifiedPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border border-border rounded-xl p-4">
+      <div className="bg-card border border-border rounded-xl p-4">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
           <Layers className="w-4 h-4 text-emerald-600" /> Daftar Strata
         </h3>
@@ -376,16 +376,16 @@ function StratifiedPanel() {
             + Tambah strata
           </button>
           <span className="text-xs text-muted">·</span>
-          <span className="text-xs text-gray-600">Total populasi: <strong>{totalN}</strong></span>
+          <span className="text-xs text-gray-600 dark:text-gray-400">Total populasi: <strong>{totalN}</strong></span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-3">Total Sampel & Mode</h3>
           <div className="space-y-2">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Total sampel (n)</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Total sampel (n)</label>
               <input
                 type="number"
                 value={n}
@@ -395,7 +395,7 @@ function StratifiedPanel() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Mode alokasi</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Mode alokasi</label>
               <select
                 value={mode}
                 onChange={e => setMode(e.target.value)}
@@ -408,7 +408,7 @@ function StratifiedPanel() {
           </div>
         </div>
 
-        <div className="bg-white border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-3">Alokasi per Strata</h3>
           {result?.error ? (
             <div className="text-xs text-red-700">{result.error}</div>
@@ -426,7 +426,7 @@ function StratifiedPanel() {
                 {result.map(r => (
                   <tr key={r.name}>
                     <td className="px-2 py-1.5 font-medium">{r.name}</td>
-                    <td className="px-2 py-1.5 text-right text-gray-600">{r.N}</td>
+                    <td className="px-2 py-1.5 text-right text-gray-600 dark:text-gray-400">{r.N}</td>
                     <td className="px-2 py-1.5 text-right text-muted">{(r.fraction*100).toFixed(1)}%</td>
                     <td className="px-2 py-1.5 text-right font-bold text-emerald-700">{r.n}</td>
                   </tr>
@@ -482,7 +482,7 @@ function RandomSampler() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="bg-white border border-border rounded-xl p-4 space-y-3">
+      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Dice5 className="w-4 h-4 text-emerald-600" /> Daftar Populasi
         </h3>
@@ -497,7 +497,7 @@ function RandomSampler() {
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Jumlah pilih (k)</label>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Jumlah pilih (k)</label>
             <input
               type="number"
               value={k}
@@ -507,7 +507,7 @@ function RandomSampler() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Seed (opsional)
               <span className="text-muted font-normal ml-1" title="Angka untuk reproducibility">ⓘ</span>
             </label>
@@ -526,7 +526,7 @@ function RandomSampler() {
         </button>
       </div>
 
-      <div className="bg-white border border-border rounded-xl p-4">
+      <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-sm">Sampel Terpilih</h3>
           {result.length > 0 && (
@@ -563,9 +563,9 @@ function RandomSampler() {
 function HelpPanel() {
   return (
     <div className="space-y-3 max-w-3xl">
-      <details open className="bg-white border border-border rounded-xl">
+      <details open className="bg-card border border-border rounded-xl">
         <summary className="px-4 py-3 cursor-pointer font-semibold text-sm">Kapan pakai rumus apa?</summary>
-        <div className="px-4 pb-4 text-sm text-gray-700 space-y-3">
+        <div className="px-4 pb-4 text-sm text-gray-700 dark:text-gray-300 space-y-3">
           <div>
             <strong className="text-emerald-700">Slovin / Yamane</strong> — paling umum di skripsi Indonesia.
             Pakai jika populasi (N) diketahui dan tidak butuh asumsi proporsi. Sederhana, hanya butuh N + e.
@@ -585,18 +585,18 @@ function HelpPanel() {
         </div>
       </details>
 
-      <details className="bg-white border border-border rounded-xl">
+      <details className="bg-card border border-border rounded-xl">
         <summary className="px-4 py-3 cursor-pointer font-semibold text-sm">Apa itu p (proporsi)?</summary>
-        <div className="px-4 pb-4 text-sm text-gray-700 space-y-2">
+        <div className="px-4 pb-4 text-sm text-gray-700 dark:text-gray-300 space-y-2">
           <p>p = perkiraan proporsi populasi yang memiliki karakteristik yang Anda teliti.</p>
           <p>Kalau tidak punya data awal, gunakan <strong>p = 0.5</strong> (paling konservatif → menghasilkan n terbesar).</p>
           <p>Contoh: jika dari studi pilot 30% siswa malas membaca, maka p = 0.3.</p>
         </div>
       </details>
 
-      <details className="bg-white border border-border rounded-xl">
+      <details className="bg-card border border-border rounded-xl">
         <summary className="px-4 py-3 cursor-pointer font-semibold text-sm">Setelah dapat n, lalu apa?</summary>
-        <div className="px-4 pb-4 text-sm text-gray-700 space-y-2">
+        <div className="px-4 pb-4 text-sm text-gray-700 dark:text-gray-300 space-y-2">
           <p>1. <strong>Tab "Alokasi Strata"</strong> — bagi n ke kelas/strata secara proporsional.</p>
           <p>2. <strong>Tab "Random Sampler"</strong> — paste daftar nama populasi, sistem akan acak pilih sampel sesuai n.</p>
           <p>3. Pakai <Link to="/kuesioner" className="text-emerald-600 hover:underline">Kuesioner Builder</Link> untuk bikin instrumen.</p>
@@ -604,9 +604,9 @@ function HelpPanel() {
         </div>
       </details>
 
-      <details className="bg-white border border-border rounded-xl">
+      <details className="bg-card border border-border rounded-xl">
         <summary className="px-4 py-3 cursor-pointer font-semibold text-sm">Apakah n dari kalkulator ini wajib diikuti persis?</summary>
-        <div className="px-4 pb-4 text-sm text-gray-700 space-y-2">
+        <div className="px-4 pb-4 text-sm text-gray-700 dark:text-gray-300 space-y-2">
           <p>n adalah <strong>minimum</strong>. Boleh lebih tinggi, tidak boleh lebih rendah (tanpa justifikasi khusus).</p>
           <p>Untuk penelitian kuantitatif, lazim dibulatkan ke atas atau ditambah 10–20% untuk antisipasi non-respons / dropout.</p>
         </div>

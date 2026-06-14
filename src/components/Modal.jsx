@@ -16,7 +16,7 @@ export default function Modal({
   open,
   onClose,
   children,
-  panelClassName = 'bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col',
+  panelClassName = 'bg-card rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col',
   dismissOnBackdrop = true,
   zIndex = 100,
 }) {

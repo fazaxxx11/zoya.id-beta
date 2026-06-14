@@ -90,9 +90,9 @@ function Upload() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <header className="bg-white shadow-sm">
+      <header className="bg-card shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <a href="/" className="flex items-center gap-2 text-gray-600 hover:text-orange-500">
+          <a href="/" className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-orange-500">
             <ChevronLeft className="w-5 h-5" />
             Kembali ke Home
           </a>
@@ -102,16 +102,16 @@ function Upload() {
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         {/* Title */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Upload File</h1>
-          <p className="text-gray-600">Upload data siswa untuk analisis statistik atau assessment</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">Upload File</h1>
+          <p className="text-gray-600 dark:text-gray-400">Upload data siswa untuk analisis statistik atau assessment</p>
         </div>
 
         {/* Supported Formats */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 border border-border">
-          <h3 className="font-semibold text-gray-800 mb-3">Format yang Didukung</h3>
+        <div className="bg-card rounded-2xl shadow-sm p-4 border border-border">
+          <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Format yang Didukung</h3>
           <div className="flex flex-wrap gap-2">
             {formats.map(format => (
-              <span key={format.ext} className="bg-surface px-3 py-1 rounded-full text-sm text-gray-600 flex items-center gap-1">
+              <span key={format.ext} className="bg-surface px-3 py-1 rounded-full text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
                 <span>{format.icon}</span>
                 <span>{format.name}</span>
                 <span className="text-muted">.{format.ext}</span>
@@ -122,7 +122,7 @@ function Upload() {
 
         {/* Upload Area */}
         <div 
-          className={`bg-white rounded-2xl shadow-sm p-8 border-2 border-dashed transition-all ${
+          className={`bg-card rounded-2xl shadow-sm p-8 border-2 border-dashed transition-all ${
             dragActive 
               ? 'border-sky-400 bg-sky-50' 
               : 'border-border hover:border-sky-300'
@@ -150,7 +150,7 @@ function Upload() {
                 <UploadIcon className={`w-8 h-8 ${dragActive ? 'text-sky-600' : 'text-muted'}`} />
               )}
             </div>
-            <p className="text-gray-700 font-medium text-lg mb-1">
+            <p className="text-gray-700 dark:text-gray-300 font-medium text-lg mb-1">
               {processing ? 'Memproses file...' : 'Klik untuk upload atau drag & drop'}
             </p>
             <p className="text-muted text-sm">
@@ -172,9 +172,9 @@ function Upload() {
 
         {/* Uploaded Files List */}
         {files.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+          <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
             <div className="p-4 border-b border-border flex items-center justify-between">
-              <h3 className="font-semibold text-gray-800">
+              <h3 className="font-semibold text-gray-800 dark:text-gray-200">
                 File yang Diupload ({files.length})
               </h3>
               <button 
@@ -203,7 +203,7 @@ function Upload() {
                       }`} />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-800">{file.name}</p>
+                      <p className="font-medium text-gray-800 dark:text-gray-200">{file.name}</p>
                       <div className="flex items-center gap-3 text-sm text-muted">
                         <span>{file.size}</span>
                         <span className="flex items-center gap-1">
@@ -227,7 +227,7 @@ function Upload() {
             <div className="p-4 bg-surface border-t border-border">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-gray-800">
+                  <p className="font-medium text-gray-800 dark:text-gray-200">
                     Total: {files.reduce((sum, f) => sum + f.studentCount, 0)} siswa
                   </p>
                   <p className="text-sm text-muted">

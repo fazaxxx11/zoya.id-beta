@@ -103,15 +103,15 @@ function OrderStatus() {
           <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted hover:text-sky-600">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h1 className="font-bold text-gray-800">Cek Pesanan</h1>
+          <h1 className="font-bold text-gray-800 dark:text-gray-200">Cek Pesanan</h1>
           <div className="w-8"></div>
         </div>
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
         {/* Search Box */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
-          <h2 className="text-lg font-bold text-gray-800 mb-4">Masukkan Order ID</h2>
+        <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">Masukkan Order ID</h2>
           <p className="text-sm text-muted mb-4">
             Cek status pesanan tanpa perlu login. Order ID diberikan setelah Anda mengajukan permintaan layanan.
           </p>
@@ -149,7 +149,7 @@ function OrderStatus() {
                       setSearchId(order.id)
                       setFoundOrder(order)
                     }}
-                    className="text-xs bg-surface hover:bg-gray-200 px-3 py-1 rounded-full"
+                    className="text-xs bg-surface hover:bg-surface px-3 py-1 rounded-full"
                   >
                     {order.id}
                   </button>
@@ -161,11 +161,11 @@ function OrderStatus() {
 
         {/* Result: Not Found */}
         {notFound && (
-          <div className="bg-white rounded-2xl shadow-sm p-8 border border-border text-center">
+          <div className="bg-card rounded-2xl shadow-sm p-8 border border-border text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <XCircle className="w-8 h-8 text-red-500" />
             </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Pesanan Tidak Ditemukan</h3>
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Pesanan Tidak Ditemukan</h3>
             <p className="text-muted mb-4">
               Order ID "{searchId}" tidak ditemukan. Pastikan Anda memasukkan ID dengan benar.
             </p>
@@ -182,9 +182,9 @@ function OrderStatus() {
         {foundOrder && (
           <div className="space-y-4">
             {/* Status Card */}
-            <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
+            <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-800">Status Pesanan</h3>
+                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Status Pesanan</h3>
                 {getStatusBadge(foundOrder.status)}
               </div>
 
@@ -226,14 +226,14 @@ function OrderStatus() {
                         {/* Calculate average score from results */}
                         {foundOrder.results && foundOrder.results.length > 0 ? (
                           <>
-                            <div className="bg-white rounded-lg p-4">
+                            <div className="bg-card rounded-lg p-4">
                               <p className="text-sm text-muted mb-1">Jumlah Siswa</p>
                               <p className="text-2xl font-bold text-sky-600">{foundOrder.results.length} siswa</p>
                             </div>
                             
                             {/* Show each student's score */}
                             <div className="space-y-2">
-                              <p className="text-sm font-medium text-gray-700">Detail Penilaian:</p>
+                              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Detail Penilaian:</p>
                               {foundOrder.results.map((student, idx) => {
                                 // Calculate student's average
                                 const scores = student.scores || {}
@@ -243,7 +243,7 @@ function OrderStatus() {
                                   : '-'
                                 
                                 return (
-                                  <div key={idx} className="bg-white rounded-lg p-3 flex justify-between items-center">
+                                  <div key={idx} className="bg-card rounded-lg p-3 flex justify-between items-center">
                                     <div>
                                       <p className="font-medium">{student.name || `Siswa ${idx + 1}`}</p>
                                       <p className="text-xs text-muted">{student.kesimpulan || ''}</p>
@@ -258,13 +258,13 @@ function OrderStatus() {
                           </>
                         ) : (
                           <>
-                            <div className="bg-white rounded-lg p-4">
+                            <div className="bg-card rounded-lg p-4">
                               <p className="text-sm text-muted mb-1">Skor Total</p>
                               <p className="text-3xl font-bold text-green-600">8.5/10</p>
                             </div>
-                            <div className="bg-white rounded-lg p-4">
+                            <div className="bg-card rounded-lg p-4">
                               <p className="text-sm text-muted mb-2">Feedback</p>
-                              <p className="text-gray-700">Tulisan sudah baik dengan struktur yang jelas dan argumen yang kuat.</p>
+                              <p className="text-gray-700 dark:text-gray-300">Tulisan sudah baik dengan struktur yang jelas dan argumen yang kuat.</p>
                             </div>
                           </>
                         )}
@@ -273,7 +273,7 @@ function OrderStatus() {
                     
                     {/* Statistics Results */}
                     {foundOrder.service === 'statistics' && (
-                      <div className="bg-white rounded-lg p-4">
+                      <div className="bg-card rounded-lg p-4">
                         <p className="text-sm text-muted mb-2">Hasil Analisis</p>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
@@ -495,9 +495,9 @@ function OrderStatus() {
             </div>
 
             {/* Share / Save */}
-            <div className="bg-white rounded-2xl shadow-sm p-4 border border-border">
+            <div className="bg-card rounded-2xl shadow-sm p-4 border border-border">
               <p className="text-sm text-muted text-center">
-                Simpan Order ID Anda: <strong className="text-gray-800">{foundOrder.id}</strong>
+                Simpan Order ID Anda: <strong className="text-gray-800 dark:text-gray-200">{foundOrder.id}</strong>
               </p>
             </div>
           </div>
@@ -505,8 +505,8 @@ function OrderStatus() {
 
         {/* Quick Actions */}
         {!foundOrder && !notFound && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
-            <h3 className="font-semibold text-gray-800 mb-4">Butuh bantuan?</h3>
+          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4">Butuh bantuan?</h3>
             <div className="space-y-3">
               <Link to="/" className="block p-3 bg-sky-50 rounded-xl hover:bg-sky-100 transition-colors">
                 <p className="font-medium text-sky-800">Kembali ke Home</p>

@@ -276,20 +276,20 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
+      <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
         <div className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center shrink-0">
             <Sparkles className="w-5 h-5 text-sky-600" />
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-bold text-gray-800">Buat Rubrik Penilaian</h2>
+            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Buat Rubrik Penilaian</h2>
             <p className="text-sm text-muted">Tentukan kriteria dan bobot penilaian</p>
           </div>
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setTplOpen(true)}
-              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-sky-50 hover:border-sky-300 transition-colors flex items-center gap-1.5 text-gray-700"
+              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-sky-50 hover:border-sky-300 transition-colors flex items-center gap-1.5 text-gray-700 dark:text-gray-300"
               title="Buka library template"
             >
               <FolderOpen className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Template</span>
@@ -298,7 +298,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
               type="button"
               onClick={handleSaveTemplate}
               disabled={!hasExistingRubrik}
-              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-emerald-50 hover:border-emerald-300 transition-colors flex items-center gap-1.5 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-emerald-50 hover:border-emerald-300 transition-colors flex items-center gap-1.5 text-gray-700 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
               title="Simpan rubrik ini sebagai template"
             >
               <Save className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Simpan</span>
@@ -308,23 +308,23 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">Judul / Nama Tugas</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Judul / Nama Tugas</label>
             <input type="text" value={title} onChange={e => setTitle(e.target.value)}
               placeholder="cth: Penilaian Proposal Skripsi" className="input-field" />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">Konteks Penilaian</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Konteks Penilaian</label>
             <textarea value={context} onChange={e => setContext(e.target.value)}
               placeholder="Jelaskan konteks..." rows={2} className="input-field resize-none" />
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
+      <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
         <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
           <div>
-            <h3 className="font-semibold text-gray-800">Kriteria Penilaian</h3>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200">Kriteria Penilaian</h3>
             <p className="text-xs text-muted mt-0.5">Total bobot harus 100%</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -469,12 +469,12 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
       <div className="bg-sky-50 rounded-xl p-4 border border-sky-100">
         <span className="font-medium text-sky-800">Rubrik: {title}</span>
         <div className="flex gap-2 mt-2">
-          {rubrik.map(k => <span key={k.id} className="bg-white px-2 py-1 rounded text-xs">{k.nama} ({k.bobot}%)</span>)}
+          {rubrik.map(k => <span key={k.id} className="bg-card px-2 py-1 rounded text-xs">{k.nama} ({k.bobot}%)</span>)}
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-border">
-        <h3 className="font-semibold text-gray-800 mb-1">Input Jawaban Murid</h3>
+      <div className="bg-card rounded-2xl shadow-sm p-5 sm:p-6 border border-border">
+        <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">Input Jawaban Murid</h3>
         <p className="text-xs text-muted mb-4">Pilih cara input yang paling cocok. Bisa ganti kapan saja.</p>
 
         {/* === Mode picker: 2 card besar === */}
@@ -485,7 +485,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             className={`group relative text-left rounded-xl p-3 sm:p-4 border-2 transition-all ${
               inputMode === 'file'
                 ? 'border-sky-500 bg-sky-50 shadow-sm'
-                : 'border-border bg-white hover:border-gray-300 hover:bg-surface'
+                : 'border-border bg-card hover:border-border hover:bg-surface'
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
@@ -493,7 +493,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             }`}>
               <FileSpreadsheet className="w-5 h-5" />
             </div>
-            <div className="font-semibold text-sm text-gray-800 flex items-center gap-1.5">
+            <div className="font-semibold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
               Upload File
               {inputMode === 'file' && <span className="text-[10px] uppercase tracking-wide bg-sky-500 text-white px-1.5 py-0.5 rounded">aktif</span>}
             </div>
@@ -506,7 +506,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             className={`group relative text-left rounded-xl p-3 sm:p-4 border-2 transition-all ${
               inputMode === 'manual'
                 ? 'border-sky-500 bg-sky-50 shadow-sm'
-                : 'border-border bg-white hover:border-gray-300 hover:bg-surface'
+                : 'border-border bg-card hover:border-border hover:bg-surface'
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
@@ -514,7 +514,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             }`}>
               <Pencil className="w-5 h-5" />
             </div>
-            <div className="font-semibold text-sm text-gray-800 flex items-center gap-1.5">
+            <div className="font-semibold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
               Ketik Manual
               {inputMode === 'manual' && <span className="text-[10px] uppercase tracking-wide bg-sky-500 text-white px-1.5 py-0.5 rounded">aktif</span>}
             </div>
@@ -540,7 +540,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               }`}>
                 <Upload className="w-7 h-7" />
               </div>
-              <p className="font-medium text-gray-800 mb-1">
+              <p className="font-medium text-gray-800 dark:text-gray-200 mb-1">
                 {dragOver ? 'Lepas untuk upload' : 'Drop file di sini atau klik'}
               </p>
               <p className="text-xs text-muted mb-3">
@@ -593,7 +593,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               </span>
             </div>
 
-            <div className="overflow-x-auto rounded-lg border border-amber-200 bg-white">
+            <div className="overflow-x-auto rounded-lg border border-amber-200 bg-card">
               <table className="w-full text-sm border-collapse">
                 <thead className="bg-amber-100/80 sticky top-0 z-10">
                   <tr className="text-left">
@@ -608,7 +608,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                 </thead>
                 <tbody>
                   {students.map((s, i) => (
-                    <tr key={s.id} className={i % 2 === 0 ? 'bg-white' : 'bg-amber-50/30'}>
+                    <tr key={s.id} className={i % 2 === 0 ? 'bg-card' : 'bg-amber-50/30'}>
                       <td className="border-b border-r border-amber-100 px-2 py-1 text-center text-[11px] text-muted font-mono align-top pt-2">
                         {i + 1}
                       </td>
@@ -618,7 +618,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                           value={s.name}
                           onChange={e => upd(s.id, 'name', e.target.value)}
                           placeholder="Nama"
-                          className="w-full px-2 py-1.5 text-sm bg-transparent border-0 focus:bg-white focus:ring-2 focus:ring-sky-300 focus:outline-none rounded"
+                          className="w-full px-2 py-1.5 text-sm bg-transparent border-0 focus:bg-card focus:ring-2 focus:ring-sky-300 focus:outline-none rounded"
                         />
                       </td>
                       <td className="border-b border-r border-amber-100 p-0 align-top">
@@ -627,7 +627,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                           onChange={e => upd(s.id, 'answer', e.target.value)}
                           placeholder="Jawaban..."
                           rows={2}
-                          className="w-full px-2 py-1.5 text-xs bg-transparent border-0 focus:bg-white focus:ring-2 focus:ring-sky-300 focus:outline-none rounded resize-y min-h-[2.5rem] leading-snug"
+                          className="w-full px-2 py-1.5 text-xs bg-transparent border-0 focus:bg-card focus:ring-2 focus:ring-sky-300 focus:outline-none rounded resize-y min-h-[2.5rem] leading-snug"
                         />
                       </td>
                       {students.some(st => st.confidence) && (
@@ -693,7 +693,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             {/* Hint card untuk manual mode */}
             <div className="bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-100 rounded-lg px-3 py-2 flex items-start gap-2 text-xs text-sky-800">
               <Pencil className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-              <span>Ketik nama & jawaban tiap siswa. Tekan <kbd className="bg-white px-1 py-0.5 rounded text-[10px] border">+ Tambah Murid</kbd> untuk row baru.</span>
+              <span>Ketik nama & jawaban tiap siswa. Tekan <kbd className="bg-card px-1 py-0.5 rounded text-[10px] border">+ Tambah Murid</kbd> untuk row baru.</span>
             </div>
             {students.map((s,i) => (
               <div key={s.id} className="bg-surface rounded-xl p-4">
@@ -790,10 +790,10 @@ function ClassSummary({ results, rubrik }) {
 
   const total = stats.count
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-border p-5">
+    <div className="bg-card rounded-2xl shadow-sm border border-border p-5">
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp className="w-5 h-5 text-sky-600" />
-        <h3 className="font-bold text-gray-800">Ringkasan Kelas</h3>
+        <h3 className="font-bold text-gray-800 dark:text-gray-200">Ringkasan Kelas</h3>
         <span className="text-xs text-muted">({total} siswa dinilai)</span>
       </div>
 
@@ -814,7 +814,7 @@ function ClassSummary({ results, rubrik }) {
 
       {/* Distribusi bar */}
       <div className="mb-4">
-        <div className="text-xs font-medium text-gray-600 mb-2">Distribusi</div>
+        <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Distribusi</div>
         <div className="flex h-6 rounded-lg overflow-hidden bg-surface">
           {Object.entries(stats.buckets).map(([label, n]) => {
             const pct = (n / total) * 100
@@ -840,7 +840,7 @@ function ClassSummary({ results, rubrik }) {
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-[11px]">
           {Object.entries(stats.buckets).filter(([, n]) => n > 0).map(([label, n]) => (
-            <span key={label} className="text-gray-600">
+            <span key={label} className="text-gray-600 dark:text-gray-400">
               <span className="inline-block w-2 h-2 rounded-full mr-1 align-middle" style={{
                 backgroundColor: { 'Sangat Baik': '#22c55e', 'Baik': '#0ea5e9', 'Cukup': '#f59e0b', 'Perbaikan': '#f97316', 'Tidak Lulus': '#ef4444' }[label],
               }}/>
@@ -856,7 +856,7 @@ function ClassSummary({ results, rubrik }) {
           <div className="font-medium text-green-700 mb-1">🏆 Top 3</div>
           {stats.top.map((s, i) => (
             <div key={i} className="flex justify-between truncate">
-              <span className="text-gray-700 truncate">{i + 1}. {s.name}</span>
+              <span className="text-gray-700 dark:text-gray-300 truncate">{i + 1}. {s.name}</span>
               <span className="font-bold text-green-600 ml-2">{s.total}</span>
             </div>
           ))}
@@ -865,7 +865,7 @@ function ClassSummary({ results, rubrik }) {
           <div className="font-medium text-red-700 mb-1">⚠️ Perlu Perhatian</div>
           {stats.bottom.map((s, i) => (
             <div key={i} className="flex justify-between truncate">
-              <span className="text-gray-700 truncate">{i + 1}. {s.name}</span>
+              <span className="text-gray-700 dark:text-gray-300 truncate">{i + 1}. {s.name}</span>
               <span className="font-bold text-red-600 ml-2">{s.total}</span>
             </div>
           ))}
@@ -922,7 +922,7 @@ function CriterionRow({ k, s, onUpdate }) {
           <span className="font-medium">{k.nama}</span>
           <span className="text-muted">{k.bobot}%</span>
         </div>
-        <div className="h-1.5 bg-gray-200 rounded-full">
+        <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
           <div className={`h-1.5 rounded-full transition-all ${s.skor>=8?'bg-green-500':s.skor>=5?'bg-amber-500':'bg-red-500'}`} style={{width:(s.skor/10)*100+'%'}}/>
         </div>
         {editingKomentar ? (
@@ -936,7 +936,7 @@ function CriterionRow({ k, s, onUpdate }) {
           />
         ) : (
           <p
-            className="text-xs text-gray-600 mt-1 cursor-text hover:bg-surface rounded px-1 py-0.5 -mx-1 group flex items-start gap-1"
+            className="text-xs text-gray-600 dark:text-gray-400 mt-1 cursor-text hover:bg-surface rounded px-1 py-0.5 -mx-1 group flex items-start gap-1"
             onClick={() => { setTmpKom(s.komentar || ''); setEditingKomentar(true) }}
             title="Klik untuk edit komentar"
           >
@@ -1024,20 +1024,20 @@ function HasilPenilaian({
               value={studentSearch}
               onChange={e => setStudentSearch(e.target.value)}
               placeholder="Cari siswa..."
-              className="w-full px-2.5 py-1 text-xs border border-border rounded-lg bg-white text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-sky-300"
+              className="w-full px-2.5 py-1 text-xs border border-border rounded-lg bg-card text-gray-700 dark:text-gray-300 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-300"
             />
           </div>
-          <div className="flex items-center gap-1.5 text-gray-600">
+          <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
             <ArrowUpDown className="w-4 h-4"/>
             <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-                    className="bg-white border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-sky-200">
+                    className="bg-card border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-sky-200">
               <option value="default">Urutan asli</option>
               <option value="high">Skor tertinggi</option>
               <option value="low">Skor terendah</option>
               <option value="name">Nama A-Z</option>
             </select>
           </div>
-          <div className="flex items-center gap-1.5 text-gray-600">
+          <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
             <Filter className="w-4 h-4"/>
             <div className="flex gap-1">
               {[
@@ -1049,7 +1049,7 @@ function HasilPenilaian({
                   className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors ${
                     filterBy === f.id
                       ? 'bg-sky-500 text-white'
-                      : 'bg-white border border-border text-gray-600 hover:bg-surface'
+                      : 'bg-card border border-border text-gray-600 dark:text-gray-400 hover:bg-surface'
                   }`}>
                   {f.label}
                 </button>
@@ -1068,7 +1068,7 @@ function HasilPenilaian({
         const status = total !== null ? statusFromScore(total) : null
         const isProcessing = r._regrading || (!r.scores && loading)
         return (
-          <div key={r.id} className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+          <div key={r.id} className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
             <div className="bg-surface px-4 py-2.5 flex justify-between items-center gap-2 flex-wrap">
               <span className="font-medium flex items-center gap-2 min-w-0">
                 {isProcessing && <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-500 shrink-0"/>}
@@ -1123,13 +1123,13 @@ function HasilPenilaian({
               <div className="p-4 space-y-3 animate-pulse">
                 {rubrik.map(k => (
                   <div key={k.id} className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0"/>
+                    <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0"/>
                     <div className="flex-1 space-y-2">
                       <div className="flex justify-between">
-                        <div className="h-3 bg-gray-200 rounded w-1/3"/>
-                        <div className="h-3 bg-gray-200 rounded w-8"/>
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3"/>
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8"/>
                       </div>
-                      <div className="h-1.5 bg-gray-200 rounded-full"/>
+                      <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full"/>
                       <div className="h-2 bg-surface rounded w-5/6"/>
                     </div>
                   </div>
@@ -1204,7 +1204,7 @@ function KesimpulanEditable({ value, onSave }) {
   }
   return (
     <div
-      className="mt-3 pt-3 border-t border-border text-sm text-gray-700 cursor-text hover:bg-surface rounded px-1 -mx-1 group flex items-start gap-2"
+      className="mt-3 pt-3 border-t border-border text-sm text-gray-700 dark:text-gray-300 cursor-text hover:bg-surface rounded px-1 -mx-1 group flex items-start gap-2"
       onClick={() => setEditing(true)}
       title="Klik untuk edit"
     >
@@ -1479,7 +1479,7 @@ function Assessment() {
               <span className="hidden sm:inline">{s.label}</span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`w-3 h-0.5 ${done ? 'bg-green-500' : 'bg-gray-200'}`} />
+              <div className={`w-3 h-0.5 ${done ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
             )}
           </div>
         )
@@ -1497,7 +1497,7 @@ function Assessment() {
         actions={
           <Link
             to="/kuesioner"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-white hover:bg-sky-50 text-sky-700 border-border transition-colors"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-card hover:bg-sky-50 text-sky-700 border-border transition-colors"
             title="Buka Kuesioner Builder"
           >
             <ClipboardList className="w-3.5 h-3.5" /> Kuesioner
@@ -1576,14 +1576,14 @@ function Assessment() {
           className="fixed inset-0 z-[100] bg-black/50  flex items-center justify-center p-4 animate-in"
           onClick={(e) => { if (e.target === e.currentTarget) setShowResetConfirm(false) }}
         >
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-scale-in">
+          <div className="bg-card rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-scale-in">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
                 <AlertCircle className="w-5 h-5 text-red-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-gray-900">Yakin reset semua?</h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <h3 className="font-bold text-gray-900 dark:text-gray-100">Yakin reset semua?</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Rubrik, daftar siswa, dan hasil penilaian akan hilang.
                   {results.length > 0 && ' Pastikan kamu sudah Export Excel dulu.'}
                 </p>
