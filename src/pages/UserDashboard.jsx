@@ -106,36 +106,36 @@ function UserDashboard() {
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {/* User Info */}
-        <div className="bg-gradient-to-br from-sky-500 to-cyan-600 rounded-2xl p-6 text-white">
+        <div className="bg-gradient-to-br from-accent/20 via-card to-accent-2/10 rounded-none border-l-4 border-accent p-8 md:p-12">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-accent/20 rounded-lg flex items-center justify-center">
               <User className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">{user.name}</h2>
-              <p className="text-sky-100 text-sm">{user.email}</p>
-              {user.phone && <p className="text-sky-100 text-sm">{user.phone}</p>}
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{user.name}</h2>
+              <p className="text-muted text-sm">{user.email}</p>
+              {user.phone && <p className="text-muted text-sm">{user.phone}</p>}
             </div>
           </div>
         </div>
 
         {/* Wallet Card */}
-        <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+        <div className="bg-card shadow-sm rounded-lg p-3">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
               <Wallet className="w-5 h-5" />💰 Saldo
             </h3>
-            <Link to="/auth" className="text-sm text-sky-600 hover:underline">
+            <Link to="/auth" className="text-sm text-accent hover:underline">
               Top-up
             </Link>
           </div>
           
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-green-50 rounded-xl p-4">
-              <p className="text-sm text-green-600">Saldo Utama</p>
-              <p className="text-xl font-bold text-green-700">{formatCurrency(wallet.balance)}</p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-lg p-3">
+              <p className="text-sm text-emerald-600">Saldo Utama</p>
+              <p className="text-xl font-bold text-emerald-700">{formatCurrency(wallet.balance)}</p>
             </div>
-            <div className="bg-amber-50 rounded-xl p-4">
+            <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3">
               <p className="text-sm text-amber-600">Bonus</p>
               <p className="text-xl font-bold text-amber-700">{formatCurrency(wallet.bonus)}</p>
             </div>
@@ -148,26 +148,26 @@ function UserDashboard() {
         </div>
 
         {/* Saved Analyses Card */}
-        <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
               <BarChart3 className="w-5 h-5" /> Riwayat Analisis Statistik
             </h3>
-            <Link to="/statistik/history" className="text-sm text-sky-600 hover:underline flex items-center gap-1">
+            <Link to="/statistik/history" className="text-sm text-accent hover:underline flex items-center gap-1">
               Lihat semua <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="bg-sky-50 rounded-xl p-4">
-              <p className="text-sm text-sky-600">Total Tersimpan</p>
-              <p className="text-xl font-bold text-sky-700">
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="bg-teal-50 dark:bg-teal-950/30 rounded-lg p-3">
+              <p className="text-sm text-teal-600">Total Tersimpan</p>
+              <p className="text-xl font-bold text-teal-700">
                 {savedLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : savedCount}
               </p>
             </div>
-            <div className="bg-purple-50 rounded-xl p-4">
-              <p className="text-sm text-purple-600">Dengan Interpretasi AI</p>
-              <p className="text-xl font-bold text-purple-700">
+            <div className="bg-accent/10 rounded-lg p-3">
+              <p className="text-sm text-accent">Dengan Interpretasi AI</p>
+              <p className="text-xl font-bold text-accent">
                 {savedLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : savedRecent.filter(i => i.ai_interpretation).length}
               </p>
             </div>
@@ -179,7 +179,7 @@ function UserDashboard() {
             <div className="text-center py-6">
               <FileText className="w-10 h-10 text-muted mx-auto mb-2" />
               <p className="text-sm text-muted mb-3">Belum ada analisis tersimpan</p>
-              <Link to="/statistik" className="inline-block text-xs text-sky-600 hover:underline">
+              <Link to="/statistik" className="inline-block text-xs text-accent hover:underline">
                 Mulai analisis sekarang →
               </Link>
             </div>
@@ -209,11 +209,11 @@ function UserDashboard() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 space-y-0">
           <button 
             onClick={() => setActiveTab('orders')}
             className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
-              activeTab === 'orders' ? 'bg-sky-500 text-white' : 'bg-card text-gray-600 dark:text-gray-400'
+              activeTab === 'orders' ? 'bg-accent text-accent-fg' : 'bg-card text-gray-600 dark:text-gray-400'
             }`}
           >
             📦 Pesanan
@@ -221,7 +221,7 @@ function UserDashboard() {
           <button 
             onClick={() => setActiveTab('transactions')}
             className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
-              activeTab === 'transactions' ? 'bg-sky-500 text-white' : 'bg-card text-gray-600 dark:text-gray-400'
+              activeTab === 'transactions' ? 'bg-accent text-accent-fg' : 'bg-card text-gray-600 dark:text-gray-400'
             }`}
           >
             💳 Transaksi
@@ -230,19 +230,19 @@ function UserDashboard() {
 
         {/* Orders List */}
         {activeTab === 'orders' && (
-          <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-card rounded-lg shadow-sm overflow-hidden">
             {orders.length === 0 ? (
               <div className="p-10 text-center">
-                <div className="w-16 h-16 bg-sky-50 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-sky-400" />
+                <div className="w-16 h-16 bg-accent/10 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-accent" />
                 </div>
                 <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">Belum ada pesanan</h3>
                 <p className="text-sm text-muted mb-4">Mulai jalankan analisis atau penilaian untuk melihat history pesanan di sini.</p>
                 <div className="flex flex-wrap gap-2 justify-center">
-                  <Link to="/statistik" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium">
+                  <Link to="/statistik" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium">
                     <BarChart3 className="w-4 h-4" /> Statistik
                   </Link>
-                  <Link to="/assessment" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium">
+                  <Link to="/assessment" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium">
                     <FileText className="w-4 h-4" /> Assessment
                   </Link>
                 </div>
@@ -259,13 +259,13 @@ function UserDashboard() {
                           {order.service === 'assessment' ? (
                             <FileText className="w-5 h-5 text-orange-500" />
                           ) : (
-                            <BarChart3 className="w-5 h-5 text-sky-500" />
+                            <BarChart3 className="w-5 h-5 text-teal-600" />
                           )}
                           <div>
                             <p className="font-medium">{serviceLabel}</p>
                             {tierLabel && <p className="text-sm text-muted capitalize">{tierLabel}</p>}
                             {order.results && (
-                              <p className="text-xs text-orange-600">
+                              <p className="text-xs text-amber-600">
                                 {order.results.length} siswa dinilai
                               </p>
                             )}
@@ -279,13 +279,13 @@ function UserDashboard() {
                           {order.status === 'completed' && (
                             <button
                               onClick={() => navigate(`/order?id=${order.id}`)}
-                              className="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded"
+                              className="text-xs bg-teal-50 dark:bg-teal-950/30 text-teal-600 px-2 py-1 rounded-full"
                             >
                               Lihat Hasil
                             </button>
                           )}
                           <span className="font-bold text-sky-600">
-                            {order.amount > 0 ? formatCurrency(order.amount) : <span className="text-emerald-600 text-sm">Gratis</span>}
+                            {order.amount > 0 ? formatCurrency(order.amount) : <span className="text-emerald-600 dark:text-emerald-400 text-sm">Gratis</span>}
                           </span>
                         </div>
                       </div>
@@ -299,10 +299,10 @@ function UserDashboard() {
 
         {/* Transactions List */}
         {activeTab === 'transactions' && (
-          <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-card rounded-lg shadow-sm overflow-hidden">
             {wallet.transactions.length === 0 ? (
               <div className="p-10 text-center">
-                <div className="w-16 h-16 bg-emerald-50 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg mx-auto mb-4 flex items-center justify-center">
                   <CreditCard className="w-8 h-8 text-emerald-400" />
                 </div>
                 <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">Belum ada transaksi</h3>
@@ -317,7 +317,7 @@ function UserDashboard() {
                       <p className="text-xs text-muted">{t.date}</p>
                     </div>
                     <div className="text-right">
-                      <p className={`font-bold ${t.amount >= 0 || t.bonus ? 'text-green-600' : 'text-red-600'}`}>
+                      <p className={`font-bold ${t.amount >= 0 || t.bonus ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                         {t.amount >= 0 || t.bonus ? '+' : ''}{formatCurrency(t.amount || t.bonus || 0)}
                       </p>
                       <p className="text-xs text-muted capitalize">{t.type}</p>
@@ -331,12 +331,12 @@ function UserDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
-          <Link to="/" className="bg-card p-4 rounded-xl border border-border text-center hover:bg-surface">
-            <Zap className="w-6 h-6 mx-auto mb-2 text-sky-500" />
+          <Link to="/" className="bg-card border border-border hover:border-accent/50 p-4 rounded-lg text-center transition-colors">
+            <Zap className="w-6 h-6 mx-auto mb-2 text-accent" />
             <p className="text-sm font-medium">Pesan Layanan</p>
           </Link>
-          <Link to="/order" className="bg-card p-4 rounded-xl border border-border text-center hover:bg-surface">
-            <History className="w-6 h-6 mx-auto mb-2 text-sky-500" />
+          <Link to="/order" className="bg-card border border-border hover:border-accent/50 p-4 rounded-lg text-center transition-colors">
+            <History className="w-6 h-6 mx-auto mb-2 text-accent" />
             <p className="text-sm font-medium">Cek Pesanan</p>
           </Link>
         </div>

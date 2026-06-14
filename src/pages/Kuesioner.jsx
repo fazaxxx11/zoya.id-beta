@@ -294,7 +294,7 @@ export default function Kuesioner() {
               <StepFlowBanner tab={tab} responses={responses.length} />
 
               {/* Top toolbar */}
-              <div className="bg-card border border-border rounded-xl p-3 mb-3 flex flex-wrap items-center gap-2">
+              <div className="bg-card border border-border rounded-lg p-3 mb-3 flex flex-wrap items-center gap-2">
                 <input
                   type="text"
                   value={draft.title}
@@ -461,11 +461,11 @@ function BuilderPanel({ draft, setDraft }) {
         onChange={e => setDraft({ ...draft, description: e.target.value })}
         placeholder="Deskripsi / pengantar kuesioner (opsional)..."
         rows={2}
-        className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm"
+        className="w-full bg-card border border-border rounded-lg px-3 py-2 text-sm"
       />
 
       {draft.sections.map((sec, sIdx) => (
-        <div key={sec.id} className="bg-card border border-border rounded-xl p-3 sm:p-4">
+        <div key={sec.id} className="bg-card border border-border rounded-lg p-3 sm:p-4">
           <div className="flex items-start gap-2 mb-3 pb-3 border-b border-border">
             <GripVertical className="w-4 h-4 text-muted mt-2.5" />
             <div className="flex-1 space-y-1.5">
@@ -541,7 +541,7 @@ function BuilderPanel({ draft, setDraft }) {
 
       <button
         onClick={addSection}
-        className="w-full bg-card border-2 border-dashed border-border hover:border-sky-400 hover:bg-sky-50/30 rounded-xl py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-sky-700 transition-colors flex items-center justify-center gap-2"
+        className="w-full bg-card border-2 border-dashed border-border hover:border-accent hover:bg-accent/5 rounded-lg py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-accent transition-colors flex items-center justify-center gap-2"
       >
         <Plus className="w-4 h-4" /> Tambah Bagian
       </button>
@@ -703,7 +703,7 @@ function PreviewPanel({ survey, onSubmit }) {
   }
 
   return (
-    <div className="bg-card border border-border rounded-xl p-4 sm:p-6 max-w-3xl mx-auto">
+    <div className="bg-card border border-border rounded-lg p-4 sm:p-6 max-w-3xl mx-auto">
       <h2 className="text-xl font-bold mb-1">{survey.title}</h2>
       {survey.description && <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 whitespace-pre-wrap">{survey.description}</p>}
 
@@ -863,9 +863,9 @@ function PreviewItem({ item, idx, value, onChange }) {
 function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, onUseInstrument }) {
   return (
     <div className="space-y-4">
-      <div className="bg-gradient-to-br from-sky-50 via-white to-cyan-50 border border-sky-200 rounded-2xl p-6 sm:p-8">
+      <div className="bg-gradient-to-br from-accent/10 via-card to-accent-2/5 border border-accent/20 rounded-lg p-6 sm:p-8">
         <div className="flex items-start gap-4 mb-5">
-          <div className="w-12 h-12 rounded-xl bg-sky-500 text-white flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 rounded-lg bg-accent text-accent-fg flex items-center justify-center flex-shrink-0">
             <ClipboardList className="w-6 h-6" />
           </div>
           <div>
@@ -880,7 +880,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
         {/* Primary CTA — Generate with AI */}
         <button
           onClick={onAIGenerate}
-          className="w-full mb-4 bg-accent hover:opacity-90 text-white rounded-xl p-4 flex items-center gap-3 transition-all  group"
+          className="w-full mb-4 bg-accent hover:opacity-90 text-accent-fg rounded-lg p-4 flex items-center gap-3 transition-all  group"
         >
           <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
             <Wand2 className="w-5 h-5" />
@@ -921,7 +921,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
         {/* Demo */}
         <button
           onClick={onDemo}
-          className="text-left bg-surface border border-border hover:bg-card rounded-xl p-5 transition-colors group"
+          className="text-left bg-surface border border-border hover:bg-card rounded-lg p-4 transition-colors group"
         >
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-5 h-5 text-accent" />
@@ -938,7 +938,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
         </button>
 
         {/* Templates */}
-        <div className="bg-card border-2 border-border rounded-xl p-5">
+        <div className="bg-card border-2 border-border rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
             <BookOpen className="w-5 h-5 text-sky-600" />
             <span className="font-semibold">Mulai dari Template</span>
@@ -959,7 +959,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
       </div>
 
       {/* Instrumen Teruji (Validated Scales) */}
-      <details className="bg-card border-2 border-emerald-200 rounded-xl overflow-hidden" open>
+      <details className="bg-card border-2 border-emerald-200 dark:border-emerald-800 rounded-lg overflow-hidden" open>
         <summary className="px-5 py-3 cursor-pointer flex items-center gap-2 hover:bg-emerald-50/50 transition-colors">
           <Library className="w-5 h-5 text-emerald-600" />
           <span className="font-semibold text-gray-900 dark:text-gray-100">Instrumen Teruji (Validated Scales)</span>
@@ -992,7 +992,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
       </details>
 
       {/* Other options */}
-      <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap items-center gap-3 text-sm">
+      <div className="bg-card border border-border rounded-lg p-3 flex flex-wrap items-center gap-3 text-sm">
         <span className="text-muted">Atau:</span>
         <button onClick={onBlank} className="text-sky-600 hover:text-sky-700 font-medium flex items-center gap-1">
           <FilePlus2 className="w-4 h-4" /> Buat dari nol
@@ -1004,7 +1004,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
       </div>
 
       {/* Help section */}
-      <details className="bg-amber-50/50 border border-amber-200 rounded-xl">
+      <details className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
         <summary className="px-4 py-3 cursor-pointer text-sm font-medium text-amber-900 flex items-center gap-2">
           <HelpCircle className="w-4 h-4" /> Apa itu kuesioner / angket / Likert?
         </summary>
@@ -1030,7 +1030,7 @@ function StepFlowBanner({ tab, responses }) {
     { id: 'responses', n: 3, label: 'Analisis', desc: `${responses} respons` },
   ]
   return (
-    <div className="bg-card border border-border rounded-xl p-2 mb-3 flex items-center justify-between gap-2 text-xs overflow-x-auto">
+    <div className="bg-card border border-border rounded-lg p-2 mb-3 flex items-center justify-between gap-2 text-xs overflow-x-auto">
       {steps.map((s, i) => {
         const active = s.id === tab
         const done = (tab === 'preview' && s.id === 'builder') ||
@@ -1134,7 +1134,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
   if (responses.length === 0) {
     return (
       <div className="space-y-3">
-        <div className="bg-card border border-border rounded-xl p-8 text-center">
+        <div className="bg-card border border-border rounded-lg p-6 text-center">
           <ListChecks className="w-12 h-12 text-muted mx-auto mb-2" />
           <p className="text-sm text-muted mb-4">
             Belum ada respons. Pilih cara mengisi:

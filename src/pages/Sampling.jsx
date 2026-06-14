@@ -32,7 +32,7 @@ export default function Sampling() {
 
       <div className="max-w-5xl mx-auto px-3 sm:px-5 py-4 space-y-4">
         {/* Intro */}
-        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4">
+        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center flex-shrink-0">
               <Calculator className="w-5 h-5" />
@@ -62,7 +62,7 @@ export default function Sampling() {
                 onClick={() => setTab(t.id)}
                 className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px flex items-center gap-1.5 whitespace-nowrap transition-colors ${
                   tab === t.id
-                    ? 'border-emerald-500 text-emerald-700'
+                    ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400'
                     : 'border-transparent text-muted hover:text-gray-700 dark:text-gray-300'
                 }`}
               >
@@ -128,7 +128,7 @@ function SizeCalculator() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Input panel */}
-      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors space-y-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Calculator className="w-4 h-4 text-emerald-600" /> Parameter
         </h3>
@@ -239,7 +239,7 @@ function SizeCalculator() {
       </div>
 
       {/* Result panel */}
-      <div className="bg-card border border-border rounded-xl p-4">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
         <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
           <Users className="w-4 h-4 text-emerald-600" /> Hasil
         </h3>
@@ -339,7 +339,7 @@ function StratifiedPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-card border border-border rounded-xl p-4">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
           <Layers className="w-4 h-4 text-emerald-600" /> Daftar Strata
         </h3>
@@ -381,7 +381,7 @@ function StratifiedPanel() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
           <h3 className="font-semibold text-sm mb-3">Total Sampel & Mode</h3>
           <div className="space-y-2">
             <div>
@@ -408,7 +408,7 @@ function StratifiedPanel() {
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
           <h3 className="font-semibold text-sm mb-3">Alokasi per Strata</h3>
           {result?.error ? (
             <div className="text-xs text-red-700">{result.error}</div>
@@ -482,7 +482,7 @@ function RandomSampler() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors space-y-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Dice5 className="w-4 h-4 text-emerald-600" /> Daftar Populasi
         </h3>
@@ -526,7 +526,7 @@ function RandomSampler() {
         </button>
       </div>
 
-      <div className="bg-card border border-border rounded-xl p-4">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-sm">Sampel Terpilih</h3>
           {result.length > 0 && (
@@ -563,7 +563,7 @@ function RandomSampler() {
 function HelpPanel() {
   return (
     <div className="space-y-3 max-w-3xl">
-      <details open className="bg-card border border-border rounded-xl">
+      <details className="bg-card border border-border rounded-xl">
         <summary className="px-4 py-3 cursor-pointer font-semibold text-sm">Kapan pakai rumus apa?</summary>
         <div className="px-4 pb-4 text-sm text-gray-700 dark:text-gray-300 space-y-3">
           <div>

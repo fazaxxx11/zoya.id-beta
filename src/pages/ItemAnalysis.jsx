@@ -154,7 +154,7 @@ export default function ItemAnalysis() {
         </div>
 
         {/* Input mode selector */}
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm font-medium">Mode Input:</span>
             <button
@@ -314,7 +314,7 @@ function ResultPanel({ result, onExport }) {
   return (
     <div className="space-y-3">
       {/* Summary */}
-      <div className="bg-card border border-border rounded-xl p-4">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <h3 className="font-semibold text-sm flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-sky-600" /> Ringkasan
@@ -353,7 +353,7 @@ function ResultPanel({ result, onExport }) {
       </div>
 
       {/* Per-item table */}
-      <div className="bg-card border border-border rounded-xl p-4">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-sm">Hasil per Butir</h3>
           {hasDistractor && (
@@ -524,7 +524,7 @@ function DecisionBadge({ decision }) {
 // ============================================================
 function HelpSection() {
   return (
-    <div className="bg-card border border-border rounded-xl p-4">
+    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
       <h3 className="font-semibold text-sm mb-3">Panduan Singkat</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
         <details className="border border-border rounded-lg p-3">

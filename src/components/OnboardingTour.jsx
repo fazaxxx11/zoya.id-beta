@@ -17,7 +17,7 @@ const STORAGE_KEY = 'onboarding_completed_v1'
 const STEPS = [
   {
     icon: Rocket,
-    iconBg: 'from-sky-500 to-blue-600',
+    iconBg: 'from-accent/20 via-accent to-accent-2/10',
     title: 'Selamat Datang! 👋',
     body: 'Aplikasi ini dirancang untuk membantu skripsi & penelitianmu lebih cepat dan rapi. Mari kita kenalan dengan fitur-fiturnya.',
   },
@@ -112,7 +112,7 @@ export default function OnboardingTour() {
       className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto animate-in"
       onClick={(e) => { if (e.target === e.currentTarget) handleSkip() }}
     >
-      <div className="bg-card rounded-3xl shadow-2xl max-w-md w-full overflow-hidden animate-scale-in">
+      <div className="bg-card/60 backdrop-blur-md border border-border/30 rounded-lg shadow-2xl max-w-md w-full overflow-hidden animate-scale-in p-4">
         {/* Skip button */}
         <button
           onClick={handleSkip}
@@ -125,7 +125,7 @@ export default function OnboardingTour() {
 
         {/* Hero Icon */}
         <div className={`bg-gradient-to-br ${current.iconBg} px-8 pt-10 pb-6 text-center relative`}>
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-md mb-2">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-lg bg-white/20 backdrop-blur-md mb-2">
             <Icon className="w-10 h-10 text-white" strokeWidth={1.8} />
           </div>
         </div>
@@ -155,14 +155,14 @@ export default function OnboardingTour() {
           {step > 0 ? (
             <button
               onClick={handleBack}
-              className="px-3 py-2.5 rounded-xl text-muted hover:bg-card/50 transition-colors text-sm font-medium flex items-center gap-1"
+              className="px-3 py-2.5 rounded-lg text-muted hover:bg-card/50 transition-colors text-sm font-medium flex items-center gap-1"
             >
               <ChevronLeft className="w-4 h-4" /> Kembali
             </button>
           ) : (
             <button
               onClick={handleSkip}
-              className="px-3 py-2.5 rounded-xl text-muted hover:text-fg transition-colors text-sm font-medium"
+              className="px-3 py-2.5 rounded-lg text-muted hover:text-fg transition-colors text-sm font-medium"
             >
               Lewati
             </button>
@@ -170,7 +170,7 @@ export default function OnboardingTour() {
 
           <button
             onClick={handleNext}
-            className="ml-auto px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-black text-white text-sm font-semibold transition-colors flex items-center gap-1.5"
+            className="ml-auto px-5 py-2.5 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-semibold transition-colors flex items-center gap-1.5"
           >
             {step === STEPS.length - 1 ? (
               <>

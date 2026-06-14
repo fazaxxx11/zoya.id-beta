@@ -42,7 +42,7 @@ export default function ConfirmPaymentModal({
 
   return (
     <Modal open={open} onClose={loading ? () => {} : onClose}
-      panelClassName="bg-card rounded-2xl shadow-xl max-w-md w-full p-6 relative animate-in fade-in">
+      panelClassName="bg-card rounded-lg shadow-xl max-w-md w-full p-6 relative animate-in fade-in">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-muted hover:text-gray-600 dark:text-gray-400"
@@ -52,15 +52,15 @@ export default function ConfirmPaymentModal({
         </button>
 
         <div className="text-center mb-5">
-          <div className="w-14 h-14 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
-            <Sparkles className="w-7 h-7 text-white" />
+          <div className="w-14 h-14 bg-gradient-to-br from-accent/20 via-card to-accent-2/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+            <Sparkles className="w-7 h-7 text-accent" />
           </div>
           <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">{displayTitle}</h3>
           {description && <p className="text-sm text-muted mt-1">{description}</p>}
         </div>
 
         {/* Price */}
-        <div className="bg-sky-50 rounded-xl p-4 mb-3">
+        <div className="bg-teal-50 dark:bg-teal-950/30 rounded-lg p-3 mb-3">
           <div className="flex justify-between items-baseline">
             <span className="text-sm text-gray-600 dark:text-gray-400">{betaFree ? 'Status beta' : 'Total bayar'}</span>
             <div className="text-right">
@@ -76,7 +76,7 @@ export default function ConfirmPaymentModal({
                 </div>
               )}
               {betaFree && <span className="text-sm text-muted line-through mr-2">{formatIDR(originalPrice)}</span>}
-              <span className="text-2xl font-bold text-sky-600">{betaFree ? 'Gratis' : formatIDR(price)}</span>
+              <span className="text-2xl font-bold text-teal-600">{betaFree ? 'Gratis' : formatIDR(price)}</span>
             </div>
           </div>
           {priceBreakdown && (
@@ -85,10 +85,10 @@ export default function ConfirmPaymentModal({
         </div>
 
         {/* Wallet */}
-        <div className={`rounded-xl p-4 mb-4 border ${sufficient ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+        <div className={`rounded-lg p-4 mb-4 border ${sufficient ? 'border-emerald-200 bg-emerald-50 dark:bg-emerald-950/30' : 'border-rose-200 bg-rose-50 dark:bg-rose-950/30'}`}>
           <div className="flex items-center gap-2 mb-2">
-            <Wallet className={`w-4 h-4 ${sufficient ? 'text-green-600' : 'text-red-600'}`} />
-            <span className={`text-sm font-medium ${sufficient ? 'text-green-700' : 'text-red-700'}`}>
+            <Wallet className={`w-4 h-4 ${sufficient ? 'text-emerald-600' : 'text-rose-600'}`} />
+            <span className={`text-sm font-medium ${sufficient ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
               {betaFree ? 'Beta gratis aktif' : `Saldo Anda: ${formatIDR(total)}`}
             </span>
           </div>
@@ -105,7 +105,7 @@ export default function ConfirmPaymentModal({
               </div>
             </div>
           ) : (
-            <div className="text-xs text-red-600">
+            <div className="text-xs text-rose-600 dark:text-rose-400">
               Kurang {formatIDR(price - total)}. Silakan top-up dulu.
             </div>
           )}
@@ -117,14 +117,14 @@ export default function ConfirmPaymentModal({
             <button
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-3 rounded-xl border-2 border-border text-gray-600 dark:text-gray-400 hover:bg-surface font-medium"
+              className="flex-1 px-4 py-3 rounded-lg border-2 border-border text-gray-600 dark:text-gray-400 hover:bg-surface font-medium"
             >
               Batal
             </button>
             <button
               onClick={onConfirm}
               disabled={loading}
-              className="flex-1 px-4 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-medium flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-3 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg font-medium flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : betaFree ? 'Mulai Gratis' : 'Bayar & Mulai'}
             </button>
@@ -133,13 +133,13 @@ export default function ConfirmPaymentModal({
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-3 rounded-xl border-2 border-border text-gray-600 dark:text-gray-400 hover:bg-surface font-medium"
+              className="flex-1 px-4 py-3 rounded-lg border-2 border-border text-gray-600 dark:text-gray-400 hover:bg-surface font-medium"
             >
               Tutup
             </button>
             <button
               onClick={() => navigate('/auth?mode=topup')}
-              className="flex-1 px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium"
+              className="flex-1 px-4 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-medium"
             >
               Top-up Sekarang
             </button>
