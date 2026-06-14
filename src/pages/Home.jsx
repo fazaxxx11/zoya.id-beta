@@ -132,11 +132,11 @@ export default function Home() {
           <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
 
           <div className="max-w-3xl mx-auto text-center relative z-10">
-            <h1 className="text-4xl md:text-5xl font-heading font-bold leading-tight mb-6">
+            <h1 className="text-3xl md:text-5xl font-heading font-black tracking-tight leading-tight mb-6">
               Olah data penelitian dari dataset ke{' '}
               <span className="text-accent">laporan akademik</span>.
             </h1>
-            <p className="text-lg text-muted mb-8 max-w-2xl mx-auto">
+            <p className="text-base md:text-lg font-light text-muted leading-relaxed mb-8 max-w-2xl mx-auto">
               Analisis statistik, interpretasi hasil, dan susun laporan —
               seluruh alur penelitian dalam satu tempat.
             </p>
@@ -146,7 +146,7 @@ export default function Home() {
                 to="/statistik"
                 className="w-full sm:w-auto px-8 py-3.5 bg-accent text-white rounded-lg hover:opacity-90 transition-colors font-semibold text-base shadow-md shadow-accent/20"
               >
-                Upload Data & Analisis
+                Mulai Analisis
               </Link>
               <button
                 onClick={() => scrollTo("layanan")}
@@ -168,8 +168,8 @@ export default function Home() {
 
         {/* Services — 4 Large Cards */}
         <section id="layanan" className="container mx-auto px-4 py-16">
-          <h2 className="text-3xl font-heading font-bold text-center mb-4">Layanan</h2>
-          <p className="text-muted text-center mb-10 max-w-lg mx-auto">
+          <h2 className="text-2xl md:text-3xl font-heading font-bold text-center mb-4">Layanan</h2>
+          <p className="text-base font-light text-muted text-center mb-10 max-w-lg mx-auto">
             Pilih layanan sesuai tahap penelitianmu
           </p>
 
@@ -186,7 +186,7 @@ export default function Home() {
                 >
                   <svc.icon className={`w-10 h-10 mb-4 ${s.icon}`} />
                   <h3 className="font-heading font-semibold text-lg mb-2">{svc.title}</h3>
-                  <p className="text-sm text-muted mb-4 leading-relaxed">{svc.desc}</p>
+                  <p className="text-sm font-light text-muted mb-4 leading-relaxed">{svc.desc}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {svc.tags.map((tag) => (
                       <span key={tag} className={`text-xs px-2 py-0.5 rounded ${s.tag}`}>
@@ -202,8 +202,8 @@ export default function Home() {
 
         {/* Workflow — 3 Steps */}
         <section id="alur" className="container mx-auto px-4 py-16">
-          <h2 className="text-3xl font-heading font-bold text-center mb-4">Alur Penelitian</h2>
-          <p className="text-muted text-center mb-12 max-w-lg mx-auto">
+          <h2 className="text-2xl md:text-3xl font-heading font-bold text-center mb-4">Alur Penelitian</h2>
+          <p className="text-base font-light text-muted text-center mb-12 max-w-lg mx-auto">
             Dari data mentah sampai laporan siap cetak
           </p>
 
@@ -214,7 +214,7 @@ export default function Home() {
                   <div className="w-14 h-14 rounded-full bg-accent-soft flex items-center justify-center mb-3">
                     <step.icon className="w-6 h-6 text-accent" />
                   </div>
-                  <span className="text-xs text-accent font-semibold mb-1">Langkah {idx + 1}</span>
+                  <span className="text-xs font-light tracking-wide uppercase text-accent mb-1">Langkah {idx + 1}</span>
                   <span className="text-sm font-medium">{step.label}</span>
                 </div>
                 {idx < WORKFLOW_STEPS.length - 1 && (
@@ -229,8 +229,8 @@ export default function Home() {
 
         {/* Cara Kerja — 3 Steps with dashed connectors */}
         <section id="cara-kerja" className="container mx-auto px-4 py-16">
-          <h2 className="text-3xl font-heading font-bold text-center mb-4">Cara Kerja</h2>
-          <p className="text-muted text-center mb-12 max-w-lg mx-auto">
+          <h2 className="text-2xl md:text-3xl font-heading font-bold text-center mb-4">Cara Kerja</h2>
+          <p className="text-base font-light text-muted text-center mb-12 max-w-lg mx-auto">
             Tiga langkah simpel menuju hasil analisis
           </p>
 
@@ -241,11 +241,11 @@ export default function Home() {
                   <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center mx-auto mb-4">
                     <ck.icon className="w-6 h-6 text-accent" />
                   </div>
-                  <span className="text-xs text-accent font-semibold tracking-wider uppercase mb-2 block">
+                  <span className="text-xs font-light tracking-wide uppercase text-accent mb-2 block">
                     Langkah {ck.step}
                   </span>
                   <h3 className="font-heading font-semibold text-base mb-2">{ck.title}</h3>
-                  <p className="text-sm text-muted">{ck.desc}</p>
+                  <p className="text-sm font-light text-muted">{ck.desc}</p>
                 </div>
                 {idx < CARA_KERJA.length - 1 && (
                   <div className="hidden md:block w-10 border-t-2 border-dashed border-border mx-2 flex-shrink-0" />
@@ -261,7 +261,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col items-center text-center space-y-4">
             <div className="text-lg font-heading font-semibold">Azezmen — Platform Penelitian Akademik</div>
-            <p className="text-sm text-muted max-w-md">
+            <p className="text-sm font-light text-muted max-w-md">
               Mendukung penelitian kuantitatif, kualitatif, instrumen, assessment, referensi, dan penyusunan laporan akademik.
             </p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
@@ -274,7 +274,7 @@ export default function Home() {
               <Link to="/login" className="text-muted hover:text-accent">Masuk</Link>
               <Link to="/register" className="px-4 py-1.5 bg-accent text-white rounded-lg hover:opacity-90 text-sm">Daftar</Link>
             </div>
-            <p className="text-xs text-muted/70 mt-3">
+            <p className="text-xs font-light text-muted/70 mt-3">
               Dibuat dengan hati untuk mahasiswa Indonesia 🇮🇩
             </p>
           </div>
