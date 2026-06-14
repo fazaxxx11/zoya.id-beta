@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import Modal from '../components/Modal'
+import { trackEvent } from '../lib/analytics'
 import {
   newSurvey, newSection, newItem,
   listSurveys, getSurvey, saveSurvey, deleteSurvey,

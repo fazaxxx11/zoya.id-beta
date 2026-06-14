@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { trackPageview } from './lib/analytics'
 import { ThemeProvider } from './lib/ThemeContext'
 import Home from './pages/Home'
 import ErrorBoundary from './components/ErrorBoundary'
