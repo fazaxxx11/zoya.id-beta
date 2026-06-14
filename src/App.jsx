@@ -4,7 +4,7 @@ import useKeyboardShortcuts from './hooks/useKeyboardShortcuts'
 import { trackPageview, trackEvent } from './lib/analytics'
 import { lazy, Suspense } from 'react'
 import { ThemeProvider } from './lib/ThemeContext'
-import Home from './pages/Home'
+const Home = lazy(() => import('./pages/Home'))
 import ErrorBoundary from './components/ErrorBoundary'
 import ToastContainer from './components/ToastContainer'
 import Aurora from './components/Aurora'

@@ -274,9 +274,7 @@ export default function Home() {
               <Link to="/login" className="text-muted hover:text-accent">Masuk</Link>
               <Link to="/register" className="px-4 py-1.5 bg-accent text-white rounded-lg hover:opacity-90 text-sm">Daftar</Link>
             </div>
-            <p className="text-xs font-light text-muted/70 mt-3">
-              Dibuat dengan hati untuk mahasiswa Indonesia 🇮🇩
-            </p>
+
           </div>
         </div>
       </footer>
