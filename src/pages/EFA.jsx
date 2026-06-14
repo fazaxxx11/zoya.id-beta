@@ -113,7 +113,7 @@ export default function EFAPage() {
         </div>
 
         {/* Input */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+        <div className="bg-white border border-border rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Data CSV (item per kolom, responden per baris)</span>
             <button onClick={() => fileRef.current?.click()} className="text-xs text-violet-600 hover:text-violet-700 flex items-center gap-1">
@@ -123,10 +123,10 @@ export default function EFAPage() {
           </div>
           <textarea
             value={csvText} onChange={e => setCsvText(e.target.value)}
-            rows={8} className="w-full font-mono text-xs border border-gray-200 rounded-lg p-2"
+            rows={8} className="w-full font-mono text-xs border border-border rounded-lg p-2"
           />
           {parsed.headers.length > 0 && (
-            <p className="text-[11px] text-gray-400">
+            <p className="text-[11px] text-muted">
               {parsed.rows.length} baris × {parsed.headers.length} item
             </p>
           )}
@@ -143,7 +143,7 @@ export default function EFAPage() {
                     {itemsToUse.length === parsed.headers.length ? 'Hapus Semua' : 'Pilih Semua'}
                   </button>
                 </div>
-                <div className="border border-gray-200 rounded-lg p-2 grid grid-cols-2 sm:grid-cols-4 gap-1 max-h-32 overflow-y-auto">
+                <div className="border border-border rounded-lg p-2 grid grid-cols-2 sm:grid-cols-4 gap-1 max-h-32 overflow-y-auto">
                   {parsed.headers.map(h => (
                     <label key={h} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-surface px-1.5 py-1 rounded">
                       <input type="checkbox" checked={itemsToUse.includes(h)} onChange={() => toggleItem(h)} />
@@ -151,14 +151,14 @@ export default function EFAPage() {
                     </label>
                   ))}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-1">{itemsToUse.length} item dipilih</p>
+                <p className="text-[11px] text-muted mt-1">{itemsToUse.length} item dipilih</p>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Jumlah Faktor</label>
                   <select value={nFactorsInput} onChange={e => setNFactorsInput(e.target.value)}
-                          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                          className="w-full border border-border rounded-lg px-3 py-2 text-sm">
                     <option value="auto">Otomatis (Kaiser λ ≥ 1)</option>
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(n => <option key={n} value={n}>{n} faktor</option>)}
                   </select>
@@ -227,24 +227,24 @@ function SamplingAdequacySection({ result }) {
   const bartlettOk = b.p < 0.05
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Sampling Adequacy</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="bg-surface rounded-lg p-3">
-          <div className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">KMO Measure of Sampling Adequacy</div>
+          <div className="text-[10px] text-muted uppercase tracking-wide mb-1">KMO Measure of Sampling Adequacy</div>
           <div className={`text-3xl font-bold ${kmoColor}`}>{k.overall?.toFixed(3) ?? 'NaN'}</div>
           <div className={`text-xs uppercase font-medium ${kmoColor}`}>{k.interpretation}</div>
-          <p className="text-[11px] text-gray-400 mt-1">
+          <p className="text-[11px] text-muted mt-1">
             ≥ 0.6 acceptable, ≥ 0.8 excellent. {k.overall >= 0.6 ? '✓ Layak EFA' : '⚠ Tidak layak — pertimbangkan tambah sampel atau drop item'}
           </p>
         </div>
         <div className={`rounded-lg p-3 ${bartlettOk ? 'bg-emerald-50' : 'bg-amber-50'}`}>
-          <div className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">Bartlett's Test of Sphericity</div>
+          <div className="text-[10px] text-muted uppercase tracking-wide mb-1">Bartlett's Test of Sphericity</div>
           <div className="text-sm font-mono">
             χ²({b.df}) = {b.chi2?.toFixed(2) ?? '—'}
           </div>
           <div className="text-sm font-mono">p = {b.p?.toFixed(4) ?? '—'}</div>
-          <p className="text-[11px] text-gray-400 mt-1">
+          <p className="text-[11px] text-muted mt-1">
             {bartlettOk ? '✓ p < 0.05, matriks korelasi berbeda dari identitas — EFA bisa dilanjut' : '⚠ p ≥ 0.05, matriks korelasi mendekati identitas — EFA tidak disarankan'}
           </p>
         </div>
@@ -297,7 +297,7 @@ function ScreePlotSection({ result }) {
   const sy = (e) => m.top + (1 - e / maxEig) * innerH
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Scree Plot</h3>
       <div className="bg-surface rounded-lg p-2 overflow-x-auto">
         <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="max-w-full h-auto">
@@ -344,7 +344,7 @@ function ScreePlotSection({ result }) {
           ))}
         </svg>
       </div>
-      <p className="text-[11px] text-gray-400 mt-2">
+      <p className="text-[11px] text-muted mt-2">
         <strong>Kaiser criterion:</strong> faktor dengan eigenvalue ≥ 1 dipertahankan ({result.nFactors} faktor terpilih).
         <strong> Cattell scree:</strong> cari "elbow" — titik dimana garis melandai.
       </p>
@@ -359,7 +359,7 @@ function VarianceTableSection({ result }) {
   const eigs = result.eigenvalues
   const p = result.p
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Variance Explained</h3>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
@@ -402,7 +402,7 @@ function LoadingsSection({ result }) {
   const showRotated = result.rotationApplied
   const matrix = showRotated ? result.loadingsRotated : result.loadingsUnrotated
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-violet-600" />
@@ -412,7 +412,7 @@ function LoadingsSection({ result }) {
           Highlight ≥
           <input type="number" step="0.05" min="0.1" max="1.0"
                  value={highlight} onChange={e => setHighlight(Math.max(0.1, Math.min(1, Number(e.target.value))))}
-                 className="w-16 border border-gray-200 rounded px-2 py-1" />
+                 className="w-16 border border-border rounded px-2 py-1" />
         </label>
       </div>
 
@@ -448,7 +448,7 @@ function LoadingsSection({ result }) {
           </tbody>
         </table>
       </div>
-      <p className="text-[11px] text-gray-400 mt-2">
+      <p className="text-[11px] text-muted mt-2">
         Loading ≥ 0.4 (warna ungu) = item secara substantif memuat ke faktor tersebut.
         h² (communality) = proporsi varians item yang dijelaskan oleh semua faktor.
       </p>
@@ -468,7 +468,7 @@ function ReportText({ result }) {
 Berdasarkan kriteria Kaiser (eigenvalue ≥ 1), terbentuk ${result.nFactors} faktor yang menjelaskan ${(cumVar * 100).toFixed(1)}% varians total. ${result.rotationApplied ? 'Setelah rotasi Varimax, struktur loadings menunjukkan setiap item memuat dominan pada satu faktor (loading ≥ 0.4).' : 'Tanpa rotasi diterapkan.'} Communalities (h²) berkisar dari ${Math.min(...result.communalities).toFixed(3)} hingga ${Math.max(...result.communalities).toFixed(3)}.`
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }}

@@ -56,7 +56,7 @@ export default function ConfirmPaymentModal({
             <Sparkles className="w-7 h-7 text-white" />
           </div>
           <h3 className="text-xl font-bold text-gray-800">{displayTitle}</h3>
-          {description && <p className="text-sm text-gray-400 mt-1">{description}</p>}
+          {description && <p className="text-sm text-muted mt-1">{description}</p>}
         </div>
 
         {/* Price */}
@@ -80,7 +80,7 @@ export default function ConfirmPaymentModal({
             </div>
           </div>
           {priceBreakdown && (
-            <p className="text-xs text-gray-400 mt-1">{priceBreakdown}</p>
+            <p className="text-xs text-muted mt-1">{priceBreakdown}</p>
           )}
         </div>
 
@@ -117,7 +117,7 @@ export default function ConfirmPaymentModal({
             <button
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-surface font-medium"
+              className="flex-1 px-4 py-3 rounded-xl border-2 border-border text-gray-600 hover:bg-surface font-medium"
             >
               Batal
             </button>
@@ -133,7 +133,7 @@ export default function ConfirmPaymentModal({
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-surface font-medium"
+              className="flex-1 px-4 py-3 rounded-xl border-2 border-border text-gray-600 hover:bg-surface font-medium"
             >
               Tutup
             </button>

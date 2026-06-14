@@ -25,7 +25,7 @@ function ChartFrame({ title, width = 480, height = 280, padding = { t: 30, r: 20
   const innerW = width - padding.l - padding.r
   const innerH = height - padding.t - padding.b
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-3">
+    <div className="bg-white rounded-lg border border-border p-3">
       {title && <div className="text-xs font-semibold text-gray-700 mb-1 text-center">{title}</div>}
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto" style={{ maxHeight: 320 }}>
         <g transform={`translate(${padding.l}, ${padding.t})`}>
@@ -381,7 +381,7 @@ function quantile(sorted, p) {
 // ============================================================
 function EmptyChart({ title, message }) {
   return (
-    <div className="bg-surface rounded-lg border border-gray-200 p-6 text-center text-sm text-muted">
+    <div className="bg-surface rounded-lg border border-border p-6 text-center text-sm text-muted">
       {title && <div className="font-medium mb-1">{title}</div>}
       {message || 'Tidak ada data'}
     </div>

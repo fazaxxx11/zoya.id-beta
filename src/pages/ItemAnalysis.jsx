@@ -154,7 +154,7 @@ export default function ItemAnalysis() {
         </div>
 
         {/* Input mode selector */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
+        <div className="bg-white border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm font-medium">Mode Input:</span>
             <button
@@ -162,7 +162,7 @@ export default function ItemAnalysis() {
               className={`text-xs px-3 py-1.5 rounded-lg border ${
                 mode === 'scored'
                   ? 'bg-sky-500 text-white border-sky-500'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-sky-300'
+                  : 'bg-white text-gray-700 border-border hover:border-sky-300'
               }`}
             >
               Skor 0/1
@@ -172,14 +172,14 @@ export default function ItemAnalysis() {
               className={`text-xs px-3 py-1.5 rounded-lg border ${
                 mode === 'responses'
                   ? 'bg-sky-500 text-white border-sky-500'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-sky-300'
+                  : 'bg-white text-gray-700 border-border hover:border-sky-300'
               }`}
             >
               Jawaban Mentah (A/B/C/D)
             </button>
             <button
               onClick={() => fileRef.current?.click()}
-              className="text-xs text-gray-400 hover:text-sky-600 ml-auto flex items-center gap-1"
+              className="text-xs text-muted hover:text-sky-600 ml-auto flex items-center gap-1"
             >
               <Upload className="w-3.5 h-3.5" /> Upload CSV
             </button>
@@ -201,10 +201,10 @@ export default function ItemAnalysis() {
                 value={scoredText}
                 onChange={e => setScoredText(e.target.value)}
                 rows={8}
-                className="w-full font-mono text-xs border border-gray-200 rounded-lg px-3 py-2"
+                className="w-full font-mono text-xs border border-border rounded-lg px-3 py-2"
                 placeholder="1,1,0,1,0&#10;1,0,1,1,0&#10;..."
               />
-              <p className="text-[11px] text-gray-400 mt-1">
+              <p className="text-[11px] text-muted mt-1">
                 {countRowsCols(scoredText)}
               </p>
             </>
@@ -217,7 +217,7 @@ export default function ItemAnalysis() {
                 value={responsesText}
                 onChange={e => setResponsesText(e.target.value)}
                 rows={6}
-                className="w-full font-mono text-xs border border-gray-200 rounded-lg px-3 py-2"
+                className="w-full font-mono text-xs border border-border rounded-lg px-3 py-2"
                 placeholder="A,B,C,D,A&#10;B,B,C,D,A&#10;..."
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
@@ -229,7 +229,7 @@ export default function ItemAnalysis() {
                     type="text"
                     value={keyText}
                     onChange={e => setKeyText(e.target.value)}
-                    className="w-full font-mono text-xs border border-gray-200 rounded-lg px-3 py-2"
+                    className="w-full font-mono text-xs border border-border rounded-lg px-3 py-2"
                     placeholder="A,B,C,D,A"
                   />
                 </div>
@@ -241,7 +241,7 @@ export default function ItemAnalysis() {
                     type="text"
                     value={optionsText}
                     onChange={e => setOptionsText(e.target.value)}
-                    className="w-full font-mono text-xs border border-gray-200 rounded-lg px-3 py-2"
+                    className="w-full font-mono text-xs border border-border rounded-lg px-3 py-2"
                     placeholder="A,B,C,D"
                   />
                 </div>
@@ -255,7 +255,7 @@ export default function ItemAnalysis() {
               <select
                 value={fraction}
                 onChange={e => setFraction(e.target.value)}
-                className="ml-2 border border-gray-200 rounded px-2 py-1 text-xs"
+                className="ml-2 border border-border rounded px-2 py-1 text-xs"
               >
                 <option value={0.25}>25%</option>
                 <option value={0.27}>27% (Kelley, default)</option>
@@ -314,7 +314,7 @@ function ResultPanel({ result, onExport }) {
   return (
     <div className="space-y-3">
       {/* Summary */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
+      <div className="bg-white border border-border rounded-xl p-4">
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <h3 className="font-semibold text-sm flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-sky-600" /> Ringkasan
@@ -353,13 +353,13 @@ function ResultPanel({ result, onExport }) {
       </div>
 
       {/* Per-item table */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
+      <div className="bg-white border border-border rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-sm">Hasil per Butir</h3>
           {hasDistractor && (
             <button
               onClick={() => setShowDistractor(s => !s)}
-              className="text-xs text-gray-400 hover:text-sky-600 flex items-center gap-1"
+              className="text-xs text-muted hover:text-sky-600 flex items-center gap-1"
             >
               {showDistractor ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               {showDistractor ? 'Sembunyikan' : 'Tampilkan'} distraktor
@@ -419,7 +419,7 @@ function ResultPanel({ result, onExport }) {
 function SummaryCard({ label, value, badge, badgeColor }) {
   return (
     <div className="bg-surface rounded-lg p-2">
-      <div className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</div>
+      <div className="text-[10px] text-muted uppercase tracking-wide">{label}</div>
       <div className="text-lg font-bold">{value}</div>
       {badge && (
         <div className={`text-[10px] inline-block px-1.5 py-0.5 rounded mt-0.5 ${badgeColor}`}>
@@ -465,7 +465,7 @@ function ItemRow({ item, showDistractor }) {
       {showDistractor && item.distractors && (
         <tr className="bg-surface/50">
           <td colSpan={7} className="px-3 py-2">
-            <div className="text-[10px] text-gray-400 mb-1">Distraktor (Atas/Bawah):</div>
+            <div className="text-[10px] text-muted mb-1">Distraktor (Atas/Bawah):</div>
             <div className="flex flex-wrap gap-1.5">
               {item.distractors.map(d => (
                 <span
@@ -524,7 +524,7 @@ function DecisionBadge({ decision }) {
 // ============================================================
 function HelpSection() {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Panduan Singkat</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
         <details className="border border-border rounded-lg p-3">

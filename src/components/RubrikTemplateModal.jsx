@@ -30,7 +30,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
   const TemplateCard = ({ tpl, deletable }) => {
     const totalBobot = tpl.kriteria.reduce((s, k) => s + Number(k.bobot || 0), 0)
     return (
-      <div className="border-2 border-gray-200 rounded-xl p-3 hover:border-sky-400 hover:bg-sky-50/40 transition-colors group">
+      <div className="border-2 border-border rounded-xl p-3 hover:border-sky-400 hover:bg-sky-50/40 transition-colors group">
         <div className="flex items-start justify-between gap-2 mb-1">
           <h4 className="font-semibold text-sm text-gray-800 truncate">{tpl.name}</h4>
           {deletable && (
@@ -43,7 +43,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
             </button>
           )}
         </div>
-        <div className="text-[11px] text-gray-400 mb-2 line-clamp-2 min-h-[2em]">
+        <div className="text-[11px] text-muted mb-2 line-clamp-2 min-h-[2em]">
           {tpl.context || <span className="italic">Tanpa konteks</span>}
         </div>
         <div className="flex flex-wrap gap-1 mb-2">
@@ -87,7 +87,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
 
         <div className="p-4 overflow-y-auto flex-1 space-y-5">
           <section>
-            <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-2">Template Bawaan</h4>
+            <h4 className="text-xs uppercase tracking-wide font-semibold text-muted mb-2">Template Bawaan</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {BUILTIN_TEMPLATES.map(tpl => (
                 <TemplateCard key={tpl.id} tpl={tpl} deletable={false} />
@@ -96,7 +96,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
           </section>
 
           <section>
-            <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-2 flex items-center gap-1.5">
+            <h4 className="text-xs uppercase tracking-wide font-semibold text-muted mb-2 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" /> Template Saya
               <span className="ml-1 text-muted normal-case font-normal">({userTpls.length})</span>
             </h4>

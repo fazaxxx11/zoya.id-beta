@@ -117,7 +117,7 @@ export default function Qualitative() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 overflow-x-auto">
+        <div className="flex border-b border-border overflow-x-auto">
           {TABS.map(t => {
             const Icon = t.icon
             const active = tab === t.id
@@ -128,7 +128,7 @@ export default function Qualitative() {
                 className={`px-4 py-2 text-sm flex items-center gap-1.5 whitespace-nowrap border-b-2 transition-colors ${
                   active
                     ? 'border-rose-500 text-rose-700 font-medium'
-                    : 'border-transparent text-gray-400 hover:text-gray-700'
+                    : 'border-transparent text-muted hover:text-gray-700'
                 }`}
               >
                 <Icon className="w-4 h-4" /> {t.label}
@@ -245,12 +245,12 @@ function DocCard({ doc, onEdit, onDelete }) {
   const [expanded, setExpanded] = useState(false)
   const wordCount = doc.text.trim().split(/\s+/).length
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-3">
+    <div className="bg-white border border-border rounded-xl p-3">
       <div className="flex items-start gap-2">
         <FileText className="w-4 h-4 text-rose-500 mt-1 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="font-medium text-sm">{doc.title}</div>
-          <div className="text-[11px] text-gray-400 mt-0.5">
+          <div className="text-[11px] text-muted mt-0.5">
             {wordCount} kata · {doc.text.length} karakter
             {doc.interviewee && ` · ${doc.interviewee}`}
             {doc.date && ` · ${doc.date}`}
@@ -291,18 +291,18 @@ function DocEditor({ initial, onSave, onCancel }) {
           <input
             type="text" value={doc.title} onChange={e => update({ title: e.target.value })}
             placeholder="Judul (mis. 'Wawancara Guru A')"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            className="w-full border border-border rounded-lg px-3 py-2 text-sm"
           />
           <div className="grid grid-cols-2 gap-2">
             <input type="text" value={doc.interviewee} onChange={e => update({ interviewee: e.target.value })}
-              placeholder="Narasumber" className="border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+              placeholder="Narasumber" className="border border-border rounded-lg px-3 py-2 text-sm" />
             <input type="date" value={doc.date} onChange={e => update({ date: e.target.value })}
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+              className="border border-border rounded-lg px-3 py-2 text-sm" />
           </div>
           <textarea
             value={doc.text} onChange={e => update({ text: e.target.value })}
             rows={14} placeholder="Paste transkrip atau catatan di sini..."
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono"
+            className="w-full border border-border rounded-lg px-3 py-2 text-sm font-mono"
           />
         </div>
         <div className="border-t border-border px-5 py-3 flex justify-end gap-2">
@@ -359,7 +359,7 @@ function CodebookTab({ codes, refresh }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {codes.map(c => (
-            <div key={c.id} className="bg-white border border-gray-200 rounded-xl p-3 flex items-start gap-2">
+            <div key={c.id} className="bg-white border border-border rounded-xl p-3 flex items-start gap-2">
               <div className="w-3 h-3 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: c.color }} />
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-sm">{c.label}</div>
@@ -393,7 +393,7 @@ function CodeEditor({ initial, onSave, onCancel }) {
             <input
               type="text" value={code.label} onChange={e => update({ label: e.target.value })}
               placeholder="mis. 'motivasi intrinsik'"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -401,7 +401,7 @@ function CodeEditor({ initial, onSave, onCancel }) {
             <textarea
               value={code.description} onChange={e => update({ description: e.target.value })}
               rows={3} placeholder="Definisi operasional & kapan menggunakan kode ini..."
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -484,10 +484,10 @@ function CodingTab({ docs, codes, codings, refresh }) {
       {/* Doc picker */}
       <div className="flex items-center gap-2">
         <label className="text-xs font-medium text-gray-700">Dokumen:</label>
-        <select value={docId} onChange={e => { setDocId(e.target.value); setSelection(null) }} className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
+        <select value={docId} onChange={e => { setDocId(e.target.value); setSelection(null) }} className="border border-border rounded-lg px-2 py-1.5 text-xs">
           {docs.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}
         </select>
-        <span className="text-[11px] text-gray-400">{docCodings.length} segment ter-coding</span>
+        <span className="text-[11px] text-muted">{docCodings.length} segment ter-coding</span>
       </div>
 
       {doc && (
@@ -505,7 +505,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
             onKeyUp={handleSelectText}
             readOnly
             rows={12}
-            className="w-full border border-gray-200 rounded-lg p-3 text-sm font-mono"
+            className="w-full border border-border rounded-lg p-3 text-sm font-mono"
           />
 
           {/* Selection + code apply */}
@@ -531,7 +531,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
 
           {/* Existing codings list */}
           {docCodings.length > 0 && (
-            <div className="bg-white border border-gray-200 rounded-xl p-3">
+            <div className="bg-white border border-border rounded-xl p-3">
               <div className="text-sm font-medium mb-2">Coding pada dokumen ini ({docCodings.length})</div>
               <div className="space-y-1.5 max-h-80 overflow-y-auto">
                 {docCodings.map(cd => {
@@ -592,17 +592,17 @@ function AnalysisTab({ docs, codes, codings }) {
   return (
     <div className="space-y-4">
       {/* Controls */}
-      <div className="bg-white border border-gray-200 rounded-xl p-3 flex flex-wrap items-center gap-3">
+      <div className="bg-white border border-border rounded-xl p-3 flex flex-wrap items-center gap-3">
         <div>
           <label className="block text-[11px] font-medium text-gray-700 mb-0.5">Scope</label>
-          <select value={scope} onChange={e => setScope(e.target.value)} className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
+          <select value={scope} onChange={e => setScope(e.target.value)} className="border border-border rounded-lg px-2 py-1.5 text-xs">
             <option value="all">Semua dokumen ({docs.length})</option>
             {docs.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}
           </select>
         </div>
         <div>
           <label className="block text-[11px] font-medium text-gray-700 mb-0.5">Top N</label>
-          <input type="number" min={5} max={100} value={topN} onChange={e => setTopN(Number(e.target.value) || 30)} className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs w-20" />
+          <input type="number" min={5} max={100} value={topN} onChange={e => setTopN(Number(e.target.value) || 30)} className="border border-border rounded-lg px-2 py-1.5 text-xs w-20" />
         </div>
         <label className="flex items-center gap-1.5 text-xs text-gray-700 mt-3">
           <input type="checkbox" checked={removeStop} onChange={e => setRemoveStop(e.target.checked)} />
@@ -611,15 +611,15 @@ function AnalysisTab({ docs, codes, codings }) {
       </div>
 
       {/* Word frequency */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
+      <div className="bg-white border border-border rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-sm flex items-center gap-1.5">
             <BarChart2 className="w-4 h-4 text-rose-500" /> Frekuensi Kata
           </h3>
-          <span className="text-xs text-gray-400">{wordFreq.length} kata teratas</span>
+          <span className="text-xs text-muted">{wordFreq.length} kata teratas</span>
         </div>
         {wordFreq.length === 0 ? (
-          <p className="text-sm text-gray-400">Tidak ada kata yang dianalisis.</p>
+          <p className="text-sm text-muted">Tidak ada kata yang dianalisis.</p>
         ) : (
           <>
             {/* Word "cloud" — size scaled by frequency */}
@@ -659,7 +659,7 @@ function AnalysisTab({ docs, codes, codings }) {
 
       {/* Bigrams */}
       {bigrams.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
+        <div className="bg-white border border-border rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-3">Frasa 2-Kata Teratas (bigrams)</h3>
           <div className="flex flex-wrap gap-1.5">
             {bigrams.map(b => (
@@ -673,10 +673,10 @@ function AnalysisTab({ docs, codes, codings }) {
 
       {/* Code stats */}
       {codes.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
+        <div className="bg-white border border-border rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-3">Statistik Kode</h3>
           {codings.length === 0 ? (
-            <p className="text-xs text-gray-400">Belum ada coding. Mulai di tab Coding.</p>
+            <p className="text-xs text-muted">Belum ada coding. Mulai di tab Coding.</p>
           ) : (
             <table className="w-full text-xs">
               <thead className="bg-surface">
@@ -705,9 +705,9 @@ function AnalysisTab({ docs, codes, codings }) {
 
       {/* Co-occurrence */}
       {codes.length >= 2 && codings.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
+        <div className="bg-white border border-border rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-1">Co-Occurrence Antar Kode</h3>
-          <p className="text-[11px] text-gray-400 mb-3">Berapa kali pasangan kode muncul bersama dalam dokumen yang sama. Diagonal = jumlah dokumen tempat kode itu muncul.</p>
+          <p className="text-[11px] text-muted mb-3">Berapa kali pasangan kode muncul bersama dalam dokumen yang sama. Diagonal = jumlah dokumen tempat kode itu muncul.</p>
           <div className="overflow-x-auto">
             <table className="text-xs">
               <thead>
@@ -788,7 +788,7 @@ function ReliabilityTab() {
         value={csvText}
         onChange={e => setCsvText(e.target.value)}
         rows={10}
-        className="w-full font-mono text-xs border border-gray-200 rounded-lg p-2"
+        className="w-full font-mono text-xs border border-border rounded-lg p-2"
       />
 
       <div className="flex justify-end">
@@ -812,7 +812,7 @@ function KappaResult({ r }) {
   const interpretation = interpretKappaID(r.kappa)
   const color = r.kappa < 0.2 ? '#dc2626' : r.kappa < 0.4 ? '#f59e0b' : r.kappa < 0.6 ? '#eab308' : r.kappa < 0.8 ? '#10b981' : '#059669'
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+    <div className="bg-white border border-border rounded-xl p-4 space-y-3">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Metric label="Cohen's κ" value={r.kappa.toFixed(4)} color={color} />
         <Metric label="Interpretasi" value={interpretation} small />
@@ -862,7 +862,7 @@ function KappaResult({ r }) {
 function Metric({ label, value, color, small }) {
   return (
     <div className="bg-surface rounded-lg p-3">
-      <div className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</div>
+      <div className="text-[10px] text-muted uppercase tracking-wide">{label}</div>
       <div className={`font-bold ${small ? 'text-sm' : 'text-2xl'}`} style={color ? { color } : {}}>{value}</div>
     </div>
   )
@@ -873,10 +873,10 @@ function Metric({ label, value, color, small }) {
 // ============================================================
 function EmptyState({ icon: Icon, title, desc }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
+    <div className="bg-white border border-border rounded-xl p-8 text-center">
       <Icon className="w-12 h-12 text-muted mx-auto mb-2" />
       <p className="font-medium text-sm mb-1">{title}</p>
-      <p className="text-xs text-gray-400 max-w-md mx-auto">{desc}</p>
+      <p className="text-xs text-muted max-w-md mx-auto">{desc}</p>
     </div>
   )
 }

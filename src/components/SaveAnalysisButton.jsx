@@ -60,7 +60,7 @@ export default function SaveAnalysisButton({ result, defaultTitle = '', toolName
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-semibold text-sm">Simpan Analisis</h3>
-                <p className="text-[11px] text-gray-400 mt-0.5">
+                <p className="text-[11px] text-muted mt-0.5">
                   Hasil ini akan masuk ke riwayat dan bisa dipakai di Generator Bab IV.
                   Butuh login.
                 </p>
@@ -75,7 +75,7 @@ export default function SaveAnalysisButton({ result, defaultTitle = '', toolName
               <input
                 type="text" value={title} onChange={e => setTitle(e.target.value)}
                 placeholder={defaultTitle || `${toolName || result.toolName || result.type} — ${new Date().toLocaleDateString('id-ID')}`}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm"
               />
             </div>
 
@@ -84,7 +84,7 @@ export default function SaveAnalysisButton({ result, defaultTitle = '', toolName
               <textarea
                 value={notes} onChange={e => setNotes(e.target.value)}
                 rows={3} placeholder="Konteks penelitian, hipotesis, dll."
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm"
               />
             </div>
 

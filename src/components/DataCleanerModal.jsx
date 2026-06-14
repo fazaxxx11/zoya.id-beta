@@ -123,7 +123,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
           <div>
             <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Pre-Analysis</div>
             <h2 className="text-lg font-bold text-gray-900">Bersihkan Dataset</h2>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-muted mt-1">
               {totalIssues > 0
                 ? `Ditemukan ${totalIssues} isu (missing + outlier + duplikat). Pilih cara penanganan.`
                 : 'Dataset bersih — tidak ada missing, outlier, atau duplikat terdeteksi.'}
@@ -142,11 +142,11 @@ function ModalBody({ data, columns, onClose, onApply }) {
               <Sparkles className="w-3.5 h-3.5" /> Smart Clean
             </button>
             <button onClick={handleReset}
-              className="text-xs font-medium px-3 py-2 rounded-lg border border-gray-200 hover:bg-white text-gray-700">
+              className="text-xs font-medium px-3 py-2 rounded-lg border border-border hover:bg-white text-gray-700">
               Reset
             </button>
           </div>
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-muted">
             <span>Total baris: <strong className="text-gray-900">{totalRows}</strong></span>
             <span>→</span>
             <span>Setelah bersihkan: <strong className={preview.report.rowsAfter < totalRows ? 'text-amber-700' : 'text-emerald-700'}>{preview.report.rowsAfter}</strong></span>
@@ -156,10 +156,10 @@ function ModalBody({ data, columns, onClose, onApply }) {
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-5">
           {/* Per-column table */}
-          <div className="border border-gray-200 rounded-xl overflow-hidden mb-4">
+          <div className="border border-border rounded-xl overflow-hidden mb-4">
             <table className="w-full text-sm">
               <thead className="bg-surface text-left">
-                <tr className="text-[11px] uppercase tracking-wider text-gray-400">
+                <tr className="text-[11px] uppercase tracking-wider text-muted">
                   <th className="px-3 py-2.5 font-medium">Kolom</th>
                   <th className="px-3 py-2.5 font-medium">Tipe</th>
                   <th className="px-3 py-2.5 font-medium text-right">Missing</th>
@@ -193,7 +193,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
                         ) : (
                           <select value={op.missing}
                             onChange={e => updateOp(col, 'missing', e.target.value)}
-                            className="text-xs px-2 py-1 border border-gray-200 rounded bg-white outline-none focus:border-gray-400">
+                            className="text-xs px-2 py-1 border border-border rounded bg-white outline-none focus:border-gray-400">
                             <option value="keep">Biarkan</option>
                             <option value="drop">Drop baris</option>
                             {a.type === 'numeric' && <option value="mean">Isi: mean</option>}
@@ -217,7 +217,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
                         ) : (
                           <select value={op.outliers}
                             onChange={e => updateOp(col, 'outliers', e.target.value)}
-                            className="text-xs px-2 py-1 border border-gray-200 rounded bg-white outline-none focus:border-gray-400">
+                            className="text-xs px-2 py-1 border border-border rounded bg-white outline-none focus:border-gray-400">
                             <option value="keep">Biarkan</option>
                             <option value="clip">Clip ke batas IQR</option>
                             <option value="drop">Drop baris</option>
@@ -232,7 +232,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
           </div>
 
           {/* Duplicate rows toggle */}
-          <div className={`flex items-center gap-3 p-3 rounded-xl border ${dupes.length > 0 ? 'bg-amber-50 border-amber-200' : 'bg-surface border-gray-200'}`}>
+          <div className={`flex items-center gap-3 p-3 rounded-xl border ${dupes.length > 0 ? 'bg-amber-50 border-amber-200' : 'bg-surface border-border'}`}>
             {dupes.length > 0 ? (
               <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
             ) : (
@@ -242,7 +242,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
               <span className="font-medium text-gray-900">
                 {dupes.length === 0 ? 'Tidak ada baris duplikat' : `${dupes.length} baris duplikat ditemukan`}
               </span>
-              {dupes.length > 0 && <span className="text-gray-400 ml-2">(seluruh kolom identik)</span>}
+              {dupes.length > 0 && <span className="text-muted ml-2">(seluruh kolom identik)</span>}
             </div>
             {dupes.length > 0 && (
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
@@ -258,7 +258,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
               Tabel menampilkan semua kolom × paginated rows. Tiap sel jadi
               input yang bisa di-edit langsung. Perubahan auto-update analisis
               & preview cleaning di atas. */}
-          <div className="mt-4 border border-gray-200 rounded-xl overflow-hidden">
+          <div className="mt-4 border border-border rounded-xl overflow-hidden">
             <button
               type="button"
               onClick={() => setShowDataPreview(v => !v)}
@@ -267,7 +267,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
               <div className="flex items-center gap-2">
                 <Table2 className="w-4 h-4 text-gray-600" />
                 <span className="text-sm font-medium text-gray-900">Lihat & Edit Data</span>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted">
                   {totalRows} baris × {columns.length} kolom
                 </span>
                 {editedCells.size > 0 && (
@@ -276,20 +276,20 @@ function ModalBody({ data, columns, onClose, onApply }) {
                   </span>
                 )}
               </div>
-              <span className="text-xs text-gray-400">{showDataPreview ? '▲ Tutup' : '▼ Buka'}</span>
+              <span className="text-xs text-muted">{showDataPreview ? '▲ Tutup' : '▼ Buka'}</span>
             </button>
 
             {showDataPreview && (
               <>
-                <div className="overflow-auto max-h-[420px] border-t border-gray-200">
+                <div className="overflow-auto max-h-[420px] border-t border-border">
                   <table className="w-full text-sm border-collapse">
                     <thead className="bg-gray-100 sticky top-0 z-10">
                       <tr>
-                        <th className="border-b border-r border-gray-200 px-2 py-1.5 w-12 text-center text-[11px] font-semibold text-gray-600 sticky left-0 bg-gray-100 z-20">
+                        <th className="border-b border-r border-border px-2 py-1.5 w-12 text-center text-[11px] font-semibold text-gray-600 sticky left-0 bg-gray-100 z-20">
                           #
                         </th>
                         {columns.map(col => (
-                          <th key={col} className="border-b border-r border-gray-200 px-2 py-1.5 text-left text-[11px] font-semibold text-gray-700 whitespace-nowrap">
+                          <th key={col} className="border-b border-r border-border px-2 py-1.5 text-left text-[11px] font-semibold text-gray-700 whitespace-nowrap">
                             <div className="flex items-center gap-1.5">
                               {col}
                               <TypeBadge type={analysis[col]?.type} />
@@ -340,7 +340,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
 
                 {/* Pagination footer */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-3 py-2 bg-surface border-t border-gray-200 text-xs text-gray-600">
+                  <div className="flex items-center justify-between px-3 py-2 bg-surface border-t border-border text-xs text-gray-600">
                     <span>Baris {startRow + 1}–{endRow} dari {totalRows}</span>
                     <div className="flex items-center gap-1">
                       <button
@@ -369,12 +369,12 @@ function ModalBody({ data, columns, onClose, onApply }) {
 
           {/* Preview report */}
           {preview.report.actions.length > 0 && (
-            <div className="mt-4 bg-surface border border-gray-200 rounded-xl p-4">
-              <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-2">Preview Aksi</div>
+            <div className="mt-4 bg-surface border border-border rounded-xl p-4">
+              <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Preview Aksi</div>
               <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
                 {preview.report.actions.map((a, i) => <li key={i}>{a}</li>)}
               </ul>
-              <div className="mt-3 pt-3 border-t border-gray-200 flex gap-4 text-xs flex-wrap">
+              <div className="mt-3 pt-3 border-t border-border flex gap-4 text-xs flex-wrap">
                 <span className="text-gray-600">Drop: <strong className="text-red-700">{preview.report.dropped}</strong> baris</span>
                 <span className="text-gray-600">Filled: <strong className="text-emerald-700">{preview.report.filled}</strong> sel</span>
                 <span className="text-gray-600">Clipped: <strong className="text-orange-700">{preview.report.clipped}</strong> sel</span>
@@ -411,8 +411,8 @@ function TypeBadge({ type }) {
   const cfg = {
     numeric: { label: 'Numerik', cls: 'bg-blue-50 text-blue-700 border-blue-200' },
     categorical: { label: 'Kategorik', cls: 'bg-purple-50 text-purple-700 border-purple-200' },
-    text: { label: 'Teks', cls: 'bg-surface text-gray-700 border-gray-200' },
+    text: { label: 'Teks', cls: 'bg-surface text-gray-700 border-border' },
     empty: { label: 'Kosong', cls: 'bg-red-50 text-red-700 border-red-200' },
-  }[type] || { label: type, cls: 'bg-surface text-gray-700 border-gray-200' }
+  }[type] || { label: type, cls: 'bg-surface text-gray-700 border-border' }
   return <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${cfg.cls}`}>{cfg.label}</span>
 }

@@ -56,7 +56,7 @@ const ResultSummary = ({
         {/* Meaning Section */}
         <div className="pt-3 border-t border-border">
           <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-            <span className="text-gray-400">Apa artinya?</span>
+            <span className="text-muted">Apa artinya?</span>
           </h4>
           <p className="text-gray-600 leading-relaxed">
             {meaning}

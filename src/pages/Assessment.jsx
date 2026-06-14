@@ -281,13 +281,13 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
           </div>
           <div className="flex-1">
             <h2 className="text-lg font-bold text-gray-800">Buat Rubrik Penilaian</h2>
-            <p className="text-sm text-gray-400">Tentukan kriteria dan bobot penilaian</p>
+            <p className="text-sm text-muted">Tentukan kriteria dan bobot penilaian</p>
           </div>
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setTplOpen(true)}
-              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-sky-50 hover:border-sky-300 transition-colors flex items-center gap-1.5 text-gray-700"
+              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-sky-50 hover:border-sky-300 transition-colors flex items-center gap-1.5 text-gray-700"
               title="Buka library template"
             >
               <FolderOpen className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Template</span>
@@ -296,7 +296,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
               type="button"
               onClick={handleSaveTemplate}
               disabled={!hasExistingRubrik}
-              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-emerald-50 hover:border-emerald-300 transition-colors flex items-center gap-1.5 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-emerald-50 hover:border-emerald-300 transition-colors flex items-center gap-1.5 text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
               title="Simpan rubrik ini sebagai template"
             >
               <Save className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Simpan</span>
@@ -323,7 +323,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
         <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
           <div>
             <h3 className="font-semibold text-gray-800">Kriteria Penilaian</h3>
-            <p className="text-xs text-gray-400 mt-0.5">Total bobot harus 100%</p>
+            <p className="text-xs text-muted mt-0.5">Total bobot harus 100%</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <button
@@ -473,7 +473,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
 
       <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-border">
         <h3 className="font-semibold text-gray-800 mb-1">Input Jawaban Murid</h3>
-        <p className="text-xs text-gray-400 mb-4">Pilih cara input yang paling cocok. Bisa ganti kapan saja.</p>
+        <p className="text-xs text-muted mb-4">Pilih cara input yang paling cocok. Bisa ganti kapan saja.</p>
 
         {/* === Mode picker: 2 card besar === */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-5">
@@ -483,11 +483,11 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             className={`group relative text-left rounded-xl p-3 sm:p-4 border-2 transition-all ${
               inputMode === 'file'
                 ? 'border-sky-500 bg-sky-50 shadow-sm'
-                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-surface'
+                : 'border-border bg-white hover:border-gray-300 hover:bg-surface'
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
-              inputMode === 'file' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-400'
+              inputMode === 'file' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-muted'
             }`}>
               <FileSpreadsheet className="w-5 h-5" />
             </div>
@@ -495,7 +495,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               Upload File
               {inputMode === 'file' && <span className="text-[10px] uppercase tracking-wide bg-sky-500 text-white px-1.5 py-0.5 rounded">aktif</span>}
             </div>
-            <div className="text-[11px] text-gray-400 mt-0.5 leading-snug">Excel, CSV, PDF, Word — banyak siswa sekaligus</div>
+            <div className="text-[11px] text-muted mt-0.5 leading-snug">Excel, CSV, PDF, Word — banyak siswa sekaligus</div>
           </button>
 
           <button
@@ -504,11 +504,11 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             className={`group relative text-left rounded-xl p-3 sm:p-4 border-2 transition-all ${
               inputMode === 'manual'
                 ? 'border-sky-500 bg-sky-50 shadow-sm'
-                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-surface'
+                : 'border-border bg-white hover:border-gray-300 hover:bg-surface'
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
-              inputMode === 'manual' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-400'
+              inputMode === 'manual' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-muted'
             }`}>
               <Pencil className="w-5 h-5" />
             </div>
@@ -516,7 +516,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               Ketik Manual
               {inputMode === 'manual' && <span className="text-[10px] uppercase tracking-wide bg-sky-500 text-white px-1.5 py-0.5 rounded">aktif</span>}
             </div>
-            <div className="text-[11px] text-gray-400 mt-0.5 leading-snug">Quick demo, tugas tulis tangan, 1-3 siswa</div>
+            <div className="text-[11px] text-muted mt-0.5 leading-snug">Quick demo, tugas tulis tangan, 1-3 siswa</div>
           </button>
         </div>
 
@@ -530,7 +530,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               className={`block border-2 border-dashed rounded-xl p-8 flex flex-col items-center cursor-pointer transition-all ${
                 dragOver
                   ? 'border-sky-500 bg-sky-50 scale-[1.01]'
-                  : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50/30'
+                  : 'border-border hover:border-sky-300 hover:bg-sky-50/30'
               }`}
             >
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3 transition-all ${
@@ -541,10 +541,10 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               <p className="font-medium text-gray-800 mb-1">
                 {dragOver ? 'Lepas untuk upload' : 'Drop file di sini atau klik'}
               </p>
-              <p className="text-xs text-gray-400 mb-3">
+              <p className="text-xs text-muted mb-3">
                 {getSupportedFormats().map(f => `.${f.ext}`).join(' · ')}
               </p>
-              <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-400 w-full max-w-sm bg-surface rounded-lg p-3 mt-2">
+              <div className="grid grid-cols-2 gap-2 text-[11px] text-muted w-full max-w-sm bg-surface rounded-lg p-3 mt-2">
                 <div className="flex items-center gap-1.5"><FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" /> Excel/CSV → kolom Nama & Jawaban</div>
                 <div className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-rose-600" /> Word/PDF → multi-siswa</div>
               </div>
@@ -571,7 +571,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               )}
               <button
                 onClick={() => { setFileData(null); setShowPreview(false); setPreviewConfirmed(false); setStudents([{ id: uid(), name: "", answer: "" }]) }}
-                className="text-xs text-gray-400 hover:text-red-600 px-2 py-1 rounded transition-colors"
+                className="text-xs text-muted hover:text-red-600 px-2 py-1 rounded transition-colors"
                 title="Ganti file"
               >
                 Ganti
@@ -696,7 +696,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             {students.map((s,i) => (
               <div key={s.id} className="bg-surface rounded-xl p-4">
                 <div className="flex justify-between mb-2">
-                  <span className="text-xs text-gray-400 font-medium">Murid #{i+1}</span>
+                  <span className="text-xs text-muted font-medium">Murid #{i+1}</span>
                   <button onClick={()=>del(s.id)} className="text-muted hover:text-red-500 transition-colors" title="Hapus"><Trash2 className="w-4 h-4"/></button>
                 </div>
                 <input type="text" value={s.name} onChange={e=>upd(s.id,'name',e.target.value)} placeholder="Nama siswa" className="input-field mb-2"/>
@@ -792,7 +792,7 @@ function ClassSummary({ results, rubrik }) {
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp className="w-5 h-5 text-sky-600" />
         <h3 className="font-bold text-gray-800">Ringkasan Kelas</h3>
-        <span className="text-xs text-gray-400">({total} siswa dinilai)</span>
+        <span className="text-xs text-muted">({total} siswa dinilai)</span>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-4">
@@ -918,7 +918,7 @@ function CriterionRow({ k, s, onUpdate }) {
       <div className="flex-1 min-w-0">
         <div className="flex justify-between text-sm">
           <span className="font-medium">{k.nama}</span>
-          <span className="text-gray-400">{k.bobot}%</span>
+          <span className="text-muted">{k.bobot}%</span>
         </div>
         <div className="h-1.5 bg-gray-200 rounded-full">
           <div className={`h-1.5 rounded-full transition-all ${s.skor>=8?'bg-green-500':s.skor>=5?'bg-amber-500':'bg-red-500'}`} style={{width:(s.skor/10)*100+'%'}}/>
@@ -1013,7 +1013,7 @@ function HasilPenilaian({
           <div className="flex items-center gap-1.5 text-gray-600">
             <ArrowUpDown className="w-4 h-4"/>
             <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-                    className="bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-sky-200">
+                    className="bg-white border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-sky-200">
               <option value="default">Urutan asli</option>
               <option value="high">Skor tertinggi</option>
               <option value="low">Skor terendah</option>
@@ -1032,14 +1032,14 @@ function HasilPenilaian({
                   className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors ${
                     filterBy === f.id
                       ? 'bg-sky-500 text-white'
-                      : 'bg-white border border-gray-200 text-gray-600 hover:bg-surface'
+                      : 'bg-white border border-border text-gray-600 hover:bg-surface'
                   }`}>
                   {f.label}
                 </button>
               ))}
             </div>
           </div>
-          <span className="ml-auto text-xs text-gray-400">
+          <span className="ml-auto text-xs text-muted">
             Menampilkan {sortedResults.length} / {results.length}
           </span>
         </div>
@@ -1075,7 +1075,7 @@ function HasilPenilaian({
                   <button
                     onClick={() => onRegrade(r.id)}
                     disabled={r._regrading}
-                    className="text-xs text-gray-400 hover:text-sky-600 px-2 py-1 rounded hover:bg-sky-50 transition-colors flex items-center gap-1 disabled:opacity-50"
+                    className="text-xs text-muted hover:text-sky-600 px-2 py-1 rounded hover:bg-sky-50 transition-colors flex items-center gap-1 disabled:opacity-50"
                     title="Nilai ulang siswa ini dengan AI"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${r._regrading ? 'animate-spin' : ''}`}/>
@@ -1126,7 +1126,7 @@ function HasilPenilaian({
       })}
 
       {sortedResults.length === 0 && hasAnyResult && (
-        <div className="bg-surface rounded-xl p-6 text-center text-sm text-gray-400">
+        <div className="bg-surface rounded-xl p-6 text-center text-sm text-muted">
           Tidak ada siswa yang cocok dengan filter ini.
         </div>
       )}
@@ -1180,7 +1180,7 @@ function KesimpulanEditable({ value, onSave }) {
         />
         <div className="flex gap-2 mt-2">
           <button onClick={() => { onSave(tmp); setEditing(false) }} className="text-xs px-3 py-1 bg-sky-600 text-white rounded-lg hover:bg-sky-700">Simpan</button>
-          <button onClick={() => { setTmp(value); setEditing(false) }} className="text-xs px-3 py-1 text-gray-400 hover:bg-gray-100 rounded-lg">Batal</button>
+          <button onClick={() => { setTmp(value); setEditing(false) }} className="text-xs px-3 py-1 text-muted hover:bg-gray-100 rounded-lg">Batal</button>
         </div>
       </div>
     )
@@ -1453,7 +1453,7 @@ function Assessment() {
             <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-medium transition-colors ${
               active ? 'bg-sky-500 text-white' :
               done   ? 'bg-green-500 text-white' :
-                       'bg-gray-100 text-gray-400'
+                       'bg-gray-100 text-muted'
             }`}>
               <span className="w-4 h-4 rounded-full bg-white/30 flex items-center justify-center text-[10px] font-bold">
                 {done ? '✓' : i + 1}

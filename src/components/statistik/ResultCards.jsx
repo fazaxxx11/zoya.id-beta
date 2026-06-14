@@ -475,7 +475,7 @@ export function ChiSquareResult({ r }) {
 
       <h4 className="font-semibold mb-2">Tabel Kontingensi (Observed)</h4>
       <div className="overflow-x-auto mb-4">
-        <table className="w-full text-sm border border-gray-200">
+        <table className="w-full text-sm border border-border">
           <thead className="bg-card/50">
             <tr>
               <th className="px-3 py-2 text-left border">{r.var1} \ {r.var2}</th>
@@ -732,7 +732,7 @@ export function NGainResult({ r }) {
 
       {sig && (
         <div className={`rounded-xl p-4 mb-4 border ${
-          sig.significant ? 'bg-green-50 border-green-200' : 'bg-card/50 border-gray-200'
+          sig.significant ? 'bg-green-50 border-green-200' : 'bg-card/50 border-border'
         }`}>
           <h4 className="font-semibold mb-2 text-sm">Uji Signifikansi (Paired t-test)</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
@@ -750,7 +750,7 @@ export function NGainResult({ r }) {
         </div>
       )}
 
-      <details className="border border-gray-200 rounded-xl overflow-hidden mb-4">
+      <details className="border border-border rounded-xl overflow-hidden mb-4">
         <summary className="px-4 py-2.5 bg-card/50 hover:bg-gray-100 cursor-pointer text-sm font-medium">
           Detail per Subjek ({r.pairs.length}) — klik untuk buka
         </summary>
@@ -831,7 +831,7 @@ export function TwoWayANOVAResult({ r }) {
       </div>
 
       <div className={`rounded-xl p-3 mb-4 text-sm border ${
-        r.significantInteraction ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-card/50 border-gray-200 text-fg'
+        r.significantInteraction ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-card/50 border-border text-fg'
       }`}>
         <strong>Ringkasan:</strong>
         <ul className="mt-1 space-y-0.5 list-disc list-inside">

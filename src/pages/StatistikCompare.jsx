@@ -64,7 +64,7 @@ export default function StatistikCompare() {
         <div className="max-w-md text-center">
           <AlertCircle className="w-10 h-10 text-amber-400 mx-auto mb-3" />
           <h2 className="text-xl font-bold text-gray-900 mb-2">Pilih 2 analisis</h2>
-          <p className="text-sm text-gray-400 mb-5">Untuk membandingkan, pilih tepat 2 analisis dari halaman Riwayat.</p>
+          <p className="text-sm text-muted mb-5">Untuk membandingkan, pilih tepat 2 analisis dari halaman Riwayat.</p>
           <button onClick={() => navigate('/statistik/history')}
             className="px-5 py-2.5 bg-gray-900 hover:bg-black text-white text-sm font-medium rounded-lg">
             Buka Riwayat
@@ -87,7 +87,7 @@ export default function StatistikCompare() {
         {/* Header */}
         <div className="mb-6">
           <button onClick={() => navigate('/statistik/history')}
-            className="text-xs text-gray-400 hover:text-gray-900 flex items-center gap-1 mb-2">
+            className="text-xs text-muted hover:text-gray-900 flex items-center gap-1 mb-2">
             <ChevronLeft className="w-3.5 h-3.5" /> Kembali ke Riwayat
           </button>
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Modul Statistik</div>
@@ -106,14 +106,14 @@ export default function StatistikCompare() {
         {/* Two header cards */}
         <div className="grid grid-cols-2 gap-4 mb-5">
           {[a, b].map((it, idx) => (
-            <div key={idx} className="bg-white border border-gray-200/80 rounded-xl p-4">
+            <div key={idx} className="bg-white border border-border/80 rounded-xl p-4">
               {it ? (
                 <>
                   <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">
                     {it.tool_name}
                   </div>
                   <h2 className="font-bold text-gray-900 text-base mb-1.5 truncate" title={it.title}>{it.title}</h2>
-                  <div className="text-xs text-gray-400 flex items-center gap-3 flex-wrap">
+                  <div className="text-xs text-muted flex items-center gap-3 flex-wrap">
                     {it.sample_size && <span>n = {it.sample_size}</span>}
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
@@ -129,10 +129,10 @@ export default function StatistikCompare() {
         </div>
 
         {/* Comparison table */}
-        <div className="bg-white border border-gray-200/80 rounded-xl overflow-hidden">
+        <div className="bg-white border border-border/80 rounded-xl overflow-hidden">
           {rows.map((sec, sIdx) => (
             <div key={sIdx} className={sIdx > 0 ? 'border-t border-border' : ''}>
-              <div className="px-4 py-2.5 bg-surface text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium">
+              <div className="px-4 py-2.5 bg-surface text-[11px] uppercase tracking-[0.18em] text-muted font-medium">
                 {sec.section}
               </div>
               <table className="w-full text-sm">
@@ -166,7 +166,7 @@ export default function StatistikCompare() {
         {(a?.notes || b?.notes) && (
           <div className="mt-5 grid grid-cols-2 gap-4">
             {[a, b].map((it, idx) => (
-              <div key={idx} className="bg-white border border-gray-200/80 rounded-xl p-4">
+              <div key={idx} className="bg-white border border-border/80 rounded-xl p-4">
                 <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Catatan</div>
                 {it?.notes ? (
                   <div className="text-sm text-gray-700 whitespace-pre-wrap">{it.notes}</div>

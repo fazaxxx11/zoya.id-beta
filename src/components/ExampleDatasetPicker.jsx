@@ -32,7 +32,7 @@ export default function ExampleDatasetPicker({ open, onClose, onPick }) {
           </button>
         </div>
 
-        <div className="px-6 py-3 text-xs text-gray-400 border-b border-border bg-surface/60">
+        <div className="px-6 py-3 text-xs text-muted border-b border-border bg-surface/60">
           Dataset siap pakai dengan konteks lokal. Cocok untuk explore tool tanpa upload data sendiri.
         </div>
 
@@ -43,7 +43,7 @@ export default function ExampleDatasetPicker({ open, onClose, onPick }) {
               <button
                 key={ds.id}
                 onClick={() => { onPick(ds); onClose() }}
-                className="w-full text-left bg-white border border-gray-200 hover:border-gray-400 hover:bg-surface rounded-xl p-4 transition-colors group"
+                className="w-full text-left bg-white border border-border hover:border-gray-400 hover:bg-surface rounded-xl p-4 transition-colors group"
               >
                 <div className="flex items-start justify-between gap-3 mb-1.5">
                   <div className="text-sm font-semibold text-gray-900 group-hover:text-black">

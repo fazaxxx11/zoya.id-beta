@@ -128,7 +128,7 @@ export default function References() {
         </div>
 
         {/* Toolbar */}
-        <div className="bg-white border border-gray-200 rounded-xl p-3 flex flex-wrap items-center gap-2">
+        <div className="bg-white border border-border rounded-xl p-3 flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[200px]">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
             <input
@@ -136,13 +136,13 @@ export default function References() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Cari judul, penulis, jurnal..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm"
+              className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm"
             />
           </div>
           <select
             value={filterType}
             onChange={e => setFilterType(e.target.value)}
-            className="border border-gray-200 rounded-lg px-2 py-2 text-xs"
+            className="border border-border rounded-lg px-2 py-2 text-xs"
           >
             <option value="">Semua tipe</option>
             {REF_TYPES.map(t => (
@@ -153,7 +153,7 @@ export default function References() {
             <select
               value={filterTag}
               onChange={e => setFilterTag(e.target.value)}
-              className="border border-gray-200 rounded-lg px-2 py-2 text-xs"
+              className="border border-border rounded-lg px-2 py-2 text-xs"
             >
               <option value="">Semua tag</option>
               {allTags.map(t => <option key={t} value={t}>{t}</option>)}
@@ -193,9 +193,9 @@ export default function References() {
 
         {/* List */}
         {filtered.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
+          <div className="bg-white border border-border rounded-xl p-8 text-center">
             <BookOpen className="w-12 h-12 text-muted mx-auto mb-2" />
-            <p className="text-sm text-gray-400 mb-3">
+            <p className="text-sm text-muted mb-3">
               {refs.length === 0
                 ? 'Belum ada referensi. Mulai dengan menambah manual, lookup DOI, atau import BibTeX/RIS.'
                 : 'Tidak ada hasil dengan filter ini.'}
@@ -256,9 +256,9 @@ export default function References() {
 
 function StatCard({ label, value }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-2 text-center">
+    <div className="bg-white border border-border rounded-lg p-2 text-center">
       <div className="text-xl font-bold text-violet-700">{value}</div>
-      <div className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</div>
+      <div className="text-[10px] text-muted uppercase tracking-wide">{label}</div>
     </div>
   )
 }
@@ -280,7 +280,7 @@ function RefCard({ data: ref, onEdit, onDelete, style }) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-3 hover:shadow-md transition-shadow">
+    <div className="bg-white border border-border rounded-xl p-3 hover:shadow-md transition-shadow">
       <div className="flex items-start gap-2">
         <div className="text-xl pt-0.5">{typeLabel}</div>
         <div className="flex-1 min-w-0">
@@ -317,7 +317,7 @@ function RefCard({ data: ref, onEdit, onDelete, style }) {
                     <ChevronDown className="w-3 h-3" />
                   </button>
                   {copyMenu && (
-                    <div className="absolute top-6 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1 min-w-[160px]">
+                    <div className="absolute top-6 left-0 bg-white border border-border rounded-lg shadow-lg z-10 py-1 min-w-[160px]">
                       <button onClick={() => copyText(formatAPA(ref))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-surface">APA 7 (full)</button>
                       <button onClick={() => copyText(inlineCite(ref, 'apa'))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-surface">APA inline</button>
                       <button onClick={() => copyText(formatIEEE(ref, 1))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-surface">IEEE</button>
@@ -428,7 +428,7 @@ function RefEditor({ initial, onSave, onCancel }) {
                 value={doiInput}
                 onChange={e => setDoiInput(e.target.value)}
                 placeholder="10.1037/0022-3514.51.6.1173"
-                className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm"
+                className="flex-1 border border-border rounded-lg px-3 py-1.5 text-sm"
               />
               <button
                 onClick={handleDoiLookup}
@@ -447,7 +447,7 @@ function RefEditor({ initial, onSave, onCancel }) {
             <select
               value={ref.type}
               onChange={e => update({ type: e.target.value })}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm"
             >
               {REF_TYPES.map(t => (
                 <option key={t.id} value={t.id}>{t.icon} {t.label}</option>
@@ -461,7 +461,7 @@ function RefEditor({ initial, onSave, onCancel }) {
               type="text"
               value={ref.title}
               onChange={e => update({ title: e.target.value })}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm"
             />
           </div>
 
@@ -476,14 +476,14 @@ function RefEditor({ initial, onSave, onCancel }) {
                     value={a.family}
                     onChange={e => updateAuthor(i, 'family', e.target.value)}
                     placeholder="Nama belakang"
-                    className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs"
+                    className="flex-1 border border-border rounded-lg px-2 py-1.5 text-xs"
                   />
                   <input
                     type="text"
                     value={a.given}
                     onChange={e => updateAuthor(i, 'given', e.target.value)}
                     placeholder="Nama depan"
-                    className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs"
+                    className="flex-1 border border-border rounded-lg px-2 py-1.5 text-xs"
                   />
                   <button onClick={() => removeAuthor(i)} className="text-red-500 hover:text-red-700 px-2">×</button>
                 </div>
@@ -501,7 +501,7 @@ function RefEditor({ initial, onSave, onCancel }) {
                 type="number"
                 value={ref.year || ''}
                 onChange={e => update({ year: e.target.value ? Number(e.target.value) : null })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm"
               />
             </div>
             <div>
@@ -510,7 +510,7 @@ function RefEditor({ initial, onSave, onCancel }) {
                 type="text"
                 value={ref.doi}
                 onChange={e => update({ doi: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm"
               />
             </div>
           </div>
@@ -521,20 +521,20 @@ function RefEditor({ initial, onSave, onCancel }) {
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Jurnal</label>
-                  <input type="text" value={ref.journal} onChange={e => update({ journal: e.target.value })} className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs" />
+                  <input type="text" value={ref.journal} onChange={e => update({ journal: e.target.value })} className="w-full border border-border rounded-lg px-2 py-1.5 text-xs" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Vol</label>
-                  <input type="text" value={ref.volume} onChange={e => update({ volume: e.target.value })} className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs" />
+                  <input type="text" value={ref.volume} onChange={e => update({ volume: e.target.value })} className="w-full border border-border rounded-lg px-2 py-1.5 text-xs" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Issue</label>
-                  <input type="text" value={ref.issue} onChange={e => update({ issue: e.target.value })} className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs" />
+                  <input type="text" value={ref.issue} onChange={e => update({ issue: e.target.value })} className="w-full border border-border rounded-lg px-2 py-1.5 text-xs" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Halaman (mis. 120-135)</label>
-                <input type="text" value={ref.pages} onChange={e => update({ pages: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                <input type="text" value={ref.pages} onChange={e => update({ pages: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm" />
               </div>
             </>
           )}
@@ -543,11 +543,11 @@ function RefEditor({ initial, onSave, onCancel }) {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Penerbit</label>
-                <input type="text" value={ref.publisher} onChange={e => update({ publisher: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                <input type="text" value={ref.publisher} onChange={e => update({ publisher: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Kota</label>
-                <input type="text" value={ref.city} onChange={e => update({ city: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                <input type="text" value={ref.city} onChange={e => update({ city: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm" />
               </div>
             </div>
           )}
@@ -556,7 +556,7 @@ function RefEditor({ initial, onSave, onCancel }) {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Jenis</label>
-                <select value={ref.thesisType} onChange={e => update({ thesisType: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                <select value={ref.thesisType} onChange={e => update({ thesisType: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm">
                   <option value="">Pilih...</option>
                   <option value="Skripsi">Skripsi (S1)</option>
                   <option value="Tesis">Tesis (S2)</option>
@@ -565,7 +565,7 @@ function RefEditor({ initial, onSave, onCancel }) {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Institusi</label>
-                <input type="text" value={ref.institution} onChange={e => update({ institution: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                <input type="text" value={ref.institution} onChange={e => update({ institution: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm" />
               </div>
             </div>
           )}
@@ -574,11 +574,11 @@ function RefEditor({ initial, onSave, onCancel }) {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">URL</label>
-                <input type="text" value={ref.url} onChange={e => update({ url: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                <input type="text" value={ref.url} onChange={e => update({ url: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Diakses (YYYY-MM-DD)</label>
-                <input type="text" value={ref.accessedAt} onChange={e => update({ accessedAt: e.target.value })} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                <input type="text" value={ref.accessedAt} onChange={e => update({ accessedAt: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm" />
               </div>
             </div>
           )}
@@ -590,7 +590,7 @@ function RefEditor({ initial, onSave, onCancel }) {
               value={(ref.tags || []).join(', ')}
               onChange={e => update({ tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
               placeholder="motivasi belajar, kuantitatif, pendidikan dasar"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm"
             />
           </div>
 
@@ -600,7 +600,7 @@ function RefEditor({ initial, onSave, onCancel }) {
               value={ref.note}
               onChange={e => update({ note: e.target.value })}
               rows={2}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm"
             />
           </div>
         </div>
@@ -653,11 +653,11 @@ function ImportModal({ onImport, onCancel }) {
             <span className="text-sm font-medium">Format:</span>
             <button
               onClick={() => setFormat('bibtex')}
-              className={`text-xs px-3 py-1.5 rounded-lg border ${format === 'bibtex' ? 'bg-violet-500 text-white border-violet-500' : 'border-gray-200'}`}
+              className={`text-xs px-3 py-1.5 rounded-lg border ${format === 'bibtex' ? 'bg-violet-500 text-white border-violet-500' : 'border-border'}`}
             >BibTeX (.bib)</button>
             <button
               onClick={() => setFormat('ris')}
-              className={`text-xs px-3 py-1.5 rounded-lg border ${format === 'ris' ? 'bg-violet-500 text-white border-violet-500' : 'border-gray-200'}`}
+              className={`text-xs px-3 py-1.5 rounded-lg border ${format === 'ris' ? 'bg-violet-500 text-white border-violet-500' : 'border-border'}`}
             >RIS</button>
             <button onClick={() => fileRef.current?.click()} className="text-xs ml-auto text-violet-600 hover:text-violet-700 flex items-center gap-1">
               <Upload className="w-3.5 h-3.5" /> Upload file
@@ -671,9 +671,9 @@ function ImportModal({ onImport, onCancel }) {
             placeholder={format === 'bibtex'
               ? '@article{key,\n  author = {Smith, John},\n  title = {...},\n  year = {2020}\n}'
               : 'TY  - JOUR\nAU  - Smith, John\nTI  - ...\nPY  - 2020\nER  - '}
-            className="w-full font-mono text-xs border border-gray-200 rounded-lg p-2"
+            className="w-full font-mono text-xs border border-border rounded-lg p-2"
           />
-          <p className="text-[11px] text-gray-400">
+          <p className="text-[11px] text-muted">
             Tip: ekspor dari Mendeley / Zotero / EndNote sebagai BibTeX atau RIS, lalu paste di sini.
           </p>
         </div>
@@ -727,7 +727,7 @@ function BibliographyModal({ refs, style, onStyleChange, onCancel }) {
               <button
                 key={s.id}
                 onClick={() => onStyleChange(s.id)}
-                className={`text-xs px-3 py-1.5 rounded-lg border ${style === s.id ? 'bg-violet-500 text-white border-violet-500' : 'border-gray-200 hover:border-violet-300'}`}
+                className={`text-xs px-3 py-1.5 rounded-lg border ${style === s.id ? 'bg-violet-500 text-white border-violet-500' : 'border-border hover:border-violet-300'}`}
               >
                 {s.label}
               </button>
@@ -743,7 +743,7 @@ function BibliographyModal({ refs, style, onStyleChange, onCancel }) {
           <div className="bg-surface rounded-lg p-4 max-h-[60vh] overflow-y-auto">
             <pre className="text-xs whitespace-pre-wrap font-sans leading-relaxed">{text}</pre>
           </div>
-          <p className="text-[11px] text-gray-400">
+          <p className="text-[11px] text-muted">
             Karakter `*teks*` adalah penanda italik. Saat tempel ke Word, tinggal cari-ganti `*` jadi format italik.
           </p>
         </div>

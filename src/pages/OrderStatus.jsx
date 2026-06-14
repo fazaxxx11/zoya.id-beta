@@ -100,7 +100,7 @@ function OrderStatus() {
     <div className="min-h-screen bg-pattern">
       <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 hover:text-sky-600">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted hover:text-sky-600">
             <ChevronLeft className="w-5 h-5" />
           </button>
           <h1 className="font-bold text-gray-800">Cek Pesanan</h1>
@@ -112,7 +112,7 @@ function OrderStatus() {
         {/* Search Box */}
         <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
           <h2 className="text-lg font-bold text-gray-800 mb-4">Masukkan Order ID</h2>
-          <p className="text-sm text-gray-400 mb-4">
+          <p className="text-sm text-muted mb-4">
             Cek status pesanan tanpa perlu login. Order ID diberikan setelah Anda mengajukan permintaan layanan.
           </p>
           
@@ -125,7 +125,7 @@ function OrderStatus() {
                 onChange={(e) => setSearchId(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && searchOrder()}
                 placeholder="Contoh: ORD-ABC123"
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-sky-500 outline-none"
+                className="w-full pl-10 pr-4 py-3 border-2 border-border rounded-xl focus:border-sky-500 outline-none"
               />
             </div>
             <button
@@ -140,7 +140,7 @@ function OrderStatus() {
           {/* Quick access to recent orders */}
           {getOrders().length > 0 && (
             <div className="mt-4 pt-4 border-t">
-              <p className="text-sm text-gray-400 mb-2">Pesanan Terbaru:</p>
+              <p className="text-sm text-muted mb-2">Pesanan Terbaru:</p>
               <div className="flex flex-wrap gap-2">
                 {getOrders().slice(0, 5).map(order => (
                   <button
@@ -166,7 +166,7 @@ function OrderStatus() {
               <XCircle className="w-8 h-8 text-red-500" />
             </div>
             <h3 className="text-lg font-bold text-gray-800 mb-2">Pesanan Tidak Ditemukan</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-muted mb-4">
               Order ID "{searchId}" tidak ditemukan. Pastikan Anda memasukkan ID dengan benar.
             </p>
             <button
@@ -190,23 +190,23 @@ function OrderStatus() {
 
               <div className="bg-surface rounded-xl p-4 space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Order ID</span>
+                  <span className="text-muted">Order ID</span>
                   <span className="font-mono font-semibold text-sky-600">{foundOrder.id}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Layanan</span>
+                  <span className="text-muted">Layanan</span>
                   <span className="font-medium">{foundOrder.serviceName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Tipe</span>
+                  <span className="text-muted">Tipe</span>
                   <span className="font-medium">{foundOrder.tierName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Tanggal</span>
+                  <span className="text-muted">Tanggal</span>
                   <span className="font-medium">{foundOrder.date}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t">
-                  <span className="text-gray-400">Total</span>
+                  <span className="text-muted">Total</span>
                   <span className="text-xl font-bold text-sky-600">{formatCurrency(foundOrder.amount)}</span>
                 </div>
               </div>
@@ -227,7 +227,7 @@ function OrderStatus() {
                         {foundOrder.results && foundOrder.results.length > 0 ? (
                           <>
                             <div className="bg-white rounded-lg p-4">
-                              <p className="text-sm text-gray-400 mb-1">Jumlah Siswa</p>
+                              <p className="text-sm text-muted mb-1">Jumlah Siswa</p>
                               <p className="text-2xl font-bold text-sky-600">{foundOrder.results.length} siswa</p>
                             </div>
                             
@@ -246,7 +246,7 @@ function OrderStatus() {
                                   <div key={idx} className="bg-white rounded-lg p-3 flex justify-between items-center">
                                     <div>
                                       <p className="font-medium">{student.name || `Siswa ${idx + 1}`}</p>
-                                      <p className="text-xs text-gray-400">{student.kesimpulan || ''}</p>
+                                      <p className="text-xs text-muted">{student.kesimpulan || ''}</p>
                                     </div>
                                     <div className="text-right">
                                       <p className="text-xl font-bold text-green-600">{avg}/10</p>
@@ -259,11 +259,11 @@ function OrderStatus() {
                         ) : (
                           <>
                             <div className="bg-white rounded-lg p-4">
-                              <p className="text-sm text-gray-400 mb-1">Skor Total</p>
+                              <p className="text-sm text-muted mb-1">Skor Total</p>
                               <p className="text-3xl font-bold text-green-600">8.5/10</p>
                             </div>
                             <div className="bg-white rounded-lg p-4">
-                              <p className="text-sm text-gray-400 mb-2">Feedback</p>
+                              <p className="text-sm text-muted mb-2">Feedback</p>
                               <p className="text-gray-700">Tulisan sudah baik dengan struktur yang jelas dan argumen yang kuat.</p>
                             </div>
                           </>
@@ -274,22 +274,22 @@ function OrderStatus() {
                     {/* Statistics Results */}
                     {foundOrder.service === 'statistics' && (
                       <div className="bg-white rounded-lg p-4">
-                        <p className="text-sm text-gray-400 mb-2">Hasil Analisis</p>
+                        <p className="text-sm text-muted mb-2">Hasil Analisis</p>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Mean:</span>
+                            <span className="text-muted">Mean:</span>
                             <span className="font-medium">75.3</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Std Dev:</span>
+                            <span className="text-muted">Std Dev:</span>
                             <span className="font-medium">12.4</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Min:</span>
+                            <span className="text-muted">Min:</span>
                             <span className="font-medium">45</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Max:</span>
+                            <span className="text-muted">Max:</span>
                             <span className="font-medium">98</span>
                           </div>
                         </div>
@@ -496,7 +496,7 @@ function OrderStatus() {
 
             {/* Share / Save */}
             <div className="bg-white rounded-2xl shadow-sm p-4 border border-border">
-              <p className="text-sm text-gray-400 text-center">
+              <p className="text-sm text-muted text-center">
                 Simpan Order ID Anda: <strong className="text-gray-800">{foundOrder.id}</strong>
               </p>
             </div>

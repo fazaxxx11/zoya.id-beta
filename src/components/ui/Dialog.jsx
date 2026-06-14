@@ -42,7 +42,7 @@ DialogTitle.displayName = 'DialogTitle'
 
 const DialogDescription = React.forwardRef(({ className, ...props }, ref) =>
   React.createElement(DialogPrimitive.Description, {
-    className: cn('text-sm text-gray-400', className),
+    className: cn('text-sm text-muted', className),
     ref,
     ...props
   })

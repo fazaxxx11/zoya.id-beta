@@ -85,7 +85,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
           </div>
           <div className="flex-1">
             <h2 className="text-lg font-bold text-gray-900">Auto-Buatkan Rubrik</h2>
-            <p className="text-sm text-gray-400">AI akan generate kriteria penilaian sesuai topik & level</p>
+            <p className="text-sm text-muted">AI akan generate kriteria penilaian sesuai topik & level</p>
           </div>
           <button onClick={handleClose} disabled={loading}
             className="text-muted hover:text-gray-700 p-1 rounded disabled:opacity-30">
@@ -149,7 +149,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
                     className={`px-3 py-2 rounded-lg text-xs font-medium border-2 transition-all ${
                       tipeTugas === t.id
                         ? 'border-purple-500 bg-purple-50 text-purple-700'
-                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                        : 'border-border bg-white text-gray-600 hover:border-gray-300'
                     } disabled:opacity-50`}
                   >
                     {t.label}

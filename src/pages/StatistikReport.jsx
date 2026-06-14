@@ -175,7 +175,7 @@ export default function StatistikReport() {
           <div className="flex items-center justify-between mb-3">
             <div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-muted font-medium">Pilih Analisis</div>
-              <div className="text-xs text-gray-400 mt-0.5">{selected.size} dari {items.length} dipilih</div>
+              <div className="text-xs text-muted mt-0.5">{selected.size} dari {items.length} dipilih</div>
             </div>
             <button onClick={toggleAll}
                     className="text-[11px] text-gray-600 hover:text-gray-900 font-medium px-2 py-1 rounded">
@@ -191,7 +191,7 @@ export default function StatistikReport() {
               <div>{error === 'Belum login' ? 'Login dulu untuk mengakses analisis tersimpan.' : error}</div>
             </div>
           ) : items.length === 0 ? (
-            <div className="text-xs text-gray-400 leading-relaxed py-4">
+            <div className="text-xs text-muted leading-relaxed py-4">
               Belum ada analisis tersimpan. Jalankan analisis di halaman Statistik, klik <strong>Simpan</strong>, baru kembali ke sini untuk auto-generate Bab IV.
             </div>
           ) : (
@@ -230,13 +230,13 @@ export default function StatistikReport() {
             {report && (
               <div className="flex items-center gap-2 flex-wrap">
                 <button onClick={() => window.print()}
-                        className="text-xs text-gray-700 border border-gray-200 hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5"
+                        className="text-xs text-gray-700 border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5"
                         title="Cetak atau simpan sebagai PDF (browser dialog)">
                   <Printer className="w-3.5 h-3.5" />
                   Cetak / PDF
                 </button>
                 <button onClick={copyHTML}
-                        className="text-xs text-gray-700 border border-gray-200 hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5">
+                        className="text-xs text-gray-700 border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5">
                   <Copy className="w-3.5 h-3.5" />
                   Salin (untuk Word)
                 </button>
@@ -252,7 +252,7 @@ export default function StatistikReport() {
                   {downloadingDocx ? '...' : 'Download DOCX'}
                 </button>
                 <button onClick={downloadText}
-                        className="text-xs text-gray-600 border border-gray-200 hover:bg-surface px-3 py-2 rounded-lg">
+                        className="text-xs text-gray-600 border border-border hover:bg-surface px-3 py-2 rounded-lg">
                   .txt
                 </button>
               </div>
@@ -263,7 +263,7 @@ export default function StatistikReport() {
           {!report ? (
             <div className="bg-white rounded-2xl border border-border p-12 text-center">
               <FileText className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-              <div className="text-sm text-gray-400">Pilih analisis di sidebar untuk men-generate draft</div>
+              <div className="text-sm text-muted">Pilih analisis di sidebar untuk men-generate draft</div>
             </div>
           ) : (
             <>
@@ -322,7 +322,7 @@ function ReportSection({ section }) {
                 {t.rows.map((row, ri) => (
                   <tr key={ri}>
                     {row.map((c, ci) => (
-                      <td key={ci} className="border border-gray-200 px-2 py-1.5 text-gray-800 tabular-nums">{c}</td>
+                      <td key={ci} className="border border-border px-2 py-1.5 text-gray-800 tabular-nums">{c}</td>
                     ))}
                   </tr>
                 ))}

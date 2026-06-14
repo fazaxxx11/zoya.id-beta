@@ -8,7 +8,7 @@ const MethodNote = ({
   className = '' 
 }) => {
   return (
-    <div className={`border border-gray-200 rounded-md bg-white p-4 ${className}`}>
+    <div className={`border border-border rounded-md bg-white p-4 ${className}`}>
       <h3 className="section-title text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">
         Metode
       </h3>

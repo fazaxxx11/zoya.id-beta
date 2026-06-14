@@ -84,7 +84,7 @@ export default function StatistikHistory() {
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="max-w-md text-center">
           <h2 className="text-xl font-bold text-gray-900 mb-2">Login dulu</h2>
-          <p className="text-sm text-gray-400 mb-5">Riwayat analisis tersimpan per akun. Silakan login untuk akses fitur ini.</p>
+          <p className="text-sm text-muted mb-5">Riwayat analisis tersimpan per akun. Silakan login untuk akses fitur ini.</p>
           <button onClick={() => navigate('/login?next=/statistik/history')}
             className="px-5 py-2.5 bg-gray-900 hover:bg-black text-white text-sm font-medium rounded-lg">
             Login
@@ -110,7 +110,7 @@ export default function StatistikHistory() {
             className={`text-xs font-medium px-3 py-1.5 rounded-lg border flex items-center gap-1.5 ${
               selectMode
                 ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-white text-gray-700 border-gray-200 hover:bg-surface'
+                : 'bg-white text-gray-700 border-border hover:bg-surface'
             }`}>
             <GitCompare className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{selectMode ? 'Batal' : 'Bandingkan'}</span>
@@ -118,7 +118,7 @@ export default function StatistikHistory() {
         ) : null}
       />
       <div className="max-w-6xl mx-auto p-4 sm:p-6 md:p-8">
-        <p className="text-sm text-gray-400 mb-5">{items.length} analisis tersimpan di akun Anda.</p>
+        <p className="text-sm text-muted mb-5">{items.length} analisis tersimpan di akun Anda.</p>
 
         {/* Compare action bar (sticky when in select mode) */}
         {selectMode && (
@@ -142,7 +142,7 @@ export default function StatistikHistory() {
         )}
 
         {/* Search & filter */}
-        <div className="bg-white border border-gray-200/80 rounded-xl p-3 mb-5 flex items-center gap-2 flex-wrap">
+        <div className="bg-white border border-border/80 rounded-xl p-3 mb-5 flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-2 flex-1 min-w-[200px] px-3 py-2 bg-surface rounded-lg">
             <Search className="w-4 h-4 text-muted" />
             <input value={search} onChange={e => setSearch(e.target.value)}
@@ -162,11 +162,11 @@ export default function StatistikHistory() {
 
         {/* List */}
         {loading ? (
-          <div className="bg-white border border-gray-200/80 rounded-xl p-12 text-center text-sm text-muted">
+          <div className="bg-white border border-border/80 rounded-xl p-12 text-center text-sm text-muted">
             Memuat riwayat…
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white border border-gray-200/80 rounded-xl p-12 text-center">
+          <div className="bg-white border border-border/80 rounded-xl p-12 text-center">
             <FileText className="w-10 h-10 text-muted mx-auto mb-3" />
             <h3 className="font-medium text-gray-700 mb-1">
               {items.length === 0 ? 'Belum ada riwayat' : 'Tidak ada hasil'}
@@ -184,10 +184,10 @@ export default function StatistikHistory() {
             )}
           </div>
         ) : (
-          <div className="bg-white border border-gray-200/80 rounded-xl overflow-hidden">
+          <div className="bg-white border border-border/80 rounded-xl overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-surface text-left">
-                <tr className="text-[11px] uppercase tracking-wider text-gray-400">
+                <tr className="text-[11px] uppercase tracking-wider text-muted">
                   {selectMode && <th className="px-3 py-3 w-10"></th>}
                   <th className="px-4 py-3 font-medium">Judul</th>
                   <th className="px-4 py-3 font-medium">Tool</th>
@@ -228,7 +228,7 @@ export default function StatistikHistory() {
                     </td>
                     <td className="px-4 py-3 text-gray-600">{it.tool_name}</td>
                     <td className="px-4 py-3 text-center text-gray-600">{it.sample_size ?? '—'}</td>
-                    <td className="px-4 py-3 text-gray-400 whitespace-nowrap">
+                    <td className="px-4 py-3 text-muted whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3 h-3 text-muted" />
                         {new Date(it.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
@@ -327,7 +327,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
                 <input value={titleDraft} onChange={e => setTitleDraft(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSaveTitle()}
                   autoFocus
-                  className="flex-1 text-lg font-bold text-gray-900 bg-surface border border-gray-200 rounded px-2 py-1 outline-none focus:border-gray-400" />
+                  className="flex-1 text-lg font-bold text-gray-900 bg-surface border border-border rounded px-2 py-1 outline-none focus:border-gray-400" />
                 <button onClick={handleSaveTitle} className="text-xs text-emerald-600 hover:text-emerald-700">Simpan</button>
                 <button onClick={() => { setEditingTitle(false); setTitleDraft(data.title) }} className="text-xs text-muted hover:text-gray-600">Batal</button>
               </div>
@@ -338,7 +338,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
               </h2>
             )}
             {data && (
-              <div className="text-xs text-gray-400 mt-1">
+              <div className="text-xs text-muted mt-1">
                 {data.sample_size ?? '—'} sampel · {new Date(data.created_at).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}
               </div>
             )}
@@ -357,7 +357,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
               {data.notes && (
                 <div>
                   <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Catatan</div>
-                  <div className="bg-surface border border-gray-200/80 rounded-lg p-3 text-sm text-gray-700 whitespace-pre-wrap">
+                  <div className="bg-surface border border-border/80 rounded-lg p-3 text-sm text-gray-700 whitespace-pre-wrap">
                     {data.notes}
                   </div>
                 </div>
@@ -373,7 +373,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
               {data.ai_interpretation && (
                 <div>
                   <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Interpretasi AI</div>
-                  <div className="bg-surface border border-gray-200/80 rounded-lg p-4 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                  <div className="bg-surface border border-border/80 rounded-lg p-4 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
                     {data.ai_interpretation}
                   </div>
                 </div>

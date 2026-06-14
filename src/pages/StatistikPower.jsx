@@ -83,7 +83,7 @@ export default function StatistikPower() {
                         className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
                           testId === t.id
                             ? 'bg-gray-900 text-white border-gray-900'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400'
+                            : 'bg-white text-gray-700 border-border hover:border-gray-400'
                         }`}>
                   {t.name}
                 </button>
@@ -100,7 +100,7 @@ export default function StatistikPower() {
                         className={`text-xs px-3 py-2 rounded-lg border transition-colors ${
                           solve === s.id
                             ? 'bg-gray-900 text-white border-gray-900'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400'
+                            : 'bg-white text-gray-700 border-border hover:border-gray-400'
                         }`}>
                   {s.label}
                 </button>
@@ -158,11 +158,11 @@ export default function StatistikPower() {
                 <Label>Hipotesis</Label>
                 <div className="flex gap-2">
                   <button onClick={() => setTwoTailed(true)}
-                          className={`text-xs px-3 py-1.5 rounded-lg border ${twoTailed ? 'bg-gray-900 text-white border-gray-900' : 'border-gray-200 text-gray-700'}`}>
+                          className={`text-xs px-3 py-1.5 rounded-lg border ${twoTailed ? 'bg-gray-900 text-white border-gray-900' : 'border-border text-gray-700'}`}>
                     Two-tailed
                   </button>
                   <button onClick={() => setTwoTailed(false)}
-                          className={`text-xs px-3 py-1.5 rounded-lg border ${!twoTailed ? 'bg-gray-900 text-white border-gray-900' : 'border-gray-200 text-gray-700'}`}>
+                          className={`text-xs px-3 py-1.5 rounded-lg border ${!twoTailed ? 'bg-gray-900 text-white border-gray-900' : 'border-border text-gray-700'}`}>
                     One-tailed
                   </button>
                 </div>
@@ -204,7 +204,7 @@ export default function StatistikPower() {
 
             <div className="mt-5 pt-4 border-t border-border">
               <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium mb-2">Catatan</div>
-              <p className="text-[12px] text-gray-400 leading-relaxed">
+              <p className="text-[12px] text-muted leading-relaxed">
                 Power dihitung dengan aproksimasi normal (Patnaik-style untuk noncentral F/χ²).
                 Akurasi tipikal ±5% dibandingkan G*Power untuk effect size sedang—besar.
                 Untuk perencanaan publikasi penting, verifikasi dengan G*Power atau R <code>pwr</code>.
@@ -283,7 +283,7 @@ function ResultDisplay({ result, solve, test }) {
       <div className="mt-4 pt-3 border-t border-border">
         <button
           onClick={() => navigator.clipboard.writeText(buildAPAReport(result, solve, test))}
-          className="text-xs text-gray-600 hover:text-gray-900 border border-gray-200 hover:bg-surface px-3 py-1.5 rounded-lg"
+          className="text-xs text-gray-600 hover:text-gray-900 border border-border hover:bg-surface px-3 py-1.5 rounded-lg"
         >
           Salin laporan APA
         </button>
@@ -295,7 +295,7 @@ function ResultDisplay({ result, solve, test }) {
 function Row({ label, value }) {
   return (
     <>
-      <dt className="text-gray-400">{label}</dt>
+      <dt className="text-muted">{label}</dt>
       <dd className="text-right font-medium text-gray-800 tabular-nums">{value}</dd>
     </>
   )
@@ -317,7 +317,7 @@ function NumberInput({ value, onChange, step = 0.01, min, max }) {
         const v = parseFloat(e.target.value)
         if (!isNaN(v)) onChange(v)
       }}
-      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 tabular-nums"
+      className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-gray-400 tabular-nums"
     />
   )
 }
@@ -333,7 +333,7 @@ function ConventionsTable() {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-xs">
-        <thead className="text-gray-400 uppercase tracking-wider">
+        <thead className="text-muted uppercase tracking-wider">
           <tr>
             <th className="text-left py-1.5 pr-2 font-medium">Effect size</th>
             <th className="text-right py-1.5 px-2 font-medium">Small</th>

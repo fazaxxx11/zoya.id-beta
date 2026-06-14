@@ -130,7 +130,7 @@ export default function LogisticPage() {
         </div>
 
         {/* Input */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+        <div className="bg-white border border-border rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Data (CSV dengan header)</span>
             <button onClick={() => fileRef.current?.click()} className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1">
@@ -140,10 +140,10 @@ export default function LogisticPage() {
           </div>
           <textarea
             value={csvText} onChange={e => setCsvText(e.target.value)}
-            rows={8} className="w-full font-mono text-xs border border-gray-200 rounded-lg p-2"
+            rows={8} className="w-full font-mono text-xs border border-border rounded-lg p-2"
           />
           {parsed.headers.length > 0 && (
-            <p className="text-[11px] text-gray-400">
+            <p className="text-[11px] text-muted">
               {parsed.rows.length} baris × {parsed.headers.length} kolom: {parsed.headers.join(', ')}
             </p>
           )}
@@ -154,7 +154,7 @@ export default function LogisticPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Outcome (Y, harus 0/1)</label>
                 <select value={yColumn} onChange={e => setYColumn(e.target.value)}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                        className="w-full border border-border rounded-lg px-3 py-2 text-sm">
                   {parsed.headers.map(h => <option key={h} value={h}>{h}</option>)}
                 </select>
               </div>
@@ -172,7 +172,7 @@ export default function LogisticPage() {
                     {xColumns.length === parsed.headers.filter(h => h !== yColumn).length ? 'Hapus Semua' : 'Pilih Semua'}
                   </button>
                 </div>
-                <div className="border border-gray-200 rounded-lg p-2 grid grid-cols-2 sm:grid-cols-3 gap-1 max-h-32 overflow-y-auto">
+                <div className="border border-border rounded-lg p-2 grid grid-cols-2 sm:grid-cols-3 gap-1 max-h-32 overflow-y-auto">
                   {parsed.headers.filter(h => h !== yColumn).map(h => (
                     <label key={h} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-surface px-1.5 py-1 rounded">
                       <input type="checkbox" checked={xColumns.includes(h)} onChange={() => toggleX(h)} />
@@ -180,7 +180,7 @@ export default function LogisticPage() {
                     </label>
                   ))}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-1">{xColumns.length} predictor dipilih</p>
+                <p className="text-[11px] text-muted mt-1">{xColumns.length} predictor dipilih</p>
               </div>
             </div>
           )}
@@ -235,7 +235,7 @@ export default function LogisticPage() {
 // ============================================================
 function CoefficientsTable({ fit }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
         <Sparkles className="w-4 h-4 text-amber-600" /> Koefisien & Odds Ratio
       </h3>
@@ -272,7 +272,7 @@ function CoefficientsTable({ fit }) {
           </tbody>
         </table>
       </div>
-      <p className="text-[11px] text-gray-400 mt-2">
+      <p className="text-[11px] text-muted mt-2">
         <strong>Interpretasi OR:</strong> &gt; 1 = predictor naik 1 unit → odds outcome=1 naik;
         &lt; 1 = predictor naik 1 unit → odds outcome=1 turun. Sig: * p&lt;.05, ** p&lt;.01, *** p&lt;.001
       </p>
@@ -285,7 +285,7 @@ function CoefficientsTable({ fit }) {
 // ============================================================
 function ModelFitSection({ fit }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Goodness of Fit Model</h3>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
         <Metric label="McFadden R²"   value={fit.pseudoR2.mcfadden.toFixed(4)} />
@@ -308,7 +308,7 @@ function ModelFitSection({ fit }) {
         </div>
       </div>
 
-      <p className="text-[11px] text-gray-400 mt-2">
+      <p className="text-[11px] text-muted mt-2">
         Pedoman: Nagelkerke R² 0.2-0.4 = cukup baik, 0.4+ = baik. McFadden R² 0.2-0.4 sudah dianggap excellent untuk logistik.
       </p>
     </div>
@@ -321,7 +321,7 @@ function ModelFitSection({ fit }) {
 function ClassificationSection({ cm, threshold, setThreshold }) {
   if (!cm) return null
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
         <Target className="w-4 h-4 text-amber-600" /> Classification Table
       </h3>
@@ -384,13 +384,13 @@ function ROCSection({ roc }) {
   const aucColor = roc.auc >= 0.8 ? '#059669' : roc.auc >= 0.7 ? '#0891b2' : roc.auc >= 0.6 ? '#d97706' : '#dc2626'
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <BarChart2 className="w-4 h-4 text-amber-600" /> ROC Curve
         </h3>
         <div className="text-right">
-          <div className="text-[10px] text-gray-400 uppercase tracking-wide">AUC</div>
+          <div className="text-[10px] text-muted uppercase tracking-wide">AUC</div>
           <div className="text-2xl font-bold" style={{ color: aucColor }}>{roc.auc.toFixed(3)}</div>
           <div className="text-[10px] uppercase font-medium" style={{ color: aucColor }}>{aucCat}</div>
         </div>
@@ -436,7 +436,7 @@ function ROCSection({ roc }) {
         </svg>
       </div>
 
-      <p className="text-[11px] text-gray-400 mt-2">
+      <p className="text-[11px] text-muted mt-2">
         Pedoman AUC: 0.9+ = excellent, 0.8-0.9 = good, 0.7-0.8 = fair, 0.6-0.7 = poor, &lt;0.6 = gagal.
         Diagonal abu-abu = prediksi acak.
       </p>
@@ -450,7 +450,7 @@ function ROCSection({ roc }) {
 function HosmerLemeshowSection({ hl }) {
   const goodFit = hl.p > 0.05
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-2">Hosmer-Lemeshow Goodness-of-Fit</h3>
       <div className={`rounded-lg p-3 text-xs ${goodFit ? 'bg-green-50 border border-green-200 text-green-900' : 'bg-amber-50 border border-amber-200 text-amber-900'}`}>
         <div className="font-medium mb-1">
@@ -480,7 +480,7 @@ function ReportText({ fit, cm, roc, hl, threshold }) {
 Pada threshold ${threshold.toFixed(2)}, model mencapai akurasi ${(cm.accuracy*100).toFixed(1)}% (sensitivitas ${(cm.sensitivity*100).toFixed(1)}%, spesifisitas ${(cm.specificity*100).toFixed(1)}%). Area Under the ROC Curve (AUC) = ${roc.auc.toFixed(3)}, mengindikasikan kemampuan diskriminasi model ${roc.auc>=0.8?'baik':roc.auc>=0.7?'cukup':'kurang'}. Hosmer-Lemeshow goodness-of-fit test χ²(${hl.df}) = ${hl.chi2.toFixed(2)}, p = ${hl.p.toFixed(3)} ${hl.p>0.05?'menunjukkan model fit baik':'menunjukkan model fit kurang baik'}.`
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
+    <div className="bg-white border border-border rounded-xl p-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }}
@@ -494,7 +494,7 @@ Pada threshold ${threshold.toFixed(2)}, model mencapai akurasi ${(cm.accuracy*10
 function Metric({ label, value, highlight }) {
   return (
     <div className={`rounded-lg p-2 text-center ${highlight ? 'bg-amber-50 border border-amber-200' : 'bg-surface'}`}>
-      <div className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</div>
+      <div className="text-[10px] text-muted uppercase tracking-wide">{label}</div>
       <div className={`font-bold ${highlight ? 'text-amber-700 text-lg' : ''}`}>{value}</div>
     </div>
   )

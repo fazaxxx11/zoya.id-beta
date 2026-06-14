@@ -246,14 +246,14 @@ export default function Kuesioner() {
                 className={`group rounded-lg border px-3 py-2 cursor-pointer transition-colors ${
                   s.id === activeId
                     ? 'bg-sky-50 border-sky-300'
-                    : 'bg-white border-gray-200 hover:bg-surface'
+                    : 'bg-white border-border hover:bg-surface'
                 }`}
                 onClick={() => handleSelect(s.id)}
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium truncate">{s.title || '(tanpa judul)'}</div>
-                    <div className="text-[10px] text-gray-400">
+                    <div className="text-[10px] text-muted">
                       {s.sections.reduce((n, sec) => n + sec.items.length, 0)} item ·
                       {' '}{listResponses(s.id).length} respons
                     </div>
@@ -293,7 +293,7 @@ export default function Kuesioner() {
               <StepFlowBanner tab={tab} responses={responses.length} />
 
               {/* Top toolbar */}
-              <div className="bg-white border border-gray-200 rounded-xl p-3 mb-3 flex flex-wrap items-center gap-2">
+              <div className="bg-white border border-border rounded-xl p-3 mb-3 flex flex-wrap items-center gap-2">
                 <input
                   type="text"
                   value={draft.title}
@@ -310,7 +310,7 @@ export default function Kuesioner() {
               </div>
 
               {/* Tabs */}
-              <div className="flex gap-1 mb-3 border-b border-gray-200">
+              <div className="flex gap-1 mb-3 border-b border-border">
                 {[
                   { id: 'builder',   label: 'Builder',  icon: Edit3 },
                   { id: 'preview',   label: 'Preview & Isi', icon: Eye },
@@ -324,7 +324,7 @@ export default function Kuesioner() {
                       className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px flex items-center gap-1.5 transition-colors ${
                         tab === t.id
                           ? 'border-sky-500 text-sky-700'
-                          : 'border-transparent text-gray-400 hover:text-gray-700'
+                          : 'border-transparent text-muted hover:text-gray-700'
                       }`}
                     >
                       <Ic className="w-4 h-4" /> {t.label}
@@ -460,11 +460,11 @@ function BuilderPanel({ draft, setDraft }) {
         onChange={e => setDraft({ ...draft, description: e.target.value })}
         placeholder="Deskripsi / pengantar kuesioner (opsional)..."
         rows={2}
-        className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm"
+        className="w-full bg-white border border-border rounded-xl px-3 py-2 text-sm"
       />
 
       {draft.sections.map((sec, sIdx) => (
-        <div key={sec.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4">
+        <div key={sec.id} className="bg-white border border-border rounded-xl p-3 sm:p-4">
           <div className="flex items-start gap-2 mb-3 pb-3 border-b border-border">
             <GripVertical className="w-4 h-4 text-muted mt-2.5" />
             <div className="flex-1 space-y-1.5">
@@ -480,7 +480,7 @@ function BuilderPanel({ draft, setDraft }) {
                 value={sec.description || ''}
                 onChange={e => updateSection(sIdx, { description: e.target.value })}
                 placeholder="Deskripsi/dimensi (opsional)"
-                className="w-full text-xs text-gray-400 border-0 focus:ring-0 px-1"
+                className="w-full text-xs text-muted border-0 focus:ring-0 px-1"
               />
             </div>
             <div className="flex flex-col">
@@ -501,7 +501,7 @@ function BuilderPanel({ draft, setDraft }) {
           {/* Items */}
           <div className="space-y-2">
             {sec.items.length === 0 && (
-              <p className="text-xs text-muted italic px-2 py-3 text-center border border-dashed border-gray-200 rounded-lg">
+              <p className="text-xs text-muted italic px-2 py-3 text-center border border-dashed border-border rounded-lg">
                 Belum ada pertanyaan. Tambah di bawah ↓
               </p>
             )}
@@ -554,7 +554,7 @@ function BuilderPanel({ draft, setDraft }) {
 function ItemEditor({ item, idx, onChange, onDelete, onMoveUp, onMoveDown, onDuplicate }) {
   const typeMeta = ITEM_TYPES.find(t => t.id === item.type)
   return (
-    <div className="border border-gray-200 rounded-lg p-3 hover:border-sky-200 transition-colors">
+    <div className="border border-border rounded-lg p-3 hover:border-sky-200 transition-colors">
       <div className="flex items-start gap-2">
         <span className="text-xs font-bold text-muted mt-2 w-5">{idx + 1}.</span>
         <div className="flex-1 space-y-1.5">
@@ -570,7 +570,7 @@ function ItemEditor({ item, idx, onChange, onDelete, onMoveUp, onMoveDown, onDup
             value={item.description || ''}
             onChange={e => onChange({ description: e.target.value })}
             placeholder="Bantuan/keterangan (opsional)"
-            className="w-full text-xs text-gray-400 border-0 focus:ring-0 px-1 bg-transparent"
+            className="w-full text-xs text-muted border-0 focus:ring-0 px-1 bg-transparent"
           />
         </div>
         <span className="text-[10px] uppercase tracking-wide text-muted mt-2 px-1.5 py-0.5 bg-surface rounded border">
@@ -599,7 +599,7 @@ function ItemEditor({ item, idx, onChange, onDelete, onMoveUp, onMoveDown, onDup
                                 : Array.from({length: sc}, (_, i) => String(i+1))
                   onChange({ scale: sc, scaleLabels: labels })
                 }}
-                className="border border-gray-200 rounded px-1.5 py-0.5"
+                className="border border-border rounded px-1.5 py-0.5"
               >
                 <option value={4}>4</option>
                 <option value={5}>5</option>
@@ -626,7 +626,7 @@ function ItemEditor({ item, idx, onChange, onDelete, onMoveUp, onMoveDown, onDup
             <select
               value={item.scale || 5}
               onChange={e => onChange({ scale: Number(e.target.value) })}
-              className="border border-gray-200 rounded px-1.5 py-0.5"
+              className="border border-border rounded px-1.5 py-0.5"
             >
               <option value={5}>5 bintang</option>
               <option value={10}>10 bintang</option>
@@ -666,7 +666,7 @@ function OptionsEditor({ options, onChange }) {
             type="text"
             value={opt}
             onChange={e => update(i, e.target.value)}
-            className="flex-1 text-xs border border-gray-200 rounded px-2 py-1"
+            className="flex-1 text-xs border border-border rounded px-2 py-1"
           />
           <button onClick={() => remove(i)} className="text-muted hover:text-red-600 p-0.5">
             <X className="w-3.5 h-3.5" />
@@ -701,25 +701,25 @@ function PreviewPanel({ survey, onSubmit }) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 max-w-3xl mx-auto">
+    <div className="bg-white border border-border rounded-xl p-4 sm:p-6 max-w-3xl mx-auto">
       <h2 className="text-xl font-bold mb-1">{survey.title}</h2>
       {survey.description && <p className="text-sm text-gray-600 mb-4 whitespace-pre-wrap">{survey.description}</p>}
 
       <div className="mb-4 pb-4 border-b border-border">
-        <label className="text-xs text-gray-400 block mb-1">Nama responden (opsional)</label>
+        <label className="text-xs text-muted block mb-1">Nama responden (opsional)</label>
         <input
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="Mis. Andi / Anonim"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+          className="w-full border border-border rounded-lg px-3 py-2 text-sm"
         />
       </div>
 
       {survey.sections.map(sec => (
         <section key={sec.id} className="mb-6">
           <h3 className="text-base font-semibold mb-1 pb-1 border-b border-border">{sec.title}</h3>
-          {sec.description && <p className="text-xs text-gray-400 mb-3">{sec.description}</p>}
+          {sec.description && <p className="text-xs text-muted mb-3">{sec.description}</p>}
           <div className="space-y-4">
             {sec.items.map((it, idx) => (
               <PreviewItem
@@ -752,7 +752,7 @@ function PreviewItem({ item, idx, value, onChange }) {
         {item.label || <em className="text-muted">(belum ada label)</em>}
         {item.required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
-      {item.description && <p className="text-xs text-gray-400 mb-2">{item.description}</p>}
+      {item.description && <p className="text-xs text-muted mb-2">{item.description}</p>}
 
       {item.type === 'likert' && (
         <div className="flex flex-wrap items-center gap-2">
@@ -765,7 +765,7 @@ function PreviewItem({ item, idx, value, onChange }) {
                 onChange={() => onChange(n)}
                 className="w-4 h-4"
               />
-              <span className="text-[10px] text-gray-400">{n}</span>
+              <span className="text-[10px] text-muted">{n}</span>
               <span className="text-[10px] text-muted">{(item.scaleLabels || [])[n - 1] || ''}</span>
             </label>
           ))}
@@ -830,7 +830,7 @@ function PreviewItem({ item, idx, value, onChange }) {
           type="text"
           value={value || ''}
           onChange={e => onChange(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+          className="w-full border border-border rounded-lg px-3 py-2 text-sm"
         />
       )}
 
@@ -839,7 +839,7 @@ function PreviewItem({ item, idx, value, onChange }) {
           value={value || ''}
           onChange={e => onChange(e.target.value)}
           rows={3}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+          className="w-full border border-border rounded-lg px-3 py-2 text-sm"
         />
       )}
 
@@ -848,7 +848,7 @@ function PreviewItem({ item, idx, value, onChange }) {
           type="number"
           value={value ?? ''}
           onChange={e => onChange(e.target.value === '' ? '' : Number(e.target.value))}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+          className="w-full border border-border rounded-lg px-3 py-2 text-sm"
         />
       )}
     </div>
@@ -936,7 +936,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
         </button>
 
         {/* Templates */}
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-5">
+        <div className="bg-white border-2 border-border rounded-xl p-5">
           <div className="flex items-center gap-2 mb-3">
             <BookOpen className="w-5 h-5 text-sky-600" />
             <span className="font-semibold">Mulai dari Template</span>
@@ -946,10 +946,10 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
               <button
                 key={tpl.id}
                 onClick={() => onTemplate(tpl.id)}
-                className="w-full text-left px-3 py-2 rounded-lg bg-surface hover:bg-sky-50 border border-gray-200 hover:border-sky-300 transition-colors"
+                className="w-full text-left px-3 py-2 rounded-lg bg-surface hover:bg-sky-50 border border-border hover:border-sky-300 transition-colors"
               >
                 <div className="text-sm font-medium text-gray-900">{tpl.name}</div>
-                <div className="text-xs text-gray-400">{tpl.desc}</div>
+                <div className="text-xs text-muted">{tpl.desc}</div>
               </button>
             ))}
           </div>
@@ -962,7 +962,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
           <Library className="w-5 h-5 text-emerald-600" />
           <span className="font-semibold text-gray-900">Instrumen Teruji (Validated Scales)</span>
           <span className="text-[10px] uppercase tracking-wide bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Akademik</span>
-          <span className="ml-auto text-xs text-gray-400">{INSTRUMENT_TEMPLATES.length} instrumen</span>
+          <span className="ml-auto text-xs text-muted">{INSTRUMENT_TEMPLATES.length} instrumen</span>
         </summary>
         <div className="px-5 pb-4 pt-1">
           <p className="text-xs text-gray-600 mb-3">
@@ -990,8 +990,8 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
       </details>
 
       {/* Other options */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4 flex flex-wrap items-center gap-3 text-sm">
-        <span className="text-gray-400">Atau:</span>
+      <div className="bg-white border border-border rounded-xl p-4 flex flex-wrap items-center gap-3 text-sm">
+        <span className="text-muted">Atau:</span>
         <button onClick={onBlank} className="text-sky-600 hover:text-sky-700 font-medium flex items-center gap-1">
           <FilePlus2 className="w-4 h-4" /> Buat dari nol
         </button>
@@ -1028,7 +1028,7 @@ function StepFlowBanner({ tab, responses }) {
     { id: 'responses', n: 3, label: 'Analisis', desc: `${responses} respons` },
   ]
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-2 mb-3 flex items-center justify-between gap-2 text-xs overflow-x-auto">
+    <div className="bg-white border border-border rounded-xl p-2 mb-3 flex items-center justify-between gap-2 text-xs overflow-x-auto">
       {steps.map((s, i) => {
         const active = s.id === tab
         const done = (tab === 'preview' && s.id === 'builder') ||
@@ -1038,7 +1038,7 @@ function StepFlowBanner({ tab, responses }) {
             <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-[11px] ${
               active ? 'bg-sky-500 text-white' :
               done   ? 'bg-green-500 text-white' :
-                       'bg-gray-200 text-gray-400'
+                       'bg-gray-200 text-muted'
             }`}>
               {done ? <Check className="w-3 h-3" /> : s.n}
             </div>
@@ -1132,9 +1132,9 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
   if (responses.length === 0) {
     return (
       <div className="space-y-3">
-        <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
+        <div className="bg-white border border-border rounded-xl p-8 text-center">
           <ListChecks className="w-12 h-12 text-muted mx-auto mb-2" />
-          <p className="text-sm text-gray-400 mb-4">
+          <p className="text-sm text-muted mb-4">
             Belum ada respons. Pilih cara mengisi:
           </p>
           <div className="flex flex-wrap justify-center gap-2">
@@ -1162,7 +1162,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
   return (
     <div className="space-y-3">
       {fileInput}
-      <div className="bg-white border border-gray-200 rounded-xl p-3 flex flex-wrap items-center gap-2">
+      <div className="bg-white border border-border rounded-xl p-3 flex flex-wrap items-center gap-2">
         <span className="text-sm font-medium mr-2">{responses.length} respons</span>
         <button onClick={exportCSV} className="btn-secondary text-xs py-1.5">
           <Download className="w-3.5 h-3.5" /> Export
@@ -1187,12 +1187,12 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
 
       {/* Section means */}
       {sectionStats.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl p-3">
+        <div className="bg-white border border-border rounded-xl p-3">
           <h4 className="text-sm font-semibold mb-2">Rata-rata Skor per Bagian (Likert/Rating)</h4>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {sectionStats.map(s => (
               <div key={s.section} className="bg-sky-50/50 border border-sky-100 rounded-lg p-2">
-                <div className="text-[11px] text-gray-400 truncate" title={s.section}>{s.section}</div>
+                <div className="text-[11px] text-muted truncate" title={s.section}>{s.section}</div>
                 <div className="text-lg font-bold text-sky-700">{s.mean.toFixed(2)}</div>
                 <div className="text-[10px] text-muted">n = {s.n}</div>
               </div>
@@ -1202,7 +1202,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
       )}
 
       {/* Per-respondent list */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      <div className="bg-white border border-border rounded-xl overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-surface">
             <tr>
@@ -1218,9 +1218,9 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
               }).length
               return (
                 <tr key={r.id}>
-                  <td className="px-3 py-2 text-gray-400">{i + 1}</td>
+                  <td className="px-3 py-2 text-muted">{i + 1}</td>
                   <td className="px-3 py-2 font-medium">{r.respondentName}</td>
-                  <td className="px-3 py-2 text-xs text-gray-400">{new Date(r.submittedAt).toLocaleString('id-ID')}</td>
+                  <td className="px-3 py-2 text-xs text-muted">{new Date(r.submittedAt).toLocaleString('id-ID')}</td>
                   <td className="px-3 py-2 text-xs">{filled} item</td>
                   <td className="px-3 py-2 text-right">
                     <button onClick={() => onDelete(r.id)} className="text-muted hover:text-red-600">
@@ -1235,7 +1235,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
       </div>
 
       {showRaw && (
-        <div className="bg-white border border-gray-200 rounded-xl p-3 overflow-x-auto">
+        <div className="bg-white border border-border rounded-xl p-3 overflow-x-auto">
           <table className="w-full text-xs">
             <thead className="bg-surface">
               <tr>{matrix.headers.map(h => <th key={h} className="px-2 py-1.5 text-left">{h}</th>)}</tr>
@@ -1316,20 +1316,20 @@ function AIGenerateModal({ open, onClose, onResult }) {
   return (
     <Modal open={open} onClose={handleClose}>
       {/* Header */}
-      <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
+      <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center">
             <Wand2 className="w-4 h-4" />
           </div>
           <div>
             <h3 className="font-bold text-gray-900">Generate Kuesioner dengan AI</h3>
-            <p className="text-xs text-gray-400">Powered by OpenRouter / Groq / Kimi</p>
+            <p className="text-xs text-muted">Powered by OpenRouter / Groq / Kimi</p>
           </div>
         </div>
         <button
           onClick={handleClose}
           disabled={loading}
-          className="p-1.5 rounded hover:bg-gray-100 text-gray-400 disabled:opacity-50"
+          className="p-1.5 rounded hover:bg-gray-100 text-muted disabled:opacity-50"
         >
           <X className="w-4 h-4" />
         </button>
@@ -1344,7 +1344,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
             className={`p-3 rounded-lg border-2 text-left transition-colors ${
               mode === 'quick'
                 ? 'border-accent bg-surface'
-                : 'border-gray-200 bg-white hover:border-gray-300'
+                : 'border-border bg-white hover:border-gray-300'
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
@@ -1359,7 +1359,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
             className={`p-3 rounded-lg border-2 text-left transition-colors ${
               mode === 'blueprint'
                 ? 'border-accent bg-surface'
-                : 'border-gray-200 bg-white hover:border-gray-300'
+                : 'border-border bg-white hover:border-gray-300'
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
@@ -1410,7 +1410,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               disabled={loading}
             />
-            <p className="text-[10px] text-gray-400 mt-1">Kosongkan untuk biarkan AI menentukan dimensi berdasarkan teori.</p>
+            <p className="text-[10px] text-muted mt-1">Kosongkan untuk biarkan AI menentukan dimensi berdasarkan teori.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -1476,7 +1476,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
 
         {/* Preview */}
         {preview && (
-          <div className="bg-surface border border-gray-200 rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto">
+          <div className="bg-surface border border-border rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="font-semibold text-sm text-gray-900">{preview.survey.title}</div>
@@ -1518,9 +1518,9 @@ function AIGenerateModal({ open, onClose, onResult }) {
 
             <div className="space-y-2">
               {preview.survey.sections.map((sec, si) => (
-                <div key={si} className="bg-white border border-gray-200 rounded p-2.5">
+                <div key={si} className="bg-white border border-border rounded p-2.5">
                   <div className="font-semibold text-sm text-gray-900">{sec.title}</div>
-                  {sec.description && <div className="text-xs text-gray-400 mb-1.5">{sec.description}</div>}
+                  {sec.description && <div className="text-xs text-muted mb-1.5">{sec.description}</div>}
                   <ol className="list-decimal pl-5 text-xs text-gray-700 space-y-0.5">
                     {sec.items.slice(0, 8).map((it, ii) => (
                       <li key={ii}>
@@ -1638,7 +1638,7 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
         <button
           onClick={() => setOpen(false)}
           disabled={loading}
-          className="text-gray-400 hover:text-gray-700 disabled:opacity-50"
+          className="text-muted hover:text-gray-700 disabled:opacity-50"
         >
           <X className="w-4 h-4" />
         </button>
