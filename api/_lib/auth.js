@@ -1,4 +1,3 @@
-```javascript
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseAdmin = createClient(
@@ -12,22 +11,6 @@ const supabasePublic = createClient(
 );
 
 import { slidingWindow } from './rate-limit.js';
-let cleanupInterval;
-
-const cleanupRateLimits = () => {
-  const now = Date.now();
-  for (const [key, data] of rateLimitStore.entries()) {
-    if (now - data.startTime > data.windowMs) {
-      rateLimitStore.delete(key);
-    }
-  }
-};
-
-if (!cleanupInterval) {
-  cleanupInterval = setInterval(cleanupRateLimits, 5 * 60 * 1000);
-  cleanupInterval.unref();
-}
-
 export const verifyAuth = async (req) => {
   try {
     const authHeader = req.headers.authorization;
@@ -60,7 +43,7 @@ export const verifyAuth = async (req) => {
       },
       error: null
     };
-  } catch (error) {
+  } catch {
     return { error: 'Authentication failed' };
   }
 };
@@ -111,6 +94,7 @@ export const checkPayloadSize = (req, res, maxSizeBytes) => {
 export const sanitize = (str, maxLen) => {
   if (typeof str !== 'string') return '';
   let sanitized = str.trim();
+  // eslint-disable-next-line no-control-regex
   sanitized = sanitized.replace(/[\x00-\x1F\x7F]/g, '');
   if (maxLen && sanitized.length > maxLen) {
     sanitized = sanitized.substring(0, maxLen);
@@ -118,4 +102,3 @@ export const sanitize = (str, maxLen) => {
   return sanitized;
 };
 
-export { cleanupRateLimits };

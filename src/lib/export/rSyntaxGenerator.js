@@ -45,11 +45,12 @@ export function generateRSyntax(result) {
       break
     
     case 'regression_simple':
-    case 'regression_multiple':
+    case 'regression_multiple': {
       const xs = result.predictors?.map(p => `"${p}"`).join(' + ') || 'x1'
       lines.push(`model <- lm(${result.outcome || 'y'} ~ ${xs}, data = data)`)
       lines.push('summary(model)\npar(mfrow = c(2,2))\nplot(model)')
       break
+    }
     
     case 'chisquare':
       lines.push(`table <- table(data$"${result.var1}", data$"${result.var2}")\nchisq.test(table)`)
