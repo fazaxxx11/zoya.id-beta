@@ -1,3 +1,0 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/StatistikGuide-BswQNLTX.js","assets/rolldown-runtime-CMxvf4Kt.js","assets/vendor-react-1ezbWvR3.js","assets/vendor-pdf-BZs-PAj3.js","assets/StatistikGuide-D7tr6m8s.css"])))=>i.map(i=>d[i]);
-import{o as e}from"./rolldown-runtime-CMxvf4Kt.js";import{sn as t,vn as n}from"./vendor-react-1ezbWvR3.js";import{i as r}from"./vendor-pdf-BZs-PAj3.js";var i=e(n(),1),a=t(),o=(0,i.lazy)(()=>r(()=>import(`./StatistikGuide-BswQNLTX.js`),__vite__mapDeps([0,1,2,3,4]))),s=()=>(0,a.jsx)(i.Suspense,{fallback:(0,a.jsx)(`div`,{className:`flex items-center justify-center min-h-screen text-muted`,children:`Loading...`}),children:(0,a.jsx)(o,{})});export{s as default};
-//# sourceMappingURL=StatistikGuide-DXuqiM2d.js.map

@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /dashboard
-Disallow: /profile
-Disallow: /payment
-
-Sitemap: https://azezmen.vercel.app/sitemap.xml
