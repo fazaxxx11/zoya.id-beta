@@ -521,13 +521,13 @@ function BuilderPanel({ draft, setDraft }) {
 
           {/* Add item buttons */}
           <div className="mt-3 pt-3 border-t border-border">
-            <div className="text-xs text-gray-400 mb-1.5">+ Tambah pertanyaan:</div>
+            <div className="text-xs text-muted mb-1.5">+ Tambah pertanyaan:</div>
             <div className="flex flex-wrap gap-1.5">
               {ITEM_TYPES.map(t => (
                 <button
                   key={t.id}
                   onClick={() => addItem(sIdx, t.id)}
-                  className="text-xs px-2.5 py-1 bg-gray-100 hover:bg-sky-100 hover:text-sky-700 rounded-md transition-colors"
+                  className="text-xs px-2.5 py-1 bg-surface border border-border text-fg hover:bg-card hover:border-accent rounded-md transition-colors"
                   title={t.desc}
                 >
                   {t.label}
