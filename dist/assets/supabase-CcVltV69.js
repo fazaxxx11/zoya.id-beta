@@ -1,0 +1,2 @@
+import{t as e}from"./vendor-supabase-Di1nJ4ur.js";var t=void 0,n=e(`https://placeholder.supabase.co`,`placeholder`,{auth:{persistSession:!0,autoRefreshToken:!0,detectSessionInUrl:!0}}),r=!!t;export{n,r as t};
+//# sourceMappingURL=supabase-CcVltV69.js.map
