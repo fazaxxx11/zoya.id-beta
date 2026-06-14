@@ -381,6 +381,13 @@ function Statistik() {
   // ============================================================
   const runAnalysis = ({ paidAmount = 0, paymentMethod = 'free' } = {}) => {
     if (!data) return
+    // Re-validate params (guard against race conditions)
+    const validationError = validateParams()
+    if (validationError) {
+      toast.error(validationError)
+      setAnalyzing(false)
+      return
+    }
     setAnalyzing(true)
     setError(null)
 
@@ -1136,6 +1143,23 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
               ))}
             </div>
           </div>
+          {/* Auto-suggest Spearman for non-normal data */}
+          {data && params.x && (() => {
+            try {
+              const r = testNormality(data[params.x], 0.05)
+              if (r && !r.isNormal && (params.method || 'pearson') === 'pearson') {
+                return (
+                  <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-800 dark:text-amber-300">
+                    ⚠️ Variabel <strong>{params.x}</strong> terdeteksi tidak normal.
+                    Disarankan pakai{' '}
+                    <button onClick={() => update('method', 'spearman')}
+                      className="underline font-semibold hover:text-amber-900">Spearman</button>.
+                  </div>
+                )
+              }
+            } catch { /* ignore normality check errors */ }
+            return null
+          })()}
         </>
       )}
 

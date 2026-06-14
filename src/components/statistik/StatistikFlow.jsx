@@ -313,11 +313,12 @@ const categoryHints = {
   Asosiasi: 'Cek hubungan antar kategori.',
 }
 
-function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelectTool, onAnalyze }) {
+function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelectTool, onAnalyze, hasData }) {
   const safeNumeric = Array.isArray(numericColumns) ? numericColumns : []
   const safeCategorical = Array.isArray(categoricalColumns) ? categoricalColumns : []
 
-  if (!safeNumeric.length && !safeCategorical.length) return null
+  // Show flat list when no data, recommendations when data exists
+  const showRecommendations = hasData && (safeNumeric.length > 0 || safeCategorical.length > 0)
 
   // Build recommendations based on data types
   const recommendations = useMemo(() => {
@@ -392,40 +393,73 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
     <div className="border border-border bg-card rounded-xl p-6">
       <GuideSection />
       <h2 className="text-lg font-semibold text-fg mb-1">Analisis apa yang ingin kamu lakukan?</h2>
-      <p className="text-sm text-muted mb-5">Azezmen merekomendasikan analisis berdasarkan tipe data yang terdeteksi.</p>
+      <p className="text-sm text-muted mb-5">
+        {showRecommendations
+          ? 'Azezmen merekomendasikan analisis berdasarkan tipe data yang terdeteksi.'
+          : 'Pilih analisis yang sesuai kebutuhan penelitianmu.'}
+      </p>
 
-      {/* Recommendations */}
-      <div className="space-y-5">
-        {recommendations.map(rec => (
-          <div key={rec.category}>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">{rec.category}</h3>
-            <p className="text-xs text-muted/70 mb-2">{categoryHints[rec.category] || ''}</p>
-            <div className="space-y-2">
-              {rec.items.map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => onSelectTool(item.id)}
-                  className={`w-full text-left p-4 rounded-xl border transition-colors ${
-                    selectedTool === item.id
-                      ? 'border-accent bg-accent/5'
-                      : 'border-border hover:border-accent/30 bg-card'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-sm">{item.label}</div>
-                      <div className="text-xs text-muted mt-0.5">{item.desc}</div>
+      {!hasData && (
+        <div className="mb-4 p-3 rounded-lg bg-accent/5 border border-accent/20 text-sm text-accent flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          Upload dataset terlebih dahulu untuk menjalankan analisis.
+        </div>
+      )}
+
+      {showRecommendations ? (
+        /* Recommendations by category */
+        <div className="space-y-5">
+          {recommendations.map(rec => (
+            <div key={rec.category}>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">{rec.category}</h3>
+              <p className="text-xs text-muted/70 mb-2">{categoryHints[rec.category] || ''}</p>
+              <div className="space-y-2">
+                {rec.items.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => onSelectTool(item.id)}
+                    className={`w-full text-left p-4 rounded-xl border transition-colors ${
+                      selectedTool === item.id
+                        ? 'border-accent bg-accent/5'
+                        : 'border-border hover:border-accent/30 bg-card'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium text-sm">{item.label}</div>
+                        <div className="text-xs text-muted mt-0.5">{item.desc}</div>
+                      </div>
+                      <ArrowRight className={`w-4 h-4 ${selectedTool === item.id ? 'text-accent' : 'text-muted/40'}`} />
                     </div>
-                    <ArrowRight className={`w-4 h-4 ${selectedTool === item.id ? 'text-accent' : 'text-muted/40'}`} />
-                  </div>
-                </button>
-              ))}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        /* Flat list when no data */
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {allTools.map(tool => (
+            <button
+              key={tool.id}
+              onClick={() => hasData && onSelectTool(tool.id)}
+              disabled={!hasData}
+              className={`text-left px-3 py-3 rounded-lg border text-xs transition-colors ${
+                !hasData ? 'opacity-50 cursor-not-allowed border-border bg-card text-muted' :
+                selectedTool === tool.id
+                  ? 'border-accent bg-accent/5 text-accent font-medium'
+                  : 'border-border hover:border-accent/30 text-muted hover:text-fg'
+              }`}
+            >
+              <div className="font-medium">{tool.name}</div>
+            </button>
+          ))}
+        </div>
+      )}
 
-      {/* Advanced toggle */}
+      {/* Advanced toggle — only show when recommendations are visible */}
+      {showRecommendations && (
       <div className="mt-6 pt-4 border-t border-border">
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
@@ -449,8 +483,9 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
               </button>
             ))}
           </div>
-        )}
+        )} 
       </div>
+      )}
     </div>
   )
 }
@@ -668,9 +703,10 @@ export default function StatistikFlow({
   // Determine current step based on state
   const currentStep = useMemo(() => {
     if (!file || !data) return 'upload'
-    if (!selectedTool) return 'select' // skip review, go straight to select
+    if (!selectedTool) return 'select'
+    if (!children) return 'select'  // still configuring params
     return 'results'
-  }, [file, data, selectedTool])
+  }, [file, data, selectedTool, children])
 
   const completed = useMemo(() => {
     const c = []
@@ -694,15 +730,6 @@ export default function StatistikFlow({
         onExampleLoad={onExampleLoad}
         onOpenGuide={onOpenGuide}
       />
-
-      {/* Always-visible: Pilih Uji Statistik */}
-      <div className="mt-4">
-        <TestSelectionPanel
-          data={data}
-          selectedTool={selectedTool}
-          onSelectTool={onSelectTool}
-        />
-      </div>
 
       {/* Step 2: Review (show after upload) */}
       {data && (
@@ -731,8 +758,7 @@ export default function StatistikFlow({
         </div>
       )}
 
-      {/* Step 3: Select (show after upload) */}
-      {data && (
+      {/* Step 3: Select — always visible */}
         <div className="mt-4">
           <StepSelect
             numericColumns={numericColumns}
@@ -740,9 +766,9 @@ export default function StatistikFlow({
             selectedTool={selectedTool}
             onSelectTool={onSelectTool}
             onAnalyze={onAnalyze}
+            hasData={!!data}
           />
         </div>
-      )}
 
       {/* Analyze button */}
       {data && selectedTool && (
