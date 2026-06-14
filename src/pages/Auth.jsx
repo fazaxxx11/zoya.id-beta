@@ -44,7 +44,16 @@ function Auth() {
 
   const currentUser = useCurrentUser()
   const wallet = getWallet()
-  const pendingTopups = currentUser ? getPendingTopups().filter(p => p.userEmail === currentUser.email && p.status === 'pending') : []
+  const [pendingTopups, setPendingTopups] = useState([])
+
+  // Load pending topups on mount
+  useEffect(() => {
+    if (currentUser) {
+      getPendingTopups().then(list => {
+        setPendingTopups(list.filter(p => p.userEmail === currentUser.email && p.status === 'pending'))
+      })
+    }
+  }, [currentUser])
 
   // Auto-redirect setelah OAuth callback berhasil (return dari Google + ada
   // ?redirect= di URL). replace=true biar tidak ada history "back to /auth".
@@ -171,9 +180,9 @@ function Auth() {
   }
 
   /** User klik "Saya sudah transfer" di modal → save pending entry */
-  const handleTopupSubmit = ({ method }) => {
+  const handleTopupSubmit = async ({ method }) => {
     if (!currentUser || !selectedPkg) return
-    const entry = submitPendingTopup({
+    const entry = await submitPendingTopup({
       userEmail: currentUser.email,
       amount: selectedPkg.pay,
       method,
