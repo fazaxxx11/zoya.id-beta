@@ -158,7 +158,7 @@ export default function Home() {
 
             <div className="flex flex-wrap justify-center gap-2">
               {TRUST_ITEMS.map((item) => (
-                <span key={item} className="text-xs px-3 py-1.5 rounded-lg bg-surface text-muted">
+                <span key={item} className="text-xs px-3 py-1.5 rounded-full bg-surface text-muted">
                   {item}
                 </span>
               ))}
@@ -173,14 +173,14 @@ export default function Home() {
             Pilih layanan sesuai tahap penelitianmu
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start max-w-5xl mx-auto">
             {SERVICES.map((svc) => {
               const s = accentStyle[svc.accent];
               return (
                 <Link
                   key={svc.id}
                   to={svc.path}
-                  className={`group rounded-xl p-6 transition-all hover:shadow-md hover:-translate-y-0.5 ${s.card} ${
+                  className={`group rounded-2xl p-4 transition-all hover:shadow-md hover:-translate-y-0.5 ${s.card} ${
                     svc.primary ? "min-h-[180px]" : "border border-border bg-card"
                   }`}
                 >
@@ -237,7 +237,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center max-w-4xl mx-auto">
             {CARA_KERJA.map((ck, idx) => (
               <React.Fragment key={ck.step}>
-                <div className="flex-1 text-center p-6 border border-border bg-card rounded-xl">
+                <div className="flex-1 text-center p-4 border border-border bg-card rounded-lg shadow-sm hover:border-accent/50 transition-colors">
                   <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center mx-auto mb-4">
                     <ck.icon className="w-6 h-6 text-accent" />
                   </div>
