@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { getCurrentUser } from '../lib/auth'
 import { getWallet, deductWallet } from '../lib/wallet'
+import { trackEvent } from '../lib/analytics'
 import { calculateStatisticsPrice, getStatisticsPriceWithDiscount, formatIDR } from '../lib/pricing'
 import PriceDisplay from '../components/PriceDisplay'
 import { saveOrder, generateOrderId } from '../lib/orders'
