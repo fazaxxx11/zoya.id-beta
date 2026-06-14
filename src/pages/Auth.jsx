@@ -69,7 +69,7 @@ function Auth() {
   if (currentUser && isOAuthReturn) {
     return (
       <div className="min-h-screen bg-pattern flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-gray-500">
+        <div className="flex flex-col items-center gap-3 text-gray-400">
           <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
           <p className="text-sm">Mengarahkan ke {redirectTo === '/dashboard' ? 'dashboard' : 'tujuan'}…</p>
         </div>
@@ -208,7 +208,7 @@ function Auth() {
       <div className="min-h-screen bg-pattern">
         <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
           <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-sky-600">
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <h1 className="font-bold text-gray-800">Akun Saya</h1>
@@ -260,7 +260,7 @@ function Auth() {
             </div>
             
             <div className="mt-4 pt-4 border-t">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400">
                 Total: <span className="font-bold text-gray-800">Rp {(wallet.balance + wallet.bonus).toLocaleString('id-ID')}</span>
               </p>
             </div>
@@ -307,7 +307,7 @@ function Auth() {
               {BETA_FREE ? (
                 <div className="rounded-xl border-2 border-dashed border-sky-200 bg-white p-5 text-center">
                   <p className="font-bold text-gray-800">Top-up belum dibuka</p>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-400 mt-1">
                     Semua fitur beta saat ini gratis setelah login. Informasi paket Pro/Premium akan diumumkan saat payment siap.
                   </p>
                 </div>
@@ -330,11 +330,11 @@ function Auth() {
                     )}
                     <p className="font-bold text-gray-800">Paket {pkg.label}</p>
                     <div className="mt-2 flex items-baseline gap-1">
-                      <span className="text-xs text-gray-500">Bayar</span>
+                      <span className="text-xs text-gray-400">Bayar</span>
                       <span className="text-xl font-bold text-sky-700">{formatIDR(pkg.pay)}</span>
                     </div>
                     <div className="mt-1 flex items-baseline gap-1">
-                      <span className="text-xs text-gray-500">Dapat saldo</span>
+                      <span className="text-xs text-gray-400">Dapat saldo</span>
                       <span className="text-sm font-semibold text-emerald-700">{formatIDR(pkg.total)}</span>
                     </div>
                     {pkg.bonus > 0 && (
@@ -349,7 +349,7 @@ function Auth() {
                   ))}
                 </div>
               )}
-              <p className="text-xs text-gray-500 mt-4 text-center">
+              <p className="text-xs text-gray-400 mt-4 text-center">
                 {BETA_FREE ? (
                   <>Pricing paywall <strong>coming soon</strong>. Beta saat ini gratis.</>
                 ) : (
@@ -377,13 +377,13 @@ function Auth() {
                   <div key={t.id} className="flex justify-between items-center p-3 bg-surface rounded-lg">
                     <div>
                       <p className="font-medium text-gray-800">{t.id}</p>
-                      <p className="text-xs text-gray-500">{t.date}</p>
+                      <p className="text-xs text-gray-400">{t.date}</p>
                     </div>
                     <div className="text-right">
                       <p className={`font-bold ${t.amount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {t.amount >= 0 ? '+' : ''}Rp {Math.abs(t.amount || t.bonus || 0).toLocaleString('id-ID')}
                       </p>
-                      <p className="text-xs text-gray-500">{t.type}</p>
+                      <p className="text-xs text-gray-400">{t.type}</p>
                     </div>
                   </div>
                 ))}
@@ -411,7 +411,7 @@ function Auth() {
               : 'Top-up'}
           </h1>
           {mode === 'topup' && (
-            <p className="text-sm text-gray-500">{BETA_FREE ? 'Pricing & top-up coming soon' : 'Isi saldo untuk menggunakan layanan'}</p>
+            <p className="text-sm text-gray-400">{BETA_FREE ? 'Pricing & top-up coming soon' : 'Isi saldo untuk menggunakan layanan'}</p>
           )}
         </div>
 
@@ -431,7 +431,7 @@ function Auth() {
         {mode === 'login' && (
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-500 mb-1">Email</label>
+              <label className="block text-sm text-gray-400 mb-1">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
@@ -444,7 +444,7 @@ function Auth() {
               </div>
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">Password</label>
+              <label className="block text-sm text-gray-400 mb-1">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
@@ -481,11 +481,11 @@ function Auth() {
           <>
             {otpStep === 'email' ? (
               <form onSubmit={handleSendOtp} className="space-y-4">
-                <p className="text-sm text-gray-500 -mt-2 mb-2">
+                <p className="text-sm text-gray-400 -mt-2 mb-2">
                   Kami akan kirim kode 6-digit ke email kamu. Tidak perlu password.
                 </p>
                 <div>
-                  <label className="block text-sm text-gray-500 mb-1">Email</label>
+                  <label className="block text-sm text-gray-400 mb-1">Email</label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                     <input
@@ -504,11 +504,11 @@ function Auth() {
               </form>
             ) : (
               <form onSubmit={handleVerifyOtp} className="space-y-4">
-                <p className="text-sm text-gray-500 -mt-2 mb-2">
+                <p className="text-sm text-gray-400 -mt-2 mb-2">
                   Masukkan kode 6-digit yang dikirim ke <strong>{email}</strong>.
                 </p>
                 <div>
-                  <label className="block text-sm text-gray-500 mb-1">Kode OTP</label>
+                  <label className="block text-sm text-gray-400 mb-1">Kode OTP</label>
                   <div className="relative">
                     <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                     <input
@@ -531,7 +531,7 @@ function Auth() {
                 <button
                   type="button"
                   onClick={() => { setOtpStep('email'); setOtpCode(''); setError(''); setSuccess(''); }}
-                  className="w-full text-sm text-gray-500 hover:text-sky-600 flex items-center justify-center gap-1"
+                  className="w-full text-sm text-gray-400 hover:text-sky-600 flex items-center justify-center gap-1"
                 >
                   <ArrowLeft className="w-4 h-4" /> Ganti email
                 </button>
@@ -544,7 +544,7 @@ function Auth() {
         {mode === 'register' && (
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-500 mb-1">Nama Lengkap</label>
+              <label className="block text-sm text-gray-400 mb-1">Nama Lengkap</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
@@ -557,7 +557,7 @@ function Auth() {
               </div>
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">Email</label>
+              <label className="block text-sm text-gray-400 mb-1">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
@@ -570,7 +570,7 @@ function Auth() {
               </div>
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">No. HP (opsional)</label>
+              <label className="block text-sm text-gray-400 mb-1">No. HP (opsional)</label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
@@ -583,7 +583,7 @@ function Auth() {
               </div>
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">Password</label>
+              <label className="block text-sm text-gray-400 mb-1">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
@@ -644,7 +644,7 @@ function Auth() {
         {/* Switch Mode */}
         <div className="mt-6 text-center">
           {mode === 'login' && (
-            <p className="text-gray-500">
+            <p className="text-gray-400">
               Belum punya akun?{' '}
               <button onClick={() => { setMode('register'); setError(''); }} className="text-sky-600 hover:underline font-medium">
                 Daftar
@@ -652,7 +652,7 @@ function Auth() {
             </p>
           )}
           {mode === 'register' && (
-            <p className="text-gray-500">
+            <p className="text-gray-400">
               Sudah punya akun?{' '}
               <button onClick={() => { setMode('login'); setError(''); }} className="text-sky-600 hover:underline font-medium">
                 Login
@@ -660,7 +660,7 @@ function Auth() {
             </p>
           )}
           {mode === 'otp' && (
-            <p className="text-gray-500">
+            <p className="text-gray-400">
               Pakai password?{' '}
               <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-sky-600 hover:underline font-medium">
                 Login dengan password
@@ -684,7 +684,7 @@ function Auth() {
 
         {/* Back Button */}
         <div className="mt-6 text-center">
-          <Link to="/" className="text-sm text-gray-500 hover:underline">← Kembali ke Home</Link>
+          <Link to="/" className="text-sm text-gray-400 hover:underline">← Kembali ke Home</Link>
         </div>
       </div>
     </div>

@@ -49,7 +49,7 @@ export default function AssessmentReport() {
             <FileText className="w-7 h-7 text-amber-600" />
           </div>
           <h2 className="font-bold text-gray-800 mb-2">Tidak ada data laporan</h2>
-          <p className="text-sm text-gray-500 mb-5">
+          <p className="text-sm text-gray-400 mb-5">
             Selesaikan satu penilaian Assessment dulu untuk bisa generate laporan.
           </p>
           <Link to="/assessment" className="btn-primary inline-block">Buka Assessment</Link>
@@ -87,14 +87,14 @@ export default function AssessmentReport() {
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+            className="p-2 -ml-2 text-gray-400 hover:bg-gray-100 rounded-lg"
             title="Kembali"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-gray-900 truncate">Laporan Penilaian</div>
-            <div className="text-xs text-gray-500 truncate">{title}</div>
+            <div className="text-xs text-gray-400 truncate">{title}</div>
           </div>
 
           {/* View mode toggle */}
@@ -104,7 +104,7 @@ export default function AssessmentReport() {
               className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
                 viewMode === 'class'
                   ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-gray-400 hover:text-gray-700'
               }`}
             >
               <Users className="w-3.5 h-3.5"/> Kelas
@@ -115,7 +115,7 @@ export default function AssessmentReport() {
               className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors disabled:opacity-40 ${
                 viewMode === 'student'
                   ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-gray-400 hover:text-gray-700'
               }`}
             >
               <User className="w-3.5 h-3.5"/> Per Siswa
@@ -165,10 +165,10 @@ function ClassReportView({ report }) {
     <article className="bg-white rounded-2xl shadow-sm border border-border p-6 sm:p-10 print:shadow-none print:border-0 print:rounded-none print:p-0 report-page">
       {/* Header */}
       <header className="border-b-2 border-gray-900 pb-4 mb-6 text-center print:mb-4">
-        <div className="text-xs uppercase tracking-widest text-gray-500 mb-1">{BRAND_NAME}</div>
+        <div className="text-xs uppercase tracking-widest text-gray-400 mb-1">{BRAND_NAME}</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Laporan Penilaian Kelas</h1>
         <p className="text-base font-medium text-gray-700">{meta.title}</p>
-        {meta.context && <p className="text-sm text-gray-500 mt-1 italic">{meta.context}</p>}
+        {meta.context && <p className="text-sm text-gray-400 mt-1 italic">{meta.context}</p>}
         <p className="text-xs text-muted mt-2">
           Dibuat: {meta.generatedAtLocal} · Total Siswa: {summary.totalSiswa}
         </p>
@@ -214,7 +214,7 @@ function ClassReportView({ report }) {
               return (
                 <tr key={k}>
                   <td className="border border-gray-200 px-3 py-1.5">{k}</td>
-                  <td className="border border-gray-200 px-3 py-1.5 text-gray-500">{range}</td>
+                  <td className="border border-gray-200 px-3 py-1.5 text-gray-400">{range}</td>
                   <td className="border border-gray-200 px-3 py-1.5 text-right font-medium">{n}</td>
                   <td className="border border-gray-200 px-3 py-1.5 text-right">{pct}%</td>
                 </tr>
@@ -302,7 +302,7 @@ function ClassReportView({ report }) {
       </section>
 
       {/* Footer signature line */}
-      <footer className="mt-12 pt-6 border-t border-gray-200 text-xs text-gray-500 print:mt-16">
+      <footer className="mt-12 pt-6 border-t border-gray-200 text-xs text-gray-400 print:mt-16">
         <div className="grid grid-cols-2 gap-8 mt-8">
           <div>
             <p className="mb-12">Mengetahui,</p>
@@ -380,7 +380,7 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
 
       <article className="bg-white rounded-2xl shadow-sm border border-border p-6 sm:p-10 print:shadow-none print:border-0 print:rounded-none print:p-0 report-page">
         <header className="border-b-2 border-gray-900 pb-4 mb-6 text-center">
-          <div className="text-xs uppercase tracking-widest text-gray-500 mb-1">{BRAND_NAME}</div>
+          <div className="text-xs uppercase tracking-widest text-gray-400 mb-1">{BRAND_NAME}</div>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">Kartu Nilai Siswa</h1>
           <p className="text-base font-medium text-gray-700">{card.meta.title}</p>
         </header>
@@ -388,10 +388,10 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
         {/* Identitas siswa + total skor besar */}
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <div>
-            <div className="text-xs uppercase tracking-wide text-gray-500 mb-0.5">Nama Siswa</div>
+            <div className="text-xs uppercase tracking-wide text-gray-400 mb-0.5">Nama Siswa</div>
             <div className="font-bold text-xl text-gray-900">{card.meta.studentName}</div>
             {card.meta.context && (
-              <div className="text-xs text-gray-500 mt-2 italic">{card.meta.context}</div>
+              <div className="text-xs text-gray-400 mt-2 italic">{card.meta.context}</div>
             )}
             <div className="text-xs text-muted mt-1">Tanggal: {card.meta.generatedAtLocal}</div>
           </div>
@@ -403,7 +403,7 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
           }`}>
             <div className="text-xs uppercase tracking-wide text-gray-600 mb-1">Nilai Akhir</div>
             <div className="text-5xl font-bold text-gray-900 mb-1">{card.total.toFixed(2)}</div>
-            <div className="text-xs text-gray-500 mb-2">dari skala 0–10</div>
+            <div className="text-xs text-gray-400 mb-2">dari skala 0–10</div>
             <span className={statusBadgeClass(card.status)}>{card.status}</span>
           </div>
         </section>
@@ -425,7 +425,7 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
                 <tr key={i}>
                   <td className="border border-gray-200 px-3 py-2">
                     <div className="font-medium">{k.nama}</div>
-                    {k.deskripsi && <div className="text-[11px] text-gray-500 mt-0.5">{k.deskripsi}</div>}
+                    {k.deskripsi && <div className="text-[11px] text-gray-400 mt-0.5">{k.deskripsi}</div>}
                     {k.komentar && (
                       <div className="text-xs text-gray-700 mt-1.5 italic bg-surface px-2 py-1 rounded">
                         💬 {k.komentar}
@@ -471,7 +471,7 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
         )}
 
         {/* Footer */}
-        <footer className="mt-12 pt-6 border-t border-gray-200 text-xs text-gray-500">
+        <footer className="mt-12 pt-6 border-t border-gray-200 text-xs text-gray-400">
           <div className="grid grid-cols-2 gap-8 mt-6">
             <div>
               <p className="mb-12">Penilai,</p>
@@ -500,7 +500,7 @@ function Stat({ label, value, highlight = 'gray' }) {
   }[highlight] || 'bg-surface border-gray-200'
   return (
     <div className={`rounded-lg border px-3 py-2 ${cls}`}>
-      <div className="text-[10px] uppercase tracking-wide text-gray-500">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-gray-400">{label}</div>
       <div className="text-lg font-bold text-gray-900">{value}</div>
     </div>
   )

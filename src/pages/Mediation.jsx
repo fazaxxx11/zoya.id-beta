@@ -169,7 +169,7 @@ export default function MediationPage() {
             placeholder="X,M,Y\n1.2,2.1,3.4\n..."
           />
           {parsed.headers && (
-            <p className="text-[11px] text-gray-500 mt-1">
+            <p className="text-[11px] text-gray-400 mt-1">
               {parsed.rows.length} baris × {parsed.headers.length} kolom: {parsed.headers.join(', ')}
             </p>
           )}
@@ -205,7 +205,7 @@ export default function MediationPage() {
                 onChange={e => setBootstrap(Number(e.target.value))}
                 className="w-full"
               />
-              <p className="text-[10px] text-gray-500">5000 = standar Hayes. Lebih tinggi = lebih akurat tapi lebih lambat.</p>
+              <p className="text-[10px] text-gray-400">5000 = standar Hayes. Lebih tinggi = lebih akurat tapi lebih lambat.</p>
             </div>
           )}
 
@@ -263,11 +263,11 @@ function ModelCard({ active, onClick, icon: Icon, title, desc, example }) {
       }`}
     >
       <div className="flex items-center gap-2 mb-1">
-        <Icon className={`w-4 h-4 ${active ? 'text-indigo-600' : 'text-gray-500'}`} />
+        <Icon className={`w-4 h-4 ${active ? 'text-indigo-600' : 'text-gray-400'}`} />
         <span className="font-semibold text-sm">{title}</span>
       </div>
       <p className="text-xs text-gray-600 mb-1">{desc}</p>
-      <p className="text-[11px] italic text-gray-500">{example}</p>
+      <p className="text-[11px] italic text-gray-400">{example}</p>
     </button>
   )
 }
@@ -325,7 +325,7 @@ function MediationResult({ r }) {
               <div className="text-gray-600">Estimate</div>
               <div className="font-mono text-base font-bold">{r.indirect.ab.toFixed(4)}</div>
               {r.indirect.standardized !== null && (
-                <div className="text-[10px] text-gray-500">
+                <div className="text-[10px] text-gray-400">
                   Standardized: {r.indirect.standardized.toFixed(4)}
                 </div>
               )}
@@ -368,7 +368,7 @@ function MediationResult({ r }) {
           </div>
         </div>
 
-        <div className="mt-3 text-[11px] text-gray-500">
+        <div className="mt-3 text-[11px] text-gray-400">
           n = {r.n} · R² (M) = {r.rSquaredM.toFixed(3)} · R² (Y total) = {r.rSquaredYTotal.toFixed(3)} · R² (Y direct) = {r.rSquaredYDirect.toFixed(3)}
         </div>
       </div>
@@ -428,7 +428,7 @@ function Box({ label, highlight }) {
 function PathArrow({ label, sig }) {
   return (
     <div className="flex flex-col items-center">
-      <div className={`text-[10px] font-mono ${sig ? 'text-green-700 font-bold' : 'text-gray-500'}`}>
+      <div className={`text-[10px] font-mono ${sig ? 'text-green-700 font-bold' : 'text-gray-400'}`}>
         {label}
       </div>
       <div className="text-xl text-muted">→</div>
@@ -463,7 +463,7 @@ function ModerationResult({ r }) {
           <Sparkles className="w-4 h-4 text-indigo-600" /> Hasil Moderasi (Model 1)
         </h3>
 
-        <div className="text-xs text-gray-500 mb-3">
+        <div className="text-xs text-gray-400 mb-3">
           Y = b₀ + b₁·X + b₂·W + b₃·(X·W){r.centered ? ' — variabel di-mean-center' : ''}
         </div>
 
@@ -508,7 +508,7 @@ function ModerationResult({ r }) {
         <div className="mt-3">
           <div className="text-xs font-semibold mb-2">Simple Slope Plot</div>
           <SimpleSlopePlot r={r} />
-          <p className="text-[11px] text-gray-500 mt-1">
+          <p className="text-[11px] text-gray-400 mt-1">
             Plot menunjukkan hubungan X→Y pada 3 level moderator W. Garis yang divergen = bukti interaksi.
           </p>
         </div>
@@ -540,7 +540,7 @@ function ModerationResult({ r }) {
           <p className="text-amber-900">{r.johnsonNeyman.note}</p>
         </div>
 
-        <div className="mt-3 text-[11px] text-gray-500">
+        <div className="mt-3 text-[11px] text-gray-400">
           n = {r.n} · R² = {r.rSquared.toFixed(3)} · df = {r.df}
         </div>
       </div>

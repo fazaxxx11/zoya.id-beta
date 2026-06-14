@@ -85,7 +85,7 @@ function Admin() {
       setDataError('Supabase belum dikonfigurasi.')
       setTransactions([])
       setStats(computeStats([], 0))
-      setPendingTopups(getPendingTopups())
+      setPendingTopups(await getPendingTopups())
       return
     }
     setLoadingData(true)
@@ -104,7 +104,7 @@ function Admin() {
 
       setTransactions(normalizeOrders(orders, emailById))
       setStats(computeStats(orders, profiles.length))
-      setPendingTopups(getPendingTopups())
+      setPendingTopups(await getPendingTopups())
 
       // Warn kalau cuma dapat 1 profile (user current) — RLS mencegah lihat semua
       if (profiles.length <= 1) {
@@ -128,9 +128,9 @@ function Admin() {
     }
   }
 
-  const handleRejectTopup = (id) => {
+  const handleRejectTopup = async (id) => {
     const reason = window.prompt('Alasan penolakan (opsional):', '') || ''
-    const r = rejectPendingTopup(id, reason)
+    const r = await rejectPendingTopup(id, reason)
     if (r.success) {
       toast.warning(`Top-up ${id} ditolak`)
       refreshData()
@@ -168,7 +168,7 @@ function Admin() {
           <ShieldAlert className="w-8 h-8 text-red-600" />
         </div>
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Akses Ditolak</h1>
-        <p className="text-gray-500 text-sm mb-6">
+        <p className="text-gray-400 text-sm mb-6">
           Akun kamu <strong>{currentUser?.email}</strong> tidak memiliki role admin.
           Hubungi administrator jika kamu yakin ini adalah kesalahan.
         </p>
@@ -194,7 +194,7 @@ function Admin() {
             <Lock className="w-8 h-8 text-sky-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800">Admin Login</h1>
-          <p className="text-gray-500 text-sm">{BRAND_NAME} — Akses terbatas</p>
+          <p className="text-gray-400 text-sm">{BRAND_NAME} — Akses terbatas</p>
           <p className="text-amber-600 text-xs mt-4 mb-6">
             ⚠️ Kamu belum login. Login dengan akun admin untuk akses dashboard.
           </p>
@@ -223,7 +223,7 @@ function Admin() {
       <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-2 text-gray-500 hover:text-sky-600">
+            <Link to="/" className="flex items-center gap-2 text-gray-400 hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </Link>
             <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-xl flex items-center justify-center">
@@ -238,7 +238,7 @@ function Admin() {
             <button onClick={goToHome} className="flex items-center gap-2 text-green-600 hover:text-green-700 text-sm">
               🏠 Gunakan Layanan
             </button>
-            <button onClick={handleLogout} className="flex items-center gap-2 text-gray-500 hover:text-red-600">
+            <button onClick={handleLogout} className="flex items-center gap-2 text-gray-400 hover:text-red-600">
               <LogOut className="w-5 h-5" />
             </button>
           </div>
@@ -264,28 +264,28 @@ function Admin() {
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center"><DollarSign className="w-5 h-5 text-green-600"/></div>
-              <span className="text-sm text-gray-500">Hari Ini</span>
+              <span className="text-sm text-gray-400">Hari Ini</span>
             </div>
             <p className="text-2xl font-bold text-gray-800">{formatCurrency(stats.todayRevenue)}</p>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center"><TrendingUp className="w-5 h-5 text-blue-600"/></div>
-              <span className="text-sm text-gray-500">Total Revenue</span>
+              <span className="text-sm text-gray-400">Total Revenue</span>
             </div>
             <p className="text-2xl font-bold text-gray-800">{formatCurrency(stats.totalRevenue)}</p>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center"><CreditCard className="w-5 h-5 text-purple-600"/></div>
-              <span className="text-sm text-gray-500">Transaksi Hari Ini</span>
+              <span className="text-sm text-gray-400">Transaksi Hari Ini</span>
             </div>
             <p className="text-2xl font-bold text-gray-800">{stats.todayTransactions}</p>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center"><Users className="w-5 h-5 text-orange-600"/></div>
-              <span className="text-sm text-gray-500">Total Users</span>
+              <span className="text-sm text-gray-400">Total Users</span>
             </div>
             <p className="text-2xl font-bold text-gray-800">{stats.activeUsers}</p>
           </div>
@@ -309,19 +309,19 @@ function Admin() {
           </div>
           <div className="overflow-x-auto">
             {pendingTopups.length === 0 ? (
-              <p className="p-6 text-center text-sm text-gray-500">Belum ada permintaan top-up manual.</p>
+              <p className="p-6 text-center text-sm text-gray-400">Belum ada permintaan top-up manual.</p>
             ) : (
               <table className="w-full">
                 <thead className="bg-surface">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Order ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Nominal</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Bonus</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Metode</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Waktu</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Aksi</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Order ID</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Email</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Nominal</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Bonus</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Metode</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Waktu</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -332,7 +332,7 @@ function Admin() {
                       <td className="px-4 py-3 text-sm font-semibold">{formatIDR(p.amount)}</td>
                       <td className="px-4 py-3 text-sm text-emerald-600">+{formatIDR(p.bonus)}</td>
                       <td className="px-4 py-3 text-sm capitalize">{p.method}</td>
-                      <td className="px-4 py-3 text-xs text-gray-500">{p.submittedAt}</td>
+                      <td className="px-4 py-3 text-xs text-gray-400">{p.submittedAt}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
                           p.status === 'pending' ? 'bg-amber-100 text-amber-700'
@@ -394,13 +394,13 @@ function Admin() {
             <table className="w-full">
               <thead className="bg-surface">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Order ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">User</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Service</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Amount</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Method</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Order ID</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">User</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Service</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Amount</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Method</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400">Date</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -414,7 +414,7 @@ function Admin() {
                     <td className="px-4 py-3"><span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
                       t.status==='completed'?'bg-green-100 text-green-700':t.status==='pending'?'bg-yellow-100 text-yellow-700':'bg-red-100 text-red-700'
                     }`}>{t.status}</span></td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{t.date}</td>
+                    <td className="px-4 py-3 text-sm text-gray-400">{t.date}</td>
                   </tr>
                 ))}
               </tbody>

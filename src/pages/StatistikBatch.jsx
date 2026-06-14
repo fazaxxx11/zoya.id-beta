@@ -317,7 +317,7 @@ export default function StatistikBatch() {
           </button>
           {files.length > 0 && (
             <button onClick={clearAll}
-                    className="ml-2 text-xs text-gray-500 hover:text-gray-900 px-3 py-2.5">
+                    className="ml-2 text-xs text-gray-400 hover:text-gray-900 px-3 py-2.5">
               Hapus semua
             </button>
           )}
@@ -337,7 +337,7 @@ export default function StatistikBatch() {
                     {f.error ? (
                       <div className="text-xs text-red-600 mt-0.5">{f.error}</div>
                     ) : (
-                      <div className="text-xs text-gray-500 mt-0.5">
+                      <div className="text-xs text-gray-400 mt-0.5">
                         {f.rowCount} baris · {f.columns?.length} kolom · {f.numericColumns?.length} numerik
                       </div>
                     )}
@@ -404,7 +404,7 @@ export default function StatistikBatch() {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
-                <thead className="bg-surface text-gray-500 uppercase tracking-wider">
+                <thead className="bg-surface text-gray-400 uppercase tracking-wider">
                   <tr>
                     {['File', 'n', 'Mean', 'SD', 'Median', 'Min', 'Max', 'Q1', 'Q3', 'Skew', 'Kurt'].map(h => (
                       <th key={h} className="px-3 py-2.5 text-left font-medium">{h}</th>
@@ -575,20 +575,20 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
             )}
           </div>
           {levene?.error ? (
-            <div className="text-xs text-gray-500 italic px-3 py-2 bg-surface rounded-lg">
+            <div className="text-xs text-gray-400 italic px-3 py-2 bg-surface rounded-lg">
               Tidak dapat dihitung: {levene.error}
             </div>
           ) : levene ? (
             <div className="px-3 py-3 rounded-lg bg-surface border border-border text-xs space-y-1.5">
               <div className="flex justify-between">
-                <span className="text-gray-500">F({levene.dfBetween}, {levene.dfWithin})</span>
+                <span className="text-gray-400">F({levene.dfBetween}, {levene.dfWithin})</span>
                 <span className="tabular-nums font-medium text-gray-800">{fmt(levene.F, 3)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">p-value</span>
+                <span className="text-gray-400">p-value</span>
                 <span className="tabular-nums font-medium text-gray-800">{fmtP(levene.pValue)}</span>
               </div>
-              <div className="text-[11px] text-gray-500 pt-1.5 border-t border-gray-200/60 leading-relaxed">
+              <div className="text-[11px] text-gray-400 pt-1.5 border-t border-gray-200/60 leading-relaxed">
                 Levene Brown-Forsythe (median-based). H₀: varians antar grup sama. p &lt; 0,05 → tolak H₀ (varians tidak homogen).
               </div>
             </div>
@@ -665,7 +665,7 @@ function BatchAIPanel({ payload }) {
       </div>
 
       {loading && (
-        <div className="bg-surface border border-gray-200/80 rounded-lg p-4 text-sm text-gray-500 flex items-center gap-2">
+        <div className="bg-surface border border-gray-200/80 rounded-lg p-4 text-sm text-gray-400 flex items-center gap-2">
           <span className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" />
           Menulis interpretasi…
         </div>
@@ -718,13 +718,13 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
         <div className="inline-flex border border-gray-200 rounded-lg p-0.5 bg-surface">
           <button onClick={() => onMethodChange('anova')}
                   className={`text-xs px-3 py-1.5 rounded-md transition-colors ${
-                    method === 'anova' ? 'bg-white text-gray-900 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-800'
+                    method === 'anova' ? 'bg-white text-gray-900 shadow-sm font-medium' : 'text-gray-400 hover:text-gray-800'
                   }`}>
             One-way ANOVA
           </button>
           <button onClick={() => onMethodChange('kruskal')}
                   className={`text-xs px-3 py-1.5 rounded-md transition-colors ${
-                    method === 'kruskal' ? 'bg-white text-gray-900 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-800'
+                    method === 'kruskal' ? 'bg-white text-gray-900 shadow-sm font-medium' : 'text-gray-400 hover:text-gray-800'
                   }`}>
             Kruskal-Wallis
           </button>
@@ -772,7 +772,7 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Post-hoc (Tukey HSD / Bonferroni)</div>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-surface text-gray-500 uppercase tracking-wider">
+              <thead className="bg-surface text-gray-400 uppercase tracking-wider">
                 <tr>
                   <th className="px-3 py-2 text-left font-medium">Pair</th>
                   <th className="px-3 py-2 text-left font-medium">Mean diff</th>
@@ -789,7 +789,7 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
                     <td className="px-3 py-2 text-xs">
                       {c.significant
                         ? <span className="text-emerald-700 font-medium">Berbeda nyata</span>
-                        : <span className="text-gray-500">Tidak signifikan</span>}
+                        : <span className="text-gray-400">Tidak signifikan</span>}
                     </td>
                   </tr>
                 ))}
@@ -816,7 +816,7 @@ function Stat({ label, value, sub, highlight }) {
       <div className={`text-base tabular-nums font-semibold mt-0.5 ${highlight ? 'text-emerald-700' : 'text-gray-900'}`}>
         {value}
       </div>
-      {sub && <div className="text-[10px] text-gray-500 mt-0.5 capitalize">{sub}</div>}
+      {sub && <div className="text-[10px] text-gray-400 mt-0.5 capitalize">{sub}</div>}
     </div>
   )
 }

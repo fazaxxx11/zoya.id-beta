@@ -179,7 +179,7 @@ export default function ItemAnalysis() {
             </button>
             <button
               onClick={() => fileRef.current?.click()}
-              className="text-xs text-gray-500 hover:text-sky-600 ml-auto flex items-center gap-1"
+              className="text-xs text-gray-400 hover:text-sky-600 ml-auto flex items-center gap-1"
             >
               <Upload className="w-3.5 h-3.5" /> Upload CSV
             </button>
@@ -204,7 +204,7 @@ export default function ItemAnalysis() {
                 className="w-full font-mono text-xs border border-gray-200 rounded-lg px-3 py-2"
                 placeholder="1,1,0,1,0&#10;1,0,1,1,0&#10;..."
               />
-              <p className="text-[11px] text-gray-500 mt-1">
+              <p className="text-[11px] text-gray-400 mt-1">
                 {countRowsCols(scoredText)}
               </p>
             </>
@@ -359,7 +359,7 @@ function ResultPanel({ result, onExport }) {
           {hasDistractor && (
             <button
               onClick={() => setShowDistractor(s => !s)}
-              className="text-xs text-gray-500 hover:text-sky-600 flex items-center gap-1"
+              className="text-xs text-gray-400 hover:text-sky-600 flex items-center gap-1"
             >
               {showDistractor ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               {showDistractor ? 'Sembunyikan' : 'Tampilkan'} distraktor
@@ -419,7 +419,7 @@ function ResultPanel({ result, onExport }) {
 function SummaryCard({ label, value, badge, badgeColor }) {
   return (
     <div className="bg-surface rounded-lg p-2">
-      <div className="text-[10px] text-gray-500 uppercase tracking-wide">{label}</div>
+      <div className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</div>
       <div className="text-lg font-bold">{value}</div>
       {badge && (
         <div className={`text-[10px] inline-block px-1.5 py-0.5 rounded mt-0.5 ${badgeColor}`}>
@@ -465,7 +465,7 @@ function ItemRow({ item, showDistractor }) {
       {showDistractor && item.distractors && (
         <tr className="bg-surface/50">
           <td colSpan={7} className="px-3 py-2">
-            <div className="text-[10px] text-gray-500 mb-1">Distraktor (Atas/Bawah):</div>
+            <div className="text-[10px] text-gray-400 mb-1">Distraktor (Atas/Bawah):</div>
             <div className="flex flex-wrap gap-1.5">
               {item.distractors.map(d => (
                 <span

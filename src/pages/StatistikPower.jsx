@@ -204,7 +204,7 @@ export default function StatistikPower() {
 
             <div className="mt-5 pt-4 border-t border-border">
               <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium mb-2">Catatan</div>
-              <p className="text-[12px] text-gray-500 leading-relaxed">
+              <p className="text-[12px] text-gray-400 leading-relaxed">
                 Power dihitung dengan aproksimasi normal (Patnaik-style untuk noncentral F/χ²).
                 Akurasi tipikal ±5% dibandingkan G*Power untuk effect size sedang—besar.
                 Untuk perencanaan publikasi penting, verifikasi dengan G*Power atau R <code>pwr</code>.
@@ -295,7 +295,7 @@ function ResultDisplay({ result, solve, test }) {
 function Row({ label, value }) {
   return (
     <>
-      <dt className="text-gray-500">{label}</dt>
+      <dt className="text-gray-400">{label}</dt>
       <dd className="text-right font-medium text-gray-800 tabular-nums">{value}</dd>
     </>
   )
@@ -333,7 +333,7 @@ function ConventionsTable() {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-xs">
-        <thead className="text-gray-500 uppercase tracking-wider">
+        <thead className="text-gray-400 uppercase tracking-wider">
           <tr>
             <th className="text-left py-1.5 pr-2 font-medium">Effect size</th>
             <th className="text-right py-1.5 px-2 font-medium">Small</th>

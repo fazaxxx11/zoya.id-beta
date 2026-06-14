@@ -123,7 +123,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
           <div>
             <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Pre-Analysis</div>
             <h2 className="text-lg font-bold text-gray-900">Bersihkan Dataset</h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-400 mt-1">
               {totalIssues > 0
                 ? `Ditemukan ${totalIssues} isu (missing + outlier + duplikat). Pilih cara penanganan.`
                 : 'Dataset bersih — tidak ada missing, outlier, atau duplikat terdeteksi.'}
@@ -146,7 +146,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
               Reset
             </button>
           </div>
-          <div className="flex items-center gap-3 text-xs text-gray-500">
+          <div className="flex items-center gap-3 text-xs text-gray-400">
             <span>Total baris: <strong className="text-gray-900">{totalRows}</strong></span>
             <span>→</span>
             <span>Setelah bersihkan: <strong className={preview.report.rowsAfter < totalRows ? 'text-amber-700' : 'text-emerald-700'}>{preview.report.rowsAfter}</strong></span>
@@ -159,7 +159,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
           <div className="border border-gray-200 rounded-xl overflow-hidden mb-4">
             <table className="w-full text-sm">
               <thead className="bg-surface text-left">
-                <tr className="text-[11px] uppercase tracking-wider text-gray-500">
+                <tr className="text-[11px] uppercase tracking-wider text-gray-400">
                   <th className="px-3 py-2.5 font-medium">Kolom</th>
                   <th className="px-3 py-2.5 font-medium">Tipe</th>
                   <th className="px-3 py-2.5 font-medium text-right">Missing</th>
@@ -242,7 +242,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
               <span className="font-medium text-gray-900">
                 {dupes.length === 0 ? 'Tidak ada baris duplikat' : `${dupes.length} baris duplikat ditemukan`}
               </span>
-              {dupes.length > 0 && <span className="text-gray-500 ml-2">(seluruh kolom identik)</span>}
+              {dupes.length > 0 && <span className="text-gray-400 ml-2">(seluruh kolom identik)</span>}
             </div>
             {dupes.length > 0 && (
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
@@ -267,7 +267,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
               <div className="flex items-center gap-2">
                 <Table2 className="w-4 h-4 text-gray-600" />
                 <span className="text-sm font-medium text-gray-900">Lihat & Edit Data</span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-400">
                   {totalRows} baris × {columns.length} kolom
                 </span>
                 {editedCells.size > 0 && (
@@ -276,7 +276,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
                   </span>
                 )}
               </div>
-              <span className="text-xs text-gray-500">{showDataPreview ? '▲ Tutup' : '▼ Buka'}</span>
+              <span className="text-xs text-gray-400">{showDataPreview ? '▲ Tutup' : '▼ Buka'}</span>
             </button>
 
             {showDataPreview && (
@@ -370,7 +370,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
           {/* Preview report */}
           {preview.report.actions.length > 0 && (
             <div className="mt-4 bg-surface border border-gray-200 rounded-xl p-4">
-              <div className="text-[11px] uppercase tracking-[0.18em] text-gray-500 font-medium mb-2">Preview Aksi</div>
+              <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-2">Preview Aksi</div>
               <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
                 {preview.report.actions.map((a, i) => <li key={i}>{a}</li>)}
               </ul>

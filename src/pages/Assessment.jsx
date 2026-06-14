@@ -281,7 +281,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
           </div>
           <div className="flex-1">
             <h2 className="text-lg font-bold text-gray-800">Buat Rubrik Penilaian</h2>
-            <p className="text-sm text-gray-500">Tentukan kriteria dan bobot penilaian</p>
+            <p className="text-sm text-gray-400">Tentukan kriteria dan bobot penilaian</p>
           </div>
           <div className="flex items-center gap-1.5">
             <button
@@ -323,7 +323,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
         <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
           <div>
             <h3 className="font-semibold text-gray-800">Kriteria Penilaian</h3>
-            <p className="text-xs text-gray-500 mt-0.5">Total bobot harus 100%</p>
+            <p className="text-xs text-gray-400 mt-0.5">Total bobot harus 100%</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <button
@@ -473,7 +473,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
 
       <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-border">
         <h3 className="font-semibold text-gray-800 mb-1">Input Jawaban Murid</h3>
-        <p className="text-xs text-gray-500 mb-4">Pilih cara input yang paling cocok. Bisa ganti kapan saja.</p>
+        <p className="text-xs text-gray-400 mb-4">Pilih cara input yang paling cocok. Bisa ganti kapan saja.</p>
 
         {/* === Mode picker: 2 card besar === */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-5">
@@ -487,7 +487,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
-              inputMode === 'file' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-500'
+              inputMode === 'file' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-400'
             }`}>
               <FileSpreadsheet className="w-5 h-5" />
             </div>
@@ -495,7 +495,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               Upload File
               {inputMode === 'file' && <span className="text-[10px] uppercase tracking-wide bg-sky-500 text-white px-1.5 py-0.5 rounded">aktif</span>}
             </div>
-            <div className="text-[11px] text-gray-500 mt-0.5 leading-snug">Excel, CSV, PDF, Word — banyak siswa sekaligus</div>
+            <div className="text-[11px] text-gray-400 mt-0.5 leading-snug">Excel, CSV, PDF, Word — banyak siswa sekaligus</div>
           </button>
 
           <button
@@ -508,7 +508,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
-              inputMode === 'manual' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-500'
+              inputMode === 'manual' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-400'
             }`}>
               <Pencil className="w-5 h-5" />
             </div>
@@ -516,7 +516,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               Ketik Manual
               {inputMode === 'manual' && <span className="text-[10px] uppercase tracking-wide bg-sky-500 text-white px-1.5 py-0.5 rounded">aktif</span>}
             </div>
-            <div className="text-[11px] text-gray-500 mt-0.5 leading-snug">Quick demo, tugas tulis tangan, 1-3 siswa</div>
+            <div className="text-[11px] text-gray-400 mt-0.5 leading-snug">Quick demo, tugas tulis tangan, 1-3 siswa</div>
           </button>
         </div>
 
@@ -541,10 +541,10 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               <p className="font-medium text-gray-800 mb-1">
                 {dragOver ? 'Lepas untuk upload' : 'Drop file di sini atau klik'}
               </p>
-              <p className="text-xs text-gray-500 mb-3">
+              <p className="text-xs text-gray-400 mb-3">
                 {getSupportedFormats().map(f => `.${f.ext}`).join(' · ')}
               </p>
-              <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-500 w-full max-w-sm bg-surface rounded-lg p-3 mt-2">
+              <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-400 w-full max-w-sm bg-surface rounded-lg p-3 mt-2">
                 <div className="flex items-center gap-1.5"><FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" /> Excel/CSV → kolom Nama & Jawaban</div>
                 <div className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-rose-600" /> Word/PDF → multi-siswa</div>
               </div>
@@ -571,7 +571,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               )}
               <button
                 onClick={() => { setFileData(null); setShowPreview(false); setPreviewConfirmed(false); setStudents([{ id: uid(), name: "", answer: "" }]) }}
-                className="text-xs text-gray-500 hover:text-red-600 px-2 py-1 rounded transition-colors"
+                className="text-xs text-gray-400 hover:text-red-600 px-2 py-1 rounded transition-colors"
                 title="Ganti file"
               >
                 Ganti
@@ -696,7 +696,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             {students.map((s,i) => (
               <div key={s.id} className="bg-surface rounded-xl p-4">
                 <div className="flex justify-between mb-2">
-                  <span className="text-xs text-gray-500 font-medium">Murid #{i+1}</span>
+                  <span className="text-xs text-gray-400 font-medium">Murid #{i+1}</span>
                   <button onClick={()=>del(s.id)} className="text-muted hover:text-red-500 transition-colors" title="Hapus"><Trash2 className="w-4 h-4"/></button>
                 </div>
                 <input type="text" value={s.name} onChange={e=>upd(s.id,'name',e.target.value)} placeholder="Nama siswa" className="input-field mb-2"/>
@@ -792,7 +792,7 @@ function ClassSummary({ results, rubrik }) {
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp className="w-5 h-5 text-sky-600" />
         <h3 className="font-bold text-gray-800">Ringkasan Kelas</h3>
-        <span className="text-xs text-gray-500">({total} siswa dinilai)</span>
+        <span className="text-xs text-gray-400">({total} siswa dinilai)</span>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-4">
@@ -918,7 +918,7 @@ function CriterionRow({ k, s, onUpdate }) {
       <div className="flex-1 min-w-0">
         <div className="flex justify-between text-sm">
           <span className="font-medium">{k.nama}</span>
-          <span className="text-gray-500">{k.bobot}%</span>
+          <span className="text-gray-400">{k.bobot}%</span>
         </div>
         <div className="h-1.5 bg-gray-200 rounded-full">
           <div className={`h-1.5 rounded-full transition-all ${s.skor>=8?'bg-green-500':s.skor>=5?'bg-amber-500':'bg-red-500'}`} style={{width:(s.skor/10)*100+'%'}}/>
@@ -1039,7 +1039,7 @@ function HasilPenilaian({
               ))}
             </div>
           </div>
-          <span className="ml-auto text-xs text-gray-500">
+          <span className="ml-auto text-xs text-gray-400">
             Menampilkan {sortedResults.length} / {results.length}
           </span>
         </div>
@@ -1075,7 +1075,7 @@ function HasilPenilaian({
                   <button
                     onClick={() => onRegrade(r.id)}
                     disabled={r._regrading}
-                    className="text-xs text-gray-500 hover:text-sky-600 px-2 py-1 rounded hover:bg-sky-50 transition-colors flex items-center gap-1 disabled:opacity-50"
+                    className="text-xs text-gray-400 hover:text-sky-600 px-2 py-1 rounded hover:bg-sky-50 transition-colors flex items-center gap-1 disabled:opacity-50"
                     title="Nilai ulang siswa ini dengan AI"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${r._regrading ? 'animate-spin' : ''}`}/>
@@ -1126,7 +1126,7 @@ function HasilPenilaian({
       })}
 
       {sortedResults.length === 0 && hasAnyResult && (
-        <div className="bg-surface rounded-xl p-6 text-center text-sm text-gray-500">
+        <div className="bg-surface rounded-xl p-6 text-center text-sm text-gray-400">
           Tidak ada siswa yang cocok dengan filter ini.
         </div>
       )}
@@ -1180,7 +1180,7 @@ function KesimpulanEditable({ value, onSave }) {
         />
         <div className="flex gap-2 mt-2">
           <button onClick={() => { onSave(tmp); setEditing(false) }} className="text-xs px-3 py-1 bg-sky-600 text-white rounded-lg hover:bg-sky-700">Simpan</button>
-          <button onClick={() => { setTmp(value); setEditing(false) }} className="text-xs px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-lg">Batal</button>
+          <button onClick={() => { setTmp(value); setEditing(false) }} className="text-xs px-3 py-1 text-gray-400 hover:bg-gray-100 rounded-lg">Batal</button>
         </div>
       </div>
     )
@@ -1453,7 +1453,7 @@ function Assessment() {
             <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-medium transition-colors ${
               active ? 'bg-sky-500 text-white' :
               done   ? 'bg-green-500 text-white' :
-                       'bg-gray-100 text-gray-500'
+                       'bg-gray-100 text-gray-400'
             }`}>
               <span className="w-4 h-4 rounded-full bg-white/30 flex items-center justify-center text-[10px] font-bold">
                 {done ? '✓' : i + 1}

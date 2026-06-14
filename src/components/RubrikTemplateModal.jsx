@@ -43,7 +43,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
             </button>
           )}
         </div>
-        <div className="text-[11px] text-gray-500 mb-2 line-clamp-2 min-h-[2em]">
+        <div className="text-[11px] text-gray-400 mb-2 line-clamp-2 min-h-[2em]">
           {tpl.context || <span className="italic">Tanpa konteks</span>}
         </div>
         <div className="flex flex-wrap gap-1 mb-2">
@@ -87,7 +87,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
 
         <div className="p-4 overflow-y-auto flex-1 space-y-5">
           <section>
-            <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 mb-2">Template Bawaan</h4>
+            <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-2">Template Bawaan</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {BUILTIN_TEMPLATES.map(tpl => (
                 <TemplateCard key={tpl.id} tpl={tpl} deletable={false} />
@@ -96,7 +96,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
           </section>
 
           <section>
-            <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
+            <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-400 mb-2 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" /> Template Saya
               <span className="ml-1 text-muted normal-case font-normal">({userTpls.length})</span>
             </h4>

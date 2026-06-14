@@ -143,7 +143,7 @@ export default function LogisticPage() {
             rows={8} className="w-full font-mono text-xs border border-gray-200 rounded-lg p-2"
           />
           {parsed.headers.length > 0 && (
-            <p className="text-[11px] text-gray-500">
+            <p className="text-[11px] text-gray-400">
               {parsed.rows.length} baris × {parsed.headers.length} kolom: {parsed.headers.join(', ')}
             </p>
           )}
@@ -180,7 +180,7 @@ export default function LogisticPage() {
                     </label>
                   ))}
                 </div>
-                <p className="text-[11px] text-gray-500 mt-1">{xColumns.length} predictor dipilih</p>
+                <p className="text-[11px] text-gray-400 mt-1">{xColumns.length} predictor dipilih</p>
               </div>
             </div>
           )}
@@ -272,7 +272,7 @@ function CoefficientsTable({ fit }) {
           </tbody>
         </table>
       </div>
-      <p className="text-[11px] text-gray-500 mt-2">
+      <p className="text-[11px] text-gray-400 mt-2">
         <strong>Interpretasi OR:</strong> &gt; 1 = predictor naik 1 unit → odds outcome=1 naik;
         &lt; 1 = predictor naik 1 unit → odds outcome=1 turun. Sig: * p&lt;.05, ** p&lt;.01, *** p&lt;.001
       </p>
@@ -308,7 +308,7 @@ function ModelFitSection({ fit }) {
         </div>
       </div>
 
-      <p className="text-[11px] text-gray-500 mt-2">
+      <p className="text-[11px] text-gray-400 mt-2">
         Pedoman: Nagelkerke R² 0.2-0.4 = cukup baik, 0.4+ = baik. McFadden R² 0.2-0.4 sudah dianggap excellent untuk logistik.
       </p>
     </div>
@@ -390,7 +390,7 @@ function ROCSection({ roc }) {
           <BarChart2 className="w-4 h-4 text-amber-600" /> ROC Curve
         </h3>
         <div className="text-right">
-          <div className="text-[10px] text-gray-500 uppercase tracking-wide">AUC</div>
+          <div className="text-[10px] text-gray-400 uppercase tracking-wide">AUC</div>
           <div className="text-2xl font-bold" style={{ color: aucColor }}>{roc.auc.toFixed(3)}</div>
           <div className="text-[10px] uppercase font-medium" style={{ color: aucColor }}>{aucCat}</div>
         </div>
@@ -436,7 +436,7 @@ function ROCSection({ roc }) {
         </svg>
       </div>
 
-      <p className="text-[11px] text-gray-500 mt-2">
+      <p className="text-[11px] text-gray-400 mt-2">
         Pedoman AUC: 0.9+ = excellent, 0.8-0.9 = good, 0.7-0.8 = fair, 0.6-0.7 = poor, &lt;0.6 = gagal.
         Diagonal abu-abu = prediksi acak.
       </p>
@@ -494,7 +494,7 @@ Pada threshold ${threshold.toFixed(2)}, model mencapai akurasi ${(cm.accuracy*10
 function Metric({ label, value, highlight }) {
   return (
     <div className={`rounded-lg p-2 text-center ${highlight ? 'bg-amber-50 border border-amber-200' : 'bg-surface'}`}>
-      <div className="text-[10px] text-gray-500 uppercase tracking-wide">{label}</div>
+      <div className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</div>
       <div className={`font-bold ${highlight ? 'text-amber-700 text-lg' : ''}`}>{value}</div>
     </div>
   )

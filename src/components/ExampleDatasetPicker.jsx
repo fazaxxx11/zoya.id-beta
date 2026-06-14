@@ -32,7 +32,7 @@ export default function ExampleDatasetPicker({ open, onClose, onPick }) {
           </button>
         </div>
 
-        <div className="px-6 py-3 text-xs text-gray-500 border-b border-border bg-surface/60">
+        <div className="px-6 py-3 text-xs text-gray-400 border-b border-border bg-surface/60">
           Dataset siap pakai dengan konteks lokal. Cocok untuk explore tool tanpa upload data sendiri.
         </div>
 

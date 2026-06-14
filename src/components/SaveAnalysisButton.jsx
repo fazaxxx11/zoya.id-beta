@@ -60,7 +60,7 @@ export default function SaveAnalysisButton({ result, defaultTitle = '', toolName
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-semibold text-sm">Simpan Analisis</h3>
-                <p className="text-[11px] text-gray-500 mt-0.5">
+                <p className="text-[11px] text-gray-400 mt-0.5">
                   Hasil ini akan masuk ke riwayat dan bisa dipakai di Generator Bab IV.
                   Butuh login.
                 </p>

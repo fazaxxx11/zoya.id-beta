@@ -90,7 +90,7 @@ function TabButton({ active, onClick, icon: Icon, children }) {
       className={`px-5 py-3 text-sm font-medium flex items-center gap-2 border-b-2 transition-colors ${
         active
           ? 'border-gray-900 text-gray-900 bg-white'
-          : 'border-transparent text-gray-500 hover:text-gray-800'
+          : 'border-transparent text-gray-400 hover:text-gray-800'
       }`}>
       <Icon className="w-4 h-4" />
       {children}
@@ -105,7 +105,7 @@ function CitationTab({ methodsParagraph, apaCitation, onCopy }) {
         <div className="flex items-center justify-between mb-2">
           <div>
             <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium">Bab III — Teknik Analisis Data</div>
-            <div className="text-[12px] text-gray-500 mt-0.5">Salin paragraf ini ke bagian metode penelitian skripsi.</div>
+            <div className="text-[12px] text-gray-400 mt-0.5">Salin paragraf ini ke bagian metode penelitian skripsi.</div>
           </div>
           <button onClick={() => onCopy(methodsParagraph, 'Paragraf metode')}
             className="text-xs text-gray-700 border border-gray-200 hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
@@ -122,7 +122,7 @@ function CitationTab({ methodsParagraph, apaCitation, onCopy }) {
         <div className="flex items-center justify-between mb-2">
           <div>
             <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium">Daftar Pustaka (APA)</div>
-            <div className="text-[12px] text-gray-500 mt-0.5">Referensi R untuk daftar pustaka.</div>
+            <div className="text-[12px] text-gray-400 mt-0.5">Referensi R untuk daftar pustaka.</div>
           </div>
           <button onClick={() => onCopy(apaCitation, 'Citation')}
             className="text-xs text-gray-700 border border-gray-200 hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">

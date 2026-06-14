@@ -195,7 +195,7 @@ export default function References() {
         {filtered.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
             <BookOpen className="w-12 h-12 text-muted mx-auto mb-2" />
-            <p className="text-sm text-gray-500 mb-3">
+            <p className="text-sm text-gray-400 mb-3">
               {refs.length === 0
                 ? 'Belum ada referensi. Mulai dengan menambah manual, lookup DOI, atau import BibTeX/RIS.'
                 : 'Tidak ada hasil dengan filter ini.'}
@@ -258,7 +258,7 @@ function StatCard({ label, value }) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-2 text-center">
       <div className="text-xl font-bold text-violet-700">{value}</div>
-      <div className="text-[10px] text-gray-500 uppercase tracking-wide">{label}</div>
+      <div className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</div>
     </div>
   )
 }
@@ -673,7 +673,7 @@ function ImportModal({ onImport, onCancel }) {
               : 'TY  - JOUR\nAU  - Smith, John\nTI  - ...\nPY  - 2020\nER  - '}
             className="w-full font-mono text-xs border border-gray-200 rounded-lg p-2"
           />
-          <p className="text-[11px] text-gray-500">
+          <p className="text-[11px] text-gray-400">
             Tip: ekspor dari Mendeley / Zotero / EndNote sebagai BibTeX atau RIS, lalu paste di sini.
           </p>
         </div>
@@ -743,7 +743,7 @@ function BibliographyModal({ refs, style, onStyleChange, onCancel }) {
           <div className="bg-surface rounded-lg p-4 max-h-[60vh] overflow-y-auto">
             <pre className="text-xs whitespace-pre-wrap font-sans leading-relaxed">{text}</pre>
           </div>
-          <p className="text-[11px] text-gray-500">
+          <p className="text-[11px] text-gray-400">
             Karakter `*teks*` adalah penanda italik. Saat tempel ke Word, tinggal cari-ganti `*` jadi format italik.
           </p>
         </div>

@@ -42,7 +42,7 @@ export default function CointegrationResultCard({ result }) {
           </span>
           <span
             className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
-              isCointegrated ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+              isCointegrated ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'
             }`}
           >
             {isCointegrated ? 'COINTEGRATED' : 'TIDAK COINTEGRATED'}

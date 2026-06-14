@@ -84,7 +84,7 @@ export default function StatistikHistory() {
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="max-w-md text-center">
           <h2 className="text-xl font-bold text-gray-900 mb-2">Login dulu</h2>
-          <p className="text-sm text-gray-500 mb-5">Riwayat analisis tersimpan per akun. Silakan login untuk akses fitur ini.</p>
+          <p className="text-sm text-gray-400 mb-5">Riwayat analisis tersimpan per akun. Silakan login untuk akses fitur ini.</p>
           <button onClick={() => navigate('/login?next=/statistik/history')}
             className="px-5 py-2.5 bg-gray-900 hover:bg-black text-white text-sm font-medium rounded-lg">
             Login
@@ -118,7 +118,7 @@ export default function StatistikHistory() {
         ) : null}
       />
       <div className="max-w-6xl mx-auto p-4 sm:p-6 md:p-8">
-        <p className="text-sm text-gray-500 mb-5">{items.length} analisis tersimpan di akun Anda.</p>
+        <p className="text-sm text-gray-400 mb-5">{items.length} analisis tersimpan di akun Anda.</p>
 
         {/* Compare action bar (sticky when in select mode) */}
         {selectMode && (
@@ -187,7 +187,7 @@ export default function StatistikHistory() {
           <div className="bg-white border border-gray-200/80 rounded-xl overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-surface text-left">
-                <tr className="text-[11px] uppercase tracking-wider text-gray-500">
+                <tr className="text-[11px] uppercase tracking-wider text-gray-400">
                   {selectMode && <th className="px-3 py-3 w-10"></th>}
                   <th className="px-4 py-3 font-medium">Judul</th>
                   <th className="px-4 py-3 font-medium">Tool</th>
@@ -228,7 +228,7 @@ export default function StatistikHistory() {
                     </td>
                     <td className="px-4 py-3 text-gray-600">{it.tool_name}</td>
                     <td className="px-4 py-3 text-center text-gray-600">{it.sample_size ?? '—'}</td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-3 text-gray-400 whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3 h-3 text-muted" />
                         {new Date(it.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
@@ -338,7 +338,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
               </h2>
             )}
             {data && (
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-gray-400 mt-1">
                 {data.sample_size ?? '—'} sampel · {new Date(data.created_at).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}
               </div>
             )}

@@ -94,7 +94,7 @@ function Payment() {
       <div className="min-h-screen bg-pattern">
         <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
           <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-sky-600">
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <h1 className="font-bold text-gray-800">Beta Free</h1>
@@ -317,7 +317,7 @@ function Payment() {
         <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-border">
           <div className="max-w-3xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
-              <button onClick={() => navigate('/')} className="flex items-center gap-2 text-gray-500 hover:text-sky-600">
+              <button onClick={() => navigate('/')} className="flex items-center gap-2 text-gray-400 hover:text-sky-600">
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <h1 className="font-bold text-gray-800">Hasil {service?.name}</h1>
@@ -333,7 +333,7 @@ function Payment() {
               <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">🎉 Selesai!</h2>
-            <p className="text-gray-500">
+            <p className="text-gray-400">
               Pesanan Anda telah diproses.
             </p>
             
@@ -383,7 +383,7 @@ function Payment() {
       <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-border">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-sky-600">
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <h1 className="font-bold text-gray-800">Pembayaran</h1>
@@ -428,7 +428,7 @@ function Payment() {
 
           {orderId && (
             <div className="mt-3 p-2 bg-surface rounded-lg">
-              <p className="text-xs text-gray-500">Order ID</p>
+              <p className="text-xs text-gray-400">Order ID</p>
               <p className="font-mono text-sm">{orderId}</p>
             </div>
           )}
@@ -475,7 +475,7 @@ function Payment() {
                     {method.icon}
                   </div>
                   <p className="font-semibold text-gray-800">{method.name}</p>
-                  <p className="text-xs text-gray-500">{method.desc}</p>
+                  <p className="text-xs text-gray-400">{method.desc}</p>
                 </button>
               ))}
             </div>
@@ -508,7 +508,7 @@ function Payment() {
                 <CheckCircle className="w-10 h-10 text-green-600" />
               </div>
               <h2 className="text-xl font-bold text-gray-800 mb-2">Silakan Scan QRIS</h2>
-              <p className="text-gray-500 mb-4">Order ID: {orderId}</p>
+              <p className="text-gray-400 mb-4">Order ID: {orderId}</p>
               
               <div className="w-48 h-48 bg-gray-100 rounded-xl mx-auto mb-4 flex items-center justify-center">
                 <div className="text-center text-muted">
@@ -544,7 +544,7 @@ function Payment() {
               
               <button 
                 onClick={() => setShowQR(false)}
-                className="w-full mt-3 text-gray-500 text-sm"
+                className="w-full mt-3 text-gray-400 text-sm"
               >
                 Pilih metode lain
               </button>
@@ -553,7 +553,7 @@ function Payment() {
         )}
 
         {/* Help */}
-        <div className="text-center text-sm text-gray-500">
+        <div className="text-center text-sm text-gray-400">
           <p>Butuh bantuan? <Link to="/order" className="text-sky-600 hover:underline">Cek pesanan</Link></p>
           {!currentUser && (
             <p className="mt-2">

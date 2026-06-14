@@ -94,11 +94,11 @@ function UserDashboard() {
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 text-gray-500 hover:text-sky-600">
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 text-gray-400 hover:text-sky-600">
             <ChevronLeft className="w-5 h-5" />
           </button>
           <h1 className="font-bold text-gray-800">Dashboard</h1>
-          <button onClick={handleLogout} className="text-gray-500 hover:text-red-500">
+          <button onClick={handleLogout} className="text-gray-400 hover:text-red-500">
             <LogOut className="w-5 h-5" />
           </button>
         </div>
@@ -142,7 +142,7 @@ function UserDashboard() {
           </div>
           
           <div className="mt-3 pt-3 border-t flex justify-between">
-            <span className="text-gray-500 text-sm">Total</span>
+            <span className="text-gray-400 text-sm">Total</span>
             <span className="font-bold text-lg">{formatCurrency(totalBalance)}</span>
           </div>
         </div>
@@ -178,7 +178,7 @@ function UserDashboard() {
           ) : savedRecent.length === 0 ? (
             <div className="text-center py-6">
               <FileText className="w-10 h-10 text-muted mx-auto mb-2" />
-              <p className="text-sm text-gray-500 mb-3">Belum ada analisis tersimpan</p>
+              <p className="text-sm text-gray-400 mb-3">Belum ada analisis tersimpan</p>
               <Link to="/statistik" className="inline-block text-xs text-sky-600 hover:underline">
                 Mulai analisis sekarang →
               </Link>
@@ -192,7 +192,7 @@ function UserDashboard() {
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-gray-900 truncate">{item.title}</div>
-                      <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-2">
+                      <div className="text-xs text-gray-400 mt-0.5 flex items-center gap-2">
                         <span>{item.tool_name}</span>
                         {item.sample_size && <><span className="text-muted">·</span><span>n={item.sample_size}</span></>}
                         {item.ai_interpretation && <><span className="text-muted">·</span><span className="text-emerald-600">+ AI</span></>}
@@ -237,7 +237,7 @@ function UserDashboard() {
                   <FileText className="w-8 h-8 text-sky-400" />
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-1">Belum ada pesanan</h3>
-                <p className="text-sm text-gray-500 mb-4">Mulai jalankan analisis atau penilaian untuk melihat history pesanan di sini.</p>
+                <p className="text-sm text-gray-400 mb-4">Mulai jalankan analisis atau penilaian untuk melihat history pesanan di sini.</p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   <Link to="/statistik" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium">
                     <BarChart3 className="w-4 h-4" /> Statistik
@@ -263,7 +263,7 @@ function UserDashboard() {
                           )}
                           <div>
                             <p className="font-medium">{serviceLabel}</p>
-                            {tierLabel && <p className="text-sm text-gray-500 capitalize">{tierLabel}</p>}
+                            {tierLabel && <p className="text-sm text-gray-400 capitalize">{tierLabel}</p>}
                             {order.results && (
                               <p className="text-xs text-orange-600">
                                 {order.results.length} siswa dinilai
@@ -306,7 +306,7 @@ function UserDashboard() {
                   <CreditCard className="w-8 h-8 text-emerald-400" />
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-1">Belum ada transaksi</h3>
-                <p className="text-sm text-gray-500">Saat beta, semua tools gratis. Top-up & riwayat saldo akan tampil di sini setelah monetisasi dibuka.</p>
+                <p className="text-sm text-gray-400">Saat beta, semua tools gratis. Top-up & riwayat saldo akan tampil di sini setelah monetisasi dibuka.</p>
               </div>
             ) : (
               <div className="divide-y">
@@ -314,13 +314,13 @@ function UserDashboard() {
                   <div key={t.id} className="p-4 flex justify-between items-center">
                     <div>
                       <p className="font-medium text-gray-800">{t.id}</p>
-                      <p className="text-xs text-gray-500">{t.date}</p>
+                      <p className="text-xs text-gray-400">{t.date}</p>
                     </div>
                     <div className="text-right">
                       <p className={`font-bold ${t.amount >= 0 || t.bonus ? 'text-green-600' : 'text-red-600'}`}>
                         {t.amount >= 0 || t.bonus ? '+' : ''}{formatCurrency(t.amount || t.bonus || 0)}
                       </p>
-                      <p className="text-xs text-gray-500 capitalize">{t.type}</p>
+                      <p className="text-xs text-gray-400 capitalize">{t.type}</p>
                     </div>
                   </div>
                 ))}

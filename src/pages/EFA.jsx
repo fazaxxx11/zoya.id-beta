@@ -126,7 +126,7 @@ export default function EFAPage() {
             rows={8} className="w-full font-mono text-xs border border-gray-200 rounded-lg p-2"
           />
           {parsed.headers.length > 0 && (
-            <p className="text-[11px] text-gray-500">
+            <p className="text-[11px] text-gray-400">
               {parsed.rows.length} baris × {parsed.headers.length} item
             </p>
           )}
@@ -151,7 +151,7 @@ export default function EFAPage() {
                     </label>
                   ))}
                 </div>
-                <p className="text-[11px] text-gray-500 mt-1">{itemsToUse.length} item dipilih</p>
+                <p className="text-[11px] text-gray-400 mt-1">{itemsToUse.length} item dipilih</p>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
@@ -231,20 +231,20 @@ function SamplingAdequacySection({ result }) {
       <h3 className="font-semibold text-sm mb-3">Sampling Adequacy</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="bg-surface rounded-lg p-3">
-          <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">KMO Measure of Sampling Adequacy</div>
+          <div className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">KMO Measure of Sampling Adequacy</div>
           <div className={`text-3xl font-bold ${kmoColor}`}>{k.overall?.toFixed(3) ?? 'NaN'}</div>
           <div className={`text-xs uppercase font-medium ${kmoColor}`}>{k.interpretation}</div>
-          <p className="text-[11px] text-gray-500 mt-1">
+          <p className="text-[11px] text-gray-400 mt-1">
             ≥ 0.6 acceptable, ≥ 0.8 excellent. {k.overall >= 0.6 ? '✓ Layak EFA' : '⚠ Tidak layak — pertimbangkan tambah sampel atau drop item'}
           </p>
         </div>
         <div className={`rounded-lg p-3 ${bartlettOk ? 'bg-emerald-50' : 'bg-amber-50'}`}>
-          <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">Bartlett's Test of Sphericity</div>
+          <div className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">Bartlett's Test of Sphericity</div>
           <div className="text-sm font-mono">
             χ²({b.df}) = {b.chi2?.toFixed(2) ?? '—'}
           </div>
           <div className="text-sm font-mono">p = {b.p?.toFixed(4) ?? '—'}</div>
-          <p className="text-[11px] text-gray-500 mt-1">
+          <p className="text-[11px] text-gray-400 mt-1">
             {bartlettOk ? '✓ p < 0.05, matriks korelasi berbeda dari identitas — EFA bisa dilanjut' : '⚠ p ≥ 0.05, matriks korelasi mendekati identitas — EFA tidak disarankan'}
           </p>
         </div>
@@ -344,7 +344,7 @@ function ScreePlotSection({ result }) {
           ))}
         </svg>
       </div>
-      <p className="text-[11px] text-gray-500 mt-2">
+      <p className="text-[11px] text-gray-400 mt-2">
         <strong>Kaiser criterion:</strong> faktor dengan eigenvalue ≥ 1 dipertahankan ({result.nFactors} faktor terpilih).
         <strong> Cattell scree:</strong> cari "elbow" — titik dimana garis melandai.
       </p>
@@ -448,7 +448,7 @@ function LoadingsSection({ result }) {
           </tbody>
         </table>
       </div>
-      <p className="text-[11px] text-gray-500 mt-2">
+      <p className="text-[11px] text-gray-400 mt-2">
         Loading ≥ 0.4 (warna ungu) = item secara substantif memuat ke faktor tersebut.
         h² (communality) = proporsi varians item yang dijelaskan oleh semua faktor.
       </p>

@@ -115,7 +115,7 @@ export default function AssumptionsPanel({ result, type }) {
             <div className="overflow-x-auto -mx-4 px-4">
               <table className="text-xs w-full min-w-[480px]">
                 <thead>
-                  <tr className="text-gray-500 border-b border-border">
+                  <tr className="text-gray-400 border-b border-border">
                     <th className="text-left py-1.5 font-medium">Pasangan</th>
                     <th className="text-right py-1.5 font-medium">Mean Diff</th>
                     <th className="text-right py-1.5 font-medium">95% CI</th>
@@ -128,7 +128,7 @@ export default function AssumptionsPanel({ result, type }) {
                     <tr key={i}>
                       <td className="py-1.5 text-gray-700">{c.group1} vs {c.group2}</td>
                       <td className="py-1.5 text-right tabular-nums text-gray-800">{c.meanDiff.toFixed(3)}</td>
-                      <td className="py-1.5 text-right tabular-nums text-gray-500">[{c.ci95[0].toFixed(2)}, {c.ci95[1].toFixed(2)}]</td>
+                      <td className="py-1.5 text-right tabular-nums text-gray-400">[{c.ci95[0].toFixed(2)}, {c.ci95[1].toFixed(2)}]</td>
                       <td className="py-1.5 text-right tabular-nums text-gray-700">{c.pValue.toFixed(4)}</td>
                       <td className="py-1.5 text-center">
                         {c.significant
@@ -223,7 +223,7 @@ export default function AssumptionsPanel({ result, type }) {
 function Header({ title }) {
   return (
     <div className="px-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border-b border-border">
-      <div className="text-[11px] uppercase tracking-[0.18em] text-gray-500 font-semibold">
+      <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-semibold">
         {title}
       </div>
     </div>
@@ -244,7 +244,7 @@ function Row({ badge, label, value, meaning }) {
       <div className="flex-1 min-w-0">
         <div className="text-sm font-medium text-gray-800">{label}</div>
         <div className="text-xs tabular-nums text-gray-600 mt-0.5 font-mono">{value}</div>
-        <div className="text-xs text-gray-500 mt-1">{meaning}</div>
+        <div className="text-xs text-gray-400 mt-1">{meaning}</div>
       </div>
     </div>
   )
@@ -259,11 +259,11 @@ function TestCard({ label, info, t, df, p, ci, recommended }) {
         </span>
       )}
       <div className="text-xs font-semibold text-gray-800">{label}</div>
-      <div className="text-[11px] text-gray-500 mb-2">{info}</div>
+      <div className="text-[11px] text-gray-400 mb-2">{info}</div>
       <div className="space-y-0.5 text-xs tabular-nums font-mono">
-        <div><span className="text-gray-500">t</span> = {t.toFixed(3)} <span className="text-muted">·</span> <span className="text-gray-500">df</span> = {df.toFixed(2)}</div>
-        <div><span className="text-gray-500">p</span> = {p.toFixed(4)} {p < 0.05 && <span className="text-emerald-600 font-semibold">*</span>}</div>
-        <div className="text-gray-500">95% CI [{ci[0].toFixed(3)}, {ci[1].toFixed(3)}]</div>
+        <div><span className="text-gray-400">t</span> = {t.toFixed(3)} <span className="text-muted">·</span> <span className="text-gray-400">df</span> = {df.toFixed(2)}</div>
+        <div><span className="text-gray-400">p</span> = {p.toFixed(4)} {p < 0.05 && <span className="text-emerald-600 font-semibold">*</span>}</div>
+        <div className="text-gray-400">95% CI [{ci[0].toFixed(3)}, {ci[1].toFixed(3)}]</div>
       </div>
     </div>
   )

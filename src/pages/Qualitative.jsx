@@ -128,7 +128,7 @@ export default function Qualitative() {
                 className={`px-4 py-2 text-sm flex items-center gap-1.5 whitespace-nowrap border-b-2 transition-colors ${
                   active
                     ? 'border-rose-500 text-rose-700 font-medium'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    : 'border-transparent text-gray-400 hover:text-gray-700'
                 }`}
               >
                 <Icon className="w-4 h-4" /> {t.label}
@@ -250,7 +250,7 @@ function DocCard({ doc, onEdit, onDelete }) {
         <FileText className="w-4 h-4 text-rose-500 mt-1 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="font-medium text-sm">{doc.title}</div>
-          <div className="text-[11px] text-gray-500 mt-0.5">
+          <div className="text-[11px] text-gray-400 mt-0.5">
             {wordCount} kata · {doc.text.length} karakter
             {doc.interviewee && ` · ${doc.interviewee}`}
             {doc.date && ` · ${doc.date}`}
@@ -487,7 +487,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
         <select value={docId} onChange={e => { setDocId(e.target.value); setSelection(null) }} className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
           {docs.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}
         </select>
-        <span className="text-[11px] text-gray-500">{docCodings.length} segment ter-coding</span>
+        <span className="text-[11px] text-gray-400">{docCodings.length} segment ter-coding</span>
       </div>
 
       {doc && (
@@ -616,10 +616,10 @@ function AnalysisTab({ docs, codes, codings }) {
           <h3 className="font-semibold text-sm flex items-center gap-1.5">
             <BarChart2 className="w-4 h-4 text-rose-500" /> Frekuensi Kata
           </h3>
-          <span className="text-xs text-gray-500">{wordFreq.length} kata teratas</span>
+          <span className="text-xs text-gray-400">{wordFreq.length} kata teratas</span>
         </div>
         {wordFreq.length === 0 ? (
-          <p className="text-sm text-gray-500">Tidak ada kata yang dianalisis.</p>
+          <p className="text-sm text-gray-400">Tidak ada kata yang dianalisis.</p>
         ) : (
           <>
             {/* Word "cloud" — size scaled by frequency */}
@@ -676,7 +676,7 @@ function AnalysisTab({ docs, codes, codings }) {
         <div className="bg-white border border-gray-200 rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-3">Statistik Kode</h3>
           {codings.length === 0 ? (
-            <p className="text-xs text-gray-500">Belum ada coding. Mulai di tab Coding.</p>
+            <p className="text-xs text-gray-400">Belum ada coding. Mulai di tab Coding.</p>
           ) : (
             <table className="w-full text-xs">
               <thead className="bg-surface">
@@ -707,7 +707,7 @@ function AnalysisTab({ docs, codes, codings }) {
       {codes.length >= 2 && codings.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-1">Co-Occurrence Antar Kode</h3>
-          <p className="text-[11px] text-gray-500 mb-3">Berapa kali pasangan kode muncul bersama dalam dokumen yang sama. Diagonal = jumlah dokumen tempat kode itu muncul.</p>
+          <p className="text-[11px] text-gray-400 mb-3">Berapa kali pasangan kode muncul bersama dalam dokumen yang sama. Diagonal = jumlah dokumen tempat kode itu muncul.</p>
           <div className="overflow-x-auto">
             <table className="text-xs">
               <thead>
@@ -862,7 +862,7 @@ function KappaResult({ r }) {
 function Metric({ label, value, color, small }) {
   return (
     <div className="bg-surface rounded-lg p-3">
-      <div className="text-[10px] text-gray-500 uppercase tracking-wide">{label}</div>
+      <div className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</div>
       <div className={`font-bold ${small ? 'text-sm' : 'text-2xl'}`} style={color ? { color } : {}}>{value}</div>
     </div>
   )
@@ -876,7 +876,7 @@ function EmptyState({ icon: Icon, title, desc }) {
     <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
       <Icon className="w-12 h-12 text-muted mx-auto mb-2" />
       <p className="font-medium text-sm mb-1">{title}</p>
-      <p className="text-xs text-gray-500 max-w-md mx-auto">{desc}</p>
+      <p className="text-xs text-gray-400 max-w-md mx-auto">{desc}</p>
     </div>
   )
 }

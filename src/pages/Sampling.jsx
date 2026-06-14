@@ -63,7 +63,7 @@ export default function Sampling() {
                 className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px flex items-center gap-1.5 whitespace-nowrap transition-colors ${
                   tab === t.id
                     ? 'border-emerald-500 text-emerald-700'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    : 'border-transparent text-gray-400 hover:text-gray-700'
                 }`}
               >
                 <Ic className="w-4 h-4" /> {t.label}
@@ -145,7 +145,7 @@ function SizeCalculator() {
             ))}
           </select>
           {formulaMeta && (
-            <p className="text-[11px] text-gray-500 mt-1">{formulaMeta.desc}</p>
+            <p className="text-[11px] text-gray-400 mt-1">{formulaMeta.desc}</p>
           )}
         </div>
 
@@ -427,7 +427,7 @@ function StratifiedPanel() {
                   <tr key={r.name}>
                     <td className="px-2 py-1.5 font-medium">{r.name}</td>
                     <td className="px-2 py-1.5 text-right text-gray-600">{r.N}</td>
-                    <td className="px-2 py-1.5 text-right text-gray-500">{(r.fraction*100).toFixed(1)}%</td>
+                    <td className="px-2 py-1.5 text-right text-gray-400">{(r.fraction*100).toFixed(1)}%</td>
                     <td className="px-2 py-1.5 text-right font-bold text-emerald-700">{r.n}</td>
                   </tr>
                 ))}
@@ -486,14 +486,14 @@ function RandomSampler() {
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Dice5 className="w-4 h-4 text-emerald-600" /> Daftar Populasi
         </h3>
-        <p className="text-xs text-gray-500">Tempel daftar nama (1 baris = 1 nama). Bisa juga ID, NIM, NIK, dll.</p>
+        <p className="text-xs text-gray-400">Tempel daftar nama (1 baris = 1 nama). Bisa juga ID, NIM, NIK, dll.</p>
         <textarea
           value={namesText}
           onChange={e => setNamesText(e.target.value)}
           rows={10}
           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono"
         />
-        <div className="text-xs text-gray-500">Total: <strong>{items.length}</strong> item</div>
+        <div className="text-xs text-gray-400">Total: <strong>{items.length}</strong> item</div>
 
         <div className="grid grid-cols-2 gap-2">
           <div>

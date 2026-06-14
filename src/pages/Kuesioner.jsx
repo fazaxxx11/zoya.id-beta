@@ -253,7 +253,7 @@ export default function Kuesioner() {
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium truncate">{s.title || '(tanpa judul)'}</div>
-                    <div className="text-[10px] text-gray-500">
+                    <div className="text-[10px] text-gray-400">
                       {s.sections.reduce((n, sec) => n + sec.items.length, 0)} item ·
                       {' '}{listResponses(s.id).length} respons
                     </div>
@@ -324,7 +324,7 @@ export default function Kuesioner() {
                       className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px flex items-center gap-1.5 transition-colors ${
                         tab === t.id
                           ? 'border-sky-500 text-sky-700'
-                          : 'border-transparent text-gray-500 hover:text-gray-700'
+                          : 'border-transparent text-gray-400 hover:text-gray-700'
                       }`}
                     >
                       <Ic className="w-4 h-4" /> {t.label}
@@ -480,7 +480,7 @@ function BuilderPanel({ draft, setDraft }) {
                 value={sec.description || ''}
                 onChange={e => updateSection(sIdx, { description: e.target.value })}
                 placeholder="Deskripsi/dimensi (opsional)"
-                className="w-full text-xs text-gray-500 border-0 focus:ring-0 px-1"
+                className="w-full text-xs text-gray-400 border-0 focus:ring-0 px-1"
               />
             </div>
             <div className="flex flex-col">
@@ -521,7 +521,7 @@ function BuilderPanel({ draft, setDraft }) {
 
           {/* Add item buttons */}
           <div className="mt-3 pt-3 border-t border-border">
-            <div className="text-xs text-gray-500 mb-1.5">+ Tambah pertanyaan:</div>
+            <div className="text-xs text-gray-400 mb-1.5">+ Tambah pertanyaan:</div>
             <div className="flex flex-wrap gap-1.5">
               {ITEM_TYPES.map(t => (
                 <button
@@ -570,7 +570,7 @@ function ItemEditor({ item, idx, onChange, onDelete, onMoveUp, onMoveDown, onDup
             value={item.description || ''}
             onChange={e => onChange({ description: e.target.value })}
             placeholder="Bantuan/keterangan (opsional)"
-            className="w-full text-xs text-gray-500 border-0 focus:ring-0 px-1 bg-transparent"
+            className="w-full text-xs text-gray-400 border-0 focus:ring-0 px-1 bg-transparent"
           />
         </div>
         <span className="text-[10px] uppercase tracking-wide text-muted mt-2 px-1.5 py-0.5 bg-surface rounded border">
@@ -706,7 +706,7 @@ function PreviewPanel({ survey, onSubmit }) {
       {survey.description && <p className="text-sm text-gray-600 mb-4 whitespace-pre-wrap">{survey.description}</p>}
 
       <div className="mb-4 pb-4 border-b border-border">
-        <label className="text-xs text-gray-500 block mb-1">Nama responden (opsional)</label>
+        <label className="text-xs text-gray-400 block mb-1">Nama responden (opsional)</label>
         <input
           type="text"
           value={name}
@@ -719,7 +719,7 @@ function PreviewPanel({ survey, onSubmit }) {
       {survey.sections.map(sec => (
         <section key={sec.id} className="mb-6">
           <h3 className="text-base font-semibold mb-1 pb-1 border-b border-border">{sec.title}</h3>
-          {sec.description && <p className="text-xs text-gray-500 mb-3">{sec.description}</p>}
+          {sec.description && <p className="text-xs text-gray-400 mb-3">{sec.description}</p>}
           <div className="space-y-4">
             {sec.items.map((it, idx) => (
               <PreviewItem
@@ -752,7 +752,7 @@ function PreviewItem({ item, idx, value, onChange }) {
         {item.label || <em className="text-muted">(belum ada label)</em>}
         {item.required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
-      {item.description && <p className="text-xs text-gray-500 mb-2">{item.description}</p>}
+      {item.description && <p className="text-xs text-gray-400 mb-2">{item.description}</p>}
 
       {item.type === 'likert' && (
         <div className="flex flex-wrap items-center gap-2">
@@ -765,7 +765,7 @@ function PreviewItem({ item, idx, value, onChange }) {
                 onChange={() => onChange(n)}
                 className="w-4 h-4"
               />
-              <span className="text-[10px] text-gray-500">{n}</span>
+              <span className="text-[10px] text-gray-400">{n}</span>
               <span className="text-[10px] text-muted">{(item.scaleLabels || [])[n - 1] || ''}</span>
             </label>
           ))}
@@ -949,7 +949,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
                 className="w-full text-left px-3 py-2 rounded-lg bg-surface hover:bg-sky-50 border border-gray-200 hover:border-sky-300 transition-colors"
               >
                 <div className="text-sm font-medium text-gray-900">{tpl.name}</div>
-                <div className="text-xs text-gray-500">{tpl.desc}</div>
+                <div className="text-xs text-gray-400">{tpl.desc}</div>
               </button>
             ))}
           </div>
@@ -962,7 +962,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
           <Library className="w-5 h-5 text-emerald-600" />
           <span className="font-semibold text-gray-900">Instrumen Teruji (Validated Scales)</span>
           <span className="text-[10px] uppercase tracking-wide bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Akademik</span>
-          <span className="ml-auto text-xs text-gray-500">{INSTRUMENT_TEMPLATES.length} instrumen</span>
+          <span className="ml-auto text-xs text-gray-400">{INSTRUMENT_TEMPLATES.length} instrumen</span>
         </summary>
         <div className="px-5 pb-4 pt-1">
           <p className="text-xs text-gray-600 mb-3">
@@ -991,7 +991,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
 
       {/* Other options */}
       <div className="bg-white border border-gray-200 rounded-xl p-4 flex flex-wrap items-center gap-3 text-sm">
-        <span className="text-gray-500">Atau:</span>
+        <span className="text-gray-400">Atau:</span>
         <button onClick={onBlank} className="text-sky-600 hover:text-sky-700 font-medium flex items-center gap-1">
           <FilePlus2 className="w-4 h-4" /> Buat dari nol
         </button>
@@ -1038,7 +1038,7 @@ function StepFlowBanner({ tab, responses }) {
             <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-[11px] ${
               active ? 'bg-sky-500 text-white' :
               done   ? 'bg-green-500 text-white' :
-                       'bg-gray-200 text-gray-500'
+                       'bg-gray-200 text-gray-400'
             }`}>
               {done ? <Check className="w-3 h-3" /> : s.n}
             </div>
@@ -1134,7 +1134,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
       <div className="space-y-3">
         <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
           <ListChecks className="w-12 h-12 text-muted mx-auto mb-2" />
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-400 mb-4">
             Belum ada respons. Pilih cara mengisi:
           </p>
           <div className="flex flex-wrap justify-center gap-2">
@@ -1192,7 +1192,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {sectionStats.map(s => (
               <div key={s.section} className="bg-sky-50/50 border border-sky-100 rounded-lg p-2">
-                <div className="text-[11px] text-gray-500 truncate" title={s.section}>{s.section}</div>
+                <div className="text-[11px] text-gray-400 truncate" title={s.section}>{s.section}</div>
                 <div className="text-lg font-bold text-sky-700">{s.mean.toFixed(2)}</div>
                 <div className="text-[10px] text-muted">n = {s.n}</div>
               </div>
@@ -1218,9 +1218,9 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
               }).length
               return (
                 <tr key={r.id}>
-                  <td className="px-3 py-2 text-gray-500">{i + 1}</td>
+                  <td className="px-3 py-2 text-gray-400">{i + 1}</td>
                   <td className="px-3 py-2 font-medium">{r.respondentName}</td>
-                  <td className="px-3 py-2 text-xs text-gray-500">{new Date(r.submittedAt).toLocaleString('id-ID')}</td>
+                  <td className="px-3 py-2 text-xs text-gray-400">{new Date(r.submittedAt).toLocaleString('id-ID')}</td>
                   <td className="px-3 py-2 text-xs">{filled} item</td>
                   <td className="px-3 py-2 text-right">
                     <button onClick={() => onDelete(r.id)} className="text-muted hover:text-red-600">
@@ -1323,13 +1323,13 @@ function AIGenerateModal({ open, onClose, onResult }) {
           </div>
           <div>
             <h3 className="font-bold text-gray-900">Generate Kuesioner dengan AI</h3>
-            <p className="text-xs text-gray-500">Powered by OpenRouter / Groq / Kimi</p>
+            <p className="text-xs text-gray-400">Powered by OpenRouter / Groq / Kimi</p>
           </div>
         </div>
         <button
           onClick={handleClose}
           disabled={loading}
-          className="p-1.5 rounded hover:bg-gray-100 text-gray-500 disabled:opacity-50"
+          className="p-1.5 rounded hover:bg-gray-100 text-gray-400 disabled:opacity-50"
         >
           <X className="w-4 h-4" />
         </button>
@@ -1410,7 +1410,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               disabled={loading}
             />
-            <p className="text-[10px] text-gray-500 mt-1">Kosongkan untuk biarkan AI menentukan dimensi berdasarkan teori.</p>
+            <p className="text-[10px] text-gray-400 mt-1">Kosongkan untuk biarkan AI menentukan dimensi berdasarkan teori.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -1520,7 +1520,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
               {preview.survey.sections.map((sec, si) => (
                 <div key={si} className="bg-white border border-gray-200 rounded p-2.5">
                   <div className="font-semibold text-sm text-gray-900">{sec.title}</div>
-                  {sec.description && <div className="text-xs text-gray-500 mb-1.5">{sec.description}</div>}
+                  {sec.description && <div className="text-xs text-gray-400 mb-1.5">{sec.description}</div>}
                   <ol className="list-decimal pl-5 text-xs text-gray-700 space-y-0.5">
                     {sec.items.slice(0, 8).map((it, ii) => (
                       <li key={ii}>
@@ -1638,7 +1638,7 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
         <button
           onClick={() => setOpen(false)}
           disabled={loading}
-          className="text-gray-500 hover:text-gray-700 disabled:opacity-50"
+          className="text-gray-400 hover:text-gray-700 disabled:opacity-50"
         >
           <X className="w-4 h-4" />
         </button>
