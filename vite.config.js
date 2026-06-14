@@ -25,13 +25,11 @@ export default defineConfig({
         ]
       },
       workbox: {
-        // Only precache the app shell (HTML + critical CSS + main bundle)
-        // Heavy vendor chunks are loaded on-demand via runtime caching
         globPatterns: ['**/*.{html,css,ico,png,svg,woff2}', 'assets/vendor-react*.js', 'assets/index-*.js'],
         globIgnores: [
           '**/sw.js', '**/workbox-*.js',
-          // Exclude heavy vendor chunks from precache
           'assets/vendor-pdf*.js',
+          'assets/vendor-pdfjs*.js',
           'assets/vendor-xlsx*.js',
           'assets/vendor-mammoth*.js',
           'assets/vendor-docx*.js',
@@ -40,11 +38,9 @@ export default defineConfig({
           'assets/vendor-html2canvas*.js',
         ],
         cleanupOutdatedCaches: true,
-        // Skip waiting so new SW activates immediately
         skipWaiting: true,
         clientsClaim: true,
         runtimeCaching: [
-          // Supabase API — network-first with short cache
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
             handler: 'NetworkFirst',
@@ -54,7 +50,6 @@ export default defineConfig({
               networkTimeoutSeconds: 5,
             },
           },
-          // CDN resources — cache-first for fonts/icons
           {
             urlPattern: /^https:\/\/cdnjs\.cloudflare\.com\/.*/i,
             handler: 'CacheFirst',
@@ -63,8 +58,6 @@ export default defineConfig({
               expiration: { maxEntries: 20, maxAgeSeconds: 86400 },
             },
           },
-          // Lazy-loaded JS chunks — stale-while-revalidate
-          // Once loaded, cached for fast revisits; updates in background
           {
             urlPattern: /\/assets\/.*\.js$/i,
             handler: 'StaleWhileRevalidate',
@@ -78,32 +71,33 @@ export default defineConfig({
     }),
   ],
   build: {
-    chunkSizeWarningLimit: 600,
-    // No sourcemaps in production — saves ~30% build size
+    chunkSizeWarningLimit: 800,
     sourcemap: false,
-    // Target modern browsers for smaller output
     target: 'es2020',
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
+            // Core framework — always needed
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'vendor-react'
             }
-            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
-              return 'vendor-ui'
-            }
+            // Supabase client
             if (id.includes('@supabase')) {
               return 'vendor-supabase'
             }
+            // Statistics engine — only needed for stats pages
             if (id.includes('jstat') || id.includes('simple-statistics')) {
               return 'vendor-stats'
             }
+            // Heavy file parsers — only loaded on demand
             if (id.includes('xlsx')) return 'vendor-xlsx'
-            if (id.includes('pdfjs-dist') || id.includes('pdf-lib') || id.includes('jspdf')) return 'vendor-pdf'
             if (id.includes('mammoth')) return 'vendor-mammoth'
             if (id.includes('docx')) return 'vendor-docx'
             if (id.includes('html2canvas')) return 'vendor-html2canvas'
+            // NOTE: jspdf, pdfjs-dist, pdf-lib NOT manually chunked
+            // — Rolldown auto-splits them with lazy consumers
+            // @radix-ui, lucide-react also auto-split (not critical path)
           }
         },
       },
