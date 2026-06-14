@@ -53,6 +53,7 @@ export default defineConfig({
           'vendor-xlsx':     ['xlsx'],
           'vendor-pdf':      ['jspdf', 'pdf-lib', 'pdfjs-dist'],
           'vendor-mammoth':  ['mammoth'],
+          'vendor-docx':     ['docx'],
           'vendor-stats':    ['jstat', 'simple-statistics'],
           'vendor-supabase': ['@supabase/supabase-js'],
           'vendor-ui':       ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tooltip', 'lucide-react'],
