@@ -120,7 +120,7 @@ export default function StatistikPower() {
                 <div className="flex gap-2 mt-2">
                   {['small', 'medium', 'large'].map(level => (
                     <button key={level} onClick={() => setConvEs(level)}
-                            className="text-[10px] uppercase tracking-wider px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium">
+                            className="text-[10px] uppercase tracking-wider px-2 py-1 rounded bg-surface hover:bg-gray-200 text-gray-600 font-medium">
                       {level} ({conv[level]})
                     </button>
                   ))}

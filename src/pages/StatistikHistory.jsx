@@ -134,7 +134,7 @@ export default function StatistikHistory() {
               <button
                 disabled={selected.size !== 2}
                 onClick={() => navigate(`/statistik/compare?ids=${Array.from(selected).join(',')}`)}
-                className="text-xs font-medium px-4 py-2 rounded-lg bg-white text-gray-900 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">
+                className="text-xs font-medium px-4 py-2 rounded-lg bg-white text-gray-900 hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed">
                 Bandingkan →
               </button>
             </div>

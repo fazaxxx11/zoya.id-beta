@@ -510,7 +510,7 @@ function Payment() {
               <h2 className="text-xl font-bold text-gray-800 mb-2">Silakan Scan QRIS</h2>
               <p className="text-muted mb-4">Order ID: {orderId}</p>
               
-              <div className="w-48 h-48 bg-gray-100 rounded-xl mx-auto mb-4 flex items-center justify-center">
+              <div className="w-48 h-48 bg-surface rounded-xl mx-auto mb-4 flex items-center justify-center">
                 <div className="text-center text-muted">
                   <QrCode className="w-16 h-16 mx-auto mb-2" />
                   <p className="text-xs">QRIS Code</p>

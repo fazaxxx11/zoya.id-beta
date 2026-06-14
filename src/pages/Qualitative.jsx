@@ -644,7 +644,7 @@ function AnalysisTab({ docs, codes, codings }) {
               {wordFreq.map(w => (
                 <div key={w.word} className="flex items-center gap-2 text-xs">
                   <span className="w-32 truncate font-mono">{w.word}</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden relative">
+                  <div className="flex-1 bg-surface rounded-full h-4 overflow-hidden relative">
                     <div className="h-full bg-rose-400" style={{ width: `${(w.count / maxCount) * 100}%` }} />
                     <span className="absolute inset-0 flex items-center px-2 font-medium text-gray-800">
                       {w.count} ({w.percent.toFixed(1)}%)

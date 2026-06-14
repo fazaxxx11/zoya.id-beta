@@ -387,7 +387,7 @@ function Admin() {
                 <option value="pending">Pending</option>
                 <option value="failed">Failed</option>
               </select>
-              <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg text-sm"><Download className="w-4 h-4"/>Export</button>
+              <button className="flex items-center gap-2 px-4 py-2 bg-surface rounded-lg text-sm"><Download className="w-4 h-4"/>Export</button>
             </div>
           </div>
           <div className="overflow-x-auto">

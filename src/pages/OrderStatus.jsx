@@ -149,7 +149,7 @@ function OrderStatus() {
                       setSearchId(order.id)
                       setFoundOrder(order)
                     }}
-                    className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full"
+                    className="text-xs bg-surface hover:bg-gray-200 px-3 py-1 rounded-full"
                   >
                     {order.id}
                   </button>

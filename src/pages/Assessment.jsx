@@ -487,7 +487,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
-              inputMode === 'file' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-muted'
+              inputMode === 'file' ? 'bg-sky-500 text-white' : 'bg-surface text-muted'
             }`}>
               <FileSpreadsheet className="w-5 h-5" />
             </div>
@@ -508,7 +508,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
-              inputMode === 'manual' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-muted'
+              inputMode === 'manual' ? 'bg-sky-500 text-white' : 'bg-surface text-muted'
             }`}>
               <Pencil className="w-5 h-5" />
             </div>
@@ -813,7 +813,7 @@ function ClassSummary({ results, rubrik }) {
       {/* Distribusi bar */}
       <div className="mb-4">
         <div className="text-xs font-medium text-gray-600 mb-2">Distribusi</div>
-        <div className="flex h-6 rounded-lg overflow-hidden bg-gray-100">
+        <div className="flex h-6 rounded-lg overflow-hidden bg-surface">
           {Object.entries(stats.buckets).map(([label, n]) => {
             const pct = (n / total) * 100
             if (pct === 0) return null
@@ -1113,7 +1113,7 @@ function HasilPenilaian({
                         <div className="h-3 bg-gray-200 rounded w-8"/>
                       </div>
                       <div className="h-1.5 bg-gray-200 rounded-full"/>
-                      <div className="h-2 bg-gray-100 rounded w-5/6"/>
+                      <div className="h-2 bg-surface rounded w-5/6"/>
                     </div>
                   </div>
                 ))}
@@ -1180,7 +1180,7 @@ function KesimpulanEditable({ value, onSave }) {
         />
         <div className="flex gap-2 mt-2">
           <button onClick={() => { onSave(tmp); setEditing(false) }} className="text-xs px-3 py-1 bg-sky-600 text-white rounded-lg hover:bg-sky-700">Simpan</button>
-          <button onClick={() => { setTmp(value); setEditing(false) }} className="text-xs px-3 py-1 text-muted hover:bg-gray-100 rounded-lg">Batal</button>
+          <button onClick={() => { setTmp(value); setEditing(false) }} className="text-xs px-3 py-1 text-muted hover:bg-surface rounded-lg">Batal</button>
         </div>
       </div>
     )
@@ -1453,7 +1453,7 @@ function Assessment() {
             <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-medium transition-colors ${
               active ? 'bg-sky-500 text-white' :
               done   ? 'bg-green-500 text-white' :
-                       'bg-gray-100 text-muted'
+                       'bg-surface text-muted'
             }`}>
               <span className="w-4 h-4 rounded-full bg-white/30 flex items-center justify-center text-[10px] font-bold">
                 {done ? '✓' : i + 1}

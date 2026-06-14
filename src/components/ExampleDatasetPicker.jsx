@@ -49,7 +49,7 @@ export default function ExampleDatasetPicker({ open, onClose, onPick }) {
                   <div className="text-sm font-semibold text-gray-900 group-hover:text-black">
                     {ds.name}
                   </div>
-                  <span className="text-[10px] uppercase tracking-[0.14em] text-muted bg-gray-100 px-2 py-0.5 rounded-full font-medium shrink-0">
+                  <span className="text-[10px] uppercase tracking-[0.14em] text-muted bg-surface px-2 py-0.5 rounded-full font-medium shrink-0">
                     {TOOL_LABELS[ds.recommendedTool] || ds.recommendedTool}
                   </span>
                 </div>

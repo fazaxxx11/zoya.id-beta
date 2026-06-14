@@ -87,7 +87,7 @@ export default function AssessmentReport() {
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 -ml-2 text-muted hover:bg-gray-100 rounded-lg"
+            className="p-2 -ml-2 text-muted hover:bg-surface rounded-lg"
             title="Kembali"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -98,7 +98,7 @@ export default function AssessmentReport() {
           </div>
 
           {/* View mode toggle */}
-          <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
+          <div className="flex items-center gap-1 bg-surface p-1 rounded-lg">
             <button
               onClick={() => setViewMode('class')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
@@ -266,8 +266,8 @@ function ClassReportView({ report }) {
                     {k.nama.length > 12 ? k.nama.slice(0, 11) + '…' : k.nama}
                   </th>
                 ))}
-                <th className="border border-border px-2 py-1.5 text-right bg-gray-100">Total</th>
-                <th className="border border-border px-2 py-1.5 text-left bg-gray-100">Status</th>
+                <th className="border border-border px-2 py-1.5 text-right bg-surface">Total</th>
+                <th className="border border-border px-2 py-1.5 text-left bg-surface">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -439,7 +439,7 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
               ))}
             </tbody>
             <tfoot>
-              <tr className="bg-gray-100 font-bold">
+              <tr className="bg-surface font-bold">
                 <td colSpan={3} className="border border-border px-3 py-2 text-right">Total Akhir:</td>
                 <td className="border border-border px-3 py-2 text-right">{card.total.toFixed(2)}</td>
               </tr>
@@ -514,5 +514,5 @@ function statusBadgeClass(status) {
     'Perlu Perbaikan':  'bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[11px] font-medium',
     'Belum Memenuhi':   'bg-red-100 text-red-700 px-2 py-0.5 rounded text-[11px] font-medium',
   }
-  return map[status] || 'bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-[11px] font-medium'
+  return map[status] || 'bg-surface text-gray-700 px-2 py-0.5 rounded text-[11px] font-medium'
 }

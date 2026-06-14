@@ -262,7 +262,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
             <button
               type="button"
               onClick={() => setShowDataPreview(v => !v)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-surface hover:bg-gray-100 transition-colors text-left"
+              className="w-full flex items-center justify-between px-4 py-3 bg-surface hover:bg-surface transition-colors text-left"
             >
               <div className="flex items-center gap-2">
                 <Table2 className="w-4 h-4 text-gray-600" />
@@ -283,9 +283,9 @@ function ModalBody({ data, columns, onClose, onApply }) {
               <>
                 <div className="overflow-auto max-h-[420px] border-t border-border">
                   <table className="w-full text-sm border-collapse">
-                    <thead className="bg-gray-100 sticky top-0 z-10">
+                    <thead className="bg-surface sticky top-0 z-10">
                       <tr>
-                        <th className="border-b border-r border-border px-2 py-1.5 w-12 text-center text-[11px] font-semibold text-gray-600 sticky left-0 bg-gray-100 z-20">
+                        <th className="border-b border-r border-border px-2 py-1.5 w-12 text-center text-[11px] font-semibold text-gray-600 sticky left-0 bg-surface z-20">
                           #
                         </th>
                         {columns.map(col => (

@@ -48,7 +48,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
         </div>
         <div className="flex flex-wrap gap-1 mb-2">
           {tpl.kriteria.slice(0, 4).map((k, i) => (
-            <span key={i} className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">
+            <span key={i} className="text-[10px] bg-surface px-1.5 py-0.5 rounded text-gray-600">
               {k.nama} ({k.bobot}%)
             </span>
           ))}
@@ -80,7 +80,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
             <FileText className="w-5 h-5 text-sky-600" />
             <h3 className="font-bold text-gray-900">Pilih Template Rubrik</h3>
           </div>
-          <button onClick={onClose} className="text-muted hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100">
+          <button onClick={onClose} className="text-muted hover:text-gray-700 p-1 rounded-lg hover:bg-surface">
             <X className="w-5 h-5" />
           </button>
         </div>

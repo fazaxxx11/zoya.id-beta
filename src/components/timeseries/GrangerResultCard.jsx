@@ -42,7 +42,7 @@ export default function GrangerResultCard({ result }) {
           </span>
           <span
             className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
-              isSignificant ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-muted'
+              isSignificant ? 'bg-blue-100 text-blue-700' : 'bg-surface text-muted'
             }`}
           >
             {isSignificant ? 'SIGNIFIKAN' : 'TIDAK SIGNIFIKAN'}

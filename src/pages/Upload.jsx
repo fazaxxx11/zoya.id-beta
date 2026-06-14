@@ -111,7 +111,7 @@ function Upload() {
           <h3 className="font-semibold text-gray-800 mb-3">Format yang Didukung</h3>
           <div className="flex flex-wrap gap-2">
             {formats.map(format => (
-              <span key={format.ext} className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-600 flex items-center gap-1">
+              <span key={format.ext} className="bg-surface px-3 py-1 rounded-full text-sm text-gray-600 flex items-center gap-1">
                 <span>{format.icon}</span>
                 <span>{format.name}</span>
                 <span className="text-muted">.{format.ext}</span>
@@ -142,7 +142,7 @@ function Upload() {
           
           <label htmlFor="file-upload" className="flex flex-col items-center cursor-pointer">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
-              dragActive ? 'bg-sky-100' : 'bg-gray-100'
+              dragActive ? 'bg-sky-100' : 'bg-surface'
             }`}>
               {processing ? (
                 <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />

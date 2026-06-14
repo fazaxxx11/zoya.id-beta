@@ -480,7 +480,7 @@ export function ChiSquareResult({ r }) {
             <tr>
               <th className="px-3 py-2 text-left border">{r.var1} \ {r.var2}</th>
               {r.colLabels.map(c => <th key={c} className="px-3 py-2 text-left border">{c}</th>)}
-              <th className="px-3 py-2 text-left border bg-gray-100">Total</th>
+              <th className="px-3 py-2 text-left border bg-surface">Total</th>
             </tr>
           </thead>
           <tbody>
@@ -719,7 +719,7 @@ export function NGainResult({ r }) {
                   <td className="px-3 py-2 font-bold">{n}</td>
                   <td className="px-3 py-2">{pct.toFixed(1)}%</td>
                   <td className="px-3 py-2">
-                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-surface rounded-full h-2 overflow-hidden">
                       <div className={`${color} h-2 rounded-full transition-all`} style={{ width: `${pct}%` }} />
                     </div>
                   </td>
@@ -751,7 +751,7 @@ export function NGainResult({ r }) {
       )}
 
       <details className="border border-border rounded-xl overflow-hidden mb-4">
-        <summary className="px-4 py-2.5 bg-card/50 hover:bg-gray-100 cursor-pointer text-sm font-medium">
+        <summary className="px-4 py-2.5 bg-card/50 hover:bg-surface cursor-pointer text-sm font-medium">
           Detail per Subjek ({r.pairs.length}) — klik untuk buka
         </summary>
         <div className="overflow-x-auto">

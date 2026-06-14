@@ -1329,7 +1329,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
         <button
           onClick={handleClose}
           disabled={loading}
-          className="p-1.5 rounded hover:bg-gray-100 text-muted disabled:opacity-50"
+          className="p-1.5 rounded hover:bg-surface text-muted disabled:opacity-50"
         >
           <X className="w-4 h-4" />
         </button>
