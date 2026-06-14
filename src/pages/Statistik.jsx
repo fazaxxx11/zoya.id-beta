@@ -1068,7 +1068,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
               </button>
               {someSelected && !allSelected && (
                 <>
-                  <span className="text-gray-300">·</span>
+                  <span className="text-muted">·</span>
                   <button
                     type="button"
                     onClick={() => onChange([])}

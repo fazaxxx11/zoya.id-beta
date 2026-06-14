@@ -312,7 +312,7 @@ function Admin() {
               <p className="p-6 text-center text-sm text-gray-500">Belum ada permintaan top-up manual.</p>
             ) : (
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-surface">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Order ID</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Email</th>
@@ -326,7 +326,7 @@ function Admin() {
                 </thead>
                 <tbody className="divide-y">
                   {pendingTopups.slice(0, 30).map(p => (
-                    <tr key={p.id} className="hover:bg-gray-50">
+                    <tr key={p.id} className="hover:bg-surface">
                       <td className="px-4 py-3 text-sm font-medium text-sky-600">{p.id}</td>
                       <td className="px-4 py-3 text-sm text-gray-700">{p.userEmail}</td>
                       <td className="px-4 py-3 text-sm font-semibold">{formatIDR(p.amount)}</td>
@@ -357,7 +357,7 @@ function Admin() {
                             </button>
                           </div>
                         ) : (
-                          <span className="text-xs text-gray-400">—</span>
+                          <span className="text-xs text-muted">—</span>
                         )}
                       </td>
                     </tr>
@@ -378,7 +378,7 @@ function Admin() {
             <h2 className="font-bold text-gray-800">Transaction History</h2>
             <div className="flex gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"/>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted"/>
                 <input type="text" placeholder="Cari..." value={searchTerm} onChange={e=>setSearchTerm(e.target.value)} className="pl-10 pr-4 py-2 border rounded-lg text-sm"/>
               </div>
               <select value={filterStatus} onChange={e=>setFilterStatus(e.target.value)} className="px-4 py-2 border rounded-lg text-sm">
@@ -392,7 +392,7 @@ function Admin() {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-surface">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Order ID</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">User</th>
@@ -405,10 +405,10 @@ function Admin() {
               </thead>
               <tbody className="divide-y">
                 {filteredTransactions.map(t => (
-                  <tr key={t.id} className="hover:bg-gray-50">
+                  <tr key={t.id} className="hover:bg-surface">
                     <td className="px-4 py-3 text-sm font-medium text-sky-600">{t.id}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">{t.user}</td>
-                    <td className="px-4 py-3 text-sm"><span className="font-medium">{t.service}</span><span className="text-gray-400 text-xs block">{t.tier}</span></td>
+                    <td className="px-4 py-3 text-sm"><span className="font-medium">{t.service}</span><span className="text-muted text-xs block">{t.tier}</span></td>
                     <td className="px-4 py-3 text-sm font-semibold">{formatCurrency(t.amount)}</td>
                     <td className="px-4 py-3 text-sm capitalize">{t.method}</td>
                     <td className="px-4 py-3"><span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${

@@ -44,7 +44,7 @@ export default function AssessmentReport() {
   if (!order) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="bg-white rounded-2xl shadow-sm p-8 max-w-md text-center border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm p-8 max-w-md text-center border border-border">
           <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <FileText className="w-7 h-7 text-amber-600" />
           </div>
@@ -81,7 +81,7 @@ export default function AssessmentReport() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 print:bg-white">
+    <div className="min-h-screen bg-surface print:bg-white">
       {/* === Toolbar (hidden saat print) === */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-30 print:hidden">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
@@ -162,14 +162,14 @@ function ClassReportView({ report }) {
   const { meta, summary, distribusi, kriteriaStats, tableRows, narrative, rubrik } = report
 
   return (
-    <article className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 print:shadow-none print:border-0 print:rounded-none print:p-0 report-page">
+    <article className="bg-white rounded-2xl shadow-sm border border-border p-6 sm:p-10 print:shadow-none print:border-0 print:rounded-none print:p-0 report-page">
       {/* Header */}
       <header className="border-b-2 border-gray-900 pb-4 mb-6 text-center print:mb-4">
         <div className="text-xs uppercase tracking-widest text-gray-500 mb-1">{BRAND_NAME}</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Laporan Penilaian Kelas</h1>
         <p className="text-base font-medium text-gray-700">{meta.title}</p>
         {meta.context && <p className="text-sm text-gray-500 mt-1 italic">{meta.context}</p>}
-        <p className="text-xs text-gray-400 mt-2">
+        <p className="text-xs text-muted mt-2">
           Dibuat: {meta.generatedAtLocal} · Total Siswa: {summary.totalSiswa}
         </p>
       </header>
@@ -194,7 +194,7 @@ function ClassReportView({ report }) {
         <h2 className="text-lg font-bold text-gray-900 mb-3 border-l-4 border-sky-500 pl-3">B. Distribusi Kategori</h2>
         <table className="w-full text-sm border border-gray-200">
           <thead>
-            <tr className="bg-gray-50">
+            <tr className="bg-surface">
               <th className="border border-gray-200 px-3 py-2 text-left">Kategori</th>
               <th className="border border-gray-200 px-3 py-2 text-left">Rentang</th>
               <th className="border border-gray-200 px-3 py-2 text-right">Jumlah</th>
@@ -229,7 +229,7 @@ function ClassReportView({ report }) {
         <h2 className="text-lg font-bold text-gray-900 mb-3 border-l-4 border-sky-500 pl-3">C. Analisis per Kriteria</h2>
         <table className="w-full text-sm border border-gray-200">
           <thead>
-            <tr className="bg-gray-50">
+            <tr className="bg-surface">
               <th className="border border-gray-200 px-3 py-2 text-left">Kriteria</th>
               <th className="border border-gray-200 px-3 py-2 text-right">Bobot</th>
               <th className="border border-gray-200 px-3 py-2 text-right">Mean</th>
@@ -258,7 +258,7 @@ function ClassReportView({ report }) {
         <div className="overflow-x-auto">
           <table className="w-full text-xs border border-gray-200">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-surface">
                 <th className="border border-gray-200 px-2 py-1.5 text-left">No.</th>
                 <th className="border border-gray-200 px-2 py-1.5 text-left">Nama Siswa</th>
                 {rubrik.map(k => (
@@ -280,7 +280,7 @@ function ClassReportView({ report }) {
                       {pk.skor != null ? pk.skor.toFixed(1) : '-'}
                     </td>
                   ))}
-                  <td className="border border-gray-200 px-2 py-1.5 text-right font-bold bg-gray-50">{row.total.toFixed(2)}</td>
+                  <td className="border border-gray-200 px-2 py-1.5 text-right font-bold bg-surface">{row.total.toFixed(2)}</td>
                   <td className="border border-gray-200 px-2 py-1.5">
                     <span className={statusBadgeClass(row.status)}>{row.status}</span>
                   </td>
@@ -313,7 +313,7 @@ function ClassReportView({ report }) {
             <p className="border-t border-gray-400 pt-1">Penilai</p>
           </div>
         </div>
-        <p className="text-center mt-6 text-[10px] text-gray-400">
+        <p className="text-center mt-6 text-[10px] text-muted">
           Laporan ini dibuat otomatis oleh {BRAND_NAME} · {meta.generatedAtLocal}
         </p>
       </footer>
@@ -337,7 +337,7 @@ function StudentSelectAndCard({ results, selectedId, studentCard, classReport })
   // Empty state — pilih siswa
   if (!studentCard) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl border border-border p-6">
         <h3 className="font-semibold text-gray-800 mb-3">Pilih siswa untuk lihat report card:</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {results.map(r => (
@@ -373,12 +373,12 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
             <option key={r.id} value={r.id}>{r.name || 'Tanpa Nama'}</option>
           ))}
         </select>
-        <span className="text-xs text-gray-400 ml-auto">
+        <span className="text-xs text-muted ml-auto">
           ({results.findIndex(r => r.id === selectedId) + 1} / {results.length})
         </span>
       </div>
 
-      <article className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 print:shadow-none print:border-0 print:rounded-none print:p-0 report-page">
+      <article className="bg-white rounded-2xl shadow-sm border border-border p-6 sm:p-10 print:shadow-none print:border-0 print:rounded-none print:p-0 report-page">
         <header className="border-b-2 border-gray-900 pb-4 mb-6 text-center">
           <div className="text-xs uppercase tracking-widest text-gray-500 mb-1">{BRAND_NAME}</div>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">Kartu Nilai Siswa</h1>
@@ -393,7 +393,7 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
             {card.meta.context && (
               <div className="text-xs text-gray-500 mt-2 italic">{card.meta.context}</div>
             )}
-            <div className="text-xs text-gray-400 mt-1">Tanggal: {card.meta.generatedAtLocal}</div>
+            <div className="text-xs text-muted mt-1">Tanggal: {card.meta.generatedAtLocal}</div>
           </div>
           <div className={`rounded-xl p-4 text-center ${
             card.total >= 7.5 ? 'bg-green-50 border-2 border-green-300' :
@@ -413,7 +413,7 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
           <h2 className="text-lg font-bold text-gray-900 mb-3 border-l-4 border-sky-500 pl-3">Rincian Penilaian</h2>
           <table className="w-full text-sm border border-gray-200">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-surface">
                 <th className="border border-gray-200 px-3 py-2 text-left">Kriteria</th>
                 <th className="border border-gray-200 px-3 py-2 text-right">Bobot</th>
                 <th className="border border-gray-200 px-3 py-2 text-right">Skor</th>
@@ -427,7 +427,7 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
                     <div className="font-medium">{k.nama}</div>
                     {k.deskripsi && <div className="text-[11px] text-gray-500 mt-0.5">{k.deskripsi}</div>}
                     {k.komentar && (
-                      <div className="text-xs text-gray-700 mt-1.5 italic bg-gray-50 px-2 py-1 rounded">
+                      <div className="text-xs text-gray-700 mt-1.5 italic bg-surface px-2 py-1 rounded">
                         💬 {k.komentar}
                       </div>
                     )}
@@ -493,11 +493,11 @@ function StudentCardView({ card, classReport, onChangeStudent, results, selected
 // =====================================================
 function Stat({ label, value, highlight = 'gray' }) {
   const cls = {
-    gray:  'bg-gray-50 border-gray-200',
+    gray:  'bg-surface border-gray-200',
     green: 'bg-green-50 border-green-200',
     red:   'bg-red-50 border-red-200',
     sky:   'bg-sky-50 border-sky-200',
-  }[highlight] || 'bg-gray-50 border-gray-200'
+  }[highlight] || 'bg-surface border-gray-200'
   return (
     <div className={`rounded-lg border px-3 py-2 ${cls}`}>
       <div className="text-[10px] uppercase tracking-wide text-gray-500">{label}</div>

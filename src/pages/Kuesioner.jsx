@@ -246,7 +246,7 @@ export default function Kuesioner() {
                 className={`group rounded-lg border px-3 py-2 cursor-pointer transition-colors ${
                   s.id === activeId
                     ? 'bg-sky-50 border-sky-300'
-                    : 'bg-white border-gray-200 hover:bg-gray-50'
+                    : 'bg-white border-gray-200 hover:bg-surface'
                 }`}
                 onClick={() => handleSelect(s.id)}
               >
@@ -261,12 +261,12 @@ export default function Kuesioner() {
                   <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDuplicate(s.id) }}
-                      className="p-1 text-gray-400 hover:text-sky-600"
+                      className="p-1 text-muted hover:text-sky-600"
                       title="Duplikat"
                     ><Copy className="w-3.5 h-3.5" /></button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDelete(s.id) }}
-                      className="p-1 text-gray-400 hover:text-red-600"
+                      className="p-1 text-muted hover:text-red-600"
                       title="Hapus"
                     ><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
@@ -465,8 +465,8 @@ function BuilderPanel({ draft, setDraft }) {
 
       {draft.sections.map((sec, sIdx) => (
         <div key={sec.id} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4">
-          <div className="flex items-start gap-2 mb-3 pb-3 border-b border-gray-100">
-            <GripVertical className="w-4 h-4 text-gray-300 mt-2.5" />
+          <div className="flex items-start gap-2 mb-3 pb-3 border-b border-border">
+            <GripVertical className="w-4 h-4 text-muted mt-2.5" />
             <div className="flex-1 space-y-1.5">
               <input
                 type="text"
@@ -484,10 +484,10 @@ function BuilderPanel({ draft, setDraft }) {
               />
             </div>
             <div className="flex flex-col">
-              <button onClick={() => moveSection(sIdx, -1)} className="p-1 text-gray-400 hover:text-sky-600" title="Pindah atas"><ChevronUp className="w-4 h-4" /></button>
-              <button onClick={() => moveSection(sIdx, +1)} className="p-1 text-gray-400 hover:text-sky-600" title="Pindah bawah"><ChevronDown className="w-4 h-4" /></button>
+              <button onClick={() => moveSection(sIdx, -1)} className="p-1 text-muted hover:text-sky-600" title="Pindah atas"><ChevronUp className="w-4 h-4" /></button>
+              <button onClick={() => moveSection(sIdx, +1)} className="p-1 text-muted hover:text-sky-600" title="Pindah bawah"><ChevronDown className="w-4 h-4" /></button>
             </div>
-            <button onClick={() => deleteSection(sIdx)} className="p-1.5 text-gray-400 hover:text-red-600" title="Hapus bagian"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={() => deleteSection(sIdx)} className="p-1.5 text-muted hover:text-red-600" title="Hapus bagian"><Trash2 className="w-4 h-4" /></button>
           </div>
 
           {/* AI Regenerate per-section */}
@@ -501,7 +501,7 @@ function BuilderPanel({ draft, setDraft }) {
           {/* Items */}
           <div className="space-y-2">
             {sec.items.length === 0 && (
-              <p className="text-xs text-gray-400 italic px-2 py-3 text-center border border-dashed border-gray-200 rounded-lg">
+              <p className="text-xs text-muted italic px-2 py-3 text-center border border-dashed border-gray-200 rounded-lg">
                 Belum ada pertanyaan. Tambah di bawah ↓
               </p>
             )}
@@ -520,7 +520,7 @@ function BuilderPanel({ draft, setDraft }) {
           </div>
 
           {/* Add item buttons */}
-          <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="mt-3 pt-3 border-t border-border">
             <div className="text-xs text-gray-500 mb-1.5">+ Tambah pertanyaan:</div>
             <div className="flex flex-wrap gap-1.5">
               {ITEM_TYPES.map(t => (
@@ -556,7 +556,7 @@ function ItemEditor({ item, idx, onChange, onDelete, onMoveUp, onMoveDown, onDup
   return (
     <div className="border border-gray-200 rounded-lg p-3 hover:border-sky-200 transition-colors">
       <div className="flex items-start gap-2">
-        <span className="text-xs font-bold text-gray-400 mt-2 w-5">{idx + 1}.</span>
+        <span className="text-xs font-bold text-muted mt-2 w-5">{idx + 1}.</span>
         <div className="flex-1 space-y-1.5">
           <input
             type="text"
@@ -573,14 +573,14 @@ function ItemEditor({ item, idx, onChange, onDelete, onMoveUp, onMoveDown, onDup
             className="w-full text-xs text-gray-500 border-0 focus:ring-0 px-1 bg-transparent"
           />
         </div>
-        <span className="text-[10px] uppercase tracking-wide text-gray-400 mt-2 px-1.5 py-0.5 bg-gray-50 rounded border">
+        <span className="text-[10px] uppercase tracking-wide text-muted mt-2 px-1.5 py-0.5 bg-surface rounded border">
           {typeMeta?.label || item.type}
         </span>
         <div className="flex">
-          <button onClick={onMoveUp} className="p-1 text-gray-400 hover:text-sky-600"><ChevronUp className="w-4 h-4" /></button>
-          <button onClick={onMoveDown} className="p-1 text-gray-400 hover:text-sky-600"><ChevronDown className="w-4 h-4" /></button>
-          <button onClick={onDuplicate} className="p-1 text-gray-400 hover:text-sky-600" title="Duplikat"><Copy className="w-4 h-4" /></button>
-          <button onClick={onDelete} className="p-1 text-gray-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+          <button onClick={onMoveUp} className="p-1 text-muted hover:text-sky-600"><ChevronUp className="w-4 h-4" /></button>
+          <button onClick={onMoveDown} className="p-1 text-muted hover:text-sky-600"><ChevronDown className="w-4 h-4" /></button>
+          <button onClick={onDuplicate} className="p-1 text-muted hover:text-sky-600" title="Duplikat"><Copy className="w-4 h-4" /></button>
+          <button onClick={onDelete} className="p-1 text-muted hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
         </div>
       </div>
 
@@ -615,7 +615,7 @@ function ItemEditor({ item, idx, onChange, onDelete, onMoveUp, onMoveDown, onDup
                 onChange={e => onChange({ reverseCoded: e.target.checked })}
               />
               <span>Reverse coded</span>
-              <span className="text-gray-400">(skor dibalik)</span>
+              <span className="text-muted">(skor dibalik)</span>
             </label>
           </div>
         )}
@@ -661,14 +661,14 @@ function OptionsEditor({ options, onChange }) {
     <div className="space-y-1">
       {options.map((opt, i) => (
         <div key={i} className="flex items-center gap-1.5">
-          <span className="text-xs text-gray-400 w-5">{i + 1}.</span>
+          <span className="text-xs text-muted w-5">{i + 1}.</span>
           <input
             type="text"
             value={opt}
             onChange={e => update(i, e.target.value)}
             className="flex-1 text-xs border border-gray-200 rounded px-2 py-1"
           />
-          <button onClick={() => remove(i)} className="text-gray-400 hover:text-red-600 p-0.5">
+          <button onClick={() => remove(i)} className="text-muted hover:text-red-600 p-0.5">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -705,7 +705,7 @@ function PreviewPanel({ survey, onSubmit }) {
       <h2 className="text-xl font-bold mb-1">{survey.title}</h2>
       {survey.description && <p className="text-sm text-gray-600 mb-4 whitespace-pre-wrap">{survey.description}</p>}
 
-      <div className="mb-4 pb-4 border-b border-gray-100">
+      <div className="mb-4 pb-4 border-b border-border">
         <label className="text-xs text-gray-500 block mb-1">Nama responden (opsional)</label>
         <input
           type="text"
@@ -718,7 +718,7 @@ function PreviewPanel({ survey, onSubmit }) {
 
       {survey.sections.map(sec => (
         <section key={sec.id} className="mb-6">
-          <h3 className="text-base font-semibold mb-1 pb-1 border-b border-gray-100">{sec.title}</h3>
+          <h3 className="text-base font-semibold mb-1 pb-1 border-b border-border">{sec.title}</h3>
           {sec.description && <p className="text-xs text-gray-500 mb-3">{sec.description}</p>}
           <div className="space-y-4">
             {sec.items.map((it, idx) => (
@@ -734,7 +734,7 @@ function PreviewPanel({ survey, onSubmit }) {
         </section>
       ))}
 
-      <div className="pt-4 border-t border-gray-100 flex items-center gap-3">
+      <div className="pt-4 border-t border-border flex items-center gap-3">
         <button onClick={handleSubmit} className="btn-primary">
           <Send className="w-4 h-4" /> Submit Respons
         </button>
@@ -748,8 +748,8 @@ function PreviewItem({ item, idx, value, onChange }) {
   return (
     <div>
       <label className="block text-sm font-medium mb-1.5">
-        <span className="text-gray-400 mr-1">{idx + 1}.</span>
-        {item.label || <em className="text-gray-300">(belum ada label)</em>}
+        <span className="text-muted mr-1">{idx + 1}.</span>
+        {item.label || <em className="text-muted">(belum ada label)</em>}
         {item.required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       {item.description && <p className="text-xs text-gray-500 mb-2">{item.description}</p>}
@@ -766,7 +766,7 @@ function PreviewItem({ item, idx, value, onChange }) {
                 className="w-4 h-4"
               />
               <span className="text-[10px] text-gray-500">{n}</span>
-              <span className="text-[10px] text-gray-400">{(item.scaleLabels || [])[n - 1] || ''}</span>
+              <span className="text-[10px] text-muted">{(item.scaleLabels || [])[n - 1] || ''}</span>
             </label>
           ))}
         </div>
@@ -780,7 +780,7 @@ function PreviewItem({ item, idx, value, onChange }) {
               type="button"
               onClick={() => onChange(n)}
               className={`text-2xl transition-colors ${
-                (value || 0) >= n ? 'text-amber-400' : 'text-gray-300 hover:text-amber-300'
+                (value || 0) >= n ? 'text-amber-400' : 'text-muted hover:text-amber-300'
               }`}
             >★</button>
           ))}
@@ -946,7 +946,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
               <button
                 key={tpl.id}
                 onClick={() => onTemplate(tpl.id)}
-                className="w-full text-left px-3 py-2 rounded-lg bg-gray-50 hover:bg-sky-50 border border-gray-200 hover:border-sky-300 transition-colors"
+                className="w-full text-left px-3 py-2 rounded-lg bg-surface hover:bg-sky-50 border border-gray-200 hover:border-sky-300 transition-colors"
               >
                 <div className="text-sm font-medium text-gray-900">{tpl.name}</div>
                 <div className="text-xs text-gray-500">{tpl.desc}</div>
@@ -995,7 +995,7 @@ function WelcomeWizard({ onDemo, onTemplate, onBlank, onImport, onAIGenerate, on
         <button onClick={onBlank} className="text-sky-600 hover:text-sky-700 font-medium flex items-center gap-1">
           <FilePlus2 className="w-4 h-4" /> Buat dari nol
         </button>
-        <span className="text-gray-300">·</span>
+        <span className="text-muted">·</span>
         <button onClick={onImport} className="text-sky-600 hover:text-sky-700 font-medium flex items-center gap-1">
           <Upload className="w-4 h-4" /> Import file JSON
         </button>
@@ -1044,9 +1044,9 @@ function StepFlowBanner({ tab, responses }) {
             </div>
             <div className="min-w-0">
               <div className={`font-semibold truncate ${active ? 'text-sky-700' : 'text-gray-700'}`}>{s.label}</div>
-              <div className="text-[10px] text-gray-400 truncate">{s.desc}</div>
+              <div className="text-[10px] text-muted truncate">{s.desc}</div>
             </div>
-            {i < steps.length - 1 && <ArrowRight className="w-3 h-3 text-gray-300 flex-shrink-0" />}
+            {i < steps.length - 1 && <ArrowRight className="w-3 h-3 text-muted flex-shrink-0" />}
           </div>
         )
       })}
@@ -1133,15 +1133,15 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
     return (
       <div className="space-y-3">
         <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
-          <ListChecks className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+          <ListChecks className="w-12 h-12 text-muted mx-auto mb-2" />
           <p className="text-sm text-gray-500 mb-4">
             Belum ada respons. Pilih cara mengisi:
           </p>
           <div className="flex flex-wrap justify-center gap-2">
-            <span className="text-xs text-gray-400 self-center">Cara 1:</span>
+            <span className="text-xs text-muted self-center">Cara 1:</span>
             <span className="text-xs text-gray-700 self-center">Buka tab <strong>Preview & Isi</strong> untuk isi manual</span>
           </div>
-          <div className="my-3 text-xs text-gray-300">— atau —</div>
+          <div className="my-3 text-xs text-muted">— atau —</div>
           <div className="flex flex-wrap justify-center gap-2">
             <button onClick={downloadTemplate} className="btn-secondary text-xs py-1.5">
               <Download className="w-3.5 h-3.5" /> Download Template CSV
@@ -1150,7 +1150,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
               <Upload className="w-3.5 h-3.5" /> Import Respons (CSV)
             </button>
           </div>
-          <p className="text-[11px] text-gray-400 mt-2 max-w-md mx-auto">
+          <p className="text-[11px] text-muted mt-2 max-w-md mx-auto">
             Tip: download template dulu untuk lihat format kolom yang dibutuhkan, isi pakai Excel/Google Sheets, lalu upload kembali.
           </p>
         </div>
@@ -1194,7 +1194,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
               <div key={s.section} className="bg-sky-50/50 border border-sky-100 rounded-lg p-2">
                 <div className="text-[11px] text-gray-500 truncate" title={s.section}>{s.section}</div>
                 <div className="text-lg font-bold text-sky-700">{s.mean.toFixed(2)}</div>
-                <div className="text-[10px] text-gray-400">n = {s.n}</div>
+                <div className="text-[10px] text-muted">n = {s.n}</div>
               </div>
             ))}
           </div>
@@ -1204,7 +1204,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
       {/* Per-respondent list */}
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-surface">
             <tr>
               {['#', 'Nama', 'Waktu', 'Item terisi', ''].map(h =>
                 <th key={h} className="px-3 py-2 text-left text-xs font-medium text-gray-600">{h}</th>)}
@@ -1223,7 +1223,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
                   <td className="px-3 py-2 text-xs text-gray-500">{new Date(r.submittedAt).toLocaleString('id-ID')}</td>
                   <td className="px-3 py-2 text-xs">{filled} item</td>
                   <td className="px-3 py-2 text-right">
-                    <button onClick={() => onDelete(r.id)} className="text-gray-400 hover:text-red-600">
+                    <button onClick={() => onDelete(r.id)} className="text-muted hover:text-red-600">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </td>
@@ -1237,7 +1237,7 @@ function ResponsesPanel({ survey, responses, onDelete, onClearAll, onAnalyze, on
       {showRaw && (
         <div className="bg-white border border-gray-200 rounded-xl p-3 overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-gray-50">
+            <thead className="bg-surface">
               <tr>{matrix.headers.map(h => <th key={h} className="px-2 py-1.5 text-left">{h}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -1476,7 +1476,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
 
         {/* Preview */}
         {preview && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto">
+          <div className="bg-surface border border-gray-200 rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="font-semibold text-sm text-gray-900">{preview.survey.title}</div>
@@ -1529,7 +1529,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
                       </li>
                     ))}
                     {sec.items.length > 8 && (
-                      <li className="text-gray-400 italic list-none">…dan {sec.items.length - 8} item lainnya</li>
+                      <li className="text-muted italic list-none">…dan {sec.items.length - 8} item lainnya</li>
                     )}
                   </ol>
                 </div>
@@ -1537,7 +1537,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
             </div>
 
             {preview.provider && (
-              <div className="text-[10px] text-gray-400 italic">Generated via {preview.provider}</div>
+              <div className="text-[10px] text-muted italic">Generated via {preview.provider}</div>
             )}
 
             <button

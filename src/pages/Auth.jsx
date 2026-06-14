@@ -228,7 +228,7 @@ function Auth() {
           </div>
 
           {/* Wallet Card */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-gray-800">💰 Saldo Saya</h3>
               <button 
@@ -283,7 +283,7 @@ function Auth() {
 
           {/* Top-up packages */}
           {mode === 'topup' && (
-            <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-gray-800">📦 Paket Top-up</h3>
                 <span className={`text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 ${BETA_FREE ? 'text-sky-600 bg-sky-50' : 'text-emerald-600 bg-emerald-50'}`}>
@@ -334,7 +334,7 @@ function Auth() {
                       </p>
                     )}
                     {pkg.bonus === 0 && (
-                      <p className="text-[11px] text-gray-400 mt-1">Tanpa bonus (paket coba)</p>
+                      <p className="text-[11px] text-muted mt-1">Tanpa bonus (paket coba)</p>
                     )}
                   </button>
                   ))}
@@ -361,11 +361,11 @@ function Auth() {
 
           {/* Transaction History */}
           {wallet.transactions.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
               <h3 className="font-bold text-gray-800 mb-4">📜 Riwayat Transaksi</h3>
               <div className="space-y-3">
                 {wallet.transactions.slice(0, 10).map(t => (
-                  <div key={t.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <div key={t.id} className="flex justify-between items-center p-3 bg-surface rounded-lg">
                     <div>
                       <p className="font-medium text-gray-800">{t.id}</p>
                       <p className="text-xs text-gray-500">{t.date}</p>
@@ -424,7 +424,7 @@ function Auth() {
             <div>
               <label className="block text-sm text-gray-500 mb-1">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
                   type="email"
                   value={email}
@@ -437,7 +437,7 @@ function Auth() {
             <div>
               <label className="block text-sm text-gray-500 mb-1">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
@@ -448,7 +448,7 @@ function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -478,7 +478,7 @@ function Auth() {
                 <div>
                   <label className="block text-sm text-gray-500 mb-1">Email</label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                     <input
                       type="email"
                       value={email}
@@ -501,7 +501,7 @@ function Auth() {
                 <div>
                   <label className="block text-sm text-gray-500 mb-1">Kode OTP</label>
                   <div className="relative">
-                    <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                     <input
                       type="text"
                       inputMode="numeric"
@@ -537,7 +537,7 @@ function Auth() {
             <div>
               <label className="block text-sm text-gray-500 mb-1">Nama Lengkap</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
                   type="text"
                   value={name}
@@ -550,7 +550,7 @@ function Auth() {
             <div>
               <label className="block text-sm text-gray-500 mb-1">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
                   type="email"
                   value={email}
@@ -563,7 +563,7 @@ function Auth() {
             <div>
               <label className="block text-sm text-gray-500 mb-1">No. HP (opsional)</label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
                   type="tel"
                   value={phone}
@@ -576,7 +576,7 @@ function Auth() {
             <div>
               <label className="block text-sm text-gray-500 mb-1">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
@@ -587,7 +587,7 @@ function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -659,7 +659,7 @@ function Auth() {
             </p>
           )}
           {(mode === 'login' || mode === 'register') && (
-            <p className="text-gray-400 text-sm mt-3">
+            <p className="text-muted text-sm mt-3">
               atau{' '}
               <button onClick={() => navigate('/')} className="text-sky-600 hover:underline">
                 kembali ke beranda
@@ -690,14 +690,14 @@ function AltLoginMethods({ loading, onGoogle, onOtp, variant = 'login' }) {
     <div className="pt-2">
       <div className="flex items-center gap-3 my-3">
         <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-xs text-gray-400 uppercase tracking-wider">atau</span>
+        <span className="text-xs text-muted uppercase tracking-wider">atau</span>
         <div className="flex-1 h-px bg-gray-200" />
       </div>
       <button
         type="button"
         onClick={onGoogle}
         disabled={loading}
-        className="w-full bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+        className="w-full bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-surface text-gray-700 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
       >
         <GoogleIcon className="w-5 h-5" />
         {variant === 'signup' ? 'Daftar dengan Google' : 'Login dengan Google'}

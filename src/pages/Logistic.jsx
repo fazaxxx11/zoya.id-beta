@@ -150,7 +150,7 @@ export default function LogisticPage() {
 
           {/* Column mapping */}
           {parsed.headers.length > 0 && (
-            <div className="space-y-2 pt-2 border-t border-gray-100">
+            <div className="space-y-2 pt-2 border-t border-border">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Outcome (Y, harus 0/1)</label>
                 <select value={yColumn} onChange={e => setYColumn(e.target.value)}
@@ -174,7 +174,7 @@ export default function LogisticPage() {
                 </div>
                 <div className="border border-gray-200 rounded-lg p-2 grid grid-cols-2 sm:grid-cols-3 gap-1 max-h-32 overflow-y-auto">
                   {parsed.headers.filter(h => h !== yColumn).map(h => (
-                    <label key={h} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-gray-50 px-1.5 py-1 rounded">
+                    <label key={h} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-surface px-1.5 py-1 rounded">
                       <input type="checkbox" checked={xColumns.includes(h)} onChange={() => toggleX(h)} />
                       <span className="truncate">{h}</span>
                     </label>
@@ -241,7 +241,7 @@ function CoefficientsTable({ fit }) {
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
-          <thead className="bg-gray-50">
+          <thead className="bg-surface">
             <tr>
               <th className="px-2 py-1.5 text-left">Variabel</th>
               <th className="px-2 py-1.5 text-right">β</th>
@@ -257,7 +257,7 @@ function CoefficientsTable({ fit }) {
             {fit.coefficients.map((c, i) => {
               const sig = c.p < 0.001 ? '***' : c.p < 0.01 ? '**' : c.p < 0.05 ? '*' : ''
               return (
-                <tr key={i} className={i === 0 ? 'bg-gray-50/50' : ''}>
+                <tr key={i} className={i === 0 ? 'bg-surface/50' : ''}>
                   <td className="px-2 py-1.5 font-medium">{c.name}</td>
                   <td className="px-2 py-1.5 text-right font-mono">{c.b.toFixed(4)}</td>
                   <td className="px-2 py-1.5 text-right font-mono">{c.se.toFixed(4)}</td>
@@ -339,7 +339,7 @@ function ClassificationSection({ cm, threshold, setThreshold }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <table className="w-full text-xs">
-            <thead className="bg-gray-50">
+            <thead className="bg-surface">
               <tr>
                 <th className="px-2 py-1.5"></th>
                 <th className="px-2 py-1.5">Predicted: 0</th>
@@ -348,12 +348,12 @@ function ClassificationSection({ cm, threshold, setThreshold }) {
             </thead>
             <tbody>
               <tr>
-                <th className="px-2 py-1.5 bg-gray-50 text-left">Actual: 0</th>
+                <th className="px-2 py-1.5 bg-surface text-left">Actual: 0</th>
                 <td className="px-2 py-1.5 text-center bg-green-50 font-mono font-bold">{cm.tn}</td>
                 <td className="px-2 py-1.5 text-center bg-red-50/50 font-mono">{cm.fp}</td>
               </tr>
               <tr>
-                <th className="px-2 py-1.5 bg-gray-50 text-left">Actual: 1</th>
+                <th className="px-2 py-1.5 bg-surface text-left">Actual: 1</th>
                 <td className="px-2 py-1.5 text-center bg-red-50/50 font-mono">{cm.fn}</td>
                 <td className="px-2 py-1.5 text-center bg-green-50 font-mono font-bold">{cm.tp}</td>
               </tr>
@@ -396,7 +396,7 @@ function ROCSection({ roc }) {
         </div>
       </div>
 
-      <div className="bg-gray-50 rounded-lg p-2">
+      <div className="bg-surface rounded-lg p-2">
         <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="max-w-full h-auto">
           {/* Diagonal reference */}
           <line x1={sx(0)} y1={sy(0)} x2={sx(1)} y2={sy(1)} stroke="#cbd5e1" strokeDasharray="3,3" />
@@ -493,7 +493,7 @@ Pada threshold ${threshold.toFixed(2)}, model mencapai akurasi ${(cm.accuracy*10
 
 function Metric({ label, value, highlight }) {
   return (
-    <div className={`rounded-lg p-2 text-center ${highlight ? 'bg-amber-50 border border-amber-200' : 'bg-gray-50'}`}>
+    <div className={`rounded-lg p-2 text-center ${highlight ? 'bg-amber-50 border border-amber-200' : 'bg-surface'}`}>
       <div className="text-[10px] text-gray-500 uppercase tracking-wide">{label}</div>
       <div className={`font-bold ${highlight ? 'text-amber-700 text-lg' : ''}`}>{value}</div>
     </div>

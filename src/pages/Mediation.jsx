@@ -175,7 +175,7 @@ export default function MediationPage() {
           )}
 
           {/* Column mapping */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-border">
             <ColumnPicker label="X (predictor)" value={colX} setValue={setColX} options={parsed.headers} />
             {model === 'mediation' && (
               <ColumnPicker label="M (mediator)" value={colM} setValue={setColM} options={parsed.headers} />
@@ -299,7 +299,7 @@ function MediationResult({ r }) {
 
         {/* Paths table */}
         <table className="w-full text-xs mt-4">
-          <thead className="bg-gray-50">
+          <thead className="bg-surface">
             <tr>
               <th className="px-2 py-1.5 text-left">Path</th>
               <th className="px-2 py-1.5 text-right">Coef</th>
@@ -381,7 +381,7 @@ function MediationResult({ r }) {
 function PathRow({ name, data }) {
   const sig = data.p < 0.001 ? '***' : data.p < 0.01 ? '**' : data.p < 0.05 ? '*' : ''
   return (
-    <tr className="hover:bg-gray-50">
+    <tr className="hover:bg-surface">
       <td className="px-2 py-1.5 font-medium">{name}</td>
       <td className="px-2 py-1.5 text-right font-mono">{data.coef.toFixed(4)}</td>
       <td className="px-2 py-1.5 text-right font-mono">{data.se.toFixed(4)}</td>
@@ -394,7 +394,7 @@ function PathRow({ name, data }) {
 
 function PathDiagram({ paths, indirect }) {
   return (
-    <div className="bg-gray-50 rounded-lg p-4 my-2">
+    <div className="bg-surface rounded-lg p-4 my-2">
       <div className="flex items-center justify-around gap-2">
         <Box label="X" />
         <PathArrow label={`a = ${paths.a.coef.toFixed(2)}`} sig={paths.a.p < 0.05} />
@@ -431,7 +431,7 @@ function PathArrow({ label, sig }) {
       <div className={`text-[10px] font-mono ${sig ? 'text-green-700 font-bold' : 'text-gray-500'}`}>
         {label}
       </div>
-      <div className="text-xl text-gray-400">→</div>
+      <div className="text-xl text-muted">→</div>
     </div>
   )
 }
@@ -468,7 +468,7 @@ function ModerationResult({ r }) {
         </div>
 
         <table className="w-full text-xs">
-          <thead className="bg-gray-50">
+          <thead className="bg-surface">
             <tr>
               <th className="px-2 py-1.5 text-left">Term</th>
               <th className="px-2 py-1.5 text-right">Coef</th>
@@ -490,7 +490,7 @@ function ModerationResult({ r }) {
         <div className={`mt-3 rounded-lg p-3 text-xs ${
           r.interactionSignificant
             ? 'bg-green-50 border border-green-200 text-green-900'
-            : 'bg-gray-50 border border-gray-200 text-gray-700'
+            : 'bg-surface border border-gray-200 text-gray-700'
         }`}>
           <div className="font-semibold mb-1">
             {r.interactionSignificant
@@ -517,7 +517,7 @@ function ModerationResult({ r }) {
         <div className="mt-3">
           <div className="text-xs font-semibold mb-2">Conditional Effect of X (pick-a-point: -1 SD, Mean, +1 SD)</div>
           <table className="w-full text-xs">
-            <thead className="bg-gray-50">
+            <thead className="bg-surface">
               <tr>
                 <th className="px-2 py-1.5 text-left">Pada W =</th>
                 <th className="px-2 py-1.5 text-right">Effect</th>
@@ -617,7 +617,7 @@ function SimpleSlopePlot({ r }) {
   const yTicks = [yLo, (yLo + yHi) / 2, yHi]
 
   return (
-    <div className="bg-gray-50 rounded-lg p-3 overflow-x-auto">
+    <div className="bg-surface rounded-lg p-3 overflow-x-auto">
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="max-w-full h-auto">
         {/* Background grid */}
         {yTicks.map((yt, i) => (

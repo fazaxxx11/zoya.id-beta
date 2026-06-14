@@ -103,7 +103,7 @@ function Payment() {
         </header>
 
         <div className="max-w-2xl mx-auto px-4 py-10">
-          <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100 text-center">
+          <div className="bg-white rounded-2xl shadow-sm p-8 border border-border text-center">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-4">
               <Sparkles className="w-8 h-8" />
             </div>
@@ -314,7 +314,7 @@ function Payment() {
 
     return (
       <div className="min-h-screen bg-pattern">
-        <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-border">
           <div className="max-w-3xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <button onClick={() => navigate('/')} className="flex items-center gap-2 text-gray-500 hover:text-sky-600">
@@ -328,7 +328,7 @@ function Payment() {
 
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
           {/* Success Badge */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 text-center">
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
@@ -344,7 +344,7 @@ function Payment() {
           </div>
 
           {/* Next step card */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
             <h3 className="font-bold text-gray-800 mb-2">Langkah Selanjutnya</h3>
             <p className="text-gray-600 mb-4">
               Pembayaran berhasil. Silakan lanjutkan ke halaman {serviceLabel} untuk
@@ -366,7 +366,7 @@ function Payment() {
             </button>
             <button 
               onClick={() => navigate('/')}
-              className="w-full px-6 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-medium flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-surface font-medium flex items-center justify-center gap-2"
             >
               <Home className="w-5 h-5" />
               Kembali ke Home
@@ -380,7 +380,7 @@ function Payment() {
   return (
     <div className="min-h-screen bg-pattern">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-border">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-sky-600">
@@ -412,7 +412,7 @@ function Payment() {
         )}
 
         {/* Order Summary */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
           <h2 className="text-lg font-bold text-gray-800 mb-4">Ringkasan Pesanan</h2>
           
           <div className="flex items-center gap-4 p-4 bg-sky-50 rounded-xl">
@@ -427,7 +427,7 @@ function Payment() {
           </div>
 
           {orderId && (
-            <div className="mt-3 p-2 bg-gray-50 rounded-lg">
+            <div className="mt-3 p-2 bg-surface rounded-lg">
               <p className="text-xs text-gray-500">Order ID</p>
               <p className="font-mono text-sm">{orderId}</p>
             </div>
@@ -456,7 +456,7 @@ function Payment() {
 
         {/* Payment Method Selection */}
         {!showQR && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
             <h2 className="text-lg font-bold text-gray-800 mb-4">Metode Pembayaran</h2>
             
             <div className="grid grid-cols-2 gap-3">
@@ -502,7 +502,7 @@ function Payment() {
 
         {/* QRIS Display */}
         {showQR && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
             <div className="text-center">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-10 h-10 text-green-600" />
@@ -511,7 +511,7 @@ function Payment() {
               <p className="text-gray-500 mb-4">Order ID: {orderId}</p>
               
               <div className="w-48 h-48 bg-gray-100 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                <div className="text-center text-gray-400">
+                <div className="text-center text-muted">
                   <QrCode className="w-16 h-16 mx-auto mb-2" />
                   <p className="text-xs">QRIS Code</p>
                   <p className="text-xs">Rp {tier?.price?.toLocaleString('id-ID')}</p>

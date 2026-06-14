@@ -45,7 +45,7 @@ export default function ConfirmPaymentModal({
       panelClassName="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative animate-in fade-in">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+          className="absolute top-3 right-3 text-muted hover:text-gray-600"
           disabled={loading}
         >
           <X className="w-5 h-5" />
@@ -66,7 +66,7 @@ export default function ConfirmPaymentModal({
             <div className="text-right">
               {!betaFree && isDiscountActive() && originalPrice && originalPrice > price && (
                 <div className="flex items-center justify-end gap-2 mb-0.5">
-                  <span className="text-sm text-gray-400 line-through">{formatIDR(originalPrice)}</span>
+                  <span className="text-sm text-muted line-through">{formatIDR(originalPrice)}</span>
                   <span
                     className="text-[10px] font-semibold text-white px-1.5 py-0.5 rounded-full"
                     style={{ background: 'linear-gradient(135deg, #ec4899, #a855f7)' }}
@@ -75,7 +75,7 @@ export default function ConfirmPaymentModal({
                   </span>
                 </div>
               )}
-              {betaFree && <span className="text-sm text-gray-400 line-through mr-2">{formatIDR(originalPrice)}</span>}
+              {betaFree && <span className="text-sm text-muted line-through mr-2">{formatIDR(originalPrice)}</span>}
               <span className="text-2xl font-bold text-sky-600">{betaFree ? 'Gratis' : formatIDR(price)}</span>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function ConfirmPaymentModal({
             <button
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-medium"
+              className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-surface font-medium"
             >
               Batal
             </button>
@@ -133,7 +133,7 @@ export default function ConfirmPaymentModal({
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-medium"
+              className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-surface font-medium"
             >
               Tutup
             </button>
@@ -146,7 +146,7 @@ export default function ConfirmPaymentModal({
           </div>
         )}
 
-        <p className="text-[11px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
+        <p className="text-[11px] text-muted text-center mt-3 flex items-center justify-center gap-1">
           <AlertCircle className="w-3 h-3" />
           {betaFree ? 'Tidak ada pemotongan saldo selama beta' : 'Saldo akan dipotong setelah klik konfirmasi'}
         </p>

@@ -259,7 +259,7 @@ function SizeCalculator() {
             <div className="text-xs space-y-2">
               <div>
                 <div className="font-semibold text-gray-700">Rumus</div>
-                <code className="text-[11px] bg-gray-50 px-2 py-1 rounded block mt-1 text-gray-700">
+                <code className="text-[11px] bg-surface px-2 py-1 rounded block mt-1 text-gray-700">
                   {result.formula}
                 </code>
               </div>
@@ -365,17 +365,17 @@ function StratifiedPanel() {
               <button
                 onClick={() => remove(i)}
                 disabled={strata.length === 1}
-                className="text-red-500 hover:text-red-700 disabled:text-gray-300 px-2"
+                className="text-red-500 hover:text-red-700 disabled:text-muted px-2"
               >×</button>
             </div>
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-gray-100">
+        <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border">
           <button onClick={add} className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">
             + Tambah strata
           </button>
-          <span className="text-xs text-gray-400">·</span>
+          <span className="text-xs text-muted">·</span>
           <span className="text-xs text-gray-600">Total populasi: <strong>{totalN}</strong></span>
         </div>
       </div>
@@ -414,7 +414,7 @@ function StratifiedPanel() {
             <div className="text-xs text-red-700">{result.error}</div>
           ) : (
             <table className="w-full text-xs">
-              <thead className="bg-gray-50">
+              <thead className="bg-surface">
                 <tr>
                   <th className="px-2 py-1.5 text-left">Strata</th>
                   <th className="px-2 py-1.5 text-right">N</th>
@@ -431,7 +431,7 @@ function StratifiedPanel() {
                     <td className="px-2 py-1.5 text-right font-bold text-emerald-700">{r.n}</td>
                   </tr>
                 ))}
-                <tr className="bg-gray-50">
+                <tr className="bg-surface">
                   <td className="px-2 py-1.5 font-bold">Total</td>
                   <td className="px-2 py-1.5 text-right font-bold">{totalN}</td>
                   <td></td>
@@ -509,7 +509,7 @@ function RandomSampler() {
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Seed (opsional)
-              <span className="text-gray-400 font-normal ml-1" title="Angka untuk reproducibility">ⓘ</span>
+              <span className="text-muted font-normal ml-1" title="Angka untuk reproducibility">ⓘ</span>
             </label>
             <input
               type="number"
@@ -536,19 +536,19 @@ function RandomSampler() {
           )}
         </div>
         {result.length === 0 ? (
-          <p className="text-xs text-gray-400 italic text-center py-8">Klik "Pilih Acak" untuk lihat hasil</p>
+          <p className="text-xs text-muted italic text-center py-8">Klik "Pilih Acak" untuk lihat hasil</p>
         ) : (
           <ol className="text-sm space-y-1">
             {result.map((r, i) => (
-              <li key={i} className="flex items-center gap-2 px-2 py-1 hover:bg-gray-50 rounded">
-                <span className="text-xs text-gray-400 w-6">{i + 1}.</span>
+              <li key={i} className="flex items-center gap-2 px-2 py-1 hover:bg-surface rounded">
+                <span className="text-xs text-muted w-6">{i + 1}.</span>
                 <span className="font-medium">{r}</span>
               </li>
             ))}
           </ol>
         )}
         {seed !== '' && result.length > 0 && (
-          <p className="text-[10px] text-gray-400 mt-3 italic">
+          <p className="text-[10px] text-muted mt-3 italic">
             Seed = {seed}. Hasil reproducible — pakai seed yang sama akan keluar urutan yang sama.
           </p>
         )}

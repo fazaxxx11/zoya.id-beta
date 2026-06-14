@@ -100,8 +100,6 @@
 .dark .bg-white\/50 {
   background-color: rgb(var(--card) / 0.7);
 }
-.dark .bg-gray-50,
-.dark .bg-gray-100,
 .dark .bg-slate-50,
 .dark .bg-slate-100 {
   background-color: rgb(var(--border) / 0.25);
@@ -111,7 +109,6 @@
 }
 
 /* Borders → theme border */
-.dark .border-gray-100,
 .dark .border-gray-200,
 .dark .border-gray-300,
 .dark .border-slate-100,
@@ -134,15 +131,12 @@
   color: rgb(var(--fg) / 0.85);
 }
 .dark .text-gray-500,
-.dark .text-gray-400,
 .dark .text-slate-500,
 .dark .text-slate-400 {
   color: rgb(var(--muted));
 }
 
 /* Hover background untuk row clickable */
-.dark .hover\:bg-gray-50:hover,
-.dark .hover\:bg-gray-100:hover,
 .dark .hover\:bg-slate-50:hover {
   background-color: rgb(var(--border) / 0.4);
 }
@@ -488,8 +482,6 @@ body::before { display: none; }
   backdrop-filter: blur(12px);
   border: 1px solid rgb(var(--border) / 0.45);
 }
-.dark .bg-gray-50  { background-color: rgb(var(--card) / 0.4) !important; }
-.dark .bg-gray-100 { background-color: rgb(var(--card) / 0.6) !important; }
 .dark .bg-gray-200 { background-color: rgb(var(--border) / 0.8) !important; }
 .dark .bg-gray-800 { background-color: rgb(var(--card)) !important; }
 .dark .bg-gray-900 { background-color: rgb(var(--bg)) !important; }
@@ -500,7 +492,7 @@ body::before { display: none; }
 .dark .text-gray-700 { color: rgb(var(--fg) / 0.92) !important; }
 .dark .text-gray-600 { color: rgb(var(--muted)) !important; }
 .dark .text-gray-500 { color: rgb(var(--muted) / 0.85) !important; }
-.dark .text-gray-400 { color: rgb(var(--muted) / 0.7) !important; }
+
 
 /* Borders */
 .dark .border-gray-100,

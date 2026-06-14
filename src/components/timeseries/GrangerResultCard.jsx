@@ -31,7 +31,7 @@ export default function GrangerResultCard({ result }) {
           {isSignificant ? (
             <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0" />
           ) : (
-            <XCircle className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <XCircle className="w-4 h-4 text-muted flex-shrink-0" />
           )}
           <span className="text-sm font-bold truncate" style={{ color: 'rgb(var(--fg))' }}>
             {result.xLabel || 'X'}

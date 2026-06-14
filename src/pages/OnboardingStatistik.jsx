@@ -204,7 +204,7 @@ export default function OnboardingStatistik() {
 function Welcome({ onStart, onSkip }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200/80 p-6">
-      <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-2">Modul Statistik</div>
+      <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Modul Statistik</div>
       <h1 className="text-xl font-semibold text-gray-900 tracking-tight">Panduan memilih analisis</h1>
       <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">
         Dua sampai tiga pertanyaan singkat, lalu kami rekomendasikan tool yang sesuai dengan tujuan dan tipe datamu.
@@ -221,7 +221,7 @@ function Welcome({ onStart, onSkip }) {
             <s.icon className="w-3.5 h-3.5 text-gray-500" strokeWidth={1.75} />
             <div className="min-w-0">
               <div className="text-xs font-medium text-gray-800 leading-tight">{s.label}</div>
-              <div className="text-[11px] text-gray-400 leading-tight">{s.desc}</div>
+              <div className="text-[11px] text-muted leading-tight">{s.desc}</div>
             </div>
           </div>
         ))}
@@ -234,7 +234,7 @@ function Welcome({ onStart, onSkip }) {
           <ArrowRight className="w-4 h-4" strokeWidth={2} />
         </button>
         <button onClick={onSkip}
-                className="flex-1 border border-gray-200 hover:bg-gray-50 text-sm text-gray-700 font-medium py-2.5 px-4 rounded-lg transition-colors">
+                className="flex-1 border border-gray-200 hover:bg-surface text-sm text-gray-700 font-medium py-2.5 px-4 rounded-lg transition-colors">
           Langsung ke tools
         </button>
       </div>
@@ -253,7 +253,7 @@ function WizardStep({ node, stepIndex, onChoose, onBack }) {
                 className="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1">
           <ChevronLeft className="w-3.5 h-3.5" /> Kembali
         </button>
-        <div className="text-[11px] uppercase tracking-[0.16em] text-gray-400">Pertanyaan {stepIndex}</div>
+        <div className="text-[11px] uppercase tracking-[0.16em] text-muted">Pertanyaan {stepIndex}</div>
       </div>
 
       <h2 className="text-base font-semibold text-gray-900 tracking-tight mt-3">{node.question}</h2>
@@ -264,9 +264,9 @@ function WizardStep({ node, stepIndex, onChoose, onBack }) {
       <div className="divide-y divide-gray-100 border border-gray-200/80 rounded-lg mt-5 overflow-hidden">
         {node.options.map((opt, i) => (
           <button key={i} onClick={() => onChoose(opt)}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center justify-between group">
+                  className="w-full text-left px-4 py-3 hover:bg-surface transition-colors flex items-center justify-between group">
             <span className="text-sm text-gray-700 group-hover:text-gray-900">{opt.label}</span>
-            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-600 flex-shrink-0 ml-3" strokeWidth={2} />
+            <ChevronRight className="w-4 h-4 text-muted group-hover:text-gray-600 flex-shrink-0 ml-3" strokeWidth={2} />
           </button>
         ))}
       </div>
@@ -283,7 +283,7 @@ function Recommendation({ toolKey, onGo, onRestart, onSkip }) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200/80 p-6">
-      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-3">
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-3">
         <Check className="w-3.5 h-3.5 text-gray-700" strokeWidth={2.5} />
         Rekomendasi
       </div>
@@ -291,13 +291,13 @@ function Recommendation({ toolKey, onGo, onRestart, onSkip }) {
       <h3 className="text-xl font-semibold text-gray-900 tracking-tight">{info.name}</h3>
       <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">{info.desc}</p>
 
-      <div className="mt-5 border-t border-gray-100 pt-4">
-        <div className="text-[11px] uppercase tracking-[0.16em] text-gray-400 font-medium mb-2">Persiapan data</div>
+      <div className="mt-5 border-t border-border pt-4">
+        <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium mb-2">Persiapan data</div>
         <ul className="text-xs text-gray-600 space-y-1.5">
-          <li className="flex gap-2"><span className="text-gray-300">—</span>File Excel (.xlsx) atau CSV (.csv)</li>
-          <li className="flex gap-2"><span className="text-gray-300">—</span>Header kolom di baris pertama</li>
-          <li className="flex gap-2"><span className="text-gray-300">—</span>Setiap baris satu observasi / responden</li>
-          <li className="flex gap-2"><span className="text-gray-300">—</span>Nilai numerik tanpa simbol (Rp, %, dll)</li>
+          <li className="flex gap-2"><span className="text-muted">—</span>File Excel (.xlsx) atau CSV (.csv)</li>
+          <li className="flex gap-2"><span className="text-muted">—</span>Header kolom di baris pertama</li>
+          <li className="flex gap-2"><span className="text-muted">—</span>Setiap baris satu observasi / responden</li>
+          <li className="flex gap-2"><span className="text-muted">—</span>Nilai numerik tanpa simbol (Rp, %, dll)</li>
         </ul>
       </div>
 
@@ -307,7 +307,7 @@ function Recommendation({ toolKey, onGo, onRestart, onSkip }) {
           Mulai analisis <ArrowRight className="w-4 h-4" strokeWidth={2} />
         </button>
         <button onClick={onRestart}
-                className="border border-gray-200 hover:bg-gray-50 text-sm text-gray-700 font-medium py-2.5 px-4 rounded-lg">
+                className="border border-gray-200 hover:bg-surface text-sm text-gray-700 font-medium py-2.5 px-4 rounded-lg">
           Ulangi panduan
         </button>
         <button onClick={onSkip}

@@ -256,19 +256,19 @@ function DocCard({ doc, onEdit, onDelete }) {
             {doc.date && ` · ${doc.date}`}
           </div>
           {expanded && (
-            <div className="mt-2 bg-gray-50 rounded p-2 text-xs whitespace-pre-wrap max-h-60 overflow-y-auto">
+            <div className="mt-2 bg-surface rounded p-2 text-xs whitespace-pre-wrap max-h-60 overflow-y-auto">
               {doc.text}
             </div>
           )}
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => setExpanded(!expanded)} className="text-gray-400 hover:text-gray-700 p-1" title={expanded ? 'Tutup' : 'Lihat'}>
+          <button onClick={() => setExpanded(!expanded)} className="text-muted hover:text-gray-700 p-1" title={expanded ? 'Tutup' : 'Lihat'}>
             <Eye className="w-4 h-4" />
           </button>
-          <button onClick={onEdit} className="text-gray-400 hover:text-rose-600 p-1" title="Edit">
+          <button onClick={onEdit} className="text-muted hover:text-rose-600 p-1" title="Edit">
             <Edit3 className="w-4 h-4" />
           </button>
-          <button onClick={onDelete} className="text-gray-400 hover:text-red-600 p-1" title="Hapus">
+          <button onClick={onDelete} className="text-muted hover:text-red-600 p-1" title="Hapus">
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
@@ -283,9 +283,9 @@ function DocEditor({ initial, onSave, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="border-b border-gray-100 px-5 py-3 flex items-center justify-between">
+        <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">{initial.title ? 'Edit Dokumen' : 'Tambah Dokumen'}</h3>
-          <button onClick={onCancel} className="text-gray-400 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          <button onClick={onCancel} className="text-muted hover:text-gray-700"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
           <input
@@ -305,7 +305,7 @@ function DocEditor({ initial, onSave, onCancel }) {
             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono"
           />
         </div>
-        <div className="border-t border-gray-100 px-5 py-3 flex justify-end gap-2">
+        <div className="border-t border-border px-5 py-3 flex justify-end gap-2">
           <button onClick={onCancel} className="btn-ghost text-sm">Batal</button>
           <button onClick={() => onSave(doc)} className="btn-primary text-sm">
             <Save className="w-4 h-4" /> Simpan
@@ -365,8 +365,8 @@ function CodebookTab({ codes, refresh }) {
                 <div className="font-medium text-sm">{c.label}</div>
                 {c.description && <div className="text-xs text-gray-600 mt-0.5">{c.description}</div>}
               </div>
-              <button onClick={() => setEditing(c)} className="text-gray-400 hover:text-rose-600 p-1"><Edit3 className="w-4 h-4" /></button>
-              <button onClick={() => handleDelete(c.id)} className="text-gray-400 hover:text-red-600 p-1"><Trash2 className="w-4 h-4" /></button>
+              <button onClick={() => setEditing(c)} className="text-muted hover:text-rose-600 p-1"><Edit3 className="w-4 h-4" /></button>
+              <button onClick={() => handleDelete(c.id)} className="text-muted hover:text-red-600 p-1"><Trash2 className="w-4 h-4" /></button>
             </div>
           ))}
         </div>
@@ -383,9 +383,9 @@ function CodeEditor({ initial, onSave, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-md w-full">
-        <div className="border-b border-gray-100 px-5 py-3 flex items-center justify-between">
+        <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">{initial.label ? 'Edit Kode' : 'Tambah Kode'}</h3>
-          <button onClick={onCancel} className="text-gray-400 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          <button onClick={onCancel} className="text-muted hover:text-gray-700"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
           <div>
@@ -418,7 +418,7 @@ function CodeEditor({ initial, onSave, onCancel }) {
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-100 px-5 py-3 flex justify-end gap-2">
+        <div className="border-t border-border px-5 py-3 flex justify-end gap-2">
           <button onClick={onCancel} className="btn-ghost text-sm">Batal</button>
           <button onClick={() => onSave(code)} className="btn-primary text-sm"><Save className="w-4 h-4" /> Simpan</button>
         </div>
@@ -543,7 +543,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
                         {code.label}
                       </span>
                       <span className="flex-1 italic text-gray-700">"{cd.segment}"</span>
-                      <button onClick={() => removeCoding(cd.id)} className="text-gray-400 hover:text-red-600">
+                      <button onClick={() => removeCoding(cd.id)} className="text-muted hover:text-red-600">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -623,7 +623,7 @@ function AnalysisTab({ docs, codes, codings }) {
         ) : (
           <>
             {/* Word "cloud" — size scaled by frequency */}
-            <div className="flex flex-wrap gap-2 mb-4 p-3 bg-gray-50 rounded-lg">
+            <div className="flex flex-wrap gap-2 mb-4 p-3 bg-surface rounded-lg">
               {wordFreq.slice(0, 30).map(w => {
                 const size = 11 + Math.round((w.count / maxCount) * 18)
                 const opacity = 0.5 + (w.count / maxCount) * 0.5
@@ -679,7 +679,7 @@ function AnalysisTab({ docs, codes, codings }) {
             <p className="text-xs text-gray-500">Belum ada coding. Mulai di tab Coding.</p>
           ) : (
             <table className="w-full text-xs">
-              <thead className="bg-gray-50">
+              <thead className="bg-surface">
                 <tr>
                   <th className="px-2 py-1.5 text-left">Kode</th>
                   <th className="px-2 py-1.5 text-right">Jumlah Kemunculan</th>
@@ -826,14 +826,14 @@ function KappaResult({ r }) {
           <table className="text-xs">
             <thead>
               <tr>
-                <th className="px-2 py-1 bg-gray-50">A \ B</th>
-                {r.categories.map(c => <th key={c} className="px-2 py-1 bg-gray-50">{c}</th>)}
+                <th className="px-2 py-1 bg-surface">A \ B</th>
+                {r.categories.map(c => <th key={c} className="px-2 py-1 bg-surface">{c}</th>)}
               </tr>
             </thead>
             <tbody>
               {r.confusionMatrix.map((row, i) => (
                 <tr key={i}>
-                  <th className="px-2 py-1 bg-gray-50 text-left">{r.categories[i]}</th>
+                  <th className="px-2 py-1 bg-surface text-left">{r.categories[i]}</th>
                   {row.map((val, j) => (
                     <td key={j} className={`px-2 py-1 text-center font-mono ${i === j ? 'bg-green-50 font-bold' : ''}`}>{val}</td>
                   ))}
@@ -861,7 +861,7 @@ function KappaResult({ r }) {
 
 function Metric({ label, value, color, small }) {
   return (
-    <div className="bg-gray-50 rounded-lg p-3">
+    <div className="bg-surface rounded-lg p-3">
       <div className="text-[10px] text-gray-500 uppercase tracking-wide">{label}</div>
       <div className={`font-bold ${small ? 'text-sm' : 'text-2xl'}`} style={color ? { color } : {}}>{value}</div>
     </div>
@@ -874,7 +874,7 @@ function Metric({ label, value, color, small }) {
 function EmptyState({ icon: Icon, title, desc }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
-      <Icon className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+      <Icon className="w-12 h-12 text-muted mx-auto mb-2" />
       <p className="font-medium text-sm mb-1">{title}</p>
       <p className="text-xs text-gray-500 max-w-md mx-auto">{desc}</p>
     </div>

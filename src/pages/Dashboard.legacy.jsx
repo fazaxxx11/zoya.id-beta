@@ -86,13 +86,13 @@ function Dashboard() {
         <div className="flex gap-2 mb-6">
           <button 
             onClick={() => setActiveTab('history')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'history' ? 'bg-sky-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'history' ? 'bg-sky-500 text-white' : 'bg-white text-gray-600 hover:bg-surface'}`}
           >
             <History className="w-4 h-4" /> Riwayat
           </button>
           <button 
             onClick={() => setActiveTab('profile')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'profile' ? 'bg-sky-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'profile' ? 'bg-sky-500 text-white' : 'bg-white text-gray-600 hover:bg-surface'}`}
           >
             <User className="w-4 h-4" /> Profil
           </button>
@@ -106,7 +106,7 @@ function Dashboard() {
             </div>
             <div className="divide-y">
               {MOCK_HISTORY.map((item) => (
-                <div key={item.id} className="p-4 hover:bg-gray-50">
+                <div key={item.id} className="p-4 hover:bg-surface">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       {item.service === 'Assessment' ? 
@@ -148,7 +148,7 @@ function Dashboard() {
               <div>
                 <label className="block text-sm text-gray-500 mb-1">Email</label>
                 <input type="email" value={isAdmin ? ADMIN_EMAIL : 'akun@test.com'} disabled 
-                  className="w-full px-4 py-2 border rounded-lg bg-gray-50 text-gray-600" />
+                  className="w-full px-4 py-2 border rounded-lg bg-surface text-gray-600" />
               </div>
               
               {isAdmin && (
@@ -160,15 +160,15 @@ function Dashboard() {
               <div className="pt-4 border-t">
                 <h4 className="font-medium text-gray-800 mb-2">Statistik Penggunaan</h4>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="text-center p-3 bg-surface rounded-lg">
                     <p className="text-2xl font-bold text-sky-600">{MOCK_HISTORY.length}</p>
                     <p className="text-xs text-gray-500">Total</p>
                   </div>
-                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="text-center p-3 bg-surface rounded-lg">
                     <p className="text-2xl font-bold text-green-600">{MOCK_HISTORY.filter(t => t.status === 'completed').length}</p>
                     <p className="text-xs text-gray-500">Selesai</p>
                   </div>
-                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="text-center p-3 bg-surface rounded-lg">
                     <p className="text-2xl font-bold text-yellow-600">{MOCK_HISTORY.filter(t => t.status === 'pending').length}</p>
                     <p className="text-xs text-gray-500">Pending</p>
                   </div>

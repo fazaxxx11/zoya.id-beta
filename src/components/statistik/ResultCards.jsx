@@ -490,7 +490,7 @@ export function ChiSquareResult({ r }) {
                 {row.map((v, j) => (
                   <td key={j} className="px-3 py-2 border">
                     {v}
-                    <span className="text-xs text-gray-400 ml-1">(E={r.expected[i][j].toFixed(1)})</span>
+                    <span className="text-xs text-muted ml-1">(E={r.expected[i][j].toFixed(1)})</span>
                   </td>
                 ))}
                 <td className="px-3 py-2 border bg-card/50 font-semibold">{r.rowTotals[i]}</td>

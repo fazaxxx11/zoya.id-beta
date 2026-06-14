@@ -88,7 +88,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
             <p className="text-sm text-gray-500">AI akan generate kriteria penilaian sesuai topik & level</p>
           </div>
           <button onClick={handleClose} disabled={loading}
-            className="text-gray-400 hover:text-gray-700 p-1 rounded disabled:opacity-30">
+            className="text-muted hover:text-gray-700 p-1 rounded disabled:opacity-30">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -171,7 +171,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
                 className="w-full accent-purple-500"
                 disabled={loading}
               />
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <div className="flex justify-between text-xs text-muted mt-1">
                 <span>3 (ringkas)</span>
                 <span>4 (default)</span>
                 <span>5 (detail)</span>
@@ -220,7 +220,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
 
             <div className="space-y-2 max-h-80 overflow-y-auto">
               {preview.map((k, i) => (
-                <div key={i} className="bg-gray-50 border border-gray-100 rounded-lg p-3">
+                <div key={i} className="bg-surface border border-border rounded-lg p-3">
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <div className="font-semibold text-sm text-gray-800">{i + 1}. {k.nama}</div>
                     <span className="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full shrink-0">
@@ -243,7 +243,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
                 Terapkan ke Rubrik
               </button>
             </div>
-            <div className="text-xs text-gray-400 text-center">
+            <div className="text-xs text-muted text-center">
               Rubrik existing akan diganti. Bisa di-edit setelah diterapkan.
             </div>
           </div>

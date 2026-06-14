@@ -30,7 +30,7 @@ const MethodNote = ({
         )}
         
         {limitation && (
-          <div className="pt-2 border-t border-gray-100">
+          <div className="pt-2 border-t border-border">
             <p className="text-gray-700 text-sm">
               <span className="font-medium">Catatan:</span>{' '}
               <span className="text-gray-600">{limitation}</span>

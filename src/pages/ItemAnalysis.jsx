@@ -249,7 +249,7 @@ export default function ItemAnalysis() {
             </>
           )}
 
-          <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+          <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-border">
             <label className="text-xs text-gray-700">
               Persentase kelompok atas/bawah:
               <select
@@ -342,7 +342,7 @@ function ResultPanel({ result, onExport }) {
         </div>
 
         {/* Decision summary */}
-        <div className="mt-3 pt-3 border-t border-gray-100">
+        <div className="mt-3 pt-3 border-t border-border">
           <div className="text-xs text-gray-600 mb-2">Keputusan butir:</div>
           <div className="flex flex-wrap gap-2">
             <DecisionPill type="terima" count={summary.decisions.terima || 0} />
@@ -369,7 +369,7 @@ function ResultPanel({ result, onExport }) {
 
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-gray-50">
+            <thead className="bg-surface">
               <tr>
                 <th className="px-2 py-2 text-left">No</th>
                 <th className="px-2 py-2 text-right" title="Tingkat Kesukaran">P</th>
@@ -418,7 +418,7 @@ function ResultPanel({ result, onExport }) {
 
 function SummaryCard({ label, value, badge, badgeColor }) {
   return (
-    <div className="bg-gray-50 rounded-lg p-2">
+    <div className="bg-surface rounded-lg p-2">
       <div className="text-[10px] text-gray-500 uppercase tracking-wide">{label}</div>
       <div className="text-lg font-bold">{value}</div>
       {badge && (
@@ -447,7 +447,7 @@ function DecisionPill({ type, count }) {
 function ItemRow({ item, showDistractor }) {
   return (
     <>
-      <tr className="hover:bg-gray-50">
+      <tr className="hover:bg-surface">
         <td className="px-2 py-1.5 font-medium">{item.no}</td>
         <td className="px-2 py-1.5 text-right font-mono">{item.p?.toFixed(3)}</td>
         <td className="px-2 py-1.5">
@@ -463,7 +463,7 @@ function ItemRow({ item, showDistractor }) {
         </td>
       </tr>
       {showDistractor && item.distractors && (
-        <tr className="bg-gray-50/50">
+        <tr className="bg-surface/50">
           <td colSpan={7} className="px-3 py-2">
             <div className="text-[10px] text-gray-500 mb-1">Distraktor (Atas/Bawah):</div>
             <div className="flex flex-wrap gap-1.5">
@@ -492,7 +492,7 @@ function ItemRow({ item, showDistractor }) {
 }
 
 function CategoryBadge({ cat, type }) {
-  if (!cat) return <span className="text-gray-400">—</span>
+  if (!cat) return <span className="text-muted">—</span>
   const styles = type === 'p'
     ? { sukar: 'bg-red-100 text-red-700', sedang: 'bg-green-100 text-green-700', mudah: 'bg-yellow-100 text-yellow-700' }
     : { jelek: 'bg-red-100 text-red-700', cukup: 'bg-yellow-100 text-yellow-700', baik: 'bg-green-100 text-green-700', sangat_baik: 'bg-emerald-100 text-emerald-700' }
@@ -527,14 +527,14 @@ function HelpSection() {
     <div className="bg-white border border-gray-200 rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Panduan Singkat</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-        <details className="border border-gray-100 rounded-lg p-3">
+        <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Apa itu Tingkat Kesukaran (P)?</summary>
           <div className="mt-2 text-gray-600 space-y-1">
             <p>P = proporsi siswa yang menjawab benar.</p>
             <p><strong>Ideal:</strong> 0.30 ≤ P ≤ 0.70 (sedang). Terlalu sulit (P&lt;0.30) atau terlalu mudah (P&gt;0.70) kurang ideal.</p>
           </div>
         </details>
-        <details className="border border-gray-100 rounded-lg p-3">
+        <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Apa itu Daya Pembeda (D)?</summary>
           <div className="mt-2 text-gray-600 space-y-1">
             <p>D mengukur sejauh mana butir membedakan siswa pintar dari siswa kurang.</p>
@@ -542,21 +542,21 @@ function HelpSection() {
             <p><strong>Ideal:</strong> D ≥ 0.30 (Ebel & Frisbie, 1991).</p>
           </div>
         </details>
-        <details className="border border-gray-100 rounded-lg p-3">
+        <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Apa itu r_pb (point-biserial)?</summary>
           <div className="mt-2 text-gray-600 space-y-1">
             <p>Korelasi antara butir dengan skor total. Nilai positif = siswa yang menjawab benar cenderung skor tinggi (butir konsisten dengan tes).</p>
             <p><strong>Bagus:</strong> r_pb ≥ 0.30. Negatif → butir bermasalah (perlu dicek).</p>
           </div>
         </details>
-        <details className="border border-gray-100 rounded-lg p-3">
+        <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Apa itu KR-20?</summary>
           <div className="mt-2 text-gray-600 space-y-1">
             <p>Reliabilitas internal untuk tes 0/1. Setara dengan Cronbach α versi dichotomous.</p>
             <p><strong>Bagus:</strong> ≥ 0.70. <strong>Sangat tinggi:</strong> ≥ 0.90.</p>
           </div>
         </details>
-        <details className="border border-gray-100 rounded-lg p-3">
+        <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Distraktor "berfungsi" artinya?</summary>
           <div className="mt-2 text-gray-600 space-y-1">
             <p>Distraktor (jawaban salah) yang baik harus:</p>
@@ -567,7 +567,7 @@ function HelpSection() {
             <p>Kalau tidak, distraktor terlalu jelas salah → revisi.</p>
           </div>
         </details>
-        <details className="border border-gray-100 rounded-lg p-3">
+        <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Lalu apa setelah dapat hasil?</summary>
           <div className="mt-2 text-gray-600 space-y-1">
             <p>1. Butir <strong>Terima</strong> → simpan, pakai untuk tes selanjutnya.</p>

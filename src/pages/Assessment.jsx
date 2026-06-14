@@ -274,7 +274,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+      <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
         <div className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center shrink-0">
             <Sparkles className="w-5 h-5 text-sky-600" />
@@ -319,7 +319,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+      <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
         <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
           <div>
             <h3 className="font-semibold text-gray-800">Kriteria Penilaian</h3>
@@ -352,7 +352,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
 
         <div className="space-y-4">
           {rubrik.map((kr, i) => (
-            <div key={kr.id} className="bg-gray-50 rounded-xl p-4">
+            <div key={kr.id} className="bg-surface rounded-xl p-4">
               <div className="flex justify-between mb-2">
                 <span className="text-xs font-bold text-sky-600">Kriteria #{i+1}</span>
                 <button onClick={() => del(kr.id)} className="text-red-500"><Trash2 className="w-4 h-4"/></button>
@@ -471,7 +471,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100">
+      <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-border">
         <h3 className="font-semibold text-gray-800 mb-1">Input Jawaban Murid</h3>
         <p className="text-xs text-gray-500 mb-4">Pilih cara input yang paling cocok. Bisa ganti kapan saja.</p>
 
@@ -483,7 +483,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             className={`group relative text-left rounded-xl p-3 sm:p-4 border-2 transition-all ${
               inputMode === 'file'
                 ? 'border-sky-500 bg-sky-50 shadow-sm'
-                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-surface'
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
@@ -504,7 +504,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             className={`group relative text-left rounded-xl p-3 sm:p-4 border-2 transition-all ${
               inputMode === 'manual'
                 ? 'border-sky-500 bg-sky-50 shadow-sm'
-                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-surface'
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
@@ -544,7 +544,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               <p className="text-xs text-gray-500 mb-3">
                 {getSupportedFormats().map(f => `.${f.ext}`).join(' · ')}
               </p>
-              <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-500 w-full max-w-sm bg-gray-50 rounded-lg p-3 mt-2">
+              <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-500 w-full max-w-sm bg-surface rounded-lg p-3 mt-2">
                 <div className="flex items-center gap-1.5"><FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" /> Excel/CSV → kolom Nama & Jawaban</div>
                 <div className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-rose-600" /> Word/PDF → multi-siswa</div>
               </div>
@@ -607,7 +607,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                 <tbody>
                   {students.map((s, i) => (
                     <tr key={s.id} className={i % 2 === 0 ? 'bg-white' : 'bg-amber-50/30'}>
-                      <td className="border-b border-r border-amber-100 px-2 py-1 text-center text-[11px] text-gray-400 font-mono align-top pt-2">
+                      <td className="border-b border-r border-amber-100 px-2 py-1 text-center text-[11px] text-muted font-mono align-top pt-2">
                         {i + 1}
                       </td>
                       <td className="border-b border-r border-amber-100 p-0 align-top">
@@ -639,7 +639,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                               {s.confidence}%
                             </span>
                           ) : (
-                            <span className="text-gray-300 text-[10px]">—</span>
+                            <span className="text-muted text-[10px]">—</span>
                           )}
                         </td>
                       )}
@@ -656,7 +656,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                   ))}
                   {students.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-3 py-6 text-center text-sm text-gray-400">
+                      <td colSpan={5} className="px-3 py-6 text-center text-sm text-muted">
                         Belum ada baris. Klik "+ Tambah Baris" untuk input manual.
                       </td>
                     </tr>
@@ -694,10 +694,10 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               <span>Ketik nama & jawaban tiap siswa. Tekan <kbd className="bg-white px-1 py-0.5 rounded text-[10px] border">+ Tambah Murid</kbd> untuk row baru.</span>
             </div>
             {students.map((s,i) => (
-              <div key={s.id} className="bg-gray-50 rounded-xl p-4">
+              <div key={s.id} className="bg-surface rounded-xl p-4">
                 <div className="flex justify-between mb-2">
                   <span className="text-xs text-gray-500 font-medium">Murid #{i+1}</span>
-                  <button onClick={()=>del(s.id)} className="text-gray-400 hover:text-red-500 transition-colors" title="Hapus"><Trash2 className="w-4 h-4"/></button>
+                  <button onClick={()=>del(s.id)} className="text-muted hover:text-red-500 transition-colors" title="Hapus"><Trash2 className="w-4 h-4"/></button>
                 </div>
                 <input type="text" value={s.name} onChange={e=>upd(s.id,'name',e.target.value)} placeholder="Nama siswa" className="input-field mb-2"/>
                 <textarea value={s.answer} onChange={e=>upd(s.id,'answer',e.target.value)} placeholder="Jawaban siswa..." rows={3} className="input-field resize-none"/>
@@ -788,7 +788,7 @@ function ClassSummary({ results, rubrik }) {
 
   const total = stats.count
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+    <div className="bg-white rounded-2xl shadow-sm border border-border p-5">
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp className="w-5 h-5 text-sky-600" />
         <h3 className="font-bold text-gray-800">Ringkasan Kelas</h3>
@@ -934,12 +934,12 @@ function CriterionRow({ k, s, onUpdate }) {
           />
         ) : (
           <p
-            className="text-xs text-gray-600 mt-1 cursor-text hover:bg-gray-50 rounded px-1 py-0.5 -mx-1 group flex items-start gap-1"
+            className="text-xs text-gray-600 mt-1 cursor-text hover:bg-surface rounded px-1 py-0.5 -mx-1 group flex items-start gap-1"
             onClick={() => { setTmpKom(s.komentar || ''); setEditingKomentar(true) }}
             title="Klik untuk edit komentar"
           >
-            <span className="flex-1">{s.komentar || <span className="italic text-gray-400">Klik untuk tambah komentar</span>}</span>
-            <Edit3 className="w-3 h-3 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5"/>
+            <span className="flex-1">{s.komentar || <span className="italic text-muted">Klik untuk tambah komentar</span>}</span>
+            <Edit3 className="w-3 h-3 text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5"/>
           </p>
         )}
       </div>
@@ -1032,7 +1032,7 @@ function HasilPenilaian({
                   className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors ${
                     filterBy === f.id
                       ? 'bg-sky-500 text-white'
-                      : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:bg-surface'
                   }`}>
                   {f.label}
                 </button>
@@ -1051,8 +1051,8 @@ function HasilPenilaian({
         const status = total !== null ? statusFromScore(total) : null
         const isProcessing = r._regrading || (!r.scores && loading)
         return (
-          <div key={r.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gray-50 px-4 py-2.5 flex justify-between items-center gap-2 flex-wrap">
+          <div key={r.id} className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+            <div className="bg-surface px-4 py-2.5 flex justify-between items-center gap-2 flex-wrap">
               <span className="font-medium flex items-center gap-2 min-w-0">
                 {isProcessing && <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-500 shrink-0"/>}
                 <span className="truncate">{r.name}</span>
@@ -1069,7 +1069,7 @@ function HasilPenilaian({
                   </span>
                 )}
                 <span className="font-bold text-sky-600 text-sm">
-                  {total !== null ? `${total}/10` : <span className="text-gray-300">—/10</span>}
+                  {total !== null ? `${total}/10` : <span className="text-muted">—/10</span>}
                 </span>
                 {r.scores && !loading && (
                   <button
@@ -1119,14 +1119,14 @@ function HasilPenilaian({
                 ))}
               </div>
             ) : (
-              <div className="p-4 text-xs text-gray-400 italic">Menunggu giliran…</div>
+              <div className="p-4 text-xs text-muted italic">Menunggu giliran…</div>
             )}
           </div>
         )
       })}
 
       {sortedResults.length === 0 && hasAnyResult && (
-        <div className="bg-gray-50 rounded-xl p-6 text-center text-sm text-gray-500">
+        <div className="bg-surface rounded-xl p-6 text-center text-sm text-gray-500">
           Tidak ada siswa yang cocok dengan filter ini.
         </div>
       )}
@@ -1163,7 +1163,7 @@ function KesimpulanEditable({ value, onSave }) {
     return (
       <button
         onClick={() => setEditing(true)}
-        className="mt-3 pt-3 border-t border-gray-100 w-full text-left text-xs text-gray-400 italic hover:text-sky-600 transition-colors"
+        className="mt-3 pt-3 border-t border-border w-full text-left text-xs text-muted italic hover:text-sky-600 transition-colors"
       >
         + Tambah kesimpulan
       </button>
@@ -1171,7 +1171,7 @@ function KesimpulanEditable({ value, onSave }) {
   }
   if (editing) {
     return (
-      <div className="mt-3 pt-3 border-t border-gray-100">
+      <div className="mt-3 pt-3 border-t border-border">
         <textarea
           value={tmp} autoFocus
           onChange={e => setTmp(e.target.value)}
@@ -1187,12 +1187,12 @@ function KesimpulanEditable({ value, onSave }) {
   }
   return (
     <div
-      className="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-700 cursor-text hover:bg-gray-50 rounded px-1 -mx-1 group flex items-start gap-2"
+      className="mt-3 pt-3 border-t border-border text-sm text-gray-700 cursor-text hover:bg-surface rounded px-1 -mx-1 group flex items-start gap-2"
       onClick={() => setEditing(true)}
       title="Klik untuk edit"
     >
       <span className="flex-1">{value}</span>
-      <Edit3 className="w-3.5 h-3.5 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5"/>
+      <Edit3 className="w-3.5 h-3.5 text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5"/>
     </div>
   )
 }

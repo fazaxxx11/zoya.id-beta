@@ -52,7 +52,7 @@ export default function StatTooltip({ term, children, className = '' }) {
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         aria-label={`Info ${data.title}`}
-        className="inline-flex items-center justify-center text-gray-300 hover:text-gray-600 focus:text-gray-700 focus:outline-none"
+        className="inline-flex items-center justify-center text-muted hover:text-gray-600 focus:text-gray-700 focus:outline-none"
       >
         <HelpCircle className="w-3.5 h-3.5" />
       </button>
@@ -67,12 +67,12 @@ export default function StatTooltip({ term, children, className = '' }) {
           <div className="font-semibold text-emerald-300 mb-1">{data.title}</div>
           <div className="text-gray-100">{data.description}</div>
           {data.formula && (
-            <div className="mt-1.5 pt-1.5 border-t border-gray-700 text-gray-300 font-mono text-[11px]">
+            <div className="mt-1.5 pt-1.5 border-t border-gray-700 text-muted font-mono text-[11px]">
               {data.formula}
             </div>
           )}
           {data.threshold && (
-            <div className="mt-1.5 pt-1.5 border-t border-gray-700 text-gray-300">
+            <div className="mt-1.5 pt-1.5 border-t border-gray-700 text-muted">
               <span className="text-amber-300 font-medium">Panduan: </span>
               {data.threshold}
             </div>

@@ -119,9 +119,9 @@ function ModalBody({ data, columns, onClose, onApply }) {
     <Modal open={true} onClose={onClose}
       panelClassName="bg-white rounded-2xl shadow-xl max-w-5xl w-full max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="p-5 border-b border-gray-100 flex items-start justify-between gap-3">
+        <div className="p-5 border-b border-border flex items-start justify-between gap-3">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-1">Pre-Analysis</div>
+            <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Pre-Analysis</div>
             <h2 className="text-lg font-bold text-gray-900">Bersihkan Dataset</h2>
             <p className="text-sm text-gray-500 mt-1">
               {totalIssues > 0
@@ -129,13 +129,13 @@ function ModalBody({ data, columns, onClose, onApply }) {
                 : 'Dataset bersih — tidak ada missing, outlier, atau duplikat terdeteksi.'}
             </p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 p-1">
+          <button onClick={onClose} className="text-muted hover:text-gray-700 p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Quick actions */}
-        <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap bg-gray-50/60">
+        <div className="px-5 py-3 border-b border-border flex items-center justify-between gap-3 flex-wrap bg-surface/60">
           <div className="flex items-center gap-2">
             <button onClick={handleSmartClean}
               className="text-xs font-medium px-3 py-2 rounded-lg bg-gray-900 hover:bg-black text-white flex items-center gap-1.5">
@@ -158,7 +158,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
           {/* Per-column table */}
           <div className="border border-gray-200 rounded-xl overflow-hidden mb-4">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-left">
+              <thead className="bg-surface text-left">
                 <tr className="text-[11px] uppercase tracking-wider text-gray-500">
                   <th className="px-3 py-2.5 font-medium">Kolom</th>
                   <th className="px-3 py-2.5 font-medium">Tipe</th>
@@ -173,7 +173,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
                   const a = analysis[col]
                   const op = colOps[col]
                   return (
-                    <tr key={col} className="hover:bg-gray-50/40">
+                    <tr key={col} className="hover:bg-surface/40">
                       <td className="px-3 py-2.5 font-medium text-gray-900">{col}</td>
                       <td className="px-3 py-2.5">
                         <TypeBadge type={a.type} />
@@ -181,15 +181,15 @@ function ModalBody({ data, columns, onClose, onApply }) {
                       <td className="px-3 py-2.5 text-right">
                         {a.missing > 0 ? (
                           <span className="text-amber-700 font-medium">
-                            {a.missing} <span className="text-xs text-gray-400">({a.missingPct.toFixed(0)}%)</span>
+                            {a.missing} <span className="text-xs text-muted">({a.missingPct.toFixed(0)}%)</span>
                           </span>
                         ) : (
-                          <span className="text-gray-300">—</span>
+                          <span className="text-muted">—</span>
                         )}
                       </td>
                       <td className="px-3 py-2.5">
                         {a.missing === 0 ? (
-                          <span className="text-xs text-gray-300">tidak ada</span>
+                          <span className="text-xs text-muted">tidak ada</span>
                         ) : (
                           <select value={op.missing}
                             onChange={e => updateOp(col, 'missing', e.target.value)}
@@ -206,14 +206,14 @@ function ModalBody({ data, columns, onClose, onApply }) {
                         {a.outlierCount > 0 ? (
                           <span className="text-orange-700 font-medium">{a.outlierCount}</span>
                         ) : (
-                          <span className="text-gray-300">—</span>
+                          <span className="text-muted">—</span>
                         )}
                       </td>
                       <td className="px-3 py-2.5">
                         {a.type !== 'numeric' ? (
-                          <span className="text-xs text-gray-300">—</span>
+                          <span className="text-xs text-muted">—</span>
                         ) : a.outlierCount === 0 ? (
-                          <span className="text-xs text-gray-300">tidak ada</span>
+                          <span className="text-xs text-muted">tidak ada</span>
                         ) : (
                           <select value={op.outliers}
                             onChange={e => updateOp(col, 'outliers', e.target.value)}
@@ -232,7 +232,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
           </div>
 
           {/* Duplicate rows toggle */}
-          <div className={`flex items-center gap-3 p-3 rounded-xl border ${dupes.length > 0 ? 'bg-amber-50 border-amber-200' : 'bg-gray-50 border-gray-200'}`}>
+          <div className={`flex items-center gap-3 p-3 rounded-xl border ${dupes.length > 0 ? 'bg-amber-50 border-amber-200' : 'bg-surface border-gray-200'}`}>
             {dupes.length > 0 ? (
               <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
             ) : (
@@ -262,7 +262,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
             <button
               type="button"
               onClick={() => setShowDataPreview(v => !v)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+              className="w-full flex items-center justify-between px-4 py-3 bg-surface hover:bg-gray-100 transition-colors text-left"
             >
               <div className="flex items-center gap-2">
                 <Table2 className="w-4 h-4 text-gray-600" />
@@ -302,8 +302,8 @@ function ModalBody({ data, columns, onClose, onApply }) {
                       {Array.from({ length: endRow - startRow }, (_, k) => {
                         const i = startRow + k
                         return (
-                          <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}>
-                            <td className="border-b border-r border-gray-100 px-2 py-1 text-center text-[11px] text-gray-400 font-mono sticky left-0 bg-inherit z-10">
+                          <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-surface/40'}>
+                            <td className="border-b border-r border-border px-2 py-1 text-center text-[11px] text-muted font-mono sticky left-0 bg-inherit z-10">
                               {i + 1}
                             </td>
                             {columns.map(col => {
@@ -311,7 +311,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
                               const isEmpty = v === null || v === undefined || v === ''
                               const isEdited = editedCells.has(`${col}|${i}`)
                               return (
-                                <td key={col} className={`border-b border-r border-gray-100 p-0 ${isEdited ? 'bg-amber-50' : ''}`}>
+                                <td key={col} className={`border-b border-r border-border p-0 ${isEdited ? 'bg-amber-50' : ''}`}>
                                   <input
                                     type="text"
                                     value={isEmpty ? '' : String(v)}
@@ -329,7 +329,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
                       })}
                       {totalRows === 0 && (
                         <tr>
-                          <td colSpan={columns.length + 1} className="px-3 py-8 text-center text-sm text-gray-400">
+                          <td colSpan={columns.length + 1} className="px-3 py-8 text-center text-sm text-muted">
                             Dataset kosong
                           </td>
                         </tr>
@@ -340,7 +340,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
 
                 {/* Pagination footer */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
+                  <div className="flex items-center justify-between px-3 py-2 bg-surface border-t border-gray-200 text-xs text-gray-600">
                     <span>Baris {startRow + 1}–{endRow} dari {totalRows}</span>
                     <div className="flex items-center gap-1">
                       <button
@@ -369,7 +369,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
 
           {/* Preview report */}
           {preview.report.actions.length > 0 && (
-            <div className="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4">
+            <div className="mt-4 bg-surface border border-gray-200 rounded-xl p-4">
               <div className="text-[11px] uppercase tracking-[0.18em] text-gray-500 font-medium mb-2">Preview Aksi</div>
               <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
                 {preview.report.actions.map((a, i) => <li key={i}>{a}</li>)}
@@ -385,8 +385,8 @@ function ModalBody({ data, columns, onClose, onApply }) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-100 flex items-center justify-between gap-2">
-          <div className="text-xs text-gray-400">
+        <div className="p-4 border-t border-border flex items-center justify-between gap-2">
+          <div className="text-xs text-muted">
             {preview.report.rowsAfter < 5 && (
               <span className="text-red-600 font-medium">⚠ Sisa baris terlalu sedikit untuk analisis</span>
             )}
@@ -411,8 +411,8 @@ function TypeBadge({ type }) {
   const cfg = {
     numeric: { label: 'Numerik', cls: 'bg-blue-50 text-blue-700 border-blue-200' },
     categorical: { label: 'Kategorik', cls: 'bg-purple-50 text-purple-700 border-purple-200' },
-    text: { label: 'Teks', cls: 'bg-gray-50 text-gray-700 border-gray-200' },
+    text: { label: 'Teks', cls: 'bg-surface text-gray-700 border-gray-200' },
     empty: { label: 'Kosong', cls: 'bg-red-50 text-red-700 border-red-200' },
-  }[type] || { label: type, cls: 'bg-gray-50 text-gray-700 border-gray-200' }
+  }[type] || { label: type, cls: 'bg-surface text-gray-700 border-gray-200' }
   return <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${cfg.cls}`}>{cfg.label}</span>
 }

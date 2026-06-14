@@ -89,7 +89,7 @@ function Upload() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface">
       <header className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <a href="/" className="flex items-center gap-2 text-gray-600 hover:text-orange-500">
@@ -107,14 +107,14 @@ function Upload() {
         </div>
 
         {/* Supported Formats */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm p-4 border border-border">
           <h3 className="font-semibold text-gray-800 mb-3">Format yang Didukung</h3>
           <div className="flex flex-wrap gap-2">
             {formats.map(format => (
               <span key={format.ext} className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-600 flex items-center gap-1">
                 <span>{format.icon}</span>
                 <span>{format.name}</span>
-                <span className="text-gray-400">.{format.ext}</span>
+                <span className="text-muted">.{format.ext}</span>
               </span>
             ))}
           </div>
@@ -147,13 +147,13 @@ function Upload() {
               {processing ? (
                 <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
               ) : (
-                <UploadIcon className={`w-8 h-8 ${dragActive ? 'text-sky-600' : 'text-gray-400'}`} />
+                <UploadIcon className={`w-8 h-8 ${dragActive ? 'text-sky-600' : 'text-muted'}`} />
               )}
             </div>
             <p className="text-gray-700 font-medium text-lg mb-1">
               {processing ? 'Memproses file...' : 'Klik untuk upload atau drag & drop'}
             </p>
-            <p className="text-gray-400 text-sm">
+            <p className="text-muted text-sm">
               Maksimum 10MB per file
             </p>
           </label>
@@ -172,8 +172,8 @@ function Upload() {
 
         {/* Uploaded Files List */}
         {files.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+          <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+            <div className="p-4 border-b border-border flex items-center justify-between">
               <h3 className="font-semibold text-gray-800">
                 File yang Diupload ({files.length})
               </h3>
@@ -187,7 +187,7 @@ function Upload() {
             
             <div className="divide-y divide-gray-100">
               {files.map((file, index) => (
-                <div key={index} className="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div key={index} className="p-4 flex items-center justify-between hover:bg-surface">
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       file.name.endsWith('.xlsx') || file.name.endsWith('.xls') ? 'bg-green-100' :
@@ -215,7 +215,7 @@ function Upload() {
                   </div>
                   <button 
                     onClick={() => removeFile(index)}
-                    className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                    className="p-2 text-muted hover:text-red-500 transition-colors"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -224,7 +224,7 @@ function Upload() {
             </div>
 
             {/* Total Summary */}
-            <div className="p-4 bg-gray-50 border-t border-gray-100">
+            <div className="p-4 bg-surface border-t border-border">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-gray-800">

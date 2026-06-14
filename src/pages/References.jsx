@@ -130,7 +130,7 @@ export default function References() {
         {/* Toolbar */}
         <div className="bg-white border border-gray-200 rounded-xl p-3 flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
             <input
               type="text"
               value={search}
@@ -194,7 +194,7 @@ export default function References() {
         {/* List */}
         {filtered.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
-            <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+            <BookOpen className="w-12 h-12 text-muted mx-auto mb-2" />
             <p className="text-sm text-gray-500 mb-3">
               {refs.length === 0
                 ? 'Belum ada referensi. Mulai dengan menambah manual, lookup DOI, atau import BibTeX/RIS.'
@@ -284,11 +284,11 @@ function RefCard({ data: ref, onEdit, onDelete, style }) {
       <div className="flex items-start gap-2">
         <div className="text-xl pt-0.5">{typeLabel}</div>
         <div className="flex-1 min-w-0">
-          <div className="font-medium text-sm">{ref.title || <span className="italic text-gray-400">Tanpa judul</span>}</div>
+          <div className="font-medium text-sm">{ref.title || <span className="italic text-muted">Tanpa judul</span>}</div>
           <div className="text-xs text-gray-600 mt-0.5">
             {ref.authors && ref.authors.length > 0
               ? ref.authors.map(a => a.family).join(', ')
-              : <span className="italic text-gray-400">Tanpa penulis</span>}
+              : <span className="italic text-muted">Tanpa penulis</span>}
             {ref.year && ` · ${ref.year}`}
             {ref.journal && ` · ${ref.journal}`}
           </div>
@@ -304,7 +304,7 @@ function RefCard({ data: ref, onEdit, onDelete, style }) {
 
           {expanded && (
             <div className="mt-3 space-y-2 text-xs">
-              <div className="bg-gray-50 rounded-lg p-2 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
+              <div className="bg-surface rounded-lg p-2 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
                 {formatted}
               </div>
               <div className="flex flex-wrap gap-2">
@@ -318,11 +318,11 @@ function RefCard({ data: ref, onEdit, onDelete, style }) {
                   </button>
                   {copyMenu && (
                     <div className="absolute top-6 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1 min-w-[160px]">
-                      <button onClick={() => copyText(formatAPA(ref))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50">APA 7 (full)</button>
-                      <button onClick={() => copyText(inlineCite(ref, 'apa'))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50">APA inline</button>
-                      <button onClick={() => copyText(formatIEEE(ref, 1))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50">IEEE</button>
-                      <button onClick={() => copyText(formatVancouver(ref, 1))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50">Vancouver</button>
-                      <button onClick={() => copyText(formatHarvard(ref))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-gray-50">Harvard</button>
+                      <button onClick={() => copyText(formatAPA(ref))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-surface">APA 7 (full)</button>
+                      <button onClick={() => copyText(inlineCite(ref, 'apa'))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-surface">APA inline</button>
+                      <button onClick={() => copyText(formatIEEE(ref, 1))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-surface">IEEE</button>
+                      <button onClick={() => copyText(formatVancouver(ref, 1))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-surface">Vancouver</button>
+                      <button onClick={() => copyText(formatHarvard(ref))} className="w-full text-left text-xs px-3 py-1.5 hover:bg-surface">Harvard</button>
                     </div>
                   )}
                 </div>
@@ -354,15 +354,15 @@ function RefCard({ data: ref, onEdit, onDelete, style }) {
         <div className="flex items-center gap-1">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="text-gray-400 hover:text-gray-700 p-1"
+            className="text-muted hover:text-gray-700 p-1"
             title={expanded ? 'Tutup' : 'Lihat'}
           >
             {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
-          <button onClick={onEdit} className="text-gray-400 hover:text-violet-600 p-1" title="Edit">
+          <button onClick={onEdit} className="text-muted hover:text-violet-600 p-1" title="Edit">
             <Edit3 className="w-4 h-4" />
           </button>
-          <button onClick={onDelete} className="text-gray-400 hover:text-red-600 p-1" title="Hapus">
+          <button onClick={onDelete} className="text-muted hover:text-red-600 p-1" title="Hapus">
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
@@ -409,9 +409,9 @@ function RefEditor({ initial, onSave, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl max-w-2xl w-full my-4 max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-white border-b border-border px-5 py-3 flex items-center justify-between rounded-t-2xl">
           <h3 className="font-semibold">{initial.title ? 'Edit Referensi' : 'Tambah Referensi'}</h3>
-          <button onClick={onCancel} className="text-gray-400 hover:text-gray-700">
+          <button onClick={onCancel} className="text-muted hover:text-gray-700">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -605,7 +605,7 @@ function RefEditor({ initial, onSave, onCancel }) {
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-white border-t border-gray-100 px-5 py-3 flex justify-end gap-2 rounded-b-2xl">
+        <div className="sticky bottom-0 bg-white border-t border-border px-5 py-3 flex justify-end gap-2 rounded-b-2xl">
           <button onClick={onCancel} className="btn-ghost text-sm">Batal</button>
           <button onClick={() => onSave(ref)} className="btn-primary text-sm">
             <Save className="w-4 h-4" /> Simpan
@@ -642,9 +642,9 @@ function ImportModal({ onImport, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="border-b border-gray-100 px-5 py-3 flex items-center justify-between">
+        <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">Import Referensi</h3>
-          <button onClick={onCancel} className="text-gray-400 hover:text-gray-700">
+          <button onClick={onCancel} className="text-muted hover:text-gray-700">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -677,7 +677,7 @@ function ImportModal({ onImport, onCancel }) {
             Tip: ekspor dari Mendeley / Zotero / EndNote sebagai BibTeX atau RIS, lalu paste di sini.
           </p>
         </div>
-        <div className="border-t border-gray-100 px-5 py-3 flex justify-end gap-2">
+        <div className="border-t border-border px-5 py-3 flex justify-end gap-2">
           <button onClick={onCancel} className="btn-ghost text-sm">Batal</button>
           <button
             onClick={() => onImport(text, format)}
@@ -714,9 +714,9 @@ function BibliographyModal({ refs, style, onStyleChange, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="border-b border-gray-100 px-5 py-3 flex items-center justify-between">
+        <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">Daftar Pustaka ({refs.length} referensi)</h3>
-          <button onClick={onCancel} className="text-gray-400 hover:text-gray-700">
+          <button onClick={onCancel} className="text-muted hover:text-gray-700">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -740,7 +740,7 @@ function BibliographyModal({ refs, style, onStyleChange, onCancel }) {
               <Download className="w-3.5 h-3.5" /> Unduh
             </button>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4 max-h-[60vh] overflow-y-auto">
+          <div className="bg-surface rounded-lg p-4 max-h-[60vh] overflow-y-auto">
             <pre className="text-xs whitespace-pre-wrap font-sans leading-relaxed">{text}</pre>
           </div>
           <p className="text-[11px] text-gray-500">

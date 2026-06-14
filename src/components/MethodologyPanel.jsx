@@ -49,7 +49,7 @@ export default function MethodologyPanel({ result }) {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-100 bg-gray-50/50">
+      <div className="flex border-b border-border bg-surface/50">
         <TabButton active={activeTab === 'citation'} onClick={() => setActiveTab('citation')} icon={BookOpen}>
           Untuk Skripsi
         </TabButton>
@@ -104,16 +104,16 @@ function CitationTab({ methodsParagraph, apaCitation, onCopy }) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.16em] text-gray-400 font-medium">Bab III — Teknik Analisis Data</div>
+            <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium">Bab III — Teknik Analisis Data</div>
             <div className="text-[12px] text-gray-500 mt-0.5">Salin paragraf ini ke bagian metode penelitian skripsi.</div>
           </div>
           <button onClick={() => onCopy(methodsParagraph, 'Paragraf metode')}
-            className="text-xs text-gray-700 border border-gray-200 hover:bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+            className="text-xs text-gray-700 border border-gray-200 hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
             <Copy className="w-3.5 h-3.5" />
             Salin
           </button>
         </div>
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-[13px] text-gray-800 leading-relaxed">
+        <div className="bg-surface border border-gray-200 rounded-lg p-4 text-[13px] text-gray-800 leading-relaxed">
           {methodsParagraph}
         </div>
       </div>
@@ -121,16 +121,16 @@ function CitationTab({ methodsParagraph, apaCitation, onCopy }) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.16em] text-gray-400 font-medium">Daftar Pustaka (APA)</div>
+            <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium">Daftar Pustaka (APA)</div>
             <div className="text-[12px] text-gray-500 mt-0.5">Referensi R untuk daftar pustaka.</div>
           </div>
           <button onClick={() => onCopy(apaCitation, 'Citation')}
-            className="text-xs text-gray-700 border border-gray-200 hover:bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+            className="text-xs text-gray-700 border border-gray-200 hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
             <Copy className="w-3.5 h-3.5" />
             Salin
           </button>
         </div>
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-[13px] text-gray-800 font-mono leading-relaxed">
+        <div className="bg-surface border border-gray-200 rounded-lg p-4 text-[13px] text-gray-800 font-mono leading-relaxed">
           {apaCitation}
         </div>
       </div>
@@ -157,13 +157,13 @@ function RScriptTab({ rScript, showFull, onToggle, onCopy, onDownload }) {
 
       <div className="bg-gray-900 rounded-lg overflow-hidden">
         <div className="px-3 sm:px-4 py-2 bg-gray-800 border-b border-gray-700 flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-2 text-xs text-gray-300 font-mono">
+          <div className="flex items-center gap-2 text-xs text-muted font-mono">
             <FileCode className="w-3.5 h-3.5" />
             analysis.R
           </div>
           <div className="flex items-center gap-1.5">
             <button onClick={onCopy}
-              className="text-[11px] text-gray-300 hover:text-white px-2 py-1 rounded inline-flex items-center gap-1 whitespace-nowrap">
+              className="text-[11px] text-muted hover:text-white px-2 py-1 rounded inline-flex items-center gap-1 whitespace-nowrap">
               <Copy className="w-3 h-3" />
               Salin
             </button>
@@ -179,13 +179,13 @@ function RScriptTab({ rScript, showFull, onToggle, onCopy, onDownload }) {
         </pre>
         {!showFull && (
           <button onClick={onToggle}
-            className="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 border-t border-gray-700">
+            className="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-xs text-muted border-t border-gray-700">
             Tampilkan kode lengkap
           </button>
         )}
         {showFull && (
           <button onClick={onToggle}
-            className="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 border-t border-gray-700">
+            className="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-xs text-muted border-t border-gray-700">
             Ringkas
           </button>
         )}

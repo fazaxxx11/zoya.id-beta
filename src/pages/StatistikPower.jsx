@@ -75,8 +75,8 @@ export default function StatistikPower() {
         {/* Input column */}
         <div className="space-y-4">
           {/* Test picker */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-3">Jenis Uji</div>
+          <div className="bg-white rounded-2xl border border-border p-5">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-3">Jenis Uji</div>
             <div className="flex flex-wrap gap-2">
               {TESTS.map(t => (
                 <button key={t.id} onClick={() => setTestId(t.id)}
@@ -92,8 +92,8 @@ export default function StatistikPower() {
           </div>
 
           {/* What to solve */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-3">Hitung Apa?</div>
+          <div className="bg-white rounded-2xl border border-border p-5">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-3">Hitung Apa?</div>
             <div className="grid grid-cols-3 gap-2">
               {SOLVE_OPTIONS.map(s => (
                 <button key={s.id} onClick={() => setSolve(s.id)}
@@ -109,8 +109,8 @@ export default function StatistikPower() {
           </div>
 
           {/* Parameters */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium">Parameter</div>
+          <div className="bg-white rounded-2xl border border-border p-5 space-y-4">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium">Parameter</div>
 
             {/* Effect size (hide if solving for it) */}
             {solve !== 'es' && (
@@ -141,7 +141,7 @@ export default function StatistikPower() {
               <div>
                 <Label>Power (1 − β)</Label>
                 <NumberInput value={power} onChange={setPower} step={0.05} min={0.5} max={0.999} />
-                <div className="text-[11px] text-gray-400 mt-1">Konvensi umum: 0.80 (cukup), 0.90 (kuat).</div>
+                <div className="text-[11px] text-muted mt-1">Konvensi umum: 0.80 (cukup), 0.90 (kuat).</div>
               </div>
             )}
 
@@ -149,7 +149,7 @@ export default function StatistikPower() {
             <div>
               <Label>Alpha (α)</Label>
               <NumberInput value={alpha} onChange={setAlpha} step={0.01} min={0.001} max={0.2} />
-              <div className="text-[11px] text-gray-400 mt-1">Konvensi: 0.05 (default), 0.01 (lebih ketat).</div>
+              <div className="text-[11px] text-muted mt-1">Konvensi: 0.05 (default), 0.01 (lebih ketat).</div>
             </div>
 
             {/* Tail toggle (not relevant for ANOVA / chi-square) */}
@@ -182,7 +182,7 @@ export default function StatistikPower() {
               <div>
                 <Label>Derajat kebebasan (df)</Label>
                 <NumberInput value={df} onChange={(v) => setDf(Math.max(1, Math.round(v)))} step={1} min={1} />
-                <div className="text-[11px] text-gray-400 mt-1">Untuk tabel R×C: df = (R−1)(C−1). Goodness-of-fit: df = kategori − 1.</div>
+                <div className="text-[11px] text-muted mt-1">Untuk tabel R×C: df = (R−1)(C−1). Goodness-of-fit: df = kategori − 1.</div>
               </div>
             )}
           </div>
@@ -190,8 +190,8 @@ export default function StatistikPower() {
 
         {/* Output column */}
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sticky top-20">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-1">Hasil</div>
+          <div className="bg-white rounded-2xl border border-border p-5 sticky top-20">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Hasil</div>
             <div className="text-base font-semibold text-gray-900 mb-4">{test.name}</div>
 
             {result?.error ? (
@@ -202,8 +202,8 @@ export default function StatistikPower() {
               <ResultDisplay result={result} solve={solve} test={test} />
             ) : null}
 
-            <div className="mt-5 pt-4 border-t border-gray-100">
-              <div className="text-[11px] uppercase tracking-[0.16em] text-gray-400 font-medium mb-2">Catatan</div>
+            <div className="mt-5 pt-4 border-t border-border">
+              <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium mb-2">Catatan</div>
               <p className="text-[12px] text-gray-500 leading-relaxed">
                 Power dihitung dengan aproksimasi normal (Patnaik-style untuk noncentral F/χ²).
                 Akurasi tipikal ±5% dibandingkan G*Power untuk effect size sedang—besar.
@@ -212,8 +212,8 @@ export default function StatistikPower() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-5">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-2">Tabel Konvensi Cohen</div>
+          <div className="bg-white rounded-2xl border border-border p-5">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Tabel Konvensi Cohen</div>
             <ConventionsTable />
           </div>
         </div>
@@ -280,10 +280,10 @@ function ResultDisplay({ result, solve, test }) {
         )}
       </dl>
 
-      <div className="mt-4 pt-3 border-t border-gray-100">
+      <div className="mt-4 pt-3 border-t border-border">
         <button
           onClick={() => navigator.clipboard.writeText(buildAPAReport(result, solve, test))}
-          className="text-xs text-gray-600 hover:text-gray-900 border border-gray-200 hover:bg-gray-50 px-3 py-1.5 rounded-lg"
+          className="text-xs text-gray-600 hover:text-gray-900 border border-gray-200 hover:bg-surface px-3 py-1.5 rounded-lg"
         >
           Salin laporan APA
         </button>

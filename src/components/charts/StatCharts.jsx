@@ -381,7 +381,7 @@ function quantile(sorted, p) {
 // ============================================================
 function EmptyChart({ title, message }) {
   return (
-    <div className="bg-gray-50 rounded-lg border border-gray-200 p-6 text-center text-sm text-gray-400">
+    <div className="bg-surface rounded-lg border border-gray-200 p-6 text-center text-sm text-muted">
       {title && <div className="font-medium mb-1">{title}</div>}
       {message || 'Tidak ada data'}
     </div>

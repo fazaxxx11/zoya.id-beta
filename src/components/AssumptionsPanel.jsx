@@ -32,7 +32,7 @@ export default function AssumptionsPanel({ result, type }) {
         )}
 
         {/* Side-by-side Student vs Welch */}
-        <div className="border-t border-gray-100">
+        <div className="border-t border-border">
           <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
             <TestCard
               label="Student's t-test"
@@ -105,7 +105,7 @@ export default function AssumptionsPanel({ result, type }) {
 
         {/* Tukey HSD post-hoc */}
         {result.postHoc && result.postHoc.comparisons && result.postHoc.comparisons.length > 0 && (
-          <div className="border-t border-gray-100 px-4 py-3">
+          <div className="border-t border-border px-4 py-3">
             <div className="flex items-center gap-2 mb-2">
               <Info className="w-4 h-4 text-sky-600" />
               <div className="text-xs font-semibold text-gray-800 uppercase tracking-wide">
@@ -115,7 +115,7 @@ export default function AssumptionsPanel({ result, type }) {
             <div className="overflow-x-auto -mx-4 px-4">
               <table className="text-xs w-full min-w-[480px]">
                 <thead>
-                  <tr className="text-gray-500 border-b border-gray-100">
+                  <tr className="text-gray-500 border-b border-border">
                     <th className="text-left py-1.5 font-medium">Pasangan</th>
                     <th className="text-right py-1.5 font-medium">Mean Diff</th>
                     <th className="text-right py-1.5 font-medium">95% CI</th>
@@ -133,7 +133,7 @@ export default function AssumptionsPanel({ result, type }) {
                       <td className="py-1.5 text-center">
                         {c.significant
                           ? <span className="text-emerald-600 font-medium">✓</span>
-                          : <span className="text-gray-300">—</span>}
+                          : <span className="text-muted">—</span>}
                       </td>
                     </tr>
                   ))}
@@ -189,7 +189,7 @@ export default function AssumptionsPanel({ result, type }) {
 
         {/* VIF for multiple regression */}
         {type === 'regression_multiple' && result.vifs && result.vifs.length > 0 && (
-          <div className="border-t border-gray-100 px-4 py-3">
+          <div className="border-t border-border px-4 py-3">
             <div className="flex items-center gap-2 mb-2">
               <Info className="w-4 h-4 text-sky-600" />
               <div className="text-xs font-semibold text-gray-800 uppercase tracking-wide">
@@ -206,7 +206,7 @@ export default function AssumptionsPanel({ result, type }) {
                 </div>
               ))}
             </div>
-            <div className="text-[11px] text-gray-400 mt-2">
+            <div className="text-[11px] text-muted mt-2">
               Rule of thumb: VIF &gt; 10 = multikolinearitas serius; 5-10 = perhatikan; &lt; 5 = OK.
             </div>
           </div>
@@ -222,7 +222,7 @@ export default function AssumptionsPanel({ result, type }) {
 
 function Header({ title }) {
   return (
-    <div className="px-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+    <div className="px-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border-b border-border">
       <div className="text-[11px] uppercase tracking-[0.18em] text-gray-500 font-semibold">
         {title}
       </div>
@@ -239,7 +239,7 @@ function Row({ badge, label, value, meaning }) {
   }
   const b = badges[badge] || badges.info
   return (
-    <div className="border-t border-gray-100 first:border-t-0 px-4 py-3 flex items-start gap-3">
+    <div className="border-t border-border first:border-t-0 px-4 py-3 flex items-start gap-3">
       <div className={`${b.cls} rounded-md p-1.5 shrink-0 mt-0.5`}>{b.icon}</div>
       <div className="flex-1 min-w-0">
         <div className="text-sm font-medium text-gray-800">{label}</div>
@@ -261,7 +261,7 @@ function TestCard({ label, info, t, df, p, ci, recommended }) {
       <div className="text-xs font-semibold text-gray-800">{label}</div>
       <div className="text-[11px] text-gray-500 mb-2">{info}</div>
       <div className="space-y-0.5 text-xs tabular-nums font-mono">
-        <div><span className="text-gray-500">t</span> = {t.toFixed(3)} <span className="text-gray-400">·</span> <span className="text-gray-500">df</span> = {df.toFixed(2)}</div>
+        <div><span className="text-gray-500">t</span> = {t.toFixed(3)} <span className="text-muted">·</span> <span className="text-gray-500">df</span> = {df.toFixed(2)}</div>
         <div><span className="text-gray-500">p</span> = {p.toFixed(4)} {p < 0.05 && <span className="text-emerald-600 font-semibold">*</span>}</div>
         <div className="text-gray-500">95% CI [{ci[0].toFixed(3)}, {ci[1].toFixed(3)}]</div>
       </div>

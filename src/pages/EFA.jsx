@@ -132,7 +132,7 @@ export default function EFAPage() {
           )}
 
           {parsed.headers.length > 0 && (
-            <div className="space-y-2 pt-2 border-t border-gray-100">
+            <div className="space-y-2 pt-2 border-t border-border">
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="block text-xs font-medium text-gray-700">Item yang dimasukkan</label>
@@ -145,7 +145,7 @@ export default function EFAPage() {
                 </div>
                 <div className="border border-gray-200 rounded-lg p-2 grid grid-cols-2 sm:grid-cols-4 gap-1 max-h-32 overflow-y-auto">
                   {parsed.headers.map(h => (
-                    <label key={h} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-gray-50 px-1.5 py-1 rounded">
+                    <label key={h} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-surface px-1.5 py-1 rounded">
                       <input type="checkbox" checked={itemsToUse.includes(h)} onChange={() => toggleItem(h)} />
                       <span className="truncate">{h}</span>
                     </label>
@@ -230,7 +230,7 @@ function SamplingAdequacySection({ result }) {
     <div className="bg-white border border-gray-200 rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Sampling Adequacy</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="bg-gray-50 rounded-lg p-3">
+        <div className="bg-surface rounded-lg p-3">
           <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">KMO Measure of Sampling Adequacy</div>
           <div className={`text-3xl font-bold ${kmoColor}`}>{k.overall?.toFixed(3) ?? 'NaN'}</div>
           <div className={`text-xs uppercase font-medium ${kmoColor}`}>{k.interpretation}</div>
@@ -256,7 +256,7 @@ function SamplingAdequacySection({ result }) {
           <div className="text-xs font-medium mb-1">MSA per Item (Anti-image diagonal)</div>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-gray-50">
+              <thead className="bg-surface">
                 <tr>
                   <th className="px-2 py-1.5 text-left">Item</th>
                   <th className="px-2 py-1.5 text-right">MSA</th>
@@ -299,7 +299,7 @@ function ScreePlotSection({ result }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4">
       <h3 className="font-semibold text-sm mb-3">Scree Plot</h3>
-      <div className="bg-gray-50 rounded-lg p-2 overflow-x-auto">
+      <div className="bg-surface rounded-lg p-2 overflow-x-auto">
         <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="max-w-full h-auto">
           {/* Kaiser threshold y=1 */}
           <line x1={m.left} x2={m.left + innerW} y1={sy(1)} y2={sy(1)} stroke="#dc2626" strokeDasharray="4,3" />
@@ -363,7 +363,7 @@ function VarianceTableSection({ result }) {
       <h3 className="font-semibold text-sm mb-3">Variance Explained</h3>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
-          <thead className="bg-gray-50">
+          <thead className="bg-surface">
             <tr>
               <th className="px-2 py-1.5 text-left">Faktor</th>
               <th className="px-2 py-1.5 text-right">Eigenvalue</th>
@@ -418,7 +418,7 @@ function LoadingsSection({ result }) {
 
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
-          <thead className="bg-gray-50">
+          <thead className="bg-surface">
             <tr>
               <th className="px-2 py-1.5 text-left">Item</th>
               {Array.from({ length: result.nFactors }, (_, k) => (

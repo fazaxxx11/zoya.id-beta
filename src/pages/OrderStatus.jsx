@@ -110,7 +110,7 @@ function OrderStatus() {
 
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
         {/* Search Box */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
           <h2 className="text-lg font-bold text-gray-800 mb-4">Masukkan Order ID</h2>
           <p className="text-sm text-gray-500 mb-4">
             Cek status pesanan tanpa perlu login. Order ID diberikan setelah Anda mengajukan permintaan layanan.
@@ -118,7 +118,7 @@ function OrderStatus() {
           
           <div className="flex gap-3">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
               <input
                 type="text"
                 value={searchId}
@@ -161,7 +161,7 @@ function OrderStatus() {
 
         {/* Result: Not Found */}
         {notFound && (
-          <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100 text-center">
+          <div className="bg-white rounded-2xl shadow-sm p-8 border border-border text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <XCircle className="w-8 h-8 text-red-500" />
             </div>
@@ -182,13 +182,13 @@ function OrderStatus() {
         {foundOrder && (
           <div className="space-y-4">
             {/* Status Card */}
-            <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-gray-800">Status Pesanan</h3>
                 {getStatusBadge(foundOrder.status)}
               </div>
 
-              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <div className="bg-surface rounded-xl p-4 space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Order ID</span>
                   <span className="font-mono font-semibold text-sky-600">{foundOrder.id}</span>
@@ -337,7 +337,7 @@ function OrderStatus() {
                         a.click()
                         URL.revokeObjectURL(url)
                       }}
-                      className="w-full mt-3 bg-gray-500 text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2"
+                      className="w-full mt-3 bg-surface0 text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2"
                     >
                       <Download className="w-4 h-4" /> Download TXT
                     </button>
@@ -495,7 +495,7 @@ function OrderStatus() {
             </div>
 
             {/* Share / Save */}
-            <div className="bg-white rounded-2xl shadow-sm p-4 border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-sm p-4 border border-border">
               <p className="text-sm text-gray-500 text-center">
                 Simpan Order ID Anda: <strong className="text-gray-800">{foundOrder.id}</strong>
               </p>
@@ -505,7 +505,7 @@ function OrderStatus() {
 
         {/* Quick Actions */}
         {!foundOrder && !notFound && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
             <h3 className="font-semibold text-gray-800 mb-4">Butuh bantuan?</h3>
             <div className="space-y-3">
               <Link to="/" className="block p-3 bg-sky-50 rounded-xl hover:bg-sky-100 transition-colors">

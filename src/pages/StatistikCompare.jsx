@@ -75,14 +75,14 @@ export default function StatistikCompare() {
   }
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-sm text-gray-400">Memuat perbandingan…</div>
+    return <div className="min-h-screen flex items-center justify-center text-sm text-muted">Memuat perbandingan…</div>
   }
 
   const [a, b] = items
   const sameTool = a && b && a.tool === b.tool
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface">
       <div className="max-w-6xl mx-auto p-6 md:p-8">
         {/* Header */}
         <div className="mb-6">
@@ -90,7 +90,7 @@ export default function StatistikCompare() {
             className="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1 mb-2">
             <ChevronLeft className="w-3.5 h-3.5" /> Kembali ke Riwayat
           </button>
-          <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-1">Modul Statistik</div>
+          <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Modul Statistik</div>
           <h1 className="text-2xl font-bold text-gray-900">Bandingkan Analisis</h1>
           {!sameTool && a && b && (
             <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800 flex items-start gap-2">
@@ -109,7 +109,7 @@ export default function StatistikCompare() {
             <div key={idx} className="bg-white border border-gray-200/80 rounded-xl p-4">
               {it ? (
                 <>
-                  <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-1">
+                  <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">
                     {it.tool_name}
                   </div>
                   <h2 className="font-bold text-gray-900 text-base mb-1.5 truncate" title={it.title}>{it.title}</h2>
@@ -131,8 +131,8 @@ export default function StatistikCompare() {
         {/* Comparison table */}
         <div className="bg-white border border-gray-200/80 rounded-xl overflow-hidden">
           {rows.map((sec, sIdx) => (
-            <div key={sIdx} className={sIdx > 0 ? 'border-t border-gray-100' : ''}>
-              <div className="px-4 py-2.5 bg-gray-50 text-[11px] uppercase tracking-[0.18em] text-gray-500 font-medium">
+            <div key={sIdx} className={sIdx > 0 ? 'border-t border-border' : ''}>
+              <div className="px-4 py-2.5 bg-surface text-[11px] uppercase tracking-[0.18em] text-gray-500 font-medium">
                 {sec.section}
               </div>
               <table className="w-full text-sm">
@@ -140,12 +140,12 @@ export default function StatistikCompare() {
                   {sec.items.map((row, rIdx) => {
                     const aDiff = row.a && row.b && row.a.value !== row.b.value
                     return (
-                      <tr key={rIdx} className="border-t border-gray-100 first:border-t-0">
+                      <tr key={rIdx} className="border-t border-border first:border-t-0">
                         <td className="px-4 py-2.5 text-gray-600 w-1/3">{row.label}</td>
                         <td className={`px-4 py-2.5 font-mono text-[13px] ${aDiff ? 'bg-amber-50/40' : ''}`}>
                           <CellValue item={row.a} />
                         </td>
-                        <td className={`px-4 py-2.5 font-mono text-[13px] border-l border-gray-100 ${aDiff ? 'bg-amber-50/40' : ''}`}>
+                        <td className={`px-4 py-2.5 font-mono text-[13px] border-l border-border ${aDiff ? 'bg-amber-50/40' : ''}`}>
                           <CellValue item={row.b} />
                         </td>
                       </tr>
@@ -157,7 +157,7 @@ export default function StatistikCompare() {
           ))}
         </div>
 
-        <div className="mt-4 text-xs text-gray-400 flex items-center gap-2">
+        <div className="mt-4 text-xs text-muted flex items-center gap-2">
           <span className="inline-block w-3 h-3 rounded-sm bg-amber-50/70 border border-amber-200/60" />
           Highlight kuning = ada perbedaan nilai di kedua sisi
         </div>
@@ -167,11 +167,11 @@ export default function StatistikCompare() {
           <div className="mt-5 grid grid-cols-2 gap-4">
             {[a, b].map((it, idx) => (
               <div key={idx} className="bg-white border border-gray-200/80 rounded-xl p-4">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-medium mb-2">Catatan</div>
+                <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Catatan</div>
                 {it?.notes ? (
                   <div className="text-sm text-gray-700 whitespace-pre-wrap">{it.notes}</div>
                 ) : (
-                  <div className="text-sm text-gray-400 italic">Tidak ada catatan</div>
+                  <div className="text-sm text-muted italic">Tidak ada catatan</div>
                 )}
               </div>
             ))}
@@ -183,13 +183,13 @@ export default function StatistikCompare() {
 }
 
 function CellValue({ item }) {
-  if (!item) return <span className="text-gray-300">—</span>
+  if (!item) return <span className="text-muted">—</span>
   return (
     <div className="flex items-center gap-2 flex-wrap">
       <span className={item.sig ? 'text-emerald-700 font-semibold' : 'text-gray-900'}>
         {item.value}
       </span>
-      {item.hint && <span className="text-[10px] text-gray-400 uppercase tracking-wider">{item.hint}</span>}
+      {item.hint && <span className="text-[10px] text-muted uppercase tracking-wider">{item.hint}</span>}
     </div>
   )
 }

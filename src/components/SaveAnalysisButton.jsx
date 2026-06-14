@@ -65,7 +65,7 @@ export default function SaveAnalysisButton({ result, defaultTitle = '', toolName
                   Butuh login.
                 </p>
               </div>
-              <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setOpen(false)} className="text-muted hover:text-gray-600">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -88,7 +88,7 @@ export default function SaveAnalysisButton({ result, defaultTitle = '', toolName
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+            <div className="flex justify-end gap-2 pt-2 border-t border-border">
               <button onClick={() => setOpen(false)} disabled={saving} className="btn-ghost text-xs">
                 Batal
               </button>

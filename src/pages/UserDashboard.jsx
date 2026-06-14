@@ -120,7 +120,7 @@ function UserDashboard() {
         </div>
 
         {/* Wallet Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-gray-800 flex items-center gap-2">
               <Wallet className="w-5 h-5" />💰 Saldo
@@ -148,7 +148,7 @@ function UserDashboard() {
         </div>
 
         {/* Saved Analyses Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-border">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-gray-800 flex items-center gap-2">
               <BarChart3 className="w-5 h-5" /> Riwayat Analisis Statistik
@@ -174,10 +174,10 @@ function UserDashboard() {
           </div>
 
           {savedLoading ? (
-            <div className="text-center py-4 text-gray-400 text-sm">Memuat…</div>
+            <div className="text-center py-4 text-muted text-sm">Memuat…</div>
           ) : savedRecent.length === 0 ? (
             <div className="text-center py-6">
-              <FileText className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+              <FileText className="w-10 h-10 text-muted mx-auto mb-2" />
               <p className="text-sm text-gray-500 mb-3">Belum ada analisis tersimpan</p>
               <Link to="/statistik" className="inline-block text-xs text-sky-600 hover:underline">
                 Mulai analisis sekarang →
@@ -185,20 +185,20 @@ function UserDashboard() {
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">5 Terbaru</p>
+              <p className="text-xs text-muted uppercase tracking-wider mb-2">5 Terbaru</p>
               {savedRecent.map(item => (
                 <Link key={item.id} to={`/statistik/history?id=${item.id}`}
-                  className="block px-3 py-2.5 rounded-lg hover:bg-gray-50 border border-gray-100 transition-colors">
+                  className="block px-3 py-2.5 rounded-lg hover:bg-surface border border-border transition-colors">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-gray-900 truncate">{item.title}</div>
                       <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-2">
                         <span>{item.tool_name}</span>
-                        {item.sample_size && <><span className="text-gray-300">·</span><span>n={item.sample_size}</span></>}
-                        {item.ai_interpretation && <><span className="text-gray-300">·</span><span className="text-emerald-600">+ AI</span></>}
+                        {item.sample_size && <><span className="text-muted">·</span><span>n={item.sample_size}</span></>}
+                        {item.ai_interpretation && <><span className="text-muted">·</span><span className="text-emerald-600">+ AI</span></>}
                       </div>
                     </div>
-                    <span className="text-xs text-gray-400 whitespace-nowrap">
+                    <span className="text-xs text-muted whitespace-nowrap">
                       {new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
                     </span>
                   </div>
@@ -274,7 +274,7 @@ function UserDashboard() {
                         {getStatusBadge(order.status)}
                       </div>
                       <div className="flex justify-between items-center mt-2">
-                        <span className="text-xs text-gray-400">{order.id}</span>
+                        <span className="text-xs text-muted">{order.id}</span>
                         <div className="flex gap-2 items-center">
                           {order.status === 'completed' && (
                             <button
@@ -331,11 +331,11 @@ function UserDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
-          <Link to="/" className="bg-white p-4 rounded-xl border border-gray-100 text-center hover:bg-gray-50">
+          <Link to="/" className="bg-white p-4 rounded-xl border border-border text-center hover:bg-surface">
             <Zap className="w-6 h-6 mx-auto mb-2 text-sky-500" />
             <p className="text-sm font-medium">Pesan Layanan</p>
           </Link>
-          <Link to="/order" className="bg-white p-4 rounded-xl border border-gray-100 text-center hover:bg-gray-50">
+          <Link to="/order" className="bg-white p-4 rounded-xl border border-border text-center hover:bg-surface">
             <History className="w-6 h-6 mx-auto mb-2 text-sky-500" />
             <p className="text-sm font-medium">Cek Pesanan</p>
           </Link>
