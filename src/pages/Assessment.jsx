@@ -18,7 +18,7 @@ import RubrikTemplateModal from '../components/RubrikTemplateModal'
 import PageHeader from '../components/PageHeader'
 import { saveTemplate as saveRubrikTemplate } from '../lib/rubrikTemplates'
 import { toast } from '../lib/toast'
-import * as XLSX from 'xlsx'
+// XLSX lazy-loaded on export
 
 // Endpoints sama untuk dev & prod (server.js delegate ke api/assess.js)
 const API_ENDPOINTS = ['/api/assess', 'http://localhost:3000/api/assess']
