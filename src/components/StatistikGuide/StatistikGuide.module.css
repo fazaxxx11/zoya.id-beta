@@ -1,0 +1,352 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: #1e293b;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 32px;
+}
+
+/* Tab navigation */
+.tabNav {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.tabButton {
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tabButton:hover {
+  color: #3b82f6;
+}
+
+.tabActive {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+/* Cards */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.cardIcon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.cardTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.cardDesc {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* Highlight box */
+.highlight {
+  background: #fefce8;
+  border-left: 4px solid #3b82f6;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+
+/* Section */
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.section p {
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
+/* Code / formula */
+.formula {
+  background: #f1f5f9;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  display: inline-block;
+  margin: 8px 0;
+  color: #1e3a5f;
+}
+
+/* Bullet list */
+.bulletList {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+.bulletList li {
+  line-height: 1.7;
+  margin-bottom: 4px;
+}
+
+/* Accordion */
+.accordionItem {
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.accordionQuestion {
+  font-weight: 600;
+  padding: 12px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.accordionArrow {
+  transition: transform 0.2s;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.accordionArrowOpen {
+  transform: rotate(180deg);
+}
+
+.accordionAnswer {
+  padding: 8px 0 12px;
+  color: #6b7280;
+  line-height: 1.7;
+}
+
+/* Illustration wrapper */
+.illustration {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.illustrationCaption {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* Badge */
+.badge {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+/* Reject box */
+.rejectBox {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+
+.rejectBox strong {
+  color: #dc2626;
+}
+
+/* SPSS Comparison */
+.spssToggle {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.spssToggle:hover {
+  background: #1d4ed8;
+}
+
+.spssPanel {
+  background: #f8fafc;
+  border: 1px dashed #94a3b8;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.spssPlaceholder {
+  background: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  border-radius: 6px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.spssSteps {
+  padding-left: 20px;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.spssSteps li {
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+
+/* Sub-tab */
+.subTabRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.subTab {
+  padding: 0.4rem 1rem;
+  border: 1px solid #c7d2fe;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6366f1;
+  font-size: 0.88rem;
+}
+
+.subTabActive {
+  padding: 0.4rem 1rem;
+  border: 1px solid #6366f1;
+  background: #6366f1;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+/* Tutorial stepper */
+.tutorialStepper {
+  padding: 1.5rem;
+  background: #f8faff;
+  border-radius: 12px;
+  border: 1px solid #e0e7ff;
+}
+
+.stepProgress {
+  height: 6px;
+  background: #e0e7ff;
+  border-radius: 99px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.stepProgress > div {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #3b82f6);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.stepCard {
+  min-height: 100px;
+  animation: slideInRight 0.3s ease;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin-bottom: 1.2rem;
+}
+
+.stepCard h3 {
+  color: #4f46e5;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.stepBtnRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.stepBtn {
+  padding: 0.5rem 1.2rem;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: opacity 0.2s;
+}
+
+.stepBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.stepDone {
+  font-weight: 600;
+  color: #16a34a;
+  font-size: 0.95rem;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}

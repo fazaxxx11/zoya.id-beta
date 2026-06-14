@@ -22,6 +22,7 @@ const StatistikBatch      = lazy(() => import('./pages/StatistikBatch'))
 const StatistikPower      = lazy(() => import('./pages/StatistikPower'))
 const StatistikReport     = lazy(() => import('./pages/StatistikReport'))
 const OnboardingStatistik = lazy(() => import('./pages/OnboardingStatistik'))
+const StatistikGuide     = lazy(() => import('./pages/StatistikGuide'))
 const Assessment          = lazy(() => import('./pages/Assessment'))
 const AssessmentReport    = lazy(() => import('./pages/AssessmentReport'))
 const Payment             = lazy(() => import('./pages/Payment'))
@@ -80,6 +81,7 @@ function App() {
           <Route path="/statistik/batch" element={<StatistikBatch />} />
           <Route path="/statistik/power" element={<StatistikPower />} />
           <Route path="/statistik/report" element={<StatistikReport />} />
+          <Route path="/statistik/guide" element={<StatistikGuide />} />
           <Route path="/kuesioner" element={<Kuesioner />} />
           <Route path="/sampling" element={<Sampling />} />
           <Route path="/butir-soal" element={<ItemAnalysis />} />
