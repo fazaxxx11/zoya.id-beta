@@ -13,8 +13,8 @@ const RecommendationList = ({
     <section className={`${className}`}>
       <h2 className="section-title">{title}</h2>
       <ol className="list-none pl-0 mt-4">
-        {items.map((item, index) => (
-          <li key={index} className="flex mb-2 last:mb-0">
+        {items.map((item, idx) => (
+          <li key={`rec-${idx}-${item.slice(0,20)}`} className="flex mb-2 last:mb-0">
             <div className="flex-shrink-0 mr-3">
               <span 
                 className="font-mono font-medium text-sm"
@@ -23,7 +23,7 @@ const RecommendationList = ({
                   color: 'var(--accent, #2563eb)'
                 }}
               >
-                {index + 1}.
+                {idx + 1}.
               </span>
             </div>
             <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">

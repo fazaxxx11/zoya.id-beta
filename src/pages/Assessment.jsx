@@ -961,7 +961,7 @@ function HasilPenilaian({
   const studentFuse = useMemo(() => new Fuse(results, { keys: ['name'], threshold: 0.3 }), [results])
 
   const sortedResults = useMemo(() => {
-    const arr = [...results]
+    let arr = [...results]
     if (sortBy === 'high') arr.sort((a, b) => calcTotal(b.scores, rubrik) - calcTotal(a.scores, rubrik))
     else if (sortBy === 'low') arr.sort((a, b) => calcTotal(a.scores, rubrik) - calcTotal(b.scores, rubrik))
     else if (sortBy === 'name') arr.sort((a, b) => (a.name || '').localeCompare(b.name || ''))

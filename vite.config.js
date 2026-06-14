@@ -26,9 +26,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
-        // Skip old hashed chunks during precache to prevent stale bundles
         globIgnores: ['**/sw.js', '**/workbox-*.js'],
-        // Clean up old caches on activate
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
@@ -47,18 +45,32 @@ export default defineConfig({
   ],
   build: {
     chunkSizeWarningLimit: 600,
+    sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-xlsx':     ['xlsx'],
-          'vendor-pdf':      ['jspdf', 'pdf-lib', 'pdfjs-dist'],
-          'vendor-mammoth':  ['mammoth'],
-          'vendor-docx':     ['docx'],
-          'vendor-stats':    ['jstat', 'simple-statistics'],
-          'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-ui':       ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tooltip', 'lucide-react'],
-        },
-      },
-    },
-  },
+        manualChunks(id) {
+          // Rolldown requires function format, not object
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'vendor-react'
+            }
+            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
+              return 'vendor-ui'
+            }
+            if (id.includes('@supabase')) {
+              return 'vendor-supabase'
+            }
+            if (id.includes('jstat') || id.includes('simple-statistics')) {
+              return 'vendor-stats'
+            }
+            // File parsers stay separate (already lazy-loaded)
+            if (id.includes('xlsx')) return 'vendor-xlsx'
+            if (id.includes('pdfjs-dist') || id.includes('pdf-lib') || id.includes('jspdf')) return 'vendor-pdf'
+            if (id.includes('mammoth')) return 'vendor-mammoth'
+            if (id.includes('docx')) return 'vendor-docx'
+          }
+        }
+      }
+    }
+  }
 })

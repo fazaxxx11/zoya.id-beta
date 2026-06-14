@@ -187,7 +187,7 @@ function Upload() {
             
             <div className="divide-y divide-gray-100">
               {files.map((file, index) => (
-                <div key={index} className="p-4 flex items-center justify-between hover:bg-surface">
+                <div key={`file-${file.name}-${index}`} className="p-4 flex items-center justify-between hover:bg-surface">
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       file.name.endsWith('.xlsx') || file.name.endsWith('.xls') ? 'bg-green-100' :
