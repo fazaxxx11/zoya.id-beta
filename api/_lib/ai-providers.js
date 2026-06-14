@@ -9,6 +9,17 @@
  */
 const providerDefinitions = [
   {
+    id: 'ai1833',
+    name: 'AI1833',
+    urlEnv: 'AI1833_URL',
+    baseUrlEnv: 'AI1833_BASE_URL',
+    defaultUrl: 'https://api.ai1833.shop/v1/chat/completions',
+    modelEnv: 'AI1833_MODEL',
+    defaultModel: 'deepseek-v4-flash',
+    keyEnv: 'AI1833_API_KEY',
+    isOpenRouter: false
+  },
+  {
     id: 'generalcompute',
     name: 'General Compute',
     urlEnv: 'GENERALCOMPUTE_URL',

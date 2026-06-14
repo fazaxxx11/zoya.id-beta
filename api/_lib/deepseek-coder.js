@@ -1,12 +1,12 @@
-// DeepSeek V3.2 Coder Helper — call General Compute for code generation
+// DeepSeek V4 Flash Coder Helper — call AI1833 for code generation
 // Usage: node api/_lib/deepseek-coder.js "your coding task here"
 // Uses centralized provider config
 
 import { getProvider, buildHeaders, buildChatBody } from './ai-providers.js';
 
 async function callDeepSeek(task, files = {}) {
-  const provider = getProvider('generalcompute');
-  if (!provider) throw new Error('GENERALCOMPUTE_API_KEY not set');
+  const provider = getProvider('ai1833');
+  if (!provider) throw new Error('AI1833_API_KEY not set');
 
   const fileContext = Object.entries(files)
     .map(([path, content]) => `--- FILE: ${path} ---\n${content}\n--- END: ${path} ---`)

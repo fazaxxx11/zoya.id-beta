@@ -168,7 +168,7 @@ describe('ai-providers', () => {
     it('getProviderStatus() returns status without secrets', async () => {
       const { getProviderStatus } = await import('../../api/_lib/ai-providers.js');
       const status = getProviderStatus();
-      expect(status.length).toBe(4);
+      expect(status.length).toBe(5);
       const gc = status.find(p => p.id === 'generalcompute');
       expect(gc.configured).toBe(true);
       expect(gc).not.toHaveProperty('key');
