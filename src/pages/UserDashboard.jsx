@@ -282,12 +282,12 @@ function UserDashboard() {
                           {order.status === 'completed' && (
                             <button
                               onClick={() => navigate(`/order?id=${order.id}`)}
-                              className="text-xs bg-teal-50 dark:bg-teal-950/30 text-teal-600 px-2 py-1 rounded-full"
+                              className="text-xs bg-card border border-accent text-accent px-2 py-1 rounded-full hover:bg-accent/10 transition-colors"
                             >
                               Lihat Hasil
                             </button>
                           )}
-                          <span className="font-bold text-sky-600">
+                          <span className="font-bold text-fg">
                             {order.amount > 0 ? formatCurrency(order.amount) : <span className="text-emerald-600 dark:text-emerald-400 text-sm">Gratis</span>}
                           </span>
                         </div>
