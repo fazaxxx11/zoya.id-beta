@@ -767,7 +767,7 @@ function Statistik() {
 
             {/* Shimmer loading skeleton */}
             {analyzing && (
-              <div className="border border-border bg-card rounded-xl overflow-hidden p-5 space-y-4">
+              <div className="border border-border bg-card rounded-lg overflow-hidden p-4 space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full shimmer" />
                   <div className="space-y-2 flex-1">
