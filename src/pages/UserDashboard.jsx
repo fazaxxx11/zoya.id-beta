@@ -133,24 +133,26 @@ function UserDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-3">
-          <Link to="/statistik" className="group bg-card border border-border hover:border-accent rounded-lg p-4 transition-colors">
-            <BarChart3 className="w-6 h-6 text-accent mb-2" />
-            <p className="text-sm font-medium text-fg">Statistik Baru</p>
+        <div className="grid grid-cols-2 gap-4">
+          <Link to="/statistik" className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
+            <BarChart3 className="w-7 h-7 text-accent mb-3 group-hover:scale-110 transition-transform" />
+            <p className="text-sm font-semibold text-fg mb-1">Statistik Baru</p>
+            <p className="text-xs text-muted">70+ uji tersedia</p>
           </Link>
-          <Link to="/statistik/history" className="group bg-card border border-border hover:border-accent rounded-lg p-4 transition-colors">
-            <FileText className="w-6 h-6 text-accent mb-2" />
-            <p className="text-sm font-medium text-fg">Lihat History</p>
+          <Link to="/statistik/history" className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
+            <FileText className="w-7 h-7 text-accent mb-3 group-hover:scale-110 transition-transform" />
+            <p className="text-sm font-semibold text-fg mb-1">Lihat History</p>
+            <p className="text-xs text-muted">{savedCount} analisis</p>
           </Link>
-          <Link to="/auth" className="group bg-card border border-border hover:border-accent rounded-lg p-4 transition-colors">
-            <Wallet className="w-6 h-6 text-emerald-600 mb-2" />
-            <p className="text-sm font-medium text-fg">Top Up</p>
-            <p className="text-xs text-muted mt-1">{formatCurrency(totalBalance)}</p>
+          <Link to="/auth" className="group bg-card border border-border hover:border-emerald-500 hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
+            <Wallet className="w-7 h-7 text-emerald-600 mb-3 group-hover:scale-110 transition-transform" />
+            <p className="text-sm font-semibold text-fg mb-1">Top Up</p>
+            <p className="text-xs text-muted">{formatCurrency(totalBalance)}</p>
           </Link>
-          <button onClick={() => setActiveTab('orders')} className="group bg-card border border-border hover:border-accent rounded-lg p-4 transition-colors text-left">
-            <Clock className="w-6 h-6 text-amber-600 mb-2" />
-            <p className="text-sm font-medium text-fg">Cek Order</p>
-            <p className="text-xs text-muted mt-1">{orders.length} pesanan</p>
+          <button onClick={() => setActiveTab('orders')} className="group bg-card border border-border hover:border-amber-500 hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1 text-left">
+            <Clock className="w-7 h-7 text-amber-600 mb-3 group-hover:scale-110 transition-transform" />
+            <p className="text-sm font-semibold text-fg mb-1">Cek Order</p>
+            <p className="text-xs text-muted">{orders.length} pesanan</p>
           </button>
         </div>
 
