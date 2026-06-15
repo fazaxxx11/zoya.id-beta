@@ -11,6 +11,7 @@ import { subscribeWallet } from '../lib/wallet'
 import { subscribeOrders } from '../lib/orders'
 import { listAnalyses, countAnalyses, deleteAnalysis } from '../lib/savedAnalyses'
 import { toast } from '../lib/toast'
+import { trackEvent } from '../lib/analytics'
 
 // Simple skeleton pulse component
 function Skeleton({ className = '' }) {
@@ -62,6 +63,7 @@ function UserDashboard() {
       navigate('/auth')
       return
     }
+    trackEvent('dashboard_view')
     const unsubW = subscribeWallet(setWallet)
     const unsubO = subscribeOrders(setOrders)
     return () => { unsubW(); unsubO() }
@@ -187,12 +189,12 @@ function UserDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-4">
-          <Link to="/statistik" className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
+          <Link to="/statistik" onClick={() => trackEvent('quick_action', { action: 'new_stat' })} className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
             <BarChart3 className="w-7 h-7 text-accent mb-3 group-hover:scale-110 transition-transform" />
             <p className="text-sm font-semibold text-fg mb-1">Statistik Baru</p>
             <p className="text-xs text-muted">70+ uji tersedia</p>
           </Link>
-          <Link to="/statistik/history" className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
+          <Link to="/statistik/history" onClick={() => trackEvent('quick_action', { action: 'history' })} className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
             <FileText className="w-7 h-7 text-accent mb-3 group-hover:scale-110 transition-transform" />
             <p className="text-sm font-semibold text-fg mb-1">Lihat History</p>
             <p className="text-xs text-muted">{savedCount} analisis</p>
@@ -252,6 +254,7 @@ function UserDashboard() {
                             setSavedRecent(prev => prev.filter(i => i.id !== item.id))
                             setSavedCount(prev => prev - 1)
                             toast.success('Analisis dihapus')
+                            trackEvent('analysis_delete')
                           })
                         }
                       }}
