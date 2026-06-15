@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import Fuse from 'fuse.js'
 import { Link, useNavigate } from 'react-router-dom'
 import { 
   ChevronLeft, Plus, Trash2, FileText, Users, Sparkles, Award,
@@ -20,6 +19,8 @@ import RubrikTemplateModal from '../components/RubrikTemplateModal'
 import PageHeader from '../components/PageHeader'
 import { saveTemplate as saveRubrikTemplate } from '../lib/rubrikTemplates'
 import { toast } from '../lib/toast'
+import { createFuzzySearch } from '../lib/fuzzySearch'
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
 // XLSX lazy-loaded on export
 
 // Endpoints sama untuk dev & prod (server.js delegate ke api/assess.js)
@@ -396,6 +397,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
   const [previewConfirmed, setPreviewConfirmed] = useState(false) // Sudah konfirmasi preview belum
   const [animKey, setAnimKey] = useState(0)        // bump untuk re-trigger fade-in saat ganti mode
   const [dragOver, setDragOver] = useState(false)  // visual feedback saat drag file
+  const [studentSearch, setStudentSearch] = useState('')
   const fileInputRef = useRef(null)
 
   const addStudent = () => setStudents(s => [...s, { id: uid(), name: "", answer: "" }]);
@@ -437,6 +439,13 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
 
   // Allow assessment if at least 1 student has name & answer
   const hasStudents = students.length > 0 && students.some(s => s.name && s.answer)
+
+  // Fuzzy filter students for search
+  const filteredStudents = useMemo(() => {
+    if (!studentSearch.trim()) return students
+    const fuse = createFuzzySearch(students, ['name', 'answer'])
+    return fuse.search(studentSearch).map(r => r.item)
+  }, [students, studentSearch])
 
   // File mode needs preview confirmation first
   const canAssess = inputMode === 'manual'
@@ -695,7 +704,17 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               <Pencil className="w-3.5 h-3.5 mt-0.5 shrink-0" />
               <span>Ketik nama & jawaban tiap siswa. Tekan <kbd className="bg-card px-1 py-0.5 rounded text-[10px] border">+ Tambah Murid</kbd> untuk row baru.</span>
             </div>
-            {students.map((s,i) => (
+            {/* Search input */}
+            {students.length > 3 && (
+              <input
+                type="text"
+                value={studentSearch}
+                onChange={e => setStudentSearch(e.target.value)}
+                placeholder="Cari siswa... (nama atau jawaban)"
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-card text-gray-700 dark:text-gray-300 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-300"
+              />
+            )}
+            {filteredStudents.map((s,i) => (
               <div key={s.id} className="bg-surface rounded-xl p-4">
                 <div className="flex justify-between mb-2">
                   <span className="text-xs text-muted font-medium">Murid #{i+1}</span>
@@ -958,7 +977,7 @@ function HasilPenilaian({
   const [sortBy, setSortBy] = useState('default')   // default | high | low | name
   const [filterBy, setFilterBy] = useState('all')   // all | pass | fail
   const [studentSearch, setStudentSearch] = useState('')
-  const studentFuse = useMemo(() => new Fuse(results, { keys: ['name'], threshold: 0.3 }), [results])
+  const studentFuse = useMemo(() => createFuzzySearch(results, ['name']), [results])
 
   const sortedResults = useMemo(() => {
     let arr = [...results]
@@ -1229,6 +1248,9 @@ function Assessment() {
   const [batchProgress, setBatchProgress] = useState({ done: 0, total: 0 })
   // Reset confirmation modal
   const [showResetConfirm, setShowResetConfirm] = useState(false)
+
+  // Keyboard shortcuts: / → focus search, Ctrl+Enter → submit
+  useKeyboardShortcuts()
 
   // Load uploaded students from Upload page
   useEffect(() => {

@@ -24,6 +24,7 @@ import MethodologyPanel from '../components/MethodologyPanel'
 import Modal from '../components/Modal'
 import AssumptionsPanel from '../components/AssumptionsPanel'
 import PageHeader from '../components/PageHeader'
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
 import { datasetToParsed } from '../lib/exampleDatasets'
 import StatistikFlow from '../components/statistik/StatistikFlow'
 import {
@@ -84,6 +85,9 @@ function Statistik() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const activeTool = searchParams.get('tool') || 'deskriptif'
+
+  // Keyboard shortcuts: / → focus search
+  useKeyboardShortcuts()
 
   // Auto-redirect DISABLED — show /statistik directly with analysis choices
   // Users can access /statistik/start manually if they want guided tour
