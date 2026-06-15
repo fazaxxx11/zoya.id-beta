@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 /**
  * Global keyboard shortcuts:
@@ -11,8 +10,6 @@ import { useNavigate } from 'react-router-dom'
  *   Escape   → (handled by existing modals, no-op here)
  */
 export default function useKeyboardShortcuts() {
-  const navigate = useNavigate()
-
   useEffect(() => {
     let pendingG = false
     let gTimeout = null
@@ -49,12 +46,12 @@ export default function useKeyboardShortcuts() {
         const routes = { d: '/dashboard', s: '/statistik', h: '/statistik/history' }
         if (routes[e.key]) {
           e.preventDefault()
-          navigate(routes[e.key])
+          window.location.href = routes[e.key]
         }
       }
     }
 
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [navigate])
+  }, [])
 }
