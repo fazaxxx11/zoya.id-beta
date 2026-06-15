@@ -719,10 +719,9 @@ export default function StatistikFlow({
   // Determine current step based on state
   const currentStep = useMemo(() => {
     if (!file || !data) return 'upload'
-    if (!selectedTool) return 'review'   // show Cek Data after upload
-    if (!children) return 'select'       // configuring params
-    return 'results'
-  }, [file, data, selectedTool, children])
+    if (!selectedTool) return 'review'   // Cek Data after upload
+    return 'select'                      // Analisis when tool picked
+  }, [file, data, selectedTool])
 
   const completed = useMemo(() => {
     const c = []
