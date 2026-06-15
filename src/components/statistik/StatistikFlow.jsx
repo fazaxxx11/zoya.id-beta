@@ -639,7 +639,7 @@ export default function StatistikFlow({
   file, data: propData, columns, numericColumns, categoricalColumns, error,
   activeTool, selectedTool, onSelectTool,
   onFileUpload, onExampleLoad, onOpenGuide, onAnalyze, onDataChange,
-  analyzing, children, // children = result/interpretation panels
+  analyzing, result, children, // result = analysis result, children = result/interpretation panels
 }) {
   // Editing state
   const [originalData, setOriginalData] = useState(null)
@@ -719,16 +719,16 @@ export default function StatistikFlow({
   // Determine current step based on state
   const currentStep = useMemo(() => {
     if (!file || !data) return 'upload'
+    if (result) return 'results'
     if (analyzing) return 'select'       // user clicked Analisis
     return 'review'                      // reviewing data after upload
-  }, [file, data, analyzing])
+  }, [file, data, result, analyzing])
 
   const completed = useMemo(() => {
     const c = []
     if (currentStep !== 'upload') c.push('upload')
     if (currentStep !== 'upload' && currentStep !== 'review') c.push('review')
     if (currentStep === 'results') c.push('select')
-    // 'results' never marked completed — it's the final step
     return c
   }, [currentStep])
 

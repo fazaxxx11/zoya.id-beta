@@ -718,6 +718,7 @@ function Statistik() {
           onOpenGuide={() => setShowGuide(true)}
           onAnalyze={handlePayClick}
           analyzing={analyzing}
+          result={result}
         >
           {/* Main panel */}
           <div className="lg:col-span-3 space-y-6">
