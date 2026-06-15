@@ -1,22 +1,20 @@
 // src/components/statistik/StatistikFlow.jsx
 // Guided step-based flow for Statistik page
 import Fuse from 'fuse.js'
-// Wraps existing logic, presents as Upload → Review → Select → Results → Interpret → Export
+// Wraps existing logic, presents as Upload → Cek Data → Analisis → Hasil
 
 import { useState, useMemo, useCallback } from 'react'
 import {
-  Upload, Table, BarChart3, Brain, Download, CheckCircle,
+  Upload, Table, BarChart3, CheckCircle,
   ChevronRight, AlertCircle, FileSpreadsheet, ArrowRight,
 } from 'lucide-react'
 import DataPreview from '../DataPreview'
 
 const STEPS = [
-  { id: 'upload',   label: 'Upload',    icon: Upload },
-  { id: 'review',   label: 'Variabel',  icon: Table },
-  { id: 'select',   label: 'Analisis',  icon: BarChart3 },
-  { id: 'results',  label: 'Hasil',     icon: CheckCircle },
-  { id: 'interpret',label: 'Interpretasi', icon: Brain },
-  { id: 'export',   label: 'Export',    icon: Download },
+  { id: 'upload',  label: 'Upload',    icon: Upload },
+  { id: 'review',  label: 'Cek Data',  icon: Table },
+  { id: 'select',  label: 'Analisis',  icon: BarChart3 },
+  { id: 'results', label: 'Hasil',     icon: CheckCircle },
 ]
 
 // ============================================================
@@ -721,8 +719,8 @@ export default function StatistikFlow({
   // Determine current step based on state
   const currentStep = useMemo(() => {
     if (!file || !data) return 'upload'
-    if (!selectedTool) return 'select'
-    if (!children) return 'select'  // still configuring params
+    if (!selectedTool) return 'review'   // show Cek Data after upload
+    if (!children) return 'select'       // configuring params
     return 'results'
   }, [file, data, selectedTool, children])
 
