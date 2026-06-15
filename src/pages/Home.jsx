@@ -12,6 +12,7 @@ import {
   User,
   Menu,
   X,
+  BarChart3,
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
 import Logo from "../components/Logo";
@@ -118,7 +119,6 @@ export default function Home() {
             </nav>
 
             <div className="flex items-center gap-3">
-              {/* Mobile hamburger */}
               <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-fg hover:text-accent transition-colors active:scale-95">
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -144,76 +144,107 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Mobile menu dropdown */}
+      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-b border-border bg-card/95 backdrop-blur">
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
-            <button onClick={() => { scrollTo("layanan"); setMobileOpen(false) }} className="text-left text-sm hover:text-accent transition-colors py-2">
-              Layanan
-            </button>
-            <button onClick={() => { scrollTo("alur"); setMobileOpen(false) }} className="text-left text-sm hover:text-accent transition-colors py-2">
-              Alur
-            </button>
-            <button onClick={() => { scrollTo("cara-kerja"); setMobileOpen(false) }} className="text-left text-sm hover:text-accent transition-colors py-2">
-              Cara Kerja
-            </button>
-            <Link to="/help" onClick={() => setMobileOpen(false)} className="text-sm hover:text-accent transition-colors py-2">
-              Bantuan
-            </Link>
+            <button onClick={() => { scrollTo("layanan"); setMobileOpen(false) }} className="text-left text-sm hover:text-accent transition-colors py-2">Layanan</button>
+            <button onClick={() => { scrollTo("alur"); setMobileOpen(false) }} className="text-left text-sm hover:text-accent transition-colors py-2">Alur</button>
+            <button onClick={() => { scrollTo("cara-kerja"); setMobileOpen(false) }} className="text-left text-sm hover:text-accent transition-colors py-2">Cara Kerja</button>
+            <Link to="/help" onClick={() => setMobileOpen(false)} className="text-sm hover:text-accent transition-colors py-2">Bantuan</Link>
           </nav>
         </div>
       )}
 
       <main>
-        {/* Hero */}
-        <section className="container mx-auto px-4 py-12 md:py-20 relative paper-texture">
-          {/* Decorative blurs — human imperfections */}
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
+        {/* ===== HERO — Asymmetric Grid ===== */}
+        <section className="container mx-auto px-4 py-16 md:py-24 relative paper-texture overflow-hidden">
+          {/* Decorative blurs */}
+          <div className="absolute -top-20 -right-20 w-60 h-60 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-3xl mx-auto text-center relative z-10">
-            <h1 className="text-3xl md:text-5xl font-heading font-black tracking-tight leading-tight mb-6">
-              Olah data penelitian dari dataset ke{' '}
-              <span className="text-accent">laporan akademik</span>.
-            </h1>
-            <p className="text-base md:text-lg font-light text-muted leading-relaxed mb-8 max-w-2xl mx-auto">
-              Analisis statistik, interpretasi hasil, dan susun laporan —
-              seluruh alur penelitian dalam satu tempat.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 items-center relative z-10">
+            {/* Left: Content (3 cols) */}
+            <div className="md:col-span-3">
+              <span className="inline-block text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mb-4 -rotate-2">
+                🚀 70+ uji statistik tersedia
+              </span>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
-              <Link
-                to="/statistik"
-                className="w-full sm:w-auto px-8 py-3.5 bg-accent text-white rounded-lg hover:opacity-90 transition-colors font-semibold text-base shadow-md shadow-accent/20"
-              >
-                Mulai Analisis
-              </Link>
-              <button
-                onClick={() => scrollTo("layanan")}
-                className="w-full sm:w-auto px-6 py-3.5 border border-border rounded-lg hover:bg-surface transition-colors font-medium text-sm"
-              >
-                Lihat Layanan
-              </button>
+              <h1 className="text-3xl md:text-5xl font-heading font-black tracking-tight leading-tight mb-5">
+                Olah data penelitian dari dataset ke{' '}
+                <span className="text-accent">laporan akademik</span>.
+              </h1>
+
+              <p className="text-base md:text-lg font-light text-muted leading-relaxed mb-6 max-w-xl">
+                Analisis statistik, interpretasi hasil, dan susun laporan —
+                seluruh alur penelitian dalam satu tempat.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <Link
+                  to="/statistik"
+                  className="w-full sm:w-auto px-8 py-3.5 bg-accent text-white rounded-lg hover:opacity-90 transition-all font-semibold text-base shadow-md shadow-accent/20 active:scale-95"
+                >
+                  Mulai Analisis
+                </Link>
+                <button
+                  onClick={() => scrollTo("layanan")}
+                  className="w-full sm:w-auto px-6 py-3.5 border border-border rounded-lg hover:bg-surface transition-colors font-medium text-sm active:scale-95"
+                >
+                  Lihat Layanan
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {TRUST_ITEMS.map((item, i) => (
+                  <span key={item} className={`text-xs px-3 py-1.5 rounded-full bg-surface text-muted hover:bg-accent/10 transition-colors ${i === 0 ? 'transform -rotate-1' : ''}`}>
+                    {item}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2">
-              {TRUST_ITEMS.map((item) => (
-                <span key={item} className="text-xs px-3 py-1.5 rounded-full bg-surface text-muted hover:bg-accent/10">
-                  {item}
-                </span>
-              ))}
+            {/* Right: Visual element (2 cols) — breaks template feel */}
+            <div className="md:col-span-2 hidden md:block">
+              <div className="relative">
+                {/* Fake stat card — overlapping */}
+                <div className="bg-card border border-border rounded-xl p-5 shadow-lg transform rotate-2 hover:rotate-0 transition-transform">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
+                      <BarChart3 className="w-4 h-4 text-accent" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold">Uji T-Test</div>
+                      <div className="text-xs text-muted">Selesai • 2 menit lalu</div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-2 bg-accent/20 rounded-full w-3/4" />
+                    <div className="h-2 bg-teal-500/20 rounded-full w-1/2" />
+                    <div className="h-2 bg-amber-500/20 rounded-full w-2/3" />
+                  </div>
+                </div>
+
+                {/* Overlapping second card — depth effect */}
+                <div className="absolute -bottom-4 -left-4 bg-card border border-border rounded-xl p-4 shadow-md transform -rotate-3 hover:rotate-0 transition-transform w-48">
+                  <div className="text-xs text-muted mb-1">Signifikansi</div>
+                  <div className="text-lg font-bold text-emerald-500">p = 0.003</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Services — 4 Large Cards */}
-        <section id="layanan" className="container mx-auto px-4 py-16">
-          <h2 className="text-2xl md:text-3xl font-heading font-bold text-center mb-4">Layanan</h2>
-          <p className="text-base font-light text-muted text-center mb-10 max-w-lg mx-auto">
-            Pilih layanan sesuai tahap penelitianmu
-          </p>
+        {/* ===== SERVICES — Asymmetric grid ===== */}
+        <section id="layanan" className="container mx-auto px-4 py-12">
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold mb-2">Layanan</h2>
+            <p className="text-base font-light text-muted max-w-md">
+              Pilih layanan sesuai tahap penelitianmu
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start max-w-5xl mx-auto">
             {SERVICES.map((svc) => {
               const s = accentStyle[svc.accent];
               return (
@@ -221,7 +252,9 @@ export default function Home() {
                   key={svc.id}
                   to={svc.path}
                   className={`group rounded-2xl p-4 transition-all hover:shadow-md hover:-translate-y-0.5 ${s.card} ${
-                    svc.primary ? "min-h-[180px]" : "border border-border bg-card"
+                    svc.primary
+                      ? 'md:col-span-2 min-h-[180px]'
+                      : 'border border-border bg-card'
                   }`}
                 >
                   <svc.icon className={`w-10 h-10 mb-4 ${s.icon}`} />
@@ -240,12 +273,15 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Workflow — 3 Steps */}
+        {/* ===== WORKFLOW — Centered with accent underline ===== */}
         <section id="alur" className="container mx-auto px-4 py-16">
-          <h2 className="text-2xl md:text-3xl font-heading font-bold text-center mb-4">Alur Penelitian</h2>
-          <p className="text-base font-light text-muted text-center mb-12 max-w-lg mx-auto">
-            Dari data mentah sampai laporan siap cetak
-          </p>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold mb-2">Alur Penelitian</h2>
+            <div className="w-12 h-0.5 bg-accent mx-auto mb-3" />
+            <p className="text-base font-light text-muted max-w-lg mx-auto">
+              Dari data mentah sampai laporan siap cetak
+            </p>
+          </div>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-0 max-w-3xl mx-auto">
             {WORKFLOW_STEPS.map((step, idx) => (
@@ -267,17 +303,20 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Cara Kerja — 3 Steps with dashed connectors */}
-        <section id="cara-kerja" className="container mx-auto px-4 py-16">
-          <h2 className="text-2xl md:text-3xl font-heading font-bold text-center mb-4">Cara Kerja</h2>
-          <p className="text-base font-light text-muted text-center mb-12 max-w-lg mx-auto">
-            Tiga langkah simpel menuju hasil analisis
-          </p>
+        {/* ===== CARA KERJA — Left-aligned header ===== */}
+        <section id="cara-kerja" className="container mx-auto px-4 py-20">
+          <div className="text-center mb-12">
+            <span className="text-xs font-semibold text-accent tracking-widest uppercase">Process</span>
+            <h2 className="text-2xl md:text-3xl font-heading font-bold mt-1 mb-2">Cara Kerja</h2>
+            <p className="text-base font-light text-muted max-w-lg mx-auto">
+              Tiga langkah simpel menuju hasil analisis
+            </p>
+          </div>
 
           <div className="flex flex-col md:flex-row items-center max-w-4xl mx-auto">
             {CARA_KERJA.map((ck, idx) => (
               <React.Fragment key={ck.step}>
-                <div className="flex-1 text-center p-4 border border-border bg-card rounded-lg shadow-sm hover:border-accent/50 transition-colors active:scale-[0.98] active:scale-95">
+                <div className="flex-1 text-center p-4 border border-border bg-card rounded-lg shadow-sm hover:border-accent/50 transition-colors active:scale-[0.98]">
                   <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center mx-auto mb-4">
                     <ck.icon className="w-6 h-6 text-accent" />
                   </div>
@@ -296,7 +335,7 @@ export default function Home() {
         </section>
       </main>
 
-      {/* Footer */}
+      {/* Footer — compact with rose pop CTA */}
       <footer className="border-t border-border mt-16">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col items-center text-center space-y-4">
@@ -312,9 +351,8 @@ export default function Home() {
             </div>
             <div className="flex gap-4 text-sm">
               <Link to="/login" className="text-muted hover:text-accent">Masuk</Link>
-              <Link to="/register" className="px-4 py-1.5 bg-accent text-white rounded-lg hover:opacity-90 text-sm">Daftar</Link>
+              <Link to="/register" className="px-4 py-1.5 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors text-sm active:scale-95">Daftar</Link>
             </div>
-
           </div>
         </div>
       </footer>
