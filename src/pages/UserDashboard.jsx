@@ -10,6 +10,7 @@ import { useCurrentUser } from '../lib/useCurrentUser'
 import { subscribeWallet } from '../lib/wallet'
 import { subscribeOrders } from '../lib/orders'
 import { listAnalyses, countAnalyses, deleteAnalysis } from '../lib/savedAnalyses'
+import { toast } from '../lib/toast'
 
 // Simple skeleton pulse component
 function Skeleton({ className = '' }) {
@@ -54,6 +55,7 @@ function UserDashboard() {
 
   const handleLogout = () => {
     logoutUser()
+    toast.success('Sampai jumpa!')
     navigate('/')
   }
 
@@ -212,6 +214,7 @@ function UserDashboard() {
                           deleteAnalysis(item.id).then(() => {
                             setSavedRecent(prev => prev.filter(i => i.id !== item.id))
                             setSavedCount(prev => prev - 1)
+                            toast.success('Analisis dihapus')
                           })
                         }
                       }}
