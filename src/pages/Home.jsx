@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -10,6 +10,8 @@ import {
   Crosshair,
   Download,
   User,
+  Menu,
+  X,
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
 import Logo from "../components/Logo";
@@ -83,6 +85,7 @@ const accentStyle = {
 
 export default function Home() {
   const user = useCurrentUser()
+  const [mobileOpen, setMobileOpen] = useState(false)
   const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -115,6 +118,10 @@ export default function Home() {
             </nav>
 
             <div className="flex items-center gap-3">
+              {/* Mobile hamburger */}
+              <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-fg hover:text-accent transition-colors">
+                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
               <ThemeToggle />
               {user ? (
                 <Link
@@ -136,6 +143,26 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {/* Mobile menu dropdown */}
+      {mobileOpen && (
+        <div className="md:hidden border-b border-border bg-card/95 backdrop-blur">
+          <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
+            <button onClick={() => { scrollTo("layanan"); setMobileOpen(false) }} className="text-left text-sm hover:text-accent transition-colors py-2">
+              Layanan
+            </button>
+            <button onClick={() => { scrollTo("alur"); setMobileOpen(false) }} className="text-left text-sm hover:text-accent transition-colors py-2">
+              Alur
+            </button>
+            <button onClick={() => { scrollTo("cara-kerja"); setMobileOpen(false) }} className="text-left text-sm hover:text-accent transition-colors py-2">
+              Cara Kerja
+            </button>
+            <Link to="/help" onClick={() => setMobileOpen(false)} className="text-sm hover:text-accent transition-colors py-2">
+              Bantuan
+            </Link>
+          </nav>
+        </div>
+      )}
 
       <main>
         {/* Hero */}
