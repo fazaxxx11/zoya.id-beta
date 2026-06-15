@@ -9,9 +9,11 @@ import {
   FileUp,
   Crosshair,
   Download,
+  User,
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
 import Logo from "../components/Logo";
+import { useCurrentUser } from '../lib/useCurrentUser'
 
 const TRUST_ITEMS = [
   "Perhitungan transparan",
@@ -80,6 +82,7 @@ const accentStyle = {
 };
 
 export default function Home() {
+  const user = useCurrentUser()
   const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -111,14 +114,24 @@ export default function Home() {
               </Link>
             </nav>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <ThemeToggle />
-              <Link to="/login" className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-surface transition-colors">
-                Masuk
-              </Link>
-              <Link to="/register" className="px-4 py-2 text-sm bg-accent text-white rounded-lg hover:opacity-90 transition-colors">
-                Daftar
-              </Link>
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium transition-colors"
+                >
+                  <User className="w-4 h-4" />
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-surface text-fg text-sm font-medium transition-colors"
+                >
+                  Masuk / Daftar
+                </Link>
+              )}
             </div>
           </div>
         </div>
