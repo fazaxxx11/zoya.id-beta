@@ -726,12 +726,12 @@ export default function StatistikFlow({
 
   const completed = useMemo(() => {
     const c = []
-    if (file && data) c.push('upload')
-    if (data && columns.length > 0) c.push('review')
-    if (selectedTool) c.push('select')
-    if (children) c.push('results')
+    if (currentStep !== 'upload') c.push('upload')
+    if (currentStep !== 'upload' && currentStep !== 'review') c.push('review')
+    if (currentStep === 'results') c.push('select')
+    // 'results' never marked completed — it's the final step
     return c
-  }, [file, data, columns, selectedTool, children])
+  }, [currentStep])
 
   return (
     <div>
