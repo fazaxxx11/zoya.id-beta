@@ -6,6 +6,7 @@ import {
   Layers, Sigma, Clock, FileText, BookOpen, X, LayoutGrid,
   ArrowRight, RotateCcw, AlertTriangle,
 } from 'lucide-react'
+import { parseExcelFile, getColumnNames } from '../utils/excelHelper'
 import { getCurrentUser } from '../lib/auth'
 import { getWallet, deductWallet } from '../lib/wallet'
 import { trackEvent } from '../lib/analytics'
@@ -174,30 +175,31 @@ function Statistik() {
     const reader = new FileReader()
     reader.onload = async (event) => {
       try {
-        const XLSX = await import('xlsx')
-        const wb = XLSX.read(event.target.result, { type: 'binary' })
-        if (!wb.SheetNames.length) throw new Error('File tidak punya sheet')
-        const sheet = wb.Sheets[wb.SheetNames[0]]
-        const json = XLSX.utils.sheet_to_json(sheet, { defval: null })
-        if (!json.length) throw new Error('File kosong (tidak ada baris data)')
+        const arrayBuffer = event.target.result
+        const jsonData = await parseExcelFile(arrayBuffer)
+        if (!jsonData.length) throw new Error('File kosong (tidak ada baris data)')
 
-        // Bersihkan & trim header — buang header yang kosong
-        const rawHeaders = Object.keys(json[0])
+        // First row = headers
+        const rawHeaders = jsonData[0]
         const headers = rawHeaders
-          .map(h => String(h).trim())
-          .filter(h => h !== '' && h !== '__EMPTY' && !h.startsWith('Unnamed:'))
+          .map((h, i) => {
+            const str = String(h ?? '').trim()
+            if (str === '' || str === 'undefined' || str.startsWith('Unnamed:')) return null
+            return { original: i, clean: str }
+          })
+          .filter(Boolean)
         if (!headers.length) throw new Error('File tidak punya header yang valid')
 
         // Cek duplikat header
         const seen = new Set()
-        const dupes = headers.filter(h => seen.has(h) || (seen.add(h), false))
-        if (dupes.length) throw new Error(`Header duplikat: ${dupes.join(', ')}. Beri nama kolom yang unik.`)
+        const dupes = headers.filter(h => seen.has(h.clean) || (seen.add(h.clean), false))
+        if (dupes.length) throw new Error(`Header duplikat: ${dupes.map(d => d.clean).join(', ')}. Beri nama kolom yang unik.`)
 
+        // Build column-oriented data
         const parsed = {}
-        headers.forEach((h, idx) => {
-          const origKey = rawHeaders[idx] // tetap pakai key asli untuk akses
-          parsed[h] = json.map(row => {
-            const v = row[origKey]
+        headers.forEach(({ original, clean }) => {
+          parsed[clean] = jsonData.slice(1).map(row => {
+            const v = row[original]
             if (v === '' || v === null || v === undefined) return null
             if (typeof v === 'string') {
               const trimmed = v.trim()
@@ -211,18 +213,18 @@ function Statistik() {
         })
 
         // Drop baris yang seluruh nilainya null
-        const nRows = json.length
+        const nRows = jsonData.length - 1
         const keepRowIdx = []
         for (let i = 0; i < nRows; i++) {
-          const allNull = headers.every(h => parsed[h][i] === null)
+          const allNull = headers.every(h => parsed[h.clean][i] === null)
           if (!allNull) keepRowIdx.push(i)
         }
         if (!keepRowIdx.length) throw new Error('Semua baris kosong — tidak ada data untuk dianalisis')
 
         const cleaned = {}
-        headers.forEach(h => { cleaned[h] = keepRowIdx.map(i => parsed[h][i]) })
+        headers.forEach(({ clean }) => { cleaned[clean] = keepRowIdx.map(i => parsed[clean][i]) })
 
-        setColumns(headers)
+        setColumns(headers.map(h => h.clean))
         setData(cleaned)
         setFilterColumn('')
         setFilterValues([])
@@ -232,7 +234,7 @@ function Statistik() {
         toast.error('Gagal upload: ' + err.message)
       }
     }
-    reader.readAsBinaryString(uploadedFile)
+    reader.readAsArrayBuffer(uploadedFile)
     // Reset input so same file can be re-uploaded
     e.target.value = ''
   }, [])
