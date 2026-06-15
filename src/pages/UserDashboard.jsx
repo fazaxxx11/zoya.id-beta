@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { 
   ChevronLeft, User, Wallet, History, Settings, LogOut,
@@ -26,6 +26,20 @@ function UserDashboard() {
   const [savedCount, setSavedCount] = useState(0)
   const [savedRecent, setSavedRecent] = useState([])
   const [savedLoading, setSavedLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const touchStartY = useRef(0)
+  const scrollRef = useRef(null)
+
+  const refreshData = useCallback(async () => {
+    setRefreshing(true)
+    try {
+      const [c, l] = await Promise.all([countAnalyses(), listAnalyses({ limit: 5 })])
+      setSavedCount(c)
+      setSavedRecent(l.ok ? l.items : [])
+    } finally {
+      setRefreshing(false)
+    }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -94,8 +108,31 @@ function UserDashboard() {
     }
   }
 
+  // Pull to refresh
+  const handleTouchStart = (e) => {
+    if (window.scrollY === 0) {
+      touchStartY.current = e.touches[0].clientY
+    }
+  }
+
+  const handleTouchEnd = (e) => {
+    const diff = e.changedTouches[0].clientY - touchStartY.current
+    if (diff > 80 && window.scrollY === 0 && !refreshing) {
+      refreshData()
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-pattern">
+    <div
+      className="min-h-screen bg-pattern"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {refreshing && (
+        <div className="fixed top-0 left-0 right-0 z-50 flex justify-center py-2">
+          <Loader2 className="w-5 h-5 animate-spin text-accent" />
+        </div>
+      )}
       {/* Header */}
       <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
