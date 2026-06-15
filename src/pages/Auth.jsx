@@ -398,7 +398,7 @@ function Auth() {
   // Login/Register Forms
   return (
     <div className="min-h-screen bg-pattern flex items-center justify-center p-4">
-      <div className="bg-card rounded-2xl shadow-lg p-8 w-full max-w-md">
+      <div className="bg-card rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">

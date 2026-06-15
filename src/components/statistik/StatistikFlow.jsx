@@ -60,7 +60,7 @@ function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuid
       <h2 className="text-lg font-semibold text-fg mb-1">Unggah Dataset</h2>
       <p className="text-sm text-muted mb-5">Format yang didukung: .xlsx, .xls, .csv</p>
 
-      <div className="relative block border-2 border-dashed border-border rounded-xl p-10 text-center cursor-pointer hover:border-accent/30 bg-card active:scale-[0.98]/50 transition-colors active:scale-95">
+      <div className="relative block border-2 border-dashed border-border rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]/50 transition-colors active:scale-95">
         <FileSpreadsheet className="w-10 h-10 text-muted/40 mx-auto mb-3" />
         <p className="text-muted font-medium mb-1">Klik atau seret file ke sini</p>
         <p className="text-xs text-muted">Maksimal 10MB · header di baris pertama</p>
@@ -434,7 +434,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
                     className={`w-full text-left p-4 rounded-xl border transition-colors ${
                       selectedTool === item.id
                         ? 'border-accent bg-accent/5'
-                        : 'border-border hover:border-accent/30 bg-card active:scale-[0.98]'
+                        : 'border-border hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -618,7 +618,7 @@ function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
             className={`text-left p-3 rounded-lg border text-xs transition-colors ${
               selectedTool === test.id
                 ? 'border-accent bg-accent/5'
-                : 'border-border hover:border-accent/30 bg-card active:scale-[0.98]'
+                : 'border-border hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]'
             }`}
           >
             <div className="flex items-center gap-1.5">

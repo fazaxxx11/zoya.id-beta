@@ -150,7 +150,7 @@ function UserDashboard() {
 
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
         {/* User Card — compact */}
-        <div className="bg-card border-l-4 border-accent rounded-lg p-4">
+        <div className="bg-card border-l-4 border-accent rounded-lg p-4 hover:border-l-accent/80 transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">

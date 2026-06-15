@@ -198,7 +198,7 @@ export default function Home() {
 
             <div className="flex flex-wrap justify-center gap-2">
               {TRUST_ITEMS.map((item) => (
-                <span key={item} className="text-xs px-3 py-1.5 rounded-full bg-surface text-muted">
+                <span key={item} className="text-xs px-3 py-1.5 rounded-full bg-surface text-muted hover:bg-accent/10">
                   {item}
                 </span>
               ))}

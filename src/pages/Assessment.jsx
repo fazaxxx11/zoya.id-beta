@@ -276,7 +276,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
 
   return (
     <div className="space-y-6">
-      <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+      <div className="bg-card rounded-2xl shadow-sm p-6 border border-border hover:shadow-md transition-shadow">
         <div className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center shrink-0">
             <Sparkles className="w-5 h-5 text-sky-600" />
@@ -321,7 +321,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
         </div>
       </div>
 
-      <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+      <div className="bg-card rounded-2xl shadow-sm p-6 border border-border hover:shadow-md transition-shadow">
         <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
           <div>
             <h3 className="font-semibold text-gray-800 dark:text-gray-200">Kriteria Penilaian</h3>
