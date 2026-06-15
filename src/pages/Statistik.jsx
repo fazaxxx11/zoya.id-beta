@@ -7,7 +7,7 @@ import {
   ArrowRight, RotateCcw, AlertTriangle,
 } from 'lucide-react'
 import { parseExcelFile, getColumnNames } from '../utils/excelHelper'
-import { FEATURES } from '../config/features'
+
 import { getCurrentUser } from '../lib/auth'
 import { getWallet, deductWallet } from '../lib/wallet'
 import { trackEvent } from '../lib/analytics'
@@ -177,20 +177,7 @@ function Statistik() {
     reader.onload = async (event) => {
       try {
         const arrayBuffer = event.target.result
-        let jsonData
-
-        if (FEATURES.USE_EXCELJS) {
-          // NEW: exceljs path (secure)
-          console.log('[upload] using exceljs parser')
-          jsonData = await parseExcelFile(arrayBuffer)
-        } else {
-          // OLD: xlsx fallback (vulnerable)
-          console.log('[upload] using xlsx fallback')
-          const XLSX = await import('xlsx')
-          const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' })
-          const sheet = wb.Sheets[wb.SheetNames[0]]
-          jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null })
-        }
+        const jsonData = await parseExcelFile(arrayBuffer)
         if (!jsonData.length) throw new Error('File kosong (tidak ada baris data)')
 
         // First row = headers
