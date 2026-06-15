@@ -13,16 +13,17 @@ import {
   Menu,
   X,
   BarChart3,
+  Check,
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
 import Logo from "../components/Logo";
 import { useCurrentUser } from '../lib/useCurrentUser'
 
 const TRUST_ITEMS = [
-  "Perhitungan transparan",
-  "Metode statistik standar",
-  "Template APA 7th",
-  "Data tetap di browser",
+  "Gratis tanpa daftar",
+  "70+ uji statistik",
+  "Laporan siap cetak",
+  "Interpretasi otomatis"
 ];
 
 const WORKFLOW_STEPS = [
@@ -157,105 +158,117 @@ export default function Home() {
       )}
 
       <main>
-        {/* ===== HERO — Editorial Split Typography ===== */}
+        {/* ===== HERO — Split Text: Typography as Art ===== */}
         <section className="container mx-auto px-4 py-20 md:py-32 relative paper-texture overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start relative z-10">
-            {/* Left: Bold statement (7 cols) */}
-            <div className="md:col-span-7">
-              <span className="inline-block text-xs font-semibold text-accent tracking-widest uppercase mb-6">Platform Penelitian Akademik</span>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-black tracking-tight leading-[0.95] mb-6">
-                70+ uji statistik.<br />
-                <span className="text-accent">Satu platform.</span>
-              </h1>
-              <p className="text-lg md:text-xl font-light text-muted leading-relaxed max-w-lg mb-8">
-                Dari data mentah ke laporan akademik — analisis, interpretasi, dan export siap cetak.
-              </p>
+          <div className="relative z-10">
+            {/* Bold statement tagline */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-px bg-accent" />
+              <span className="text-xs font-semibold text-accent tracking-widest uppercase">
+                Platform penelitian akademik
+              </span>
+            </div>
+
+            {/* Split text hero — typography as visual element */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-black tracking-tight leading-[0.9] mb-8">
+              Olah data<br />
+              <span className="text-accent">penelitian</span><br />
+              <span className="text-muted text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+                dari dataset ke laporan.
+              </span>
+            </h1>
+
+            {/* Subheadline — confident */}
+            <p className="text-lg md:text-xl font-light text-muted leading-relaxed mb-8 max-w-lg">
+              70+ uji statistik. Interpretasi otomatis. Laporan siap cetak.
+              <span className="text-foreground font-medium"> Semua dalam satu tempat.</span>
+            </p>
+
+            {/* CTA — single primary */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <Link
                 to="/statistik"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-accent text-white rounded-lg hover:opacity-90 transition-all font-semibold text-base shadow-md shadow-accent/20 active:scale-95"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-accent text-white rounded-lg hover:opacity-90 transition-all font-semibold text-base shadow-lg shadow-accent/20 active:scale-95"
               >
-                Mulai Sekarang <ArrowRight className="w-5 h-5" />
+                Mulai Analisis
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            {/* Right: Trust (5 cols) — compact, editorial */}
-            <div className="md:col-span-5 flex flex-col items-start md:items-end md:text-right gap-4 mt-4 md:mt-12">
-              <div className="space-y-2">
-                {TRUST_ITEMS.map((item, i) => (
-                  <div key={item} className="flex items-center gap-3 text-sm text-muted">
-                    <span className="w-6 h-px bg-accent/40 hidden md:block" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 p-4 border border-border bg-card rounded-xl w-full max-w-xs">
-                <div className="text-xs text-muted mb-1">Contoh hasil analisis</div>
-                <div className="flex items-center gap-3">
-                  <BarChart3 className="w-5 h-5 text-accent" />
-                  <div>
-                    <div className="text-sm font-semibold">T-Test Independent</div>
-                    <div className="text-xs text-emerald-500 font-medium">p = 0.003 • Signifikan</div>
-                  </div>
-                </div>
-              </div>
+
+            {/* Trust — horizontal, compact */}
+            <div className="flex flex-wrap items-center gap-6 text-sm text-muted">
+              {TRUST_ITEMS.slice(0, 3).map((item) => (
+                <span key={item} className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-accent" />
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* ===== SERVICES — Editorial Numbered Sections ===== */}
+        {/* ===== SERVICES — Numbered Editorial Layout ===== */}
         <section id="layanan" className="container mx-auto px-4 py-20">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 max-w-6xl mx-auto">
-            {/* Left column: heading */}
-            <div className="md:col-span-4">
-              <span className="text-xs font-semibold text-accent tracking-widest uppercase">Layanan</span>
-              <h2 className="text-2xl md:text-3xl font-heading font-bold mt-2 mb-4">
-                Satu platform.<br />Seluruh alur penelitian.
-              </h2>
-              <p className="text-sm font-light text-muted leading-relaxed">
-                Dari upload data mentah sampai laporan akademik siap cetak. Tanpa spreadsheet. Tanpa R Studio.
-              </p>
+          {/* Section header — numbered, bold */}
+          <div className="flex items-baseline gap-4 mb-10">
+            <span className="text-5xl md:text-6xl font-heading font-black text-accent/15 leading-none">01</span>
+            <div>
+              <h2 className="text-2xl md:text-3xl font-heading font-bold">Layanan</h2>
+              <p className="text-sm font-light text-muted mt-1">Pilih sesuai tahap penelitianmu</p>
             </div>
+          </div>
 
-            {/* Right column: alternating numbered items */}
-            <div className="md:col-span-8 space-y-0">
-              {SERVICES.map((svc, i) => {
-                const s = accentStyle[svc.accent];
-                const isEven = i % 2 === 0;
-                return (
-                  <Link
-                    key={svc.id}
-                    to={svc.path}
-                    className={`group flex gap-5 py-6 border-b border-border hover:bg-surface/50 transition-all -mx-4 px-4 rounded-lg ${i === 0 ? 'border-t' : ''}`}
-                  >
-                    <span className="text-4xl font-heading font-black text-accent/15 leading-none mt-1 select-none">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <svc.icon className={`w-4 h-4 ${s.icon}`} />
-                        <h3 className="font-heading font-semibold text-base group-hover:text-accent transition-colors">{svc.title}</h3>
-                      </div>
-                      <p className="text-sm font-light text-muted leading-relaxed mb-2">{svc.desc}</p>
+          {/* Editorial layout — alternating, bukan uniform grid */}
+          <div className="space-y-6 max-w-5xl mx-auto">
+            {SERVICES.map((svc, idx) => {
+              const s = accentStyle[svc.accent];
+              return (
+                <Link
+                  key={svc.id}
+                  to={svc.path}
+                  className={`group block rounded-xl p-6 transition-all hover:shadow-md hover:-translate-y-0.5 ${s.card} ${
+                    svc.primary ? 'border-l-4 border-l-accent' : 'border border-border bg-card'
+                  }`}
+                >
+                  <div className="flex items-start gap-5">
+                    {/* Number + Icon */}
+                    <div className="flex-shrink-0">
+                      <span className="text-3xl font-heading font-black text-accent/20 block mb-1">
+                        {String(idx + 1).padStart(2, '0')}
+                      </span>
+                      <svc.icon className={`w-8 h-8 ${s.icon}`} />
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-heading font-semibold text-lg mb-1.5">{svc.title}</h3>
+                      <p className="text-sm font-light text-muted leading-relaxed mb-3">{svc.desc}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {svc.tags.map((tag) => (
                           <span key={tag} className={`text-xs px-2 py-0.5 rounded ${s.tag}`}>{tag}</span>
                         ))}
                       </div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-muted/30 group-hover:text-accent transition-colors mt-2 shrink-0" />
-                  </Link>
-                );
-              })}
-            </div>
+
+                    {/* Arrow indicator */}
+                    <ArrowRight className="w-5 h-5 text-muted group-hover:text-accent transition-colors flex-shrink-0 mt-1" />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
-        {/* ===== WORKFLOW — Editorial Numbered Steps ===== */}
+        {/* ===== WORKFLOW — Numbered ===== */}
         <section id="alur" className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto">
-            <span className="text-xs font-semibold text-accent tracking-widest uppercase">Alur</span>
-            <h2 className="text-2xl md:text-3xl font-heading font-bold mt-2 mb-12">
-              Dari data mentah ke laporan siap cetak.
-            </h2>
+            <div className="flex items-baseline gap-4 mb-10">
+              <span className="text-5xl md:text-6xl font-heading font-black text-accent/15 leading-none">02</span>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-heading font-bold">Alur Penelitian</h2>
+                <p className="text-sm font-light text-muted mt-1">Dari data mentah sampai laporan siap cetak</p>
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
               {WORKFLOW_STEPS.map((step, idx) => (
@@ -274,13 +287,16 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== CARA KERJA — Bold numbered editorial ===== */}
+        {/* ===== CARA KERJA — Numbered ===== */}
         <section id="cara-kerja" className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto">
-            <span className="text-xs font-semibold text-accent tracking-widest uppercase">Proses</span>
-            <h2 className="text-2xl md:text-3xl font-heading font-bold mt-2 mb-12">
-              Tiga langkah. Tanpa ribet.
-            </h2>
+            <div className="flex items-baseline gap-4 mb-10">
+              <span className="text-5xl md:text-6xl font-heading font-black text-accent/15 leading-none">03</span>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-heading font-bold">Cara Kerja</h2>
+                <p className="text-sm font-light text-muted mt-1">Tiga langkah simpel menuju hasil analisis</p>
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {CARA_KERJA.map((ck) => (
@@ -298,30 +314,31 @@ export default function Home() {
         </section>
       </main>
 
-      {/* Footer — Editorial left/center/right layout */}
+      {/* Footer — Editorial style */}
       <footer className="border-t border-border mt-16">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-            {/* Left: brand */}
-            <div className="md:col-span-4">
-              <span className="text-lg font-heading font-semibold">Azezmen</span>
-              <p className="text-xs text-muted font-light mt-1">Platform Penelitian Akademik</p>
+        <div className="container mx-auto px-4 py-10">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+            {/* Left — brand */}
+            <div>
+              <div className="text-lg font-heading font-bold mb-2">Azezmen</div>
+              <p className="text-sm font-light text-muted max-w-xs">
+                Platform penelitian akademik Indonesia.
+                Olah data, interpretasi, laporan.
+              </p>
             </div>
-            {/* Center: links */}
-            <div className="md:col-span-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-              <Link to="/privasi" className="text-muted hover:text-accent">Privasi</Link>
-              <Link to="/syarat" className="text-muted hover:text-accent">Ketentuan</Link>
-              <Link to="/help" className="text-muted hover:text-accent">Bantuan</Link>
-              <Link to="/feedback" className="text-muted hover:text-accent">Saran</Link>
+
+            {/* Center — links */}
+            <div className="flex gap-6 text-sm">
+              <Link to="/privasi" className="text-muted hover:text-accent transition-colors">Privasi</Link>
+              <Link to="/syarat" className="text-muted hover:text-accent transition-colors">Ketentuan</Link>
+              <Link to="/help" className="text-muted hover:text-accent transition-colors">Bantuan</Link>
+              <Link to="/feedback" className="text-muted hover:text-accent transition-colors">Kontak</Link>
             </div>
-            {/* Right: CTA */}
-            <div className="md:col-span-4 flex md:justify-end">
-              <Link
-                to="/auth"
-                className="px-5 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-colors text-sm font-medium active:scale-95"
-              >
-                Mulai Gratis
-              </Link>
+
+            {/* Right — auth */}
+            <div className="flex gap-3">
+              <Link to="/login" className="text-sm text-muted hover:text-accent transition-colors">Masuk</Link>
+              <Link to="/register" className="px-4 py-1.5 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors text-sm active:scale-95">Daftar</Link>
             </div>
           </div>
         </div>
