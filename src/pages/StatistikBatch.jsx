@@ -305,7 +305,7 @@ export default function StatistikBatch() {
       <main className="max-w-6xl mx-auto px-3 sm:px-5 py-4 sm:py-6 space-y-4 sm:space-y-5">
         {/* Drop zone */}
         <div onDrop={onDrop} onDragOver={e => e.preventDefault()}
-             className="bg-card rounded-2xl border border-dashed border-border p-5 sm:p-8 text-center hover:border-gray-400 transition-colors">
+             className="bg-card rounded-2xl border border-dashed border-border p-5 sm:p-8 text-center hover:border-gray-400 transition-colors active:scale-95">
           <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
             Drop beberapa file Excel/CSV di sini, atau pilih file. Tiap file dianggap satu dataset.
           </div>

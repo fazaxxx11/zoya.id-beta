@@ -449,7 +449,7 @@ export default function EViewsPage() {
         {/* ─── Shared Upload ─── */}
         {!hasData ? (
           <label
-            className="block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors"
+            className="block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors active:scale-95"
             style={{ borderColor: 'rgb(var(--border))', backgroundColor: 'rgb(var(--card))' }}
           >
             <Upload className="w-10 h-10 mx-auto mb-3" style={{ color: 'rgb(var(--muted) / 0.4)' }} />
@@ -476,7 +476,7 @@ export default function EViewsPage() {
               </div>
               <button
                 onClick={clearAll}
-                className="text-xs flex items-center gap-1 hover:text-red-500 transition-colors"
+                className="text-xs flex items-center gap-1 hover:text-red-500 transition-colors active:scale-95"
                 style={{ color: 'rgb(var(--muted))' }}
               >
                 <Trash2 className="w-3.5 h-3.5" /> Hapus
@@ -542,7 +542,7 @@ export default function EViewsPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-xs font-semibold transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-xs font-semibold transition-colors active:scale-95"
                     style={{
                       borderBottom: active ? '2px solid rgb(var(--accent))' : '2px solid transparent',
                       color: active ? 'rgb(var(--accent))' : 'rgb(var(--muted))',
@@ -607,7 +607,7 @@ export default function EViewsPage() {
                           {!diagnosticResults.hausman && (
                             <button
                               onClick={runHausman}
-                              className="px-4 py-2 rounded-lg border text-sm font-medium transition-colors"
+                              className="px-4 py-2 rounded-lg border text-sm font-medium transition-colors active:scale-95"
                               style={{ borderColor: 'rgb(var(--border))', backgroundColor: 'rgb(var(--surface))', color: 'rgb(var(--fg))' }}
                             >
                               Jalankan Uji Hausman (FE vs RE)
@@ -644,7 +644,7 @@ export default function EViewsPage() {
                       {FE && RE && !diagnosticResults.hausman && (
                         <button
                           onClick={runHausman}
-                          className="px-4 py-2 rounded-lg border text-sm font-medium transition-colors"
+                          className="px-4 py-2 rounded-lg border text-sm font-medium transition-colors active:scale-95"
                           style={{ borderColor: 'rgb(var(--border))', backgroundColor: 'rgb(var(--surface))', color: 'rgb(var(--fg))' }}
                         >
                           Jalankan Uji Hausman (FE vs RE)
@@ -732,7 +732,7 @@ export default function EViewsPage() {
                           <button
                             key={col}
                             onClick={() => toggleTsCol(col)}
-                            className="px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors"
+                            className="px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors active:scale-95"
                             style={{
                               borderColor: active ? 'rgb(var(--accent))' : 'rgb(var(--border))',
                               backgroundColor: active ? 'rgb(var(--accent) / 0.1)' : 'rgb(var(--surface))',
@@ -759,7 +759,7 @@ export default function EViewsPage() {
                         <button
                           key={tab.id}
                           onClick={() => updateTsConfig({ tsTest: tab.id })}
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold transition-colors"
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold transition-colors active:scale-95"
                           style={{
                             borderBottom: active ? '2px solid rgb(var(--accent))' : '2px solid transparent',
                             color: active ? 'rgb(var(--accent))' : 'rgb(var(--muted))',
@@ -787,7 +787,7 @@ export default function EViewsPage() {
                             <button
                               key={col}
                               onClick={() => toggleAdfCol(col)}
-                              className="px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors"
+                              className="px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors active:scale-95"
                               style={{
                                 borderColor: active ? 'rgb(var(--accent))' : 'rgb(var(--border))',
                                 backgroundColor: active ? 'rgb(var(--accent) / 0.1)' : 'rgb(var(--surface))',

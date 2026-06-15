@@ -239,7 +239,7 @@ function SizeCalculator() {
       </div>
 
       {/* Result panel */}
-      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
         <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
           <Users className="w-4 h-4 text-emerald-600" /> Hasil
         </h3>
@@ -339,7 +339,7 @@ function StratifiedPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
           <Layers className="w-4 h-4 text-emerald-600" /> Daftar Strata
         </h3>
@@ -381,7 +381,7 @@ function StratifiedPanel() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
           <h3 className="font-semibold text-sm mb-3">Total Sampel & Mode</h3>
           <div className="space-y-2">
             <div>
@@ -408,7 +408,7 @@ function StratifiedPanel() {
           </div>
         </div>
 
-        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
           <h3 className="font-semibold text-sm mb-3">Alokasi per Strata</h3>
           {result?.error ? (
             <div className="text-xs text-red-700">{result.error}</div>
@@ -526,7 +526,7 @@ function RandomSampler() {
         </button>
       </div>
 
-      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-sm">Sampel Terpilih</h3>
           {result.length > 0 && (

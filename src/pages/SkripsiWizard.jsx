@@ -278,13 +278,13 @@ export default function SkripsiWizard() {
             <h3 className="font-semibold text-sm">Pilih jenis penelitian Anda:</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button onClick={() => setType('kuantitatif')}
-                      className="border-2 border-border hover:border-accent/50 rounded-xl p-4 text-left transition-colors">
+                      className="border-2 border-border hover:border-accent/50 rounded-xl p-4 text-left transition-colors active:scale-95">
                 <div className="text-2xl mb-1">📊</div>
                 <div className="font-semibold text-sm mb-1">Kuantitatif</div>
                 <p className="text-xs text-muted">Pengujian hipotesis dengan angka & statistik. Cocok untuk: korelasi, perbandingan kelompok, prediksi.</p>
               </button>
               <button onClick={() => setType('kualitatif')}
-                      className="border-2 border-border hover:border-accent/50 rounded-xl p-4 text-left transition-colors">
+                      className="border-2 border-border hover:border-accent/50 rounded-xl p-4 text-left transition-colors active:scale-95">
                 <div className="text-2xl mb-1">📝</div>
                 <div className="font-semibold text-sm mb-1">Kualitatif</div>
                 <p className="text-xs text-muted">Eksplorasi makna, persepsi, pengalaman. Coding wawancara, observasi, dokumen.</p>

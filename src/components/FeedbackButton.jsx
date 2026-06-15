@@ -100,7 +100,7 @@ export default function FeedbackButton() {
                       <button
                         key={cat.id} type="button"
                         onClick={() => setType(cat.id)}
-                        className="px-2 py-2 rounded-lg border text-xs font-medium transition-colors"
+                        className="px-2 py-2 rounded-lg border text-xs font-medium transition-colors active:scale-95"
                         style={
                           type === cat.id
                             ? { background: 'linear-gradient(135deg, #a855f7, #ec4899)', color: 'white', borderColor: 'transparent' }

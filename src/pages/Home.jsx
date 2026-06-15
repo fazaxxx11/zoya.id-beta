@@ -103,30 +103,30 @@ export default function Home() {
             </div>
 
             <nav className="hidden md:flex items-center gap-8">
-              <button onClick={() => scrollTo("layanan")} className="text-sm hover:text-accent transition-colors">
+              <button onClick={() => scrollTo("layanan")} className="text-sm hover:text-accent transition-colors active:scale-95">
                 Layanan
               </button>
-              <button onClick={() => scrollTo("alur")} className="text-sm hover:text-accent transition-colors">
+              <button onClick={() => scrollTo("alur")} className="text-sm hover:text-accent transition-colors active:scale-95">
                 Alur
               </button>
-              <button onClick={() => scrollTo("cara-kerja")} className="text-sm hover:text-accent transition-colors">
+              <button onClick={() => scrollTo("cara-kerja")} className="text-sm hover:text-accent transition-colors active:scale-95">
                 Cara Kerja
               </button>
-              <Link to="/help" className="text-sm hover:text-accent transition-colors">
+              <Link to="/help" className="text-sm hover:text-accent transition-colors active:scale-95">
                 Bantuan
               </Link>
             </nav>
 
             <div className="flex items-center gap-3">
               {/* Mobile hamburger */}
-              <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-fg hover:text-accent transition-colors">
+              <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-fg hover:text-accent transition-colors active:scale-95">
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
               <ThemeToggle />
               {user ? (
                 <Link
                   to="/dashboard"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium transition-colors active:scale-95"
                 >
                   <User className="w-4 h-4" />
                   Dashboard
@@ -134,7 +134,7 @@ export default function Home() {
               ) : (
                 <Link
                   to="/auth"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-surface text-fg text-sm font-medium transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-surface text-fg text-sm font-medium transition-colors active:scale-95"
                 >
                   Masuk / Daftar
                 </Link>
@@ -277,7 +277,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center max-w-4xl mx-auto">
             {CARA_KERJA.map((ck, idx) => (
               <React.Fragment key={ck.step}>
-                <div className="flex-1 text-center p-4 border border-border bg-card rounded-lg shadow-sm hover:border-accent/50 transition-colors">
+                <div className="flex-1 text-center p-4 border border-border bg-card rounded-lg shadow-sm hover:border-accent/50 transition-colors active:scale-[0.98] active:scale-95">
                   <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center mx-auto mb-4">
                     <ck.icon className="w-6 h-6 text-accent" />
                   </div>

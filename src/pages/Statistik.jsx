@@ -853,7 +853,7 @@ function FilterPanel({
   return (
     <div className="border border-border bg-card rounded-xl overflow-hidden">
       <button onClick={() => setOpen(!open)}
-              className="w-full px-5 py-3 flex items-center justify-between hover:bg-card/50 transition-colors">
+              className="w-full px-5 py-3 flex items-center justify-between hover:bg-card/50 transition-colors active:scale-95">
         <div className="flex items-center gap-2 text-sm">
           <span>🔎</span>
           <span className="font-medium text-fg">Filter Data</span>
@@ -1139,7 +1139,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
             <div className="flex gap-2">
               {[['pearson', 'Pearson (parametrik)'], ['spearman', 'Spearman (non-parametrik)']].map(([id, lbl]) => (
                 <button key={id} onClick={() => update('method', id)}
-                        className={'flex-1 px-3 py-2 rounded-xl text-sm border transition-colors '
+                        className={'flex-1 px-3 py-2 rounded-xl text-sm border transition-colors active:scale-95 '
                                  + ((params.method || 'pearson') === id
                                      ? 'bg-accent/10 border-accent/30 text-accent'
                                      : 'border-border hover:bg-card/50')}>
@@ -1179,7 +1179,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
                 ['paired', 'Paired (before-after)'],
               ].map(([id, lbl]) => (
                 <button key={id} onClick={() => update('mode', id)}
-                        className={'px-3 py-2 rounded-xl text-sm border transition-colors '
+                        className={'px-3 py-2 rounded-xl text-sm border transition-colors active:scale-95 '
                                  + (params.mode === id
                                      ? 'bg-accent/10 border-accent/30 text-accent'
                                      : 'border-border hover:bg-card/50')}>

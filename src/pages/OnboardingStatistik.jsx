@@ -234,7 +234,7 @@ function Welcome({ onStart, onSkip }) {
           <ArrowRight className="w-4 h-4" strokeWidth={2} />
         </button>
         <button onClick={onSkip}
-                className="flex-1 border border-border hover:bg-surface text-sm text-gray-700 dark:text-gray-300 font-medium py-2.5 px-4 rounded-lg transition-colors">
+                className="flex-1 border border-border hover:bg-surface text-sm text-gray-700 dark:text-gray-300 font-medium py-2.5 px-4 rounded-lg transition-colors active:scale-95">
           Langsung ke tools
         </button>
       </div>

@@ -45,13 +45,13 @@ export default function BottomNav() {
             <Link
               key={item.path}
               to={item.path}
-              className="flex flex-col items-center justify-center py-2 px-1 gap-0.5 text-[10px] font-medium transition-colors"
+              className="flex flex-col items-center justify-center py-2 px-1 gap-0.5 text-[10px] font-medium transition-colors active:scale-95"
               style={{
                 color: isActive ? 'rgb(var(--fg))' : 'rgb(var(--muted) / 0.85)',
               }}
             >
               <div
-                className="p-1 rounded-lg transition-colors"
+                className="p-1 rounded-lg transition-colors active:scale-95"
                 style={
                   isActive
                     ? { backgroundColor: 'rgb(var(--fg))', color: 'rgb(var(--card))' }

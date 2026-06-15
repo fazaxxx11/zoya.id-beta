@@ -215,7 +215,7 @@ function Upload() {
                   </div>
                   <button 
                     onClick={() => removeFile(index)}
-                    className="p-2 text-muted hover:text-red-500 transition-colors"
+                    className="p-2 text-muted hover:text-red-500 transition-colors active:scale-95"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>

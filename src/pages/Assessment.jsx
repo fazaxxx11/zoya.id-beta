@@ -573,7 +573,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               )}
               <button
                 onClick={() => { setFileData(null); setShowPreview(false); setPreviewConfirmed(false); setStudents([{ id: uid(), name: "", answer: "" }]) }}
-                className="text-xs text-muted hover:text-red-600 px-2 py-1 rounded transition-colors"
+                className="text-xs text-muted hover:text-red-600 px-2 py-1 rounded transition-colors active:scale-95"
                 title="Ganti file"
               >
                 Ganti
@@ -699,7 +699,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               <div key={s.id} className="bg-surface rounded-xl p-4">
                 <div className="flex justify-between mb-2">
                   <span className="text-xs text-muted font-medium">Murid #{i+1}</span>
-                  <button onClick={()=>del(s.id)} className="text-muted hover:text-red-500 transition-colors" title="Hapus"><Trash2 className="w-4 h-4"/></button>
+                  <button onClick={()=>del(s.id)} className="text-muted hover:text-red-500 transition-colors active:scale-95" title="Hapus"><Trash2 className="w-4 h-4"/></button>
                 </div>
                 <input type="text" value={s.name} onChange={e=>upd(s.id,'name',e.target.value)} placeholder="Nama siswa" className="input-field mb-2"/>
                 <textarea value={s.answer} onChange={e=>upd(s.id,'answer',e.target.value)} placeholder="Jawaban siswa..." rows={3} className="input-field resize-none"/>
@@ -1002,7 +1002,7 @@ function HasilPenilaian({
           </div>
           <div className="h-2 bg-sky-100 rounded-full overflow-hidden">
             <div
-              className="h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full transition-all"
+              className="h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full transition-all active:scale-95"
               style={{ width: `${(batchProgress.done / batchProgress.total) * 100}%` }}
             />
           </div>
@@ -1180,7 +1180,7 @@ function KesimpulanEditable({ value, onSave }) {
     return (
       <button
         onClick={() => setEditing(true)}
-        className="mt-3 pt-3 border-t border-border w-full text-left text-xs text-muted italic hover:text-sky-600 transition-colors"
+        className="mt-3 pt-3 border-t border-border w-full text-left text-xs text-muted italic hover:text-sky-600 transition-colors active:scale-95"
       >
         + Tambah kesimpulan
       </button>
@@ -1497,7 +1497,7 @@ function Assessment() {
         actions={
           <Link
             to="/kuesioner"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-card hover:bg-sky-50 text-sky-700 border-border transition-colors"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-card hover:bg-sky-50 text-sky-700 border-border transition-colors active:scale-95"
             title="Buka Kuesioner Builder"
           >
             <ClipboardList className="w-3.5 h-3.5" /> Kuesioner
@@ -1593,7 +1593,7 @@ function Assessment() {
               <button onClick={() => setShowResetConfirm(false)} className="btn-secondary flex-1">
                 Batal
               </button>
-              <button onClick={performReset} className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition-colors">
+              <button onClick={performReset} className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition-colors active:scale-95">
                 Ya, Reset
               </button>
             </div>

@@ -150,7 +150,7 @@ export default function MediationPage() {
         </div>
 
         {/* Input */}
-        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+        <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Data (CSV dengan header)</span>
             <button
@@ -289,7 +289,7 @@ function ColumnPicker({ label, value, setValue, options }) {
 function MediationResult({ r }) {
   return (
     <>
-      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-indigo-600" /> Hasil Mediasi (Model 4)
         </h3>
@@ -440,7 +440,7 @@ function ReportTextMediation({ r }) {
   const text = `Hasil analisis mediasi (Hayes Model 4) menunjukkan bahwa jalur a (X→M) sebesar ${r.paths.a.coef.toFixed(3)} (SE = ${r.paths.a.se.toFixed(3)}, p = ${r.paths.a.p.toFixed(3)}), dan jalur b (M→Y, mengontrol X) sebesar ${r.paths.b.coef.toFixed(3)} (SE = ${r.paths.b.se.toFixed(3)}, p = ${r.paths.b.p.toFixed(3)}). Efek total c sebesar ${r.paths.c.coef.toFixed(3)} (p = ${r.paths.c.p.toFixed(3)}); efek langsung c' sebesar ${r.paths.cp.coef.toFixed(3)} (p = ${r.paths.cp.p.toFixed(3)}). Efek tidak langsung (a·b) = ${r.indirect.ab.toFixed(3)} dengan ${((1 - r.indirect.bootstrap.alpha)*100).toFixed(0)}% bootstrap CI [${r.indirect.bootstrap.ciLow.toFixed(3)}, ${r.indirect.bootstrap.ciHigh.toFixed(3)}] berdasarkan ${r.indirect.bootstrap.n} resamples. ${r.indirect.bootstrap.significant ? 'Mediasi signifikan' : 'Mediasi tidak signifikan'}: ${r.mediationType}.`
 
   return (
-    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }} className="text-xs text-indigo-600 hover:text-indigo-700">
@@ -458,7 +458,7 @@ function ReportTextMediation({ r }) {
 function ModerationResult({ r }) {
   return (
     <>
-      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+      <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-indigo-600" /> Hasil Moderasi (Model 1)
         </h3>
@@ -726,7 +726,7 @@ function ReportTextModeration({ r }) {
   const text = `Hasil analisis moderasi (Hayes Model 1) menunjukkan koefisien interaksi X·W sebesar ${r.coefficients.XW.coef.toFixed(3)} (SE = ${r.coefficients.XW.se.toFixed(3)}, t = ${r.coefficients.XW.t.toFixed(2)}, p = ${r.coefficients.XW.p.toFixed(3)}). ${r.interactionSignificant ? 'W secara signifikan memoderasi efek X terhadap Y.' : 'W tidak signifikan memoderasi efek X→Y.'} Efek X pada level rendah W adalah ${r.conditionalEffects.atLow.effect.toFixed(3)} (p = ${r.conditionalEffects.atLow.p.toFixed(3)}); pada rata-rata W: ${r.conditionalEffects.atMean.effect.toFixed(3)} (p = ${r.conditionalEffects.atMean.p.toFixed(3)}); pada level tinggi W: ${r.conditionalEffects.atHigh.effect.toFixed(3)} (p = ${r.conditionalEffects.atHigh.p.toFixed(3)}). Model menjelaskan ${(r.rSquared * 100).toFixed(1)}% varians Y (R² = ${r.rSquared.toFixed(3)}, n = ${r.n}).`
 
   return (
-    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }} className="text-xs text-indigo-600 hover:text-indigo-700">

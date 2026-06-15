@@ -189,22 +189,22 @@ function UserDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-4">
-          <Link to="/statistik" onClick={() => trackEvent('quick_action', { action: 'new_stat' })} className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
+          <Link to="/statistik" onClick={() => trackEvent('quick_action', { action: 'new_stat' })} className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl active:scale-[0.98] p-5 transition-all hover:-translate-y-1">
             <BarChart3 className="w-7 h-7 text-accent mb-3 group-hover:scale-110 transition-transform" />
             <p className="text-sm font-semibold text-fg mb-1">Statistik Baru</p>
             <p className="text-xs text-muted">70+ uji tersedia</p>
           </Link>
-          <Link to="/statistik/history" onClick={() => trackEvent('quick_action', { action: 'history' })} className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
+          <Link to="/statistik/history" onClick={() => trackEvent('quick_action', { action: 'history' })} className="group bg-card border border-border hover:border-accent hover:shadow-lg rounded-xl active:scale-[0.98] p-5 transition-all hover:-translate-y-1">
             <FileText className="w-7 h-7 text-accent mb-3 group-hover:scale-110 transition-transform" />
             <p className="text-sm font-semibold text-fg mb-1">Lihat History</p>
             <p className="text-xs text-muted">{savedCount} analisis</p>
           </Link>
-          <Link to="/auth" className="group bg-card border border-border hover:border-emerald-500 hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1">
+          <Link to="/auth" className="group bg-card border border-border hover:border-emerald-500 hover:shadow-lg rounded-xl active:scale-[0.98] p-5 transition-all hover:-translate-y-1">
             <Wallet className="w-7 h-7 text-emerald-600 mb-3 group-hover:scale-110 transition-transform" />
             <p className="text-sm font-semibold text-fg mb-1">Top Up</p>
             <p className="text-xs text-muted">{formatCurrency(totalBalance)}</p>
           </Link>
-          <button onClick={() => setActiveTab('orders')} className="group bg-card border border-border hover:border-amber-500 hover:shadow-lg rounded-xl p-5 transition-all hover:-translate-y-1 text-left">
+          <button onClick={() => setActiveTab('orders')} className="group bg-card border border-border hover:border-amber-500 hover:shadow-lg rounded-xl active:scale-[0.98] p-5 transition-all hover:-translate-y-1 text-left">
             <Clock className="w-7 h-7 text-amber-600 mb-3 group-hover:scale-110 transition-transform" />
             <p className="text-sm font-semibold text-fg mb-1">Cek Order</p>
             <p className="text-xs text-muted">{orders.length} pesanan</p>
@@ -222,7 +222,7 @@ function UserDashboard() {
             </div>
             <div className="space-y-2">
               {savedRecent.map(item => (
-                <div key={item.id} className="group px-3 py-2.5 rounded-lg hover:bg-surface border border-border transition-colors">
+                <div key={item.id} className="group px-3 py-2.5 rounded-lg hover:bg-surface border border-border transition-colors active:scale-95">
                   <div className="flex items-center justify-between gap-3 mb-2">
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-fg truncate">{item.title}</div>
@@ -239,12 +239,12 @@ function UserDashboard() {
                   {/* Actions — reveal on hover */}
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Link to={`/statistik/history?id=${item.id}`}
-                      className="flex-1 px-3 py-1.5 text-xs text-center bg-surface hover:bg-accent/10 rounded-lg border border-border transition-colors">
+                      className="flex-1 px-3 py-1.5 text-xs text-center bg-surface hover:bg-accent/10 rounded-lg border border-border transition-colors active:scale-95">
                       View
                     </Link>
                     <button
                       onClick={() => navigate('/statistik', { state: { rerunFromId: item.id } })}
-                      className="flex-1 px-3 py-1.5 text-xs text-accent hover:bg-accent/10 rounded-lg transition-colors">
+                      className="flex-1 px-3 py-1.5 text-xs text-accent hover:bg-accent/10 rounded-lg transition-colors active:scale-95">
                       Rerun
                     </button>
                     <button
@@ -258,7 +258,7 @@ function UserDashboard() {
                           })
                         }
                       }}
-                      className="group/delete p-1.5 text-muted hover:text-red-500 rounded-lg transition-colors">
+                      className="group/delete p-1.5 text-muted hover:text-red-500 rounded-lg transition-colors active:scale-95">
                       <Trash2 className="w-4 h-4 group-hover/delete:rotate-12 transition-transform" />
                     </button>
                   </div>
@@ -299,10 +299,10 @@ function UserDashboard() {
                 <h3 className="text-lg font-semibold text-fg mb-2">Belum ada pesanan</h3>
                 <p className="text-sm text-muted mb-6 max-w-xs mx-auto">Mulai jalankan analisis atau penilaian untuk melihat history pesanan di sini.</p>
                 <div className="flex flex-wrap gap-3 justify-center">
-                  <Link to="/statistik" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium transition-colors">
+                  <Link to="/statistik" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium transition-colors active:scale-95">
                     <BarChart3 className="w-4 h-4" /> Mulai Statistik
                   </Link>
-                  <Link to="/assessment" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-card border-2 border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/20 text-amber-600 text-sm font-medium transition-colors">
+                  <Link to="/assessment" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-card border-2 border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/20 text-amber-600 text-sm font-medium transition-colors active:scale-95">
                     <FileText className="w-4 h-4" /> Assessment
                   </Link>
                 </div>
@@ -339,7 +339,7 @@ function UserDashboard() {
                           {order.status === 'completed' && (
                             <button
                               onClick={() => navigate(`/order?id=${order.id}`)}
-                              className="text-xs bg-card border border-accent text-accent px-2 py-1 rounded-full hover:bg-accent/10 transition-colors"
+                              className="text-xs bg-card border border-accent text-accent px-2 py-1 rounded-full hover:bg-accent/10 transition-colors active:scale-95"
                             >
                               Lihat Hasil
                             </button>

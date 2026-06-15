@@ -508,7 +508,7 @@ function OrderStatus() {
           <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
             <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4">Butuh bantuan?</h3>
             <div className="space-y-3">
-              <Link to="/" className="block p-3 bg-sky-50 rounded-xl hover:bg-sky-100 transition-colors">
+              <Link to="/" className="block p-3 bg-sky-50 rounded-xl hover:bg-sky-100 transition-colors active:scale-95">
                 <p className="font-medium text-sky-800">Kembali ke Home</p>
                 <p className="text-sm text-sky-600">Ajukan layanan baru</p>
               </Link>

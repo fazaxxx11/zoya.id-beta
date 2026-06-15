@@ -91,7 +91,7 @@ export default function FeedbackPage() {
                   <button
                     key={cat.id} type="button"
                     onClick={() => setType(cat.id)}
-                    className="px-3 py-3 rounded-xl border text-sm font-medium transition-colors"
+                    className="px-3 py-3 rounded-xl border text-sm font-medium transition-colors active:scale-95"
                     style={
                       type === cat.id
                         ? { background: 'linear-gradient(135deg, #a855f7, #ec4899)', color: 'white', borderColor: 'transparent' }

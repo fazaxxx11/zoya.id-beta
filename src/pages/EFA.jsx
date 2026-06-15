@@ -227,7 +227,7 @@ function SamplingAdequacySection({ result }) {
   const bartlettOk = b.p < 0.05
 
   return (
-    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <h3 className="font-semibold text-sm mb-3">Sampling Adequacy</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="bg-surface rounded-lg p-3">
@@ -297,7 +297,7 @@ function ScreePlotSection({ result }) {
   const sy = (e) => m.top + (1 - e / maxEig) * innerH
 
   return (
-    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <h3 className="font-semibold text-sm mb-3">Scree Plot</h3>
       <div className="bg-surface rounded-lg p-2 overflow-x-auto">
         <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="max-w-full h-auto">
@@ -359,7 +359,7 @@ function VarianceTableSection({ result }) {
   const eigs = result.eigenvalues
   const p = result.p
   return (
-    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <h3 className="font-semibold text-sm mb-3">Variance Explained</h3>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
@@ -402,7 +402,7 @@ function LoadingsSection({ result }) {
   const showRotated = result.rotationApplied
   const matrix = showRotated ? result.loadingsRotated : result.loadingsUnrotated
   return (
-    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-violet-600" />
@@ -468,7 +468,7 @@ function ReportText({ result }) {
 Berdasarkan kriteria Kaiser (eigenvalue ≥ 1), terbentuk ${result.nFactors} faktor yang menjelaskan ${(cumVar * 100).toFixed(1)}% varians total. ${result.rotationApplied ? 'Setelah rotasi Varimax, struktur loadings menunjukkan setiap item memuat dominan pada satu faktor (loading ≥ 0.4).' : 'Tanpa rotasi diterapkan.'} Communalities (h²) berkisar dari ${Math.min(...result.communalities).toFixed(3)} hingga ${Math.max(...result.communalities).toFixed(3)}.`
 
   return (
-    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors">
+    <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }}

@@ -60,7 +60,7 @@ function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuid
       <h2 className="text-lg font-semibold text-fg mb-1">Unggah Dataset</h2>
       <p className="text-sm text-muted mb-5">Format yang didukung: .xlsx, .xls, .csv</p>
 
-      <div className="relative block border-2 border-dashed border-border rounded-xl p-10 text-center cursor-pointer hover:border-accent/30 bg-card/50 transition-colors">
+      <div className="relative block border-2 border-dashed border-border rounded-xl p-10 text-center cursor-pointer hover:border-accent/30 bg-card active:scale-[0.98]/50 transition-colors active:scale-95">
         <FileSpreadsheet className="w-10 h-10 text-muted/40 mx-auto mb-3" />
         <p className="text-muted font-medium mb-1">Klik atau seret file ke sini</p>
         <p className="text-xs text-muted">Maksimal 10MB · header di baris pertama</p>
@@ -127,7 +127,7 @@ function StepReview({ columns, data, numericColumns, categoricalColumns, editing
         {hasEdits && (
           <button
             onClick={onReset}
-            className="text-xs text-muted hover:text-fg border border-border rounded-lg px-3 py-1.5 transition-colors"
+            className="text-xs text-muted hover:text-fg border border-border rounded-lg px-3 py-1.5 transition-colors active:scale-95"
           >
             Reset ke file asli
           </button>
@@ -272,7 +272,7 @@ function StepReview({ columns, data, numericColumns, categoricalColumns, editing
                           <td
                             key={col}
                             onClick={() => onCellClick(i, col, value)}
-                            className="px-3 py-1.5 border-r border-border last:border-r-0 font-mono max-w-[180px] truncate cursor-pointer hover:bg-accent/5 transition-colors"
+                            className="px-3 py-1.5 border-r border-border last:border-r-0 font-mono max-w-[180px] truncate cursor-pointer hover:bg-accent/5 transition-colors active:scale-95"
                             title={display === '—' ? 'empty — klik untuk edit' : `${display} — klik untuk edit`}
                           >
                             {display === '—' ? (
@@ -434,7 +434,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
                     className={`w-full text-left p-4 rounded-xl border transition-colors ${
                       selectedTool === item.id
                         ? 'border-accent bg-accent/5'
-                        : 'border-border hover:border-accent/30 bg-card'
+                        : 'border-border hover:border-accent/30 bg-card active:scale-[0.98]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -479,7 +479,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
       <div className="mt-6 pt-4 border-t border-border">
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="text-xs text-muted hover:text-fg transition-colors"
+          className="text-xs text-muted hover:text-fg transition-colors active:scale-95"
         >
           {showAdvanced ? 'Sembunyikan semua analisis' : 'Lihat semua analisis →'}
         </button>
@@ -530,7 +530,7 @@ function GuideSection() {
     <div className="mb-6">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm text-muted hover:text-fg transition-colors"
+        className="flex items-center gap-2 text-sm text-muted hover:text-fg transition-colors active:scale-95"
       >
         <span>{open ? '▾' : '▸'}</span>
         <span className="font-medium">Cara Menggunakan Azezmen</span>
@@ -618,7 +618,7 @@ function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
             className={`text-left p-3 rounded-lg border text-xs transition-colors ${
               selectedTool === test.id
                 ? 'border-accent bg-accent/5'
-                : 'border-border hover:border-accent/30 bg-card'
+                : 'border-border hover:border-accent/30 bg-card active:scale-[0.98]'
             }`}
           >
             <div className="flex items-center gap-1.5">
