@@ -245,7 +245,7 @@ function UserDashboard() {
                   <Link to="/statistik" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium">
                     <BarChart3 className="w-4 h-4" /> Statistik
                   </Link>
-                  <Link to="/assessment" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium">
+                  <Link to="/assessment" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-card border-2 border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/20 text-amber-600 text-sm font-medium">
                     <FileText className="w-4 h-4" /> Assessment
                   </Link>
                 </div>
