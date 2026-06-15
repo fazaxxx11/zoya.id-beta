@@ -102,7 +102,7 @@ function UserDashboard() {
         </div>
       </header>
 
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
         {/* User Card — compact */}
         <div className="bg-card border-l-4 border-accent rounded-lg p-4">
           <div className="flex items-center justify-between">
