@@ -18,6 +18,7 @@ import {
 import ThemeToggle from "../components/ThemeToggle";
 import Logo from "../components/Logo";
 import { useCurrentUser } from '../lib/useCurrentUser'
+import ScrollReveal from '../components/ScrollReveal'
 
 const TRUST_ITEMS = [
   "Gratis tanpa daftar",
@@ -160,6 +161,15 @@ export default function Home() {
       <main>
         {/* ===== HERO — Split Text: Typography as Art ===== */}
         <section className="container mx-auto px-4 py-20 md:py-32 relative paper-texture overflow-hidden">
+          {/* Floating decorative elements */}
+          <div className="absolute top-20 right-10 w-2 h-2 bg-accent/20 rounded-full animate-float pointer-events-none" />
+          <div className="absolute top-40 right-20 w-3 h-3 bg-teal-500/15 rounded-full animate-float-delayed pointer-events-none" />
+          <div className="absolute bottom-20 left-10 w-2 h-2 bg-amber-500/20 rounded-full animate-float pointer-events-none" />
+          <div className="absolute bottom-40 left-20 w-4 h-4 bg-rose-500/10 rounded-full animate-float-delayed pointer-events-none" />
+
+          {/* Dot pattern background */}
+          <div className="absolute inset-0 dot-pattern-bg opacity-30 pointer-events-none" />
+
           <div className="relative z-10">
             {/* Bold statement tagline */}
             <div className="flex items-center gap-3 mb-6">
@@ -207,8 +217,69 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Decorative divider */}
+        <div className="section-divider" />
+
+        {/* ===== DEMO PREVIEW — Show what the platform does ===== */}
+        <ScrollReveal>
+          <section className="container mx-auto px-4 py-16">
+            <div className="max-w-4xl mx-auto">
+              {/* Terminal-style preview */}
+              <div className="bg-card border border-border rounded-xl overflow-hidden shadow-lg">
+                {/* Terminal header */}
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-surface/50">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-rose-500/80" />
+                    <div className="w-3 h-3 rounded-full bg-amber-500/80" />
+                    <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                  </div>
+                  <span className="text-xs text-muted ml-2 font-mono">hasil-analisis.csv</span>
+                </div>
+
+                {/* Demo content */}
+                <div className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-surface/50 rounded-lg p-4 border border-border">
+                      <div className="text-xs text-muted mb-1">Uji yang dipilih</div>
+                      <div className="text-sm font-semibold">T-Test Independent</div>
+                    </div>
+                    <div className="bg-surface/50 rounded-lg p-4 border border-border">
+                      <div className="text-xs text-muted mb-1">Signifikansi</div>
+                      <div className="text-lg font-bold text-emerald-500">p = 0.003</div>
+                    </div>
+                    <div className="bg-surface/50 rounded-lg p-4 border border-border">
+                      <div className="text-xs text-muted mb-1">Kesimpulan</div>
+                      <div className="text-sm font-medium text-accent">Signifikan ✓</div>
+                    </div>
+                  </div>
+
+                  {/* Interpretation */}
+                  <div className="mt-6 p-4 bg-accent/5 border border-accent/20 rounded-lg">
+                    <div className="text-xs font-semibold text-accent mb-2">Interpretasi AI</div>
+                    <p className="text-sm text-muted leading-relaxed">
+                      Terdapat perbedaan signifikan antara kelompok kontrol dan perlakuan (t = 3.42, p = 0.003).
+                      Nilai rata-rata kelompok perlakuan (M = 78.5) lebih tinggi dibanding kelompok kontrol (M = 72.1).
+                      Efek yang ditemukan tergolong <span className="font-medium text-foreground">besar</span> (Cohen's d = 0.85).
+                    </p>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-xs text-muted">Contoh output • Hasil sesungguhnya mungkin berbeda</span>
+                    <span className="text-xs text-accent font-medium">Export DOCX →</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </ScrollReveal>
+
+        {/* Decorative divider */}
+        <div className="section-divider" />
+
         {/* ===== SERVICES — Numbered Editorial Layout ===== */}
-        <section id="layanan" className="container mx-auto px-4 py-20">
+        <ScrollReveal>
+        <section id="layanan" className="container mx-auto px-4 py-20 relative">
+          <div className="absolute inset-0 grid-pattern-bg pointer-events-none" />
           {/* Section header — numbered, bold */}
           <div className="flex items-baseline gap-4 mb-10">
             <span className="text-5xl md:text-6xl font-heading font-black text-accent/15 leading-none">01</span>
@@ -258,8 +329,13 @@ export default function Home() {
             })}
           </div>
         </section>
+        </ScrollReveal>
+
+        {/* Decorative divider */}
+        <div className="section-divider" />
 
         {/* ===== WORKFLOW — Numbered ===== */}
+        <ScrollReveal delay={0.1}>
         <section id="alur" className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-baseline gap-4 mb-10">
@@ -286,8 +362,13 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </ScrollReveal>
+
+        {/* Decorative divider */}
+        <div className="section-divider" />
 
         {/* ===== CARA KERJA — Numbered ===== */}
+        <ScrollReveal delay={0.1}>
         <section id="cara-kerja" className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-baseline gap-4 mb-10">
@@ -312,6 +393,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </ScrollReveal>
       </main>
 
       {/* Footer — Editorial style */}
