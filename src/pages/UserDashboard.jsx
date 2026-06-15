@@ -11,6 +11,11 @@ import { subscribeWallet } from '../lib/wallet'
 import { subscribeOrders } from '../lib/orders'
 import { listAnalyses, countAnalyses, deleteAnalysis } from '../lib/savedAnalyses'
 
+// Simple skeleton pulse component
+function Skeleton({ className = '' }) {
+  return <div className={`animate-pulse bg-border/50 rounded ${className}`} />
+}
+
 function UserDashboard() {
   const navigate = useNavigate()
   const user = useCurrentUser()
@@ -123,12 +128,21 @@ function UserDashboard() {
 
         {/* Hero Metric */}
         <div className="bg-gradient-to-br from-accent/5 to-transparent border border-border rounded-xl p-8 text-center">
-          <div className="text-6xl font-bold text-fg mb-3 tabular-nums">
-            {savedLoading ? <Loader2 className="w-12 h-12 animate-spin text-muted mx-auto" /> : savedCount}
-          </div>
-          <p className="text-base text-muted font-medium">Analisis Tersimpan</p>
-          {savedCount > 0 && (
-            <p className="text-xs text-muted mt-2">+{savedRecent.filter(i => i.ai_interpretation).length} dengan AI</p>
+          {savedLoading ? (
+            <>
+              <Skeleton className="w-24 h-14 mx-auto mb-3" />
+              <Skeleton className="w-32 h-4 mx-auto" />
+            </>
+          ) : (
+            <>
+              <div className="text-6xl font-bold text-fg mb-3 tabular-nums">
+                {savedCount}
+              </div>
+              <p className="text-base text-muted font-medium">Analisis Tersimpan</p>
+              {savedCount > 0 && (
+                <p className="text-xs text-muted mt-2">+{savedRecent.filter(i => i.ai_interpretation).length} dengan AI</p>
+              )}
+            </>
           )}
         </div>
 
