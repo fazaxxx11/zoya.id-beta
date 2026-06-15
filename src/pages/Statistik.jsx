@@ -748,6 +748,7 @@ function Statistik() {
                 columns={columns}
                 numericColumns={numericColumns}
                 sampleSize={sampleSize}
+                onOpenCleaner={() => setCleanerOpen(true)}
               />
             )}
 
@@ -1344,7 +1345,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
 // ============================================================
 // Data Validation Badge — shows data quality issues
 // ============================================================
-function DataValidationBadge({ data, columns, numericColumns, sampleSize }) {
+function DataValidationBadge({ data, columns, numericColumns, sampleSize, onOpenCleaner }) {
   const issues = useMemo(() => {
     const list = []
     if (sampleSize < 30) list.push(`Sampel kecil (${sampleSize} < 30) — hasil mungkin kurang stabil`)
@@ -1377,6 +1378,14 @@ function DataValidationBadge({ data, columns, numericColumns, sampleSize }) {
           <span className="text-amber-700 dark:text-amber-300">{issue}</span>
         </div>
       ))}
+      {issues.some(i => String(i).includes('missing values')) && onOpenCleaner && (
+        <button
+          onClick={onOpenCleaner}
+          className="mt-1 text-xs px-3 py-1.5 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity"
+        >
+          Clear Data
+        </button>
+      )}
     </div>
   )
 }
