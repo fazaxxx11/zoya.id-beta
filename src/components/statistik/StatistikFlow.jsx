@@ -788,13 +788,13 @@ export default function StatistikFlow({
           />
         </div>
 
-      {/* Analyze button */}
+      {/* Analyze button — sticky on mobile */}
       {data && selectedTool && (
-        <div className="mt-4">
+        <div className="mt-4 sticky bottom-0 bg-bg/80 backdrop-blur-sm py-3 -mx-4 px-4 border-t border-border md:border-0 md:bg-transparent md:backdrop-blur-none md:py-0 md:mx-0 md:px-0">
           <button
             onClick={onAnalyze}
             disabled={analyzing}
-            className="w-full py-3 rounded-xl bg-accent text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-xl bg-accent text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg md:shadow-none"
           >
             {analyzing ? (
               <>
