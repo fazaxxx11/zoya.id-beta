@@ -126,6 +126,13 @@ vercel
 
 Atau connect repo GitHub di [vercel.com](https://vercel.com) → Import Project → set env vars di dashboard.
 
+## Security — Dependency Notes
+
+- **exceljs@4.4.0** — handles all Excel **parsing** (user uploads). No known vulnerabilities.
+- **xlsx@0.18.5** — used for **export only** (app writes .xlsx files). Not used for parsing untrusted input. Known HIGH vulns (prototype pollution, ReDoS) are **not exploitable** in write-only context. Tracked: [GHSA-4r6h-8v6p-xvw6](https://github.com/advisories/GHSA-4r6h-8v6p-xvw6), [GHSA-5pgg-2g8v-p4x9](https://github.com/advisories/GHSA-5pgg-2g8v-p4x9).
+
+Migration date: 2026-06-15. See `src/utils/excelHelper.js` for parser implementation.
+
 ## License
 
 Private — zoya.id
