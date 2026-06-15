@@ -122,11 +122,14 @@ function UserDashboard() {
         </div>
 
         {/* Hero Metric */}
-        <div className="bg-card border border-border rounded-lg p-6 text-center">
-          <div className="text-5xl font-bold text-fg mb-2">
-            {savedLoading ? <Loader2 className="w-10 h-10 animate-spin text-muted mx-auto" /> : savedCount}
+        <div className="bg-gradient-to-br from-accent/5 to-transparent border border-border rounded-xl p-8 text-center">
+          <div className="text-6xl font-bold text-fg mb-3 tabular-nums">
+            {savedLoading ? <Loader2 className="w-12 h-12 animate-spin text-muted mx-auto" /> : savedCount}
           </div>
-          <p className="text-sm text-muted">Analisis Tersimpan</p>
+          <p className="text-base text-muted font-medium">Analisis Tersimpan</p>
+          {savedCount > 0 && (
+            <p className="text-xs text-muted mt-2">+{savedRecent.filter(i => i.ai_interpretation).length} dengan AI</p>
+          )}
         </div>
 
         {/* Quick Actions */}
