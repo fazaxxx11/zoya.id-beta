@@ -439,7 +439,7 @@ function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
                 />
               </div>
             </div>
@@ -452,7 +452,7 @@ function Auth() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan password"
-                  className="w-full pl-10 pr-12 py-3 rounded-xl border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-12 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
                 />
                 <button
                   type="button"
@@ -463,7 +463,7 @@ function Auth() {
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
+            <button type="submit" disabled={loading} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Login'}
             </button>
 
@@ -494,11 +494,11 @@ function Auth() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="email@example.com"
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-border focus:border-sky-500 outline-none"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
                     />
                   </div>
                 </div>
-                <button type="submit" disabled={loading || !email} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
+                <button type="submit" disabled={loading || !email} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-sky-600 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Kirim Kode <KeyRound className="w-4 h-4" /></>}
                 </button>
               </form>
@@ -521,11 +521,11 @@ function Auth() {
                       onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                       placeholder="123456"
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-border focus:border-sky-500 outline-none tracking-[0.4em] text-center font-mono text-lg"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none tracking-[0.4em] text-center font-mono text-lg"
                     />
                   </div>
                 </div>
-                <button type="submit" disabled={loading || otpCode.length !== 6} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
+                <button type="submit" disabled={loading || otpCode.length !== 6} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-sky-600 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verifikasi & Login'}
                 </button>
                 <button
@@ -552,7 +552,7 @@ function Auth() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nama Anda"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
                 />
               </div>
             </div>
@@ -565,7 +565,7 @@ function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
                 />
               </div>
             </div>
@@ -578,7 +578,7 @@ function Auth() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="0812 3456 7890"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
                 />
               </div>
             </div>
@@ -591,7 +591,7 @@ function Auth() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Buat password"
-                  className="w-full pl-10 pr-12 py-3 rounded-xl border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-12 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
                 />
                 <button
                   type="button"
@@ -602,7 +602,7 @@ function Auth() {
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
+            <button type="submit" disabled={loading} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Daftar'}
             </button>
 
