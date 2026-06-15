@@ -388,6 +388,9 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
   ]
 
   const [showAdvanced, setShowAdvanced] = useState(false)
+  const [search, setSearch] = useState('')
+  const fuse = useMemo(() => new Fuse(allTools, { keys: ['name', 'desc'], threshold: 0.3 }), [])
+  const filteredAllTools = search.trim() ? fuse.search(search).map(r => r.item) : allTools
 
   return (
     <div className="border border-border bg-card rounded-xl p-6">
@@ -406,7 +409,19 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
         </div>
       )}
 
-      {showRecommendations ? (
+      {/* Search bar */}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Cari uji statistik... (tekan /)"
+          className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent"
+          onKeyDown={e => { if (e.key === '/') { e.preventDefault(); e.target.focus() } }}
+        />
+      </div>
+
+      {showRecommendations && !search.trim() ? (
         /* Recommendations by category */
         <div className="space-y-5">
           {recommendations.map(rec => (
@@ -438,9 +453,9 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
           ))}
         </div>
       ) : (
-        /* Flat list when no data */
+        /* Flat list — all tools or search results */
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {allTools.map(tool => (
+          {filteredAllTools.map(tool => (
             <button
               key={tool.id}
               onClick={() => hasData && onSelectTool(tool.id)}
@@ -455,6 +470,9 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
               <div className="font-medium">{tool.name}</div>
             </button>
           ))}
+          {search.trim() && filteredAllTools.length === 0 && (
+            <p className="col-span-full text-sm text-muted text-center py-4">Tidak ada uji yang cocok dengan \"{search}\"</p>
+          )}
         </div>
       )}
 
@@ -469,7 +487,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
         </button>
         {showAdvanced && (
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {allTools.map(tool => (
+            {filteredAllTools.map(tool => (
               <button
                 key={tool.id}
                 onClick={() => onSelectTool(tool.id)}
