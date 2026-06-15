@@ -177,7 +177,7 @@ function Statistik() {
     reader.onload = async (event) => {
       try {
         const arrayBuffer = event.target.result
-        const jsonData = await parseExcelFile(arrayBuffer)
+        const jsonData = await parseExcelFile(arrayBuffer, uploadedFile.name)
         if (!jsonData.length) throw new Error('File kosong (tidak ada baris data)')
 
         // First row = headers
