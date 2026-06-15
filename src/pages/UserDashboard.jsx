@@ -250,16 +250,16 @@ function UserDashboard() {
           <div className="bg-card rounded-lg shadow-sm overflow-hidden">
             {orders.length === 0 ? (
               <div className="p-10 text-center">
-                <div className="w-16 h-16 bg-accent/10 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-accent" />
+                <div className="w-20 h-20 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl mx-auto mb-5 flex items-center justify-center">
+                  <FileText className="w-10 h-10 text-accent" />
                 </div>
-                <h3 className="font-semibold text-fg mb-1">Belum ada pesanan</h3>
-                <p className="text-sm text-muted mb-4">Mulai jalankan analisis atau penilaian untuk melihat history pesanan di sini.</p>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  <Link to="/statistik" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium">
-                    <BarChart3 className="w-4 h-4" /> Statistik
+                <h3 className="text-lg font-semibold text-fg mb-2">Belum ada pesanan</h3>
+                <p className="text-sm text-muted mb-6 max-w-xs mx-auto">Mulai jalankan analisis atau penilaian untuk melihat history pesanan di sini.</p>
+                <div className="flex flex-wrap gap-3 justify-center">
+                  <Link to="/statistik" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium transition-colors">
+                    <BarChart3 className="w-4 h-4" /> Mulai Statistik
                   </Link>
-                  <Link to="/assessment" className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-card border-2 border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/20 text-amber-600 text-sm font-medium">
+                  <Link to="/assessment" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-card border-2 border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/20 text-amber-600 text-sm font-medium transition-colors">
                     <FileText className="w-4 h-4" /> Assessment
                   </Link>
                 </div>
@@ -319,11 +319,11 @@ function UserDashboard() {
           <div className="bg-card rounded-lg shadow-sm overflow-hidden">
             {wallet.transactions.length === 0 ? (
               <div className="p-10 text-center">
-                <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <CreditCard className="w-8 h-8 text-emerald-400" />
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 rounded-2xl mx-auto mb-5 flex items-center justify-center">
+                  <CreditCard className="w-10 h-10 text-emerald-500" />
                 </div>
-                <h3 className="font-semibold text-fg mb-1">Belum ada transaksi</h3>
-                <p className="text-sm text-muted">Saat beta, semua tools gratis. Top-up & riwayat saldo akan tampil di sini setelah monetisasi dibuka.</p>
+                <h3 className="text-lg font-semibold text-fg mb-2">Belum ada transaksi</h3>
+                <p className="text-sm text-muted max-w-xs mx-auto">Saat beta, semua tools gratis. Top-up & riwayat saldo akan tampil di sini setelah monetisasi dibuka.</p>
               </div>
             ) : (
               <div className="divide-y">
