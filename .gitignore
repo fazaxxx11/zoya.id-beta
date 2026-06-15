@@ -3,3 +3,6 @@ package-lock.json
 .pnpm-store/
 dist/
 *.js.map
+.env
+.env.local
+.env.*.local

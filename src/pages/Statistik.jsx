@@ -7,6 +7,7 @@ import {
   ArrowRight, RotateCcw, AlertTriangle,
 } from 'lucide-react'
 import { parseExcelFile, getColumnNames } from '../utils/excelHelper'
+import { FEATURES } from '../config/features'
 import { getCurrentUser } from '../lib/auth'
 import { getWallet, deductWallet } from '../lib/wallet'
 import { trackEvent } from '../lib/analytics'
@@ -176,11 +177,24 @@ function Statistik() {
     reader.onload = async (event) => {
       try {
         const arrayBuffer = event.target.result
-        const jsonData = await parseExcelFile(arrayBuffer)
+        let jsonData
+
+        if (FEATURES.USE_EXCELJS) {
+          // NEW: exceljs path (secure)
+          console.log('[upload] using exceljs parser')
+          jsonData = await parseExcelFile(arrayBuffer)
+        } else {
+          // OLD: xlsx fallback (vulnerable)
+          console.log('[upload] using xlsx fallback')
+          const XLSX = await import('xlsx')
+          const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' })
+          const sheet = wb.Sheets[wb.SheetNames[0]]
+          jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null })
+        }
         if (!jsonData.length) throw new Error('File kosong (tidak ada baris data)')
 
         // First row = headers
-        const rawHeaders = jsonData[0]
+        const rawHeaders = Array.isArray(jsonData[0]) ? jsonData[0] : Object.values(jsonData[0])
         const headers = rawHeaders
           .map((h, i) => {
             const str = String(h ?? '').trim()
@@ -199,7 +213,7 @@ function Statistik() {
         const parsed = {}
         headers.forEach(({ original, clean }) => {
           parsed[clean] = jsonData.slice(1).map(row => {
-            const v = row[original]
+            const v = Array.isArray(row) ? row[original] : Object.values(row)[original]
             if (v === '' || v === null || v === undefined) return null
             if (typeof v === 'string') {
               const trimmed = v.trim()
