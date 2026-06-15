@@ -71,15 +71,15 @@ function UserDashboard() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'completed':
-        return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+        return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600">
           <CheckCircle className="w-3 h-3" /> Selesai
         </span>
       case 'processing':
-        return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+        return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-sky-50 dark:bg-sky-950/30 text-sky-600">
           <Loader2 className="w-3 h-3 animate-spin" /> Diproses
         </span>
       case 'pending':
-        return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+        return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-50 dark:bg-amber-950/30 text-amber-600">
           <Clock className="w-3 h-3" /> Menunggu
         </span>
       default:
