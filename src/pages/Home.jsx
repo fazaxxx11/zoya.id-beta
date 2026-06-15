@@ -278,8 +278,7 @@ export default function Home() {
 
         {/* ===== SERVICES — Numbered Editorial Layout ===== */}
         <ScrollReveal>
-        <section id="layanan" className="container mx-auto px-4 py-20 relative">
-          <div className="absolute inset-0 grid-pattern-bg pointer-events-none" />
+        <section id="layanan" className="container mx-auto px-4 py-20">
           {/* Section header — numbered, bold */}
           <div className="flex items-baseline gap-4 mb-10">
             <span className="text-5xl md:text-6xl font-heading font-black text-accent/15 leading-none">01</span>
