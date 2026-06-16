@@ -50,6 +50,8 @@ import {
   analyzeNGain,
   chiSquareIndependence,
 } from '../lib/statistics'
+import { wilcoxonSignedRank as wilcoxonBackend, mannWhitneyU as mannWhitneyBackend, analyzeNGain as ngainBackend } from '../lib/stats/backend.js'
+import { useStatsBackend } from '../lib/hooks/useStatsBackend'
 
 // ============================================================
 // Tools registry — single source of truth
@@ -115,6 +117,9 @@ function Statistik() {
   const [cleanerOpen, setCleanerOpen] = useState(false)
   const [cleaningReport, setCleaningReport] = useState(null)
   const [examplePickerOpen, setExamplePickerOpen] = useState(false)
+
+  // Backend status
+  const { status: backendStatus, loading: backendLoading } = useStatsBackend()
 
   // Reset params/result/error when tool changes
   useEffect(() => {
@@ -386,7 +391,7 @@ function Statistik() {
   // ============================================================
   // Run analysis — DISPATCH KE LIB/STATS REAL
   // ============================================================
-  const runAnalysis = ({ paidAmount = 0, paymentMethod = 'free' } = {}) => {
+  const runAnalysis = async ({ paidAmount = 0, paymentMethod = 'free' } = {}) => {
     if (!data) return
     // Re-validate params (guard against race conditions)
     const validationError = validateParams()
@@ -398,7 +403,7 @@ function Statistik() {
     setAnalyzing(true)
     setError(null)
 
-    setTimeout(() => {
+    setTimeout(async () => {
       try {
         // Pakai data yang sudah difilter (kalau filter aktif). Fallback ke raw data.
         const data = filteredData
@@ -540,12 +545,12 @@ function Statistik() {
           } else {
             throw new Error(`Butuh minimal 2 grup, ditemukan ${allKeys.length}`)
           }
-          const r = mannWhitneyU(groups[g1], groups[g2])
+          const r = await mannWhitneyBackend(groups[g1], groups[g2])
           analysisResult = { type: 'mannwhitney', outcome: params.outcome, grouping: params.grouping, groupNames: [g1, g2],
             groupValues: [{ name: g1, values: groups[g1] }, { name: g2, values: groups[g2] }], ...r }
         }
         else if (activeTool === 'wilcoxon') {
-          const r = wilcoxonSignedRank(data[params.column1], data[params.column2])
+          const r = await wilcoxonBackend(data[params.column1], data[params.column2])
           analysisResult = { type: 'wilcoxon', column1: params.column1, column2: params.column2, beforeValues: data[params.column1], afterValues: data[params.column2], ...r }
         }
         else if (activeTool === 'kruskal') {
@@ -567,7 +572,7 @@ function Statistik() {
         else if (activeTool === 'ngain') {
           // Coba ambil kolom nama bila ditentukan, kalau tidak biarkan lib generate "Subjek 1.."
           const names = params.nameColumn ? data[params.nameColumn] : []
-          const r = analyzeNGain({
+          const r = await ngainBackend({
             pre: data[params.column1],
             post: data[params.column2],
             maxScore: Number(params.maxScore),
@@ -707,6 +712,15 @@ function Statistik() {
       />
 
       <div className="max-w-5xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
+        {/* Backend Status Indicator */}
+        {!backendLoading && backendStatus && (
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            Backend: <span className={backendStatus.backend === 'scipy' ? 'text-green-600 dark:text-green-400 font-semibold' : ''}>
+              {backendStatus.backend === 'scipy' ? 'scipy ✅ (SPSS-verified)' : 'JavaScript fallback'}
+            </span>
+          </div>
+        )}
+
         <StatistikFlow
           file={file}
           data={data}
