@@ -14,7 +14,7 @@
     "api/generate-kuesioner.js": { "maxDuration": 30 },
     "api/billing-check.js": { "maxDuration": 15 },
     "api/health.js": { "maxDuration": 5 },
-    "api/stats.py": { "maxDuration": 30, "runtime": "python3.11" }
+    "api/stats.py": { "maxDuration": 30, "runtime": "python@3.11" }
   },
   "headers": [
     {
