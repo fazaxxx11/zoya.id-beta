@@ -4,6 +4,7 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { describe, oneWayANOVA, kruskalWallis, shapiroWilk } from '../lib/stats'
+import { useStatsBackend } from '../lib/hooks/useStatsBackend'
 import jstat from 'jstat'
 import { toast } from '../lib/toast'
 import { generateInterpretation } from '../lib/ai/interpretStats'
@@ -16,6 +17,7 @@ export default function StatistikBatch() {
   const [selectedColumn, setSelectedColumn] = useState('')
   const [parsing, setParsing] = useState(false)
   const inputRef = useRef(null)
+  const { status: backendStatus, loading: backendLoading } = useStatsBackend()
 
   // -----------------------------------------------------------
   // File upload — accepts multiple
@@ -303,6 +305,15 @@ export default function StatistikBatch() {
       />
 
       <main className="max-w-6xl mx-auto px-3 sm:px-5 py-4 sm:py-6 space-y-4 sm:space-y-5">
+        {/* Backend status */}
+        {!backendLoading && backendStatus && (
+          <div className="bg-card rounded-2xl border border-border p-3 flex items-center gap-2">
+            <span className="text-xs text-muted">Backend:</span>
+            <span className="text-xs font-medium">
+              {backendStatus.backend === 'scipy' ? 'scipy ✅ (SPSS-verified)' : 'JavaScript fallback'}
+            </span>
+          </div>
+        )}
         {/* Drop zone */}
         <div onDrop={onDrop} onDragOver={e => e.preventDefault()}
              className="bg-card rounded-2xl border border-dashed border-border p-5 sm:p-8 text-center hover:border-gray-400 transition-colors active:scale-95">
