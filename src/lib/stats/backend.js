@@ -29,8 +29,11 @@ async function isPythonBackendAvailable() {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 1000)
 
+    // Health check with minimal POST request
     const response = await fetch(PYTHON_BACKEND_URL, {
-      method: 'OPTIONS',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ method: 'wilcoxon', data: { before: [1,2], after: [2,3] }, options: {} }),
       signal: controller.signal
     })
 
