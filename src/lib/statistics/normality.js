@@ -198,7 +198,7 @@ function shapiroPValue(W, n) {
   const mu = 0.0038915 * Math.log(n) ** 3 - 0.083751 * Math.log(n) ** 2 - 0.31082 * Math.log(n) - 1.5861;
   const sigma = Math.exp(0.0030302 * Math.log(n) ** 2 - 0.082676 * Math.log(n) - 0.4803);
   const z = (Math.log(1 - W) - mu) / sigma;
-  return normalCDF(z);
+  return 1 - normalCDF(z);
 }
 
 /**
