@@ -16,12 +16,6 @@
     "api/health.js": { "maxDuration": 5 },
     "api/stats.py": { "maxDuration": 30, "runtime": "python3.11" }
   },
-  "builds": [
-    {
-      "src": "api/*.py",
-      "use": "@vercel/python"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
