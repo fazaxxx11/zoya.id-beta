@@ -27,7 +27,7 @@ async function isPythonBackendAvailable() {
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 1000)
+    const timeoutId = setTimeout(() => controller.abort(), 3000)  // Increased to 3s for cold start
 
     // Health check with minimal POST request
     const response = await fetch(PYTHON_BACKEND_URL, {
