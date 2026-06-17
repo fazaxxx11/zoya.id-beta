@@ -155,14 +155,9 @@ export function kolmogorovSmirnov(values, alpha = 0.05) {
 }
 
 /**
- * Auto-pilih uji normalitas berdasarkan ukuran sampel:
- * - n ≤ 50: Shapiro-Wilk (lebih sensitif)
- * - n > 50: Kolmogorov-Smirnov
+ * Uji normalitas — selalu pakai Shapiro-Wilk.
+ * scipy.stats.shapiro support n=3..5000, jadi tidak perlu switch ke KS.
  */
 export function testNormality(values, alpha = 0.05) {
-  const n = values.filter(v => typeof v === 'number' && !isNaN(v)).length
-  if (n <= 50) {
-    return { method: 'Shapiro-Wilk', ...shapiroWilk(values, alpha) }
-  }
-  return { method: 'Kolmogorov-Smirnov', ...kolmogorovSmirnov(values, alpha) }
+  return { method: 'Shapiro-Wilk', ...shapiroWilk(values, alpha) }
 }

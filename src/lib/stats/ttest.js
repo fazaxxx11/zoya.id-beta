@@ -152,7 +152,7 @@ export function pairedTTest(before, after, alpha = 0.05) {
   const n = pairs.length
   if (n < 2) return { error: 'Sampel minimal 2 pasang' }
 
-  const diff = pairs.map(([a, b]) => a - b)
+  const diff = pairs.map(([a, b]) => b - a)  // after - before (convention: positive = improvement)
   const meanDiff = diff.reduce((a, b) => a + b, 0) / n
   const varDiff = diff.reduce((s, d) => s + (d - meanDiff) ** 2, 0) / (n - 1)
   const sdDiff = Math.sqrt(varDiff)

@@ -217,9 +217,10 @@ export function kruskalWallis(groups, groupNames = null, alpha = 0.05) {
 
   const df = k - 1
   const pValue = 1 - jstat.chisquare.cdf(H, df)
-  // Effect size η²_H (Tomczak & Tomczak 2014)
-  const etaSq = (H - k + 1) / (N - k)
-  const etaSqClamped = Math.max(0, etaSq)
+  // Effect size ε² (epsilon-squared) = H / (N - 1)
+  // Reference: Kelley (1935), lebih konservatif dari η²
+  const epsilonSq = H / (N - 1)
+  const epsilonSqClamped = Math.max(0, epsilonSq)
 
   const groupStats = cleaned.map((g, i) => ({
     name: names[i],
@@ -236,11 +237,12 @@ export function kruskalWallis(groups, groupNames = null, alpha = 0.05) {
     N, k,
     groupStats,
     isSignificant: pValue < alpha,
-    etaSquared: etaSqClamped,
-    effectSizeLabel: etaSquaredLabel(etaSqClamped),
+    epsilonSquared: epsilonSqClamped,
+    etaSquared: epsilonSqClamped,  // alias for backward compat
+    effectSizeLabel: epsilonSquaredLabel(epsilonSqClamped),
     alpha,
     interpretation: pValue < alpha
-      ? `Terdapat perbedaan signifikan antar ${k} grup (H(${df}) = ${H.toFixed(3)}, p = ${pValue.toFixed(4)} < α = ${alpha}). η² = ${etaSqClamped.toFixed(3)} (${etaSquaredLabel(etaSqClamped).toLowerCase()}). Lakukan post-hoc untuk identifikasi pair berbeda.`
+      ? `Terdapat perbedaan signifikan antar ${k} grup (H(${df}) = ${H.toFixed(3)}, p = ${pValue.toFixed(4)} < α = ${alpha}). ε² = ${epsilonSqClamped.toFixed(3)} (${epsilonSquaredLabel(epsilonSqClamped).toLowerCase()}). Lakukan post-hoc untuk identifikasi pair berbeda.`
       : `Tidak ada perbedaan signifikan antar ${k} grup (H(${df}) = ${H.toFixed(3)}, p = ${pValue.toFixed(4)} > α = ${alpha}).`,
   }
 }
@@ -251,7 +253,7 @@ function median(arr) {
   return n % 2 === 0 ? (s[n / 2 - 1] + s[n / 2]) / 2 : s[Math.floor(n / 2)]
 }
 
-function etaSquaredLabel(e) {
+function epsilonSquaredLabel(e) {
   if (e < 0.01) return 'Sangat kecil'
   if (e < 0.06) return 'Kecil'
   if (e < 0.14) return 'Sedang'
