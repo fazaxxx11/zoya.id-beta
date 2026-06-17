@@ -769,7 +769,7 @@ def compute_twowayanova(data, options):
     residuals = {
         'df': int(anova_table.loc['Residual', 'df']),
         'ss': float(anova_table.loc['Residual', 'sum_sq']),
-        'ms': float(anova_table.loc['Residual', 'mean_sq'])
+        'ms': float(anova_table.loc['Residual', 'sum_sq'] / anova_table.loc['Residual', 'df'])
     }
 
     sig_effects = [e['name'] for e in effects if e['significant']]
