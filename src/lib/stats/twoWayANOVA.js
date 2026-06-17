@@ -5,13 +5,109 @@
 //
 // Model: Y_ijk = μ + α_i + β_j + (αβ)_ij + ε_ijk
 //
-// CATATAN:
-// - Untuk desain balanced (n_ij sama tiap sel), hasil F-test setara Type I/II/III.
-// - Untuk desain unbalanced, kita pakai pendekatan cell-means (mendekati Type III
-//   tapi tidak persis). Kalau butuh inference yang ketat, gunakan R/SPSS.
-// - Minimal 2 observasi per sel disarankan (untuk df_within > 0).
+// Uses Type II Sum of Squares (same as R default, statsmodels typ=2).
+// Each main effect is adjusted for the other main effect (but not interaction).
+// Interaction is adjusted for both main effects.
 
 import jstat from 'jstat'
+
+// === Simple matrix operations for OLS ===
+function matTranspose(A) {
+  const rows = A.length, cols = A[0].length
+  const AT = Array.from({ length: cols }, () => new Float64Array(rows))
+  for (let i = 0; i < rows; i++)
+    for (let j = 0; j < cols; j++)
+      AT[j][i] = A[i][j]
+  return AT
+}
+
+function matMul(A, B) {
+  const m = A.length, n = B[0].length, k = B.length
+  const C = Array.from({ length: m }, () => new Float64Array(n))
+  for (let i = 0; i < m; i++)
+    for (let j = 0; j < n; j++) {
+      let s = 0
+      for (let l = 0; l < k; l++) s += A[i][l] * B[l][j]
+      C[i][j] = s
+    }
+  return C
+}
+
+function matVecMul(A, v) {
+  const m = A.length, n = v.length
+  const result = new Float64Array(m)
+  for (let i = 0; i < m; i++) {
+    let s = 0
+    for (let j = 0; j < n; j++) s += A[i][j] * v[j]
+    result[i] = s
+  }
+  return result
+}
+
+function vecSub(a, b) {
+  const r = new Float64Array(a.length)
+  for (let i = 0; i < a.length; i++) r[i] = a[i] - b[i]
+  return r
+}
+
+function vecNormSq(v) {
+  let s = 0
+  for (let i = 0; i < v.length; i++) s += v[i] * v[i]
+  return s
+}
+
+// Solve Ax = b via Gauss-Jordan with partial pivoting
+function solveLinearSystem(A, b) {
+  const n = A.length
+  // Augmented matrix [A | b]
+  const M = A.map((row, i) => {
+    const augmented = new Float64Array(n + 1)
+    for (let j = 0; j < n; j++) augmented[j] = row[j]
+    augmented[n] = b[i]
+    return augmented
+  })
+
+  for (let col = 0; col < n; col++) {
+    // Partial pivoting
+    let maxVal = Math.abs(M[col][col])
+    let maxRow = col
+    for (let row = col + 1; row < n; row++) {
+      if (Math.abs(M[row][col]) > maxVal) {
+        maxVal = Math.abs(M[row][col])
+        maxRow = row
+      }
+    }
+    if (maxVal < 1e-12) continue // near-singular
+    if (maxRow !== col) { const tmp = M[col]; M[col] = M[maxRow]; M[maxRow] = tmp }
+
+    // Eliminate below
+    const pivot = M[col][col]
+    for (let row = col + 1; row < n; row++) {
+      const factor = M[row][col] / pivot
+      for (let j = col; j <= n; j++) M[row][j] -= factor * M[col][j]
+    }
+  }
+
+  // Back substitution
+  const x = new Float64Array(n)
+  for (let i = n - 1; i >= 0; i--) {
+    let s = M[i][n]
+    for (let j = i + 1; j < n; j++) s -= M[i][j] * x[j]
+    x[i] = M[i][i] !== 0 ? s / M[i][i] : 0
+  }
+  return x
+}
+
+function olsRSS(X, y) {
+  // RSS = ||y - Xβ̂||² where β̂ = (X'X)⁻¹X'y
+  const XT = matTranspose(X)
+  const XTX = matMul(XT, X)
+  const XTy = matVecMul(XT, y)
+  const beta = solveLinearSystem(XTX, XTy)
+  const yhat = matVecMul(X, beta)
+  const resid = vecSub(y, yhat)
+  return vecNormSq(resid)
+}
 
 /**
  * Two-Way ANOVA.
@@ -57,7 +153,7 @@ export function twoWayANOVA({ y, a, b, nameA = 'A', nameB = 'B', alpha = 0.05 })
   if (aN < 2) return { error: `Faktor "${nameA}" hanya punya 1 level — butuh ≥ 2` }
   if (bN < 2) return { error: `Faktor "${nameB}" hanya punya 1 level — butuh ≥ 2` }
 
-  // Cell map: {a}|{b} → values[]
+  // Cell map: {a}\x1f{b} → values[]
   const cells = {}
   rows.forEach(r => {
     const key = `${r.a}\x1f${r.b}`
@@ -109,33 +205,100 @@ export function twoWayANOVA({ y, a, b, nameA = 'A', nameB = 'B', alpha = 0.05 })
   }
 
   // === Sum of Squares ===
-  // SS_total = Σ (y - grandMean)²
   const SS_total = rows.reduce((s, r) => s + (r.y - grandMean) ** 2, 0)
 
-  // SS_A = Σ_i n_i (meanA_i - grandMean)²
-  const SS_A = levelsA.reduce(
-    (s, la) => s + nA[la] * (meanA[la] - grandMean) ** 2, 0
-  )
-
-  // SS_B = Σ_j n_j (meanB_j - grandMean)²
-  const SS_B = levelsB.reduce(
-    (s, lb) => s + nB[lb] * (meanB[lb] - grandMean) ** 2, 0
-  )
-
-  // SS_cells = Σ_ij n_ij (cellMean_ij - grandMean)²  (between-cells)
-  const SS_cells = Object.keys(cellMean).reduce(
-    (s, k) => s + cellN[k] * (cellMean[k] - grandMean) ** 2, 0
-  )
-
-  // SS_within = Σ Σ (y_ijk - cellMean_ij)²
+  // SS_within (residual) = Σ (y - cellMean)² — same for all SS types
   const SS_within = rows.reduce((s, r) => {
     const k = `${r.a}\x1f${r.b}`
     return s + (r.y - cellMean[k]) ** 2
   }, 0)
 
-  // SS_AB = SS_cells - SS_A - SS_B
-  // (Untuk balanced design ini eksak; untuk unbalanced ini approx Type III)
-  const SS_AB = Math.max(0, SS_cells - SS_A - SS_B)
+  // === Type II Sum of Squares via OLS regression ===
+  const yVec = Float64Array.from(rows.map(r => r.y))
+
+  // Reference level = last level alphabetically (same as R/Python treatment coding)
+  const refA = levelsA[aN - 1]
+  const refB = levelsB[bN - 1]
+  const nonRefA = levelsA.slice(0, -1)
+  const nonRefB = levelsB.slice(0, -1)
+
+  // Build design matrices (all include intercept column)
+  // X_A: intercept + A dummies (for RSS_A model)
+  // X_B: intercept + B dummies (for RSS_B model)
+  // X_AB: intercept + A dummies + B dummies (for RSS_additive model)
+  // X_full: intercept + A dummies + B dummies + AB interactions (for RSS_full model)
+
+  const buildXA = () => {
+    const X = Array.from({ length: N }, () => new Float64Array(1 + nonRefA.length))
+    for (let i = 0; i < N; i++) {
+      X[i][0] = 1 // intercept
+      for (let j = 0; j < nonRefA.length; j++) {
+        X[i][1 + j] = rows[i].a === nonRefA[j] ? 1 : 0
+      }
+    }
+    return X
+  }
+
+  const buildXB = () => {
+    const X = Array.from({ length: N }, () => new Float64Array(1 + nonRefB.length))
+    for (let i = 0; i < N; i++) {
+      X[i][0] = 1
+      for (let j = 0; j < nonRefB.length; j++) {
+        X[i][1 + j] = rows[i].b === nonRefB[j] ? 1 : 0
+      }
+    }
+    return X
+  }
+
+  const buildXAB = () => {
+    const nCols = 1 + nonRefA.length + nonRefB.length
+    const X = Array.from({ length: N }, () => new Float64Array(nCols))
+    for (let i = 0; i < N; i++) {
+      X[i][0] = 1
+      for (let j = 0; j < nonRefA.length; j++) {
+        X[i][1 + j] = rows[i].a === nonRefA[j] ? 1 : 0
+      }
+      for (let j = 0; j < nonRefB.length; j++) {
+        X[i][1 + nonRefA.length + j] = rows[i].b === nonRefB[j] ? 1 : 0
+      }
+    }
+    return X
+  }
+
+  const buildXFull = () => {
+    const nCols = 1 + nonRefA.length + nonRefB.length + nonRefA.length * nonRefB.length
+    const X = Array.from({ length: N }, () => new Float64Array(nCols))
+    for (let i = 0; i < N; i++) {
+      X[i][0] = 1
+      let col = 1
+      for (let j = 0; j < nonRefA.length; j++) {
+        X[i][col++] = rows[i].a === nonRefA[j] ? 1 : 0
+      }
+      for (let j = 0; j < nonRefB.length; j++) {
+        X[i][col++] = rows[i].b === nonRefB[j] ? 1 : 0
+      }
+      for (let ja = 0; ja < nonRefA.length; ja++) {
+        for (let jb = 0; jb < nonRefB.length; jb++) {
+          X[i][col++] = (rows[i].a === nonRefA[ja] && rows[i].b === nonRefB[jb]) ? 1 : 0
+        }
+      }
+    }
+    return X
+  }
+
+  // Compute RSS for each model
+  const RSS_A = olsRSS(buildXA(), yVec)      // Y ~ A
+  const RSS_B = olsRSS(buildXB(), yVec)      // Y ~ B
+  const RSS_AB = olsRSS(buildXAB(), yVec)    // Y ~ A + B (additive)
+  const RSS_full = olsRSS(buildXFull(), yVec) // Y ~ A + B + A:B
+
+  // Type II SS
+  const SS_A = RSS_B - RSS_AB        // R(A|B)
+  const SS_B = RSS_A - RSS_AB        // R(B|A)
+  const SS_AB = Math.max(0, RSS_AB - RSS_full) // R(AB|A,B)
+
+  // SS_cells for display
+  const SS_cells = SS_total - SS_within
 
   // === Degrees of freedom ===
   const df_A = aN - 1
@@ -147,7 +310,7 @@ export function twoWayANOVA({ y, a, b, nameA = 'A', nameB = 'B', alpha = 0.05 })
   const MS_A = SS_A / df_A
   const MS_B = SS_B / df_B
   const MS_AB = SS_AB / df_AB
-  const MS_within = SS_within / dfWithin
+  const MS_within = RSS_full / dfWithin
 
   // === F statistics & p-values ===
   const F_A = MS_A / MS_within
@@ -167,9 +330,9 @@ export function twoWayANOVA({ y, a, b, nameA = 'A', nameB = 'B', alpha = 0.05 })
   const etaSq_B  = SS_B  / SS_total
   const etaSq_AB = SS_AB / SS_total
 
-  const partialEtaSq_A  = SS_A  / (SS_A  + SS_within)
-  const partialEtaSq_B  = SS_B  / (SS_B  + SS_within)
-  const partialEtaSq_AB = SS_AB / (SS_AB + SS_within)
+  const partialEtaSq_A  = SS_A  / (SS_A  + RSS_full)
+  const partialEtaSq_B  = SS_B  / (SS_B  + RSS_full)
+  const partialEtaSq_AB = SS_AB / (SS_AB + RSS_full)
 
   const interpretEta = (e) => {
     const a = Math.abs(e)
@@ -232,7 +395,7 @@ export function twoWayANOVA({ y, a, b, nameA = 'A', nameB = 'B', alpha = 0.05 })
     },
     {
       source: 'Residual',
-      SS: SS_within, df: dfWithin, MS: MS_within,
+      SS: RSS_full, df: dfWithin, MS: MS_within,
       F: null, pValue: null, etaSquared: null, partialEtaSquared: null,
       effectSize: null, significant: null,
     },
