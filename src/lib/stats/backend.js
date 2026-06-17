@@ -10,7 +10,19 @@ import { mannWhitneyU as mannWhitneyJS, wilcoxonSignedRank as wilcoxonJS } from 
 import { analyzeNGain as ngainJS } from './ngain.js'
 
 const PYTHON_BACKEND_URL = '/api/stats'
-const BACKEND_TIMEOUT = 5000 // 5s
+const BACKEND_TIMEOUT = 10000 // 10s (cold start can take 5-8s)
+
+/**
+ * Eager warm-up: fire a lightweight GET to keep the serverless function warm.
+ * Runs once on module load — no user action needed.
+ */
+;(async function warmUpBackend() {
+  try {
+    const controller = new AbortController()
+    setTimeout(() => controller.abort(), 5000)
+    await fetch(PYTHON_BACKEND_URL, { method: 'GET', signal: controller.signal })
+  } catch { /* ignore — warm-up is best-effort */ }
+})()
 
 /**
  * Check if Python backend is available
@@ -27,13 +39,11 @@ async function isPythonBackendAvailable() {
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 3000)  // Increased to 3s for cold start
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
 
-    // Health check with minimal POST request
+    // Health check via GET (no auth required, no body needed)
     const response = await fetch(PYTHON_BACKEND_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ method: 'wilcoxon', data: { before: [1,2], after: [2,3] }, options: {} }),
+      method: 'GET',
       signal: controller.signal
     })
 

@@ -146,6 +146,19 @@ class handler(BaseHTTPRequestHandler):
             print(f'[stats] Error: {e}', file=sys.stderr)
             self.send_error(500, 'Internal server error')
 
+    def do_GET(self):
+        """Health check / keep-alive — no auth required."""
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        origin = self.headers.get('Origin', '')
+        if is_allowed_origin(origin):
+            self.send_header('Access-Control-Allow-Origin', origin or '*')
+        self.send_header('Cache-Control', 'no-cache')
+        self.end_headers()
+        import time
+        resp = {'status': 'ok', 'scipy': SCIPY_AVAILABLE, 'ts': int(time.time())}
+        self.wfile.write(json.dumps(resp).encode())
+
     def do_OPTIONS(self):
         # CORS preflight
         self.send_response(200)
@@ -205,7 +218,14 @@ def compute_wilcoxon(data, options):
         'effectSize': float(effect_size),
         'effectSizeLabel': effect_size_label(effect_size),
         'meanDiff': float(np.mean(diffs)),
-        'alpha': alpha
+        'alpha': alpha,
+        'interpretation': (
+            f'Terdapat perbedaan signifikan antara sebelum & sesudah (p = {p_value:.4f} < α = {alpha}). '
+            f'Median diferensi {"positif" if np.mean(diffs) > 0 else "negatif"}. '
+            f'Effect size r = {effect_size:.3f} ({effect_size_label(effect_size).lower()}).'
+            if p_value < alpha else
+            f'Tidak ada perbedaan signifikan (p = {p_value:.4f} > α = {alpha}). H₀ tidak ditolak.'
+        )
     }
 
 
@@ -227,24 +247,47 @@ def compute_mannwhitney(data, options):
     if len(g1) < 3 or len(g2) < 3:
         return {'error': f'Each group needs at least 3 observations (g1={len(g1)}, g2={len(g2)})'}
     
+    n1 = len(g1)
+    n2 = len(g2)
+    
     # Scipy mannwhitneyu
     statistic, p_value = stats.mannwhitneyu(g1, g2, alternative='two-sided')
     
+    # Compute R1, R2, meanRank1, meanRank2 (for frontend table display)
+    combined = np.concatenate([g1, g2])
+    ranks = rankdata(combined)
+    R1 = float(np.sum(ranks[:n1]))
+    R2 = float(np.sum(ranks[n1:]))
+    meanRank1 = R1 / n1
+    meanRank2 = R2 / n2
+    
     # Effect size r = Z / sqrt(N)
-    N = len(g1) + len(g2)
+    N = n1 + n2
     z_score = abs(stats.norm.ppf(1 - p_value / 2)) if p_value < 1 else 0
     effect_size = z_score / np.sqrt(N)
     
     return {
         'U': float(statistic),
-        'n1': int(len(g1)),
-        'n2': int(len(g2)),
+        'n1': int(n1),
+        'n2': int(n2),
         'N': int(N),
+        'R1': R1,
+        'R2': R2,
+        'meanRank1': float(meanRank1),
+        'meanRank2': float(meanRank2),
         'pValue': float(p_value),
         'isSignificant': bool(p_value < alpha),
+        'z': float(z_score),
         'effectSize': float(effect_size),
         'effectSizeLabel': effect_size_label(effect_size),
-        'alpha': alpha
+        'alpha': alpha,
+        'interpretation': (
+            f'Terdapat perbedaan signifikan antara dua grup (p = {p_value:.4f} < α = {alpha}). '
+            f'Mean rank grup 1 {"lebih tinggi" if meanRank1 > meanRank2 else "lebih rendah"} dari grup 2. '
+            f'Effect size r = {effect_size:.3f} ({effect_size_label(effect_size).lower()}).'
+            if p_value < alpha else
+            f'Tidak ada perbedaan signifikan antara dua grup (p = {p_value:.4f} > α = {alpha}). H₀ tidak ditolak.'
+        )
     }
 
 
