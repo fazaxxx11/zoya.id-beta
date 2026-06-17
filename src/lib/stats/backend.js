@@ -164,6 +164,174 @@ export async function analyzeNGain({ pre, post, maxScore = 100, names = [] }) {
   return { ...result, backend: 'javascript' }
 }
 
+export async function pearsonCorrelationBackend(x, y) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('correlation', { type: 'pearson', x, y })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function spearmanCorrelationBackend(x, y) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('correlation', { type: 'spearman', x, y })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function oneSampleTTestBackend(values, mu0) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('ttest', { mode: 'oneSample', values, mu0 })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function pairedTTestBackend(before, after) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('ttest', { mode: 'paired', before, after })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function independentTTestBackend(group1, group2) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('ttest', { mode: 'independent', group1, group2 })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function normalityBackend(values) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('normality', { values })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function anOVABackend(groups, groupNames) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('anova', { groups, groupNames })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function twoWayANOVABackend(y, a, b, nameA, nameB) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('twowayanova', { y, factorA: a, factorB: b })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function chiSquareBackend(var1, var2) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('chisquare', { var1, var2 })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function validityBackend(matrix) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('validity', { matrix })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function reliabilityBackend(matrix) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('reliability', { matrix })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function kruskalWallisBackend(groups, groupNames) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('kruskal', { groups, groupNames })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function regressionBackend(x, y) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('regression', { x, y })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
+export async function regressionMultipleBackend(X, y, predictors) {
+  const usePython = await isPythonBackendAvailable()
+  if (usePython) {
+    try {
+      return await callPythonBackend('regression_multiple', { X, y, predictors })
+    } catch (error) {
+      console.warn('Python backend failed, falling back to JS:', error)
+    }
+  }
+  throw new Error('Backend unavailable')
+}
+
 /**
  * Get backend status
  */

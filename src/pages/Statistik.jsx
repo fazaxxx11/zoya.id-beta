@@ -50,7 +50,13 @@ import {
   analyzeNGain,
   chiSquareIndependence,
 } from '../lib/statistics'
-import { wilcoxonSignedRank as wilcoxonBackend, mannWhitneyU as mannWhitneyBackend, analyzeNGain as ngainBackend } from '../lib/stats/backend.js'
+import { wilcoxonSignedRank as wilcoxonBackend, mannWhitneyU as mannWhitneyBackend, analyzeNGain as ngainBackend,
+  pearsonCorrelationBackend, spearmanCorrelationBackend,
+  oneSampleTTestBackend, pairedTTestBackend, independentTTestBackend,
+  normalityBackend, anOVABackend, twoWayANOVABackend,
+  chiSquareBackend, validityBackend, reliabilityBackend,
+  kruskalWallisBackend, regressionBackend, regressionMultipleBackend
+} from '../lib/stats/backend.js'
 import { useStatsBackend } from '../lib/hooks/useStatsBackend'
 
 // ============================================================
@@ -418,23 +424,34 @@ function Statistik() {
           analysisResult = { type: 'descriptive', stats }
         }
         else if (activeTool === 'normalitas') {
-          const results = params.columns.map(col => {
-            const r = testNormality(data[col], 0.05)
+          const results = await Promise.all(params.columns.map(async col => {
+            let r
+            try {
+              r = await normalityBackend(data[col])
+            } catch {
+              r = testNormality(data[col], 0.05)
+            }
             return { column: col, values: data[col].filter(v => typeof v === 'number' && !isNaN(v)), ...r }
-          })
+          }))
           analysisResult = { type: 'normality', results }
         }
         else if (activeTool === 'korelasi') {
-          const fn = params.method === 'spearman' ? spearmanCorrelation : pearsonCorrelation
-          const r = fn(data[params.x], data[params.y])
+          let r
+          if (params.method === 'spearman') {
+            try { r = await spearmanCorrelationBackend(data[params.x], data[params.y]) } catch { r = spearmanCorrelation(data[params.x], data[params.y]) }
+          } else {
+            try { r = await pearsonCorrelationBackend(data[params.x], data[params.y]) } catch { r = pearsonCorrelation(data[params.x], data[params.y]) }
+          }
           analysisResult = { type: 'correlation', method: params.method || 'pearson', x: params.x, y: params.y, xValues: data[params.x], yValues: data[params.y], ...r }
         }
         else if (activeTool === 'ttest') {
           if (params.mode === 'oneSample') {
-            const r = oneSampleTTest(data[params.column1], Number(params.mu0))
+            let r
+            try { r = await oneSampleTTestBackend(data[params.column1], Number(params.mu0)) } catch { r = oneSampleTTest(data[params.column1], Number(params.mu0)) }
             analysisResult = { type: 'ttest', mode: 'oneSample', column: params.column1, values: data[params.column1], mu0: Number(params.mu0), ...r }
           } else if (params.mode === 'paired') {
-            const r = pairedTTest(data[params.column1], data[params.column2])
+            let r
+            try { r = await pairedTTestBackend(data[params.column1], data[params.column2]) } catch { r = pairedTTest(data[params.column1], data[params.column2]) }
             analysisResult = { type: 'ttest', mode: 'paired', column1: params.column1, column2: params.column2, beforeValues: data[params.column1], afterValues: data[params.column2], ...r }
           } else {
             // independent — split by grouping
@@ -451,7 +468,8 @@ function Statistik() {
             if (groupKeys.length !== 2) {
               throw new Error(`Independent t-test butuh 2 grup, ditemukan ${groupKeys.length}: ${groupKeys.join(', ')}`)
             }
-            const r = independentTTest(groups[groupKeys[0]], groups[groupKeys[1]])
+            let r
+            try { r = await independentTTestBackend(groups[groupKeys[0]], groups[groupKeys[1]]) } catch { r = independentTTest(groups[groupKeys[0]], groups[groupKeys[1]]) }
             analysisResult = {
               type: 'ttest', mode: 'independent',
               outcome: params.column1, grouping: params.grouping,
@@ -468,8 +486,10 @@ function Statistik() {
             const row = params.items.map(it => data[it][i])
             matrix.push(row)
           }
-          const validity = itemValidity(matrix)
-          const reliability = cronbachAlpha(matrix)
+          let validity
+          try { validity = await validityBackend(matrix) } catch { validity = itemValidity(matrix) }
+          let reliability
+          try { reliability = await reliabilityBackend(matrix) } catch { reliability = cronbachAlpha(matrix) }
           analysisResult = {
             type: 'validity_reliability',
             items: params.items,
@@ -488,18 +508,24 @@ function Statistik() {
           })
           const groupKeys = Object.keys(groups)
           if (groupKeys.length < 2) throw new Error('Butuh minimal 2 grup')
-          const r = oneWayANOVA(groupKeys.map(k => groups[k]), groupKeys)
+          let r
+          try { r = await anOVABackend(groupKeys.map(k => groups[k]), groupKeys) } catch { r = oneWayANOVA(groupKeys.map(k => groups[k]), groupKeys) }
           analysisResult = { type: 'anova', outcome: params.outcome, grouping: params.grouping,
             groupValues: groupKeys.map(k => ({ name: k, values: groups[k] })), ...r }
         }
         else if (activeTool === 'twowayanova') {
-          const r = twoWayANOVA({
-            y: data[params.outcome],
-            a: data[params.factorA],
-            b: data[params.factorB],
-            nameA: params.factorA,
-            nameB: params.factorB,
-          })
+          let r
+          try {
+            r = await twoWayANOVABackend(data[params.outcome], data[params.factorA], data[params.factorB], params.factorA, params.factorB)
+          } catch {
+            r = twoWayANOVA({
+              y: data[params.outcome],
+              a: data[params.factorA],
+              b: data[params.factorB],
+              nameA: params.factorA,
+              nameB: params.factorB,
+            })
+          }
           analysisResult = {
             type: 'twowayanova',
             outcome: params.outcome,
@@ -509,16 +535,19 @@ function Statistik() {
           }
         }
         else if (activeTool === 'regresi') {
-          const r = simpleLinearRegression(data[params.x], data[params.y])
+          let r
+          try { r = await regressionBackend(data[params.x], data[params.y]) } catch { r = simpleLinearRegression(data[params.x], data[params.y]) }
           analysisResult = { type: 'regression_simple', x: params.x, y: params.y, xValues: data[params.x], yValues: data[params.y], ...r }
         }
         else if (activeTool === 'regresiganda') {
           const X = params.predictors.map(p => data[p])
-          const r = multipleLinearRegression(X, data[params.outcome], params.predictors)
+          let r
+          try { r = await regressionMultipleBackend(X, data[params.outcome], params.predictors) } catch { r = multipleLinearRegression(X, data[params.outcome], params.predictors) }
           analysisResult = { type: 'regression_multiple', predictors: params.predictors, outcome: params.outcome, ...r }
         }
         else if (activeTool === 'chisquare') {
-          const r = chiSquareIndependence(data[params.var1], data[params.var2])
+          let r
+          try { r = await chiSquareBackend(data[params.var1], data[params.var2]) } catch { r = chiSquareIndependence(data[params.var1], data[params.var2]) }
           analysisResult = { type: 'chisquare', var1: params.var1, var2: params.var2, ...r }
         }
         else if (activeTool === 'mannwhitney') {
@@ -565,7 +594,8 @@ function Statistik() {
           })
           const keys = Object.keys(groups)
           if (keys.length < 2) throw new Error('Butuh minimal 2 grup')
-          const r = kruskalWallis(keys.map(k => groups[k]), keys)
+          let r
+          try { r = await kruskalWallisBackend(keys.map(k => groups[k]), keys) } catch { r = kruskalWallis(keys.map(k => groups[k]), keys) }
           analysisResult = { type: 'kruskal', outcome: params.outcome, grouping: params.grouping,
             groupValues: keys.map(k => ({ name: k, values: groups[k] })), ...r }
         }

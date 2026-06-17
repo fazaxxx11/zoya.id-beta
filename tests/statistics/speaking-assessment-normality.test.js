@@ -1,0 +1,102 @@
+import { describe, it, expect } from 'vitest';
+import { shapiroWilk } from '../../src/lib/statistics/normality.js';
+import { describe as describeStats } from '../../src/lib/statistics/descriptive.js';
+import { readFileSync } from 'fs';
+
+// Load data from extraction
+const dataFile = readFileSync('/tmp/speaking_assessment_data.json', 'utf8');
+const { skill1: skill1Data, skill2: skill2Data } = JSON.parse(dataFile);
+
+describe('Speaking Assessment Normality Test', () => {
+  
+  it('Skill 1 normality test (Shapiro-Wilk)', () => {
+    console.log('\n=== SKILL 1 NORMALITY TEST ===');
+    console.log('Sample size:', skill1Data.length);
+    
+    // Descriptive stats
+    const desc1 = describeStats(skill1Data);
+    console.log('\nDescriptive Statistics:');
+    console.log('  Mean:', desc1.mean.toFixed(2));
+    console.log('  Median:', desc1.median.toFixed(2));
+    console.log('  SD:', desc1.stdDev.toFixed(2));
+    console.log('  Min:', desc1.min);
+    console.log('  Max:', desc1.max);
+    console.log('  Skewness:', desc1.skewness.toFixed(3));
+    console.log('  Kurtosis:', desc1.kurtosis.toFixed(3));
+    
+    // Shapiro-Wilk test
+    const normality1 = shapiroWilk(skill1Data);
+    console.log('\nShapiro-Wilk Test:');
+    console.log('  W statistic:', normality1.W.toFixed(4));
+    console.log('  p-value:', normality1.pValue.toFixed(4));
+    console.log('  Result:', normality1.isNormal ? '✅ NORMAL' : '❌ NOT NORMAL');
+    console.log('  Interpretation:', normality1.isNormal ? 'p >= 0.05: Data appears normally distributed (fail to reject H₀). Parametric tests are appropriate.' : 'p < 0.05: Data significantly deviates from normality (reject H₀). Consider nonparametric tests or data transformation.');
+    
+    expect(normality1.W).toBeDefined();
+    expect(normality1.pValue).toBeDefined();
+    expect(normality1.isNormal).toBeDefined();
+  });
+  
+  it('Skill 2 normality test (Shapiro-Wilk)', () => {
+    console.log('\n=== SKILL 2 NORMALITY TEST ===');
+    console.log('Sample size:', skill2Data.length);
+    
+    // Descriptive stats
+    const desc2 = describeStats(skill2Data);
+    console.log('\nDescriptive Statistics:');
+    console.log('  Mean:', desc2.mean.toFixed(2));
+    console.log('  Median:', desc2.median.toFixed(2));
+    console.log('  SD:', desc2.stdDev.toFixed(2));
+    console.log('  Min:', desc2.min);
+    console.log('  Max:', desc2.max);
+    console.log('  Skewness:', desc2.skewness.toFixed(3));
+    console.log('  Kurtosis:', desc2.kurtosis.toFixed(3));
+    
+    // Shapiro-Wilk test
+    const normality2 = shapiroWilk(skill2Data);
+    console.log('\nShapiro-Wilk Test:');
+    console.log('  W statistic:', normality2.W.toFixed(4));
+    console.log('  p-value:', normality2.pValue.toFixed(4));
+    console.log('  Result:', normality2.isNormal ? '✅ NORMAL' : '❌ NOT NORMAL');
+    console.log('  Interpretation:', normality2.isNormal ? 'p >= 0.05: Data appears normally distributed (fail to reject H₀). Parametric tests are appropriate.' : 'p < 0.05: Data significantly deviates from normality (reject H₀). Consider nonparametric tests or data transformation.');
+    
+    expect(normality2.W).toBeDefined();
+    expect(normality2.pValue).toBeDefined();
+    expect(normality2.isNormal).toBeDefined();
+  });
+  
+  it('Comparison summary', () => {
+    console.log('\n=== COMPARISON SUMMARY ===');
+    
+    const desc1 = describeStats(skill1Data);
+    const desc2 = describeStats(skill2Data);
+    const norm1 = shapiroWilk(skill1Data);
+    const norm2 = shapiroWilk(skill2Data);
+    
+    console.log('\n| Metric           | Skill 1  | Skill 2  |');
+    console.log('|------------------|----------|----------|');
+    console.log(`| n                | ${skill1Data.length}      | ${skill2Data.length}      |`);
+    console.log(`| Mean             | ${desc1.mean.toFixed(2)}    | ${desc2.mean.toFixed(2)}    |`);
+    console.log(`| SD               | ${desc1.stdDev.toFixed(2)}     | ${desc2.stdDev.toFixed(2)}     |`);
+    console.log(`| Min              | ${desc1.min}        | ${desc2.min}        |`);
+    console.log(`| Max              | ${desc1.max}        | ${desc2.max}        |`);
+    console.log(`| Skewness         | ${desc1.skewness.toFixed(3)}   | ${desc2.skewness.toFixed(3)}   |`);
+    console.log(`| Kurtosis         | ${desc1.kurtosis.toFixed(3)}   | ${desc2.kurtosis.toFixed(3)}   |`);
+    console.log(`| W statistic      | ${norm1.W.toFixed(4)}  | ${norm2.W.toFixed(4)}  |`);
+    console.log(`| p-value          | ${norm1.pValue.toFixed(4)}  | ${norm2.pValue.toFixed(4)}  |`);
+    console.log(`| Normal?          | ${norm1.isNormal ? 'YES ✅' : 'NO ❌'}   | ${norm2.isNormal ? 'YES ✅' : 'NO ❌'}   |`);
+    
+    console.log('\n=== INTERPRETATION ===');
+    console.log('Skill 1:', norm1.isNormal ? 'Normal distribution (p >= 0.05)' : 'NOT normal (p < 0.05)');
+    console.log('Skill 2:', norm2.isNormal ? 'Normal distribution (p >= 0.05)' : 'NOT normal (p < 0.05)');
+    
+    if (norm1.isNormal && norm2.isNormal) {
+      console.log('\n✅ BOTH distributions are NORMAL → Use parametric tests (t-test, ANOVA)');
+    } else if (!norm1.isNormal && !norm2.isNormal) {
+      console.log('\n❌ BOTH distributions are NOT NORMAL → Use nonparametric tests (Mann-Whitney, Wilcoxon)');
+    } else {
+      console.log('\n⚠️ MIXED results → Consider nonparametric tests or data transformation');
+    }
+  });
+  
+});
