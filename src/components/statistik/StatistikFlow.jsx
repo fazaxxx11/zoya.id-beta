@@ -55,15 +55,28 @@ function StepIndicator({ current, completed }) {
 // Step 1: Upload
 // ============================================================
 function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuide }) {
+  const hasFile = file && file.name
+  
   return (
     <div className="border border-border bg-card rounded-xl p-6">
       <h2 className="text-lg font-semibold text-fg mb-1">Unggah Dataset</h2>
       <p className="text-sm text-muted mb-5">Format yang didukung: .xlsx, .xls, .csv</p>
 
-      <div className="relative block border-2 border-dashed border-border rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]/50 transition-colors active:scale-95">
-        <FileSpreadsheet className="w-10 h-10 text-muted/40 mx-auto mb-3" />
-        <p className="text-muted font-medium mb-1">Klik atau seret file ke sini</p>
-        <p className="text-xs text-muted">Maksimal 10MB · header di baris pertama</p>
+      <div className={`relative block border-2 border-dashed rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]/50 transition-colors active:scale-95 ${hasFile ? 'border-green-400 bg-green-50/50' : 'border-border'}`}>
+        {hasFile ? (
+          <>
+            <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-3" />
+            <p className="text-green-700 font-medium mb-1">✓ Berhasil diunggah</p>
+            <p className="text-sm text-green-600 font-semibold">{file.name}</p>
+            <p className="text-xs text-muted mt-2">Klik untuk ganti file lain</p>
+          </>
+        ) : (
+          <>
+            <FileSpreadsheet className="w-10 h-10 text-muted/40 mx-auto mb-3" />
+            <p className="text-muted font-medium mb-1">Klik atau seret file ke sini</p>
+            <p className="text-xs text-muted">Maksimal 10MB · header di baris pertama</p>
+          </>
+        )}
         <input
           type="file"
           accept=".xlsx,.xls,.csv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
