@@ -135,7 +135,7 @@ function Upload() {
             type="file" 
             id="file-upload"
             className="hidden" 
-            accept=".xlsx,.xls,.csv,.docx,.pdf,.txt"
+            accept=".xlsx,.xls,.csv,.docx,.doc,.pdf,.txt"
             multiple
             onChange={handleFileSelect}
           />
@@ -192,15 +192,21 @@ function Upload() {
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       file.name.endsWith('.xlsx') || file.name.endsWith('.xls') ? 'bg-green-100' :
                       file.name.endsWith('.csv') ? 'bg-blue-100' :
+                      file.name.endsWith('.docx') || file.name.endsWith('.doc') ? 'bg-blue-100' :
                       file.name.endsWith('.pdf') ? 'bg-red-100' :
-                      'bg-purple-100'
+                      'bg-gray-100'
                     }`}>
-                      <FileSpreadsheet className={`w-5 h-5 ${
-                        file.name.endsWith('.xlsx') || file.name.endsWith('.xls') ? 'text-green-600' :
-                        file.name.endsWith('.csv') ? 'text-blue-600' :
-                        file.name.endsWith('.pdf') ? 'text-red-600' :
-                        'text-purple-600'
-                      }`} />
+                      {(file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) ? (
+                        <FileSpreadsheet className="w-5 h-5 text-green-600" />
+                      ) : file.name.endsWith('.csv') ? (
+                        <FileSpreadsheet className="w-5 h-5 text-blue-600" />
+                      ) : file.name.endsWith('.docx') || file.name.endsWith('.doc') ? (
+                        <FileText className="w-5 h-5 text-blue-600" />
+                      ) : file.name.endsWith('.pdf') ? (
+                        <FileText className="w-5 h-5 text-red-600" />
+                      ) : (
+                        <File className="w-5 h-5 text-gray-600" />
+                      )}
                     </div>
                     <div>
                       <p className="font-medium text-gray-800 dark:text-gray-200">{file.name}</p>

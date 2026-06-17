@@ -436,6 +436,8 @@ export async function parseStudentFile(file) {
       return parseCSV(file)
     case 'docx':
       return parseWord(file)
+    case 'doc':
+      throw new Error('Format .doc belum didukung. Silakan convert ke .docx dulu (File → Save As → Word Document).')
     case 'pdf':
       return parsePDF(file)
     case 'txt':
