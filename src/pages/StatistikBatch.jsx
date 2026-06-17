@@ -756,18 +756,36 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
         {isANOVA ? (
           <>
             <Stat label={`F(${result.dfBetween}, ${result.dfWithin})`} value={fmt(result.F, 3)} />
-            <Stat label="p-value" value={fmtP(pVal)} highlight={sig} />
+            <Stat 
+              label="p-value" 
+              value={fmtP(pVal)} 
+              highlight={sig} 
+              tooltip="p-value = Sig. (2-tailed) di SPSS. Nilai < 0.05 menunjukkan perbedaan signifikan." 
+            />
             <Stat label="η² (eta²)" value={fmt(result.etaSquared, 3)} sub={result.effectSize} />
             <Stat label="ω² (omega²)" value={fmt(result.omegaSquared, 3)} />
           </>
         ) : (
           <>
             <Stat label={`H(${result.df})`} value={fmt(result.H, 3)} />
-            <Stat label="p-value" value={fmtP(pVal)} highlight={sig} />
+            <Stat 
+              label="p-value" 
+              value={fmtP(pVal)} 
+              highlight={sig} 
+              tooltip="p-value = Sig. (2-tailed) di SPSS. Nilai < 0.05 menunjukkan perbedaan signifikan." 
+            />
             <Stat label="η²_H" value={fmt(result.etaSquared, 3)} sub={result.effectSizeLabel} />
             <Stat label="N total" value={String(result.N)} sub={`${result.k} grup`} />
           </>
         )}
+      </div>
+
+      {/* p-value note */}
+      <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5 mb-3">
+        <div className="flex items-start gap-2 text-xs text-blue-900 dark:text-blue-100">
+          <span className="text-blue-600 dark:text-blue-400 font-medium">ℹ️</span>
+          <span><strong>p-value</strong> di hasil ini setara dengan <strong>Sig. (2-tailed)</strong> di output SPSS. Nilai {'<'} 0.05 menunjukkan perbedaan signifikan pada alpha 5%.</span>
+        </div>
       </div>
 
       {/* Interpretation */}
@@ -820,9 +838,9 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
   )
 }
 
-function Stat({ label, value, sub, highlight }) {
+function Stat({ label, value, sub, highlight, tooltip }) {
   return (
-    <div className="bg-surface border border-border rounded-lg px-3 py-2.5">
+    <div className="bg-surface border border-border rounded-lg px-3 py-2.5" title={tooltip || ''}>
       <div className="text-[10px] uppercase tracking-[0.16em] text-muted font-medium">{label}</div>
       <div className={`text-base tabular-nums font-semibold mt-0.5 ${highlight ? 'text-emerald-700' : 'text-gray-900 dark:text-gray-100'}`}>
         {value}
