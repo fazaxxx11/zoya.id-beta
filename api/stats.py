@@ -32,6 +32,50 @@ try:
 except ImportError:
     SCIPY_AVAILABLE = False
 
+import os
+import urllib.request
+
+SUPABASE_URL = os.environ.get('SUPABASE_URL', '')
+SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', '')
+
+
+def verify_jwt(token):
+    """Verify JWT token with Supabase."""
+    if not SUPABASE_URL or not token:
+        return None
+    try:
+        url = f"{SUPABASE_URL}/auth/v1/user"
+        req = urllib.request.Request(url, headers={
+            'Authorization': f'Bearer {token}',
+            'apikey': SUPABASE_ANON_KEY
+        })
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read())
+            return data.get('user')
+    except Exception:
+        return None
+
+
+ALLOWED_ORIGINS = [
+    'https://zoya.id',
+    'https://www.zoya.id',
+    'https://zoya-id-beta.vercel.app',
+    'https://azezmen.vercel.app',
+]
+
+
+def is_allowed_origin(origin):
+    if not origin:
+        return True  # server-to-server
+    if origin in ALLOWED_ORIGINS:
+        return True
+    import re
+    if re.match(r'^https://zoya-id-beta-[a-z0-9]+-zaaaxx11s-projects\.vercel\.app$', origin):
+        return True
+    if re.match(r'^http://localhost:\d+$', origin):
+        return True
+    return False
+
 
 def effect_size_label(r):
     """Kategorikan effect size berdasarkan nilai r."""
@@ -48,6 +92,17 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not SCIPY_AVAILABLE:
             self.send_error(503, "scipy not available")
+            return
+
+        # Verify JWT
+        auth_header = self.headers.get('Authorization', '')
+        if not auth_header.startswith('Bearer '):
+            self.send_error(401, 'Unauthorized')
+            return
+        token = auth_header.split(' ')[1]
+        user = verify_jwt(token)
+        if not user:
+            self.send_error(401, 'Invalid or expired token')
             return
 
         # Parse request
@@ -74,7 +129,9 @@ class handler(BaseHTTPRequestHandler):
             # Send response
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
+            origin = self.headers.get('Origin', '')
+            if is_allowed_origin(origin):
+                self.send_header('Access-Control-Allow-Origin', origin or '*')
             self.end_headers()
 
             response = {
@@ -86,12 +143,15 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response).encode())
 
         except Exception as e:
-            self.send_error(500, str(e))
+            print(f'[stats] Error: {e}', file=sys.stderr)
+            self.send_error(500, 'Internal server error')
 
     def do_OPTIONS(self):
         # CORS preflight
         self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
+        origin = self.headers.get('Origin', '')
+        if is_allowed_origin(origin):
+            self.send_header('Access-Control-Allow-Origin', origin or '*')
         self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()

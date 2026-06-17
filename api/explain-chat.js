@@ -44,7 +44,10 @@ export default async function handler(req, res) {
   }
 
   const systemPrompt = buildSystemPrompt(resultContext);
-  const cleanMsgs = messages.map(m => ({ role: m.role, content: m.content }));
+  const cleanMsgs = messages.map(m => ({
+    role: m.role,
+    content: (m.content || '').substring(0, 2000)
+  }));
   const remaining = Math.max(0, MAX_USER_TURNS - userCount);
 
   // Charge if needed
@@ -85,6 +88,11 @@ async function callChatProvider(provider, systemPrompt, messages) {
 }
 
 function buildSystemPrompt(resultContext) {
+  // Sanitize context to prevent prompt injection
+  const safeContext = (resultContext || '')
+    .replace(/ignore|disregard|forget|override|system prompt|you are now/gi, '[filtered]')
+    .substring(0, 5000);
+
   return `Kamu adalah teman ngobrol yang sabar dan jago jelasin statistik dengan bahasa SANGAT SEDERHANA.
 
 GAYA BICARA:
@@ -96,7 +104,7 @@ GAYA BICARA:
 - Pakai sapaan "kamu" (jangan "Anda").
 
 KONTEKS HASIL UJI:
-${resultContext}
+${safeContext}
 
 ATURAN:
 1. Jawab mengacu ke hasil uji di atas (jangan ngarang angka).

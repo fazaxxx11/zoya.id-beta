@@ -63,9 +63,37 @@ async function handleStructuredAssess(req, res, providers, body, user, toolId, b
   const supabaseAdmin = getSupabaseAdmin();
   const { rubrik, jawaban, studentName, title, context } = body;
 
+  // Sanitize user inputs to prevent prompt injection
+  const sanitizeForPrompt = (val) => {
+    if (typeof val === 'string') {
+      return val.replace(/[{}\[\]<>]/g, '').substring(0, 5000);
+    }
+    if (Array.isArray(val)) {
+      return val.map(item => {
+        if (typeof item === 'object') {
+          const clean = {};
+          for (const [k, v] of Object.entries(item)) {
+            clean[k] = typeof v === 'string' ? v.replace(/[{}\[\]<>]/g, '').substring(0, 2000) : v;
+          }
+          return clean;
+        }
+        return item;
+      });
+    }
+    return val;
+  };
+
+  const safeBody = {
+    rubrik: sanitizeForPrompt(body.rubrik),
+    jawaban: sanitizeForPrompt(body.jawaban),
+    studentName: sanitizeForPrompt(body.studentName),
+    title: sanitizeForPrompt(body.title),
+    context: sanitizeForPrompt(body.context),
+  };
+
   let prompt;
   try {
-    prompt = buildAssessPrompt({ rubrik, jawaban, studentName, title, context });
+    prompt = buildAssessPrompt(safeBody);
   } catch (e) {
     return res.status(400).json({ error: e.message });
   }
