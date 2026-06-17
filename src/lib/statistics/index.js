@@ -19,6 +19,19 @@ export { cronbachAlpha } from './reliability.js';
 export { independentTTest, oneSampleTTest, pairedTTest } from './ttest.js';
 export { oneWayANOVA, twoWayANOVA } from './anova.js';
 export { simpleRegression, multipleLinearRegression } from './regression.js';
+
+// Standalone Cohen's d function
+export function cohensD(group1, group2) {
+  const n1 = group1.length;
+  const n2 = group2.length;
+  const mean1 = group1.reduce((a, b) => a + b, 0) / n1;
+  const mean2 = group2.reduce((a, b) => a + b, 0) / n2;
+  const var1 = group1.reduce((a, b) => a + (b - mean1) ** 2, 0) / (n1 - 1);
+  const var2 = group2.reduce((a, b) => a + (b - mean2) ** 2, 0) / (n2 - 1);
+  const pooledStd = Math.sqrt(((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2));
+  const d = (mean1 - mean2) / pooledStd;
+  return { d, n1, n2, mean1, mean2, pooledStd };
+}
 export { cleanNumeric, listwisePair, groupBy, parseCSV, column } from './data.js';
 export {
   normalCDF, normalPDF,

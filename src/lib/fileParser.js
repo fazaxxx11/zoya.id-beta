@@ -181,7 +181,7 @@ async function parsePDF(file) {
 
     return runCascadeParsing(fullText)
   } catch (err) {
-    throw new Error('Gagal membaca PDF: ' + (err?.message || String(err)))
+    throw new Error('Gagal membaca PDF: ' + (err?.message || String(err)), { cause: err })
   }
 }
 

@@ -34,6 +34,7 @@ const BROWSER_GLOBALS = {
   XMLSerializer: 'readonly',
   ClipboardItem: 'readonly',
   importScripts: 'readonly',
+  IntersectionObserver: 'readonly',
   // Third-party browser globals
   XLSX: 'readonly',
   mammoth: 'readonly',
@@ -78,6 +79,7 @@ export default [
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'no-console': 'warn',
       'no-empty': ['error', { allowEmptyCatch: true }],
+      'no-useless-assignment': 'warn',
       // Disable react-hooks/exhaustive-deps — plugin not installed
       'react-hooks/exhaustive-deps': 'off',
     },
