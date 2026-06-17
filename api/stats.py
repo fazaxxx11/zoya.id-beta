@@ -26,10 +26,22 @@ import sys
 
 try:
     from scipy import stats
+    from scipy.stats import rankdata
     import numpy as np
     SCIPY_AVAILABLE = True
 except ImportError:
     SCIPY_AVAILABLE = False
+
+
+def effect_size_label(r):
+    """Kategorikan effect size berdasarkan nilai r."""
+    r = abs(r)
+    if r >= 0.5:
+        return 'Besar'
+    elif r >= 0.3:
+        return 'Sedang'
+    else:
+        return 'Kecil'
 
 
 class handler(BaseHTTPRequestHandler):
@@ -103,25 +115,35 @@ def compute_wilcoxon(data, options):
     
     diffs = after - before
     non_zero_mask = diffs != 0
-    diffs = diffs[non_zero_mask]
+    non_zero_diffs = diffs[non_zero_mask]
     
-    if len(diffs) < 5:
-        return {'error': f'Need at least 5 non-zero differences (got {len(diffs)})'}
+    if len(non_zero_diffs) < 5:
+        return {'error': f'Need at least 5 non-zero differences (got {len(non_zero_diffs)})'}
     
     # Scipy wilcoxon
-    statistic, p_value = stats.wilcoxon(diffs, alternative='two-sided')
+    statistic, p_value = stats.wilcoxon(non_zero_diffs, alternative='two-sided')
     
-    # Effect size r = Z / sqrt(n)
-    n = len(diffs)
-    z_score = stats.norm.ppf(1 - p_value / 2) if p_value < 1 else 0
-    effect_size = abs(z_score) / np.sqrt(n)
+    # Compute Wpos and Wneg manually
+    abs_diffs = np.abs(non_zero_diffs)
+    ranks = rankdata(abs_diffs)
+    Wpos = float(np.sum(ranks[non_zero_diffs > 0]))
+    Wneg = float(np.sum(ranks[non_zero_diffs < 0]))
+    
+    # Z-score from p-value (always positive)
+    n = len(non_zero_diffs)
+    z_score = abs(stats.norm.ppf(1 - p_value / 2)) if p_value < 1 else 0
+    effect_size = z_score / np.sqrt(n)
     
     return {
         'W': float(statistic),
+        'Wpos': Wpos,
+        'Wneg': Wneg,
         'n': int(n),
         'pValue': float(p_value),
         'isSignificant': bool(p_value < alpha),
+        'z': float(z_score),
         'effectSize': float(effect_size),
+        'effectSizeLabel': effect_size_label(effect_size),
         'meanDiff': float(np.mean(diffs)),
         'alpha': alpha
     }
@@ -150,8 +172,8 @@ def compute_mannwhitney(data, options):
     
     # Effect size r = Z / sqrt(N)
     N = len(g1) + len(g2)
-    z_score = stats.norm.ppf(1 - p_value / 2) if p_value < 1 else 0
-    effect_size = abs(z_score) / np.sqrt(N)
+    z_score = abs(stats.norm.ppf(1 - p_value / 2)) if p_value < 1 else 0
+    effect_size = z_score / np.sqrt(N)
     
     return {
         'U': float(statistic),
@@ -161,6 +183,7 @@ def compute_mannwhitney(data, options):
         'pValue': float(p_value),
         'isSignificant': bool(p_value < alpha),
         'effectSize': float(effect_size),
+        'effectSizeLabel': effect_size_label(effect_size),
         'alpha': alpha
     }
 
@@ -218,6 +241,17 @@ def compute_ngain(data, options):
     # Paired t-test for significance
     t_stat, t_p = stats.ttest_rel(post, pre)
     
+    # Tafsiran efektivitas berdasarkan persentase
+    efektivitas_persen = round(mean_gain * 100, 2)
+    if efektivitas_persen > 76:
+        tafsiran_efektivitas = 'Efektif'
+    elif efektivitas_persen >= 56:
+        tafsiran_efektivitas = 'Cukup Efektif'
+    elif efektivitas_persen >= 40:
+        tafsiran_efektivitas = 'Kurang Efektif'
+    else:
+        tafsiran_efektivitas = 'Tidak Efektif'
+    
     return {
         'n': int(len(gains)),
         'maxScore': max_score,
@@ -226,7 +260,8 @@ def compute_ngain(data, options):
         'nGainMin': float(np.min(gains)),
         'nGainMax': float(np.max(gains)),
         'kategoriKelas': kategori_kelas,
-        'efektivitasPersen': round(mean_gain * 100, 2),
+        'efektivitasPersen': efektivitas_persen,
+        'tafsiranEfektivitas': tafsiran_efektivitas,
         'distribusi': distribusi,
         'distribusiPersen': {
             'Tinggi': round(distribusi['Tinggi'] / len(gains) * 100, 2),
