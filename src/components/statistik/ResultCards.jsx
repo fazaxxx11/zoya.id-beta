@@ -232,14 +232,15 @@ export function ValidityResult({ r }) {
       </div>
 
       <div>
-        <h4 className="font-semibold mb-2">Validitas Item (Pearson item-total terkoreksi)</h4>
+        <h4 className="font-semibold mb-2">Validitas Item (Pearson item-total)</h4>
         <p className="text-xs text-muted mb-2">Kriteria: r ≥ {num(r.validity.rCritical)} dan p &lt; 0.05</p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-card/50">
               <tr>
                 <th className="px-3 py-2 text-left">Item</th>
-                <th className="px-3 py-2 text-left">r</th>
+                <th className="px-3 py-2 text-left" title="Corrected item-total (total dikurangi item ini)">r (corrected)</th>
+                <th className="px-3 py-2 text-left" title="Simple item-total (total termasuk item ini)">r (simple)</th>
                 <th className="px-3 py-2 text-left">p</th>
                 <th className="px-3 py-2 text-left">α jika dihapus</th>
                 <th className="px-3 py-2 text-left">Verdict</th>
@@ -253,6 +254,7 @@ export function ValidityResult({ r }) {
                   <tr key={i} className={it.isValid ? '' : 'bg-red-50'}>
                     <td className="px-3 py-2 font-medium">{r.items[i]}</td>
                     <td className="px-3 py-2">{num(it.r)}</td>
+                    <td className="px-3 py-2 text-muted">{num(it.rSimple)}</td>
                     <td className="px-3 py-2">{pct(it.pValue)}</td>
                     <td className="px-3 py-2">{num(alpha)}</td>
                     <td className={'px-3 py-2 font-semibold ' + (it.isValid ? 'text-accent' : 'text-red-600')}>
@@ -264,6 +266,11 @@ export function ValidityResult({ r }) {
             </tbody>
           </table>
         </div>
+        <p className="text-xs text-muted mt-2">
+          <strong>r (corrected)</strong> = korelasi item vs total tanpa item tsb (standar R/SPSS RELIABILITY). 
+          <strong> r (simple)</strong> = korelasi item vs total termasuk item tsb (SPSS CORRELATIONS). 
+          Verdict berdasarkan r corrected.
+        </p>
         <p className="text-sm mt-3 text-fg">{r.validity.summary}</p>
       </div>
     </div>

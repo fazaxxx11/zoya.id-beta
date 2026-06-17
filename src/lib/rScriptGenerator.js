@@ -129,7 +129,15 @@ colnames(data) <- ${vec(r.itemNames || [])}
 # Reliabilitas (Cronbach Alpha)
 psych::alpha(data)
 
-# Validitas item-total (corrected item-total correlation = column "r.cor" pada output di atas)
+# Validitas item-total
+# corrected item-total correlation = column "r.cor" pada output psych::alpha
+# simple item-total correlation = cor(data, rowSums(data)) untuk SPSS CORRELATIONS equivalent
+psych::alpha(data)
+cat("Simple item-total correlation:\\n")
+for (i in 1:ncol(data)) {
+  r <- cor(data[,i], rowSums(data))
+  cat(sprintf("  %s: r = %.3f\\n", colnames(data)[i], r))
+}
 `
 }
 

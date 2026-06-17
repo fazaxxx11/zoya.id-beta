@@ -115,8 +115,10 @@ function interpretCronbach(alpha) {
 }
 
 /**
- * Validitas instrumen (Pearson item-total dengan KOREKSI).
+ * Validitas instrumen (Pearson item-total — corrected + simple).
  * Hasil: tabel item dengan r, p, kesimpulan valid/tidak.
+ * corrected = total minus item itu sendiri (standar R/SPSS RELIABILITY)
+ * simple = total termasuk item itu sendiri (SPSS CORRELATIONS command)
  */
 export function itemValidity(items) {
   const k = items[0]?.length || 0
@@ -137,15 +139,20 @@ export function itemValidity(items) {
   const results = []
   for (let j = 0; j < k; j++) {
     const itemVals = valid.map(row => row[j])
+    // Corrected item-total (standard: subtract current item)
     const correctedTotals = valid.map((row, ri) => totals[ri] - row[j])
-    const corr = pearsonCorrelation(itemVals, correctedTotals)
+    const corrCorrected = pearsonCorrelation(itemVals, correctedTotals)
+    // Simple item-total (SPSS CORRELATIONS: include current item)
+    const corrSimple = pearsonCorrelation(itemVals, totals)
     results.push({
       item: j + 1,
-      r: corr.r,
-      pValue: corr.pValue,
+      r: corrCorrected.r,
+      pValue: corrCorrected.pValue,
+      rSimple: corrSimple.r,
+      pSimple: corrSimple.pValue,
       n,
-      isValid: corr.r >= rCritical && corr.pValue < 0.05,
-      verdict: corr.r >= rCritical && corr.pValue < 0.05
+      isValid: corrCorrected.r >= rCritical && corrCorrected.pValue < 0.05,
+      verdict: corrCorrected.r >= rCritical && corrCorrected.pValue < 0.05
         ? 'VALID'
         : 'TIDAK VALID',
     })
