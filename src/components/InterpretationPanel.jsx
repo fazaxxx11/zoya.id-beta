@@ -4,7 +4,8 @@
  * with streaming support, multiple styles, and caching
  */
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Copy, Check } from 'lucide-react';
 import { generateInterpretation } from '../services/aiInterpretation';
 import { generatePrompt, getFallbackInterpretation, getAvailableStyles } from '../services/interpretationPrompts';
 import { getCachedInterpretation, cacheInterpretation } from '../services/interpretationCache';
@@ -131,8 +132,8 @@ const InterpretationPanel = ({ testType, results, onClose }) => {
         <div className="flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-xl">
           <div>
             <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-              <span>🤖</span>
-              <span>Interpretasi AI</span>
+              <Sparkles className="w-5 h-5" />
+              <span className="text-xl font-semibold">Interpretasi AI</span>
             </h2>
             <p className="text-sm text-blue-100 mt-1">
               Uji: {testType}
