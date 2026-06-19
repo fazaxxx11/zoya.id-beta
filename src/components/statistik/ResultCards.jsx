@@ -2,7 +2,8 @@
 // Result display components for all statistical tests
 // Extracted from Statistik.jsx for code splitting
 
-import { useRef } from 'react'
+import React, { useState, useRef } from 'react';
+import InterpretationPanel from '../InterpretationPanel';
 import { Histogram, QQPlot, ScatterPlot, BoxPlot, ChartGrid } from '../charts/StatCharts'
 import { HistogramChart, QQPlotChart, ScatterPlotChart } from '../charts'
 import { ExportChartButton } from '../charts/ExportChartButton'
@@ -99,6 +100,7 @@ export function DescriptiveResult({ r }) {
 }
 
 export function NormalityResult({ r }) {
+  const [showInterpretation, setShowInterpretation] = useState(false);
   const rows = r.results || [{ column: r.column, ...r }]
   const anyNotNormal = rows.some(row => !row.isNormal)
   
@@ -136,6 +138,13 @@ export function NormalityResult({ r }) {
       <p className="text-xs text-muted mt-3">
         H₀: data berdistribusi normal. Jika p &gt; 0.05 → tidak ada bukti tolak H₀ → data dianggap normal.
       </p>
+
+      <button
+        onClick={() => setShowInterpretation(true)}
+        className="mt-4 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors"
+      >
+        🤖 Interpretasi AI
+      </button>
       
       {/* Enhanced Recharts visualization with export */}
       {rows.map((row, i) => row.values && (
@@ -170,6 +179,13 @@ export function NormalityResult({ r }) {
         </div>
       ))}
       </div>
+
+      <InterpretationPanel
+        isOpen={showInterpretation}
+        onClose={() => setShowInterpretation(false)}
+        testType="normalitas"
+        results={r}
+      />
     </div>
   )
 }
