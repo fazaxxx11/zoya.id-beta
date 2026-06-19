@@ -3,7 +3,8 @@
 // Extracted from Statistik.jsx for code splitting
 
 import React, { useState, useRef } from 'react';
-import InterpretationPanel from '../InterpretationPanel';
+import { Sparkles } from 'lucide-react';
+import InterpretationPanel from './InterpretationPanel';
 import { Histogram, QQPlot, ScatterPlot, BoxPlot, ChartGrid } from '../charts/StatCharts'
 import { HistogramChart, QQPlotChart, ScatterPlotChart } from '../charts'
 import { ExportChartButton } from '../charts/ExportChartButton'
@@ -142,10 +143,12 @@ export function NormalityResult({ r }) {
       <div className="mt-4 flex justify-center">
         <button
           onClick={() => setShowInterpretation(true)}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105"
+          className="group relative overflow-hidden inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 font-semibold rounded-lg shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 hover:scale-[1.02]"
         >
-          <span className="text-xl">🤖</span>
+          <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400 transition-transform duration-200 group-hover:rotate-12" />
           <span>Interpretasi AI</span>
+          {/* Subtle hover gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/0 via-blue-50/50 to-blue-50/0 dark:from-blue-900/0 dark:via-blue-900/20 dark:to-blue-900/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
         </button>
       </div>
       
