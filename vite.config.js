@@ -1,9 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
 
 export default defineConfig({
   esbuild: { drop: ['console', 'debugger'] },
+  optimizeDeps: {
+    include: ['recharts'],
+  },
   plugins: [
     react(),
     VitePWA({
@@ -95,6 +99,8 @@ export default defineConfig({
             if (id.includes('mammoth')) return 'vendor-mammoth'
             if (id.includes('docx')) return 'vendor-docx'
             if (id.includes('html2canvas')) return 'vendor-html2canvas'
+            // Charts library
+            if (id.includes('recharts')) return 'vendor-recharts'
             // NOTE: jspdf, pdfjs-dist, pdf-lib NOT manually chunked
             // — Rolldown auto-splits them with lazy consumers
             // @radix-ui, lucide-react also auto-split (not critical path)
