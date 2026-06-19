@@ -2,7 +2,11 @@
 // Result display components for all statistical tests
 // Extracted from Statistik.jsx for code splitting
 
+import { useRef } from 'react'
 import { Histogram, QQPlot, ScatterPlot, BoxPlot, ChartGrid } from '../charts/StatCharts'
+import { HistogramChart, QQPlotChart, ScatterPlotChart } from '../charts'
+import { ExportChartButton } from '../charts/ExportChartButton'
+import { processHistogramData, processQQPlot, processScatterData } from '../../lib/chartUtils'
 import StatTooltip from '../StatTooltip'
 
 const num = (v, d = 3) => typeof v === 'number' ? v.toFixed(d) : (v ?? '—')
@@ -97,6 +101,11 @@ export function DescriptiveResult({ r }) {
 export function NormalityResult({ r }) {
   const rows = r.results || [{ column: r.column, ...r }]
   const anyNotNormal = rows.some(row => !row.isNormal)
+  
+  // Refs for export functionality
+  const histogramRef = useRef(null)
+  const qqPlotRef = useRef(null)
+
   return (
     <div>
       <ResultHeader title="Uji Normalitas" significant={anyNotNormal} />
@@ -127,9 +136,33 @@ export function NormalityResult({ r }) {
       <p className="text-xs text-muted mt-3">
         H₀: data berdistribusi normal. Jika p &gt; 0.05 → tidak ada bukti tolak H₀ → data dianggap normal.
       </p>
+      
+      {/* Enhanced Recharts visualization with export */}
       {rows.map((row, i) => row.values && (
-        <div key={i} className="mt-4">
-          <h4 className="font-semibold text-sm text-fg mb-2">Visualisasi: {row.column}</h4>
+        <div key={i} className="mt-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold text-sm text-fg">Visualisasi: {row.column}</h4>
+            <div className="flex gap-2">
+              <ExportChartButton chartRef={histogramRef} filename={`histogram-${row.column}`} />
+              <ExportChartButton chartRef={qqPlotRef} filename={`qqplot-${row.column}`} />
+            </div>
+          </div>
+          
+          <div ref={histogramRef} className="bg-white p-3 rounded-lg border">
+            <HistogramChart 
+              data={processHistogramData(row.values)} 
+              title={`Histogram: ${row.column}`}
+            />
+          </div>
+          
+          <div ref={qqPlotRef} className="bg-white p-3 rounded-lg border">
+            <QQPlotChart 
+              data={processQQPlot(row.values)} 
+              title="Q-Q Plot (Normalitas)"
+            />
+          </div>
+          
+          {/* Legacy SVG charts (fallback) */}
           <ChartGrid>
             <Histogram values={row.values} title="Histogram + kurva normal" xLabel={row.column} overlayNormal />
             <QQPlot values={row.values} title="Q-Q Plot (Normal)" />
