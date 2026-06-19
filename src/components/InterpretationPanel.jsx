@@ -119,21 +119,28 @@ const InterpretationPanel = ({ testType, results, onClose }) => {
   }, [selectedStyle]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col border border-gray-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-xl">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">
-              Interpretasi AI
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              <span>🤖</span>
+              <span>Interpretasi AI</span>
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-blue-100 mt-1">
               Uji: {testType}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all duration-200 w-10 h-10 flex items-center justify-center"
             aria-label="Tutup"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,8 +150,8 @@ const InterpretationPanel = ({ testType, results, onClose }) => {
         </div>
 
         {/* Style Selector */}
-        <div className="p-6 border-b bg-gray-50">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+        <div className="p-6 border-b bg-gradient-to-b from-gray-50 to-white">
+          <label className="block text-sm font-semibold text-gray-700 mb-3">
             Pilih Gaya Interpretasi:
           </label>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -153,10 +160,10 @@ const InterpretationPanel = ({ testType, results, onClose }) => {
                 key={style.id}
                 onClick={() => setSelectedStyle(style.id)}
                 disabled={isLoading}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${
+                className={`p-4 rounded-lg border-2 text-left transition-all duration-200 ${
                   selectedStyle === style.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
+                    ? 'border-blue-600 bg-blue-50 shadow-md'
+                    : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm'
                 } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <div className="font-semibold text-gray-800">{style.name}</div>
@@ -167,7 +174,7 @@ const InterpretationPanel = ({ testType, results, onClose }) => {
         </div>
 
         {/* Interpretation Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-white to-gray-50">
           {/* Loading State */}
           {isLoading && !interpretation && (
             <div className="flex items-center justify-center py-12">
@@ -241,7 +248,7 @@ const InterpretationPanel = ({ testType, results, onClose }) => {
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between p-6 border-t bg-gray-50">
+        <div className="flex items-center justify-between p-6 border-t bg-gradient-to-b from-gray-50 to-white rounded-b-xl">
           <div className="text-sm text-gray-600">
             {interpretation && (
               <span>{interpretation.length} karakter</span>

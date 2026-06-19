@@ -139,12 +139,15 @@ export function NormalityResult({ r }) {
         H₀: data berdistribusi normal. Jika p &gt; 0.05 → tidak ada bukti tolak H₀ → data dianggap normal.
       </p>
 
-      <button
-        onClick={() => setShowInterpretation(true)}
-        className="mt-4 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors"
-      >
-        🤖 Interpretasi AI
-      </button>
+      <div className="mt-4 flex justify-center">
+        <button
+          onClick={() => setShowInterpretation(true)}
+          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105"
+        >
+          <span className="text-xl">🤖</span>
+          <span>Interpretasi AI</span>
+        </button>
+      </div>
       
       {/* Enhanced Recharts visualization with export */}
       {rows.map((row, i) => row.values && (
@@ -180,12 +183,13 @@ export function NormalityResult({ r }) {
       ))}
       </div>
 
-      <InterpretationPanel
-        isOpen={showInterpretation}
-        onClose={() => setShowInterpretation(false)}
-        testType="normalitas"
-        results={r}
-      />
+      {showInterpretation && (
+        <InterpretationPanel
+          testType="normalitas"
+          results={r}
+          onClose={() => setShowInterpretation(false)}
+        />
+      )}
     </div>
   )
 }
