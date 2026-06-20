@@ -11,6 +11,7 @@ import {
 import PageHeader from '../components/PageHeader'
 import SaveAnalysisButton from '../components/SaveAnalysisButton'
 import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
+import AIInterpretationPanel from '../components/AIInterpretationPanel'
 import { runEFA } from '../lib/statsWorkerClient'
 import { checkPaywall, chargeForTool } from '../lib/paywall'
 import { getWallet } from '../lib/wallet'
@@ -26,6 +27,7 @@ export default function EFAPage() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [running, setRunning] = useState(false)
+  const [aiInterpretation, setAiInterpretation] = useState('')
   const [showPayment, setShowPayment] = useState(false)
   const fileRef = useRef(null)
 
@@ -197,6 +199,12 @@ export default function EFAPage() {
             <VarianceTableSection result={result} />
             <LoadingsSection result={result} />
             <ReportText result={result} />
+            
+            <AIInterpretationPanel
+              result={result}
+              value={aiInterpretation}
+              onChange={setAiInterpretation}
+            />
           </>
         )}
       </div>

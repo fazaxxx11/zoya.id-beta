@@ -12,6 +12,7 @@ import {
 import PageHeader from '../components/PageHeader'
 import SaveAnalysisButton from '../components/SaveAnalysisButton'
 import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
+import AIInterpretationPanel from '../components/AIInterpretationPanel'
 import { simpleMediation, simpleModeration } from '../lib/mediation'
 import { checkPaywall, chargeForTool } from '../lib/paywall'
 import { getWallet } from '../lib/wallet'
@@ -31,6 +32,7 @@ export default function MediationPage() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [running, setRunning] = useState(false)
+  const [aiInterpretation, setAiInterpretation] = useState('')
   const [showPayment, setShowPayment] = useState(false)
   const fileRef = useRef(null)
 
@@ -234,6 +236,14 @@ export default function MediationPage() {
         )}
         {result && result._model === 'mediation' && <MediationResult r={result} />}
         {result && result._model === 'moderation' && <ModerationResult r={result} />}
+
+        {result && (
+          <AIInterpretationPanel
+            result={result}
+            value={aiInterpretation}
+            onChange={setAiInterpretation}
+          />
+        )}
       </div>
 
       <ConfirmPaymentModal

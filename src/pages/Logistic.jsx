@@ -12,6 +12,7 @@ import {
 import PageHeader from '../components/PageHeader'
 import SaveAnalysisButton from '../components/SaveAnalysisButton'
 import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
+import AIInterpretationPanel from '../components/AIInterpretationPanel'
 import {
   classificationTable,
 } from '../lib/logisticRegression'
@@ -30,6 +31,7 @@ export default function LogisticPage() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [running, setRunning] = useState(false)
+  const [aiInterpretation, setAiInterpretation] = useState('')
   const [showPayment, setShowPayment] = useState(false)
   const fileRef = useRef(null)
 
@@ -210,6 +212,12 @@ export default function LogisticPage() {
             <ROCSection roc={result.roc} />
             <HosmerLemeshowSection hl={result.hl} />
             <ReportText fit={result.fit} cm={cmAtThreshold} roc={result.roc} hl={result.hl} threshold={threshold} />
+            
+            <AIInterpretationPanel
+              result={result}
+              value={aiInterpretation}
+              onChange={setAiInterpretation}
+            />
           </>
         )}
       </div>

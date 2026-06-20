@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
+import AIInterpretationPanel from '../components/AIInterpretationPanel'
 import {
   categorizeReliability,
 } from '../lib/itemAnalysis'
@@ -31,6 +32,7 @@ export default function ItemAnalysis() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [running, setRunning] = useState(false)
+  const [aiInterpretation, setAiInterpretation] = useState('')
   const [showPayment, setShowPayment] = useState(false)
   const fileRef = useRef(null)
   const pricing = getStatisticsPriceWithDiscount('itemanalysis', countDataRows(mode === 'scored' ? scoredText : responsesText))
@@ -278,7 +280,17 @@ export default function ItemAnalysis() {
         </div>
 
         {/* Result */}
-        {result && <ResultPanel result={result} onExport={exportCSV} />}
+        {result && (
+          <>
+            <ResultPanel result={result} onExport={exportCSV} />
+            
+            <AIInterpretationPanel
+              result={result}
+              value={aiInterpretation}
+              onChange={setAiInterpretation}
+            />
+          </>
+        )}
 
         {/* Help */}
         <HelpSection />
