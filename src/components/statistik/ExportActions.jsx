@@ -12,6 +12,7 @@ import ReportPreviewModal from './ReportPreviewModal'
 
 export default function ExportActions({ result, containerRef }) {
   const [exportingPdf, setExportingPdf] = useState(false)
+  const [exportingDocx, setExportingDocx] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
 
   const handleExcel = () => {
@@ -75,7 +76,8 @@ export default function ExportActions({ result, containerRef }) {
   return (
     <>
       {dl('Excel', handleExcel)}
-      {dl(exportingPdf ? 'Membuat PDF…' : 'PDF', handlePdf, exportingPdf)}
+      {dl(exportingPdf ? 'Membuat PDF…' : 'PDF', handleExportPdf, exportingPdf)}
+      {dl(exportingDocx ? 'Membuat DOCX…' : 'DOCX', handleExportDocx, exportingDocx)}
       {dl('R Syntax', handleR)}
       <button onClick={() => setShowReportModal(true)}
         className="px-3 sm:px-4 py-2 bg-emerald-600 hover:opacity-90 text-white rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
