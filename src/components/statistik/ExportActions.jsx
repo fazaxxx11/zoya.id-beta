@@ -27,7 +27,7 @@ export default function ExportActions({ result, containerRef }) {
   const handleExportPdf = async () => {
     try {
       setExportingPdf(true)
-      await exportToPDF(result, containerEl)
+      await exportToPDF(result, containerRef?.current)
       toast.success('PDF berhasil di-download!')
     } catch (err) {
       console.error('[PDF Export]', err)
