@@ -4,7 +4,7 @@ import {
   BarChart3, Upload, FileSpreadsheet, CheckCircle,
   Sparkles, Download, FileType, File as FileIcon, AlertCircle,
   Layers, Sigma, Clock, FileText, BookOpen, X, LayoutGrid,
-  ArrowRight, RotateCcw, AlertTriangle,
+  ArrowRight, RotateCcw, AlertTriangle, Compass,
 } from 'lucide-react'
 import { parseExcelFile, getColumnNames } from '../utils/excelHelper'
 
@@ -34,6 +34,7 @@ import {
   NGainResult, TwoWayANOVAResult
 } from '../components/statistik/ResultCards'
 import ExportActions from '../components/statistik/ExportActions'
+import GuidedWizardModal from '../components/statistik/GuidedWizardModal'
 import { exportToExcel } from '../lib/export/excelExport'
 import { exportToPDF } from '../lib/export/pdfExport'
 import {
@@ -123,6 +124,9 @@ function Statistik() {
   const [cleanerOpen, setCleanerOpen] = useState(false)
   const [cleaningReport, setCleaningReport] = useState(null)
   const [examplePickerOpen, setExamplePickerOpen] = useState(false)
+  const [showWizard, setShowWizard] = useState(
+    !localStorage.getItem('azezmen_wizard_dismissed')
+  )
 
   // Backend status
   const { status: backendStatus, loading: backendLoading } = useStatsBackend()
@@ -843,6 +847,47 @@ function Statistik() {
             )}
         </StatistikFlow>
       </div>
+
+      {/* ── Floating wizard trigger ── */}
+      <button
+        onClick={() => setShowWizard(true)}
+        className="
+          fixed bottom-6 right-6 z-50
+          flex items-center gap-2 px-4 py-2.5
+          bg-[rgb(var(--card))] border border-[rgb(var(--border))]
+          shadow-[var(--shadow-md)]
+          font-heading font-semibold text-sm text-[rgb(var(--fg))]
+          hover:border-[rgb(var(--accent))] hover:shadow-lg
+          active:scale-[0.97]
+          transition-all duration-150
+        "
+        aria-label="Buka panduan analisis"
+      >
+        <Compass className="w-4 h-4 text-[rgb(var(--accent))]" />
+        Pandu
+      </button>
+
+      <GuidedWizardModal
+        open={showWizard}
+        onClose={() => setShowWizard(false)}
+        onComplete={(intent) => {
+          // Map wizard intent to tool route
+          const intentMap = {
+            'compare-two': 'mannwhitney',
+            'compare-many': 'anova',
+            relationship: 'korelasi',
+            influence: 'regresi',
+            'data-quality': 'normalitas',
+            auto: activeTool,
+          }
+          const tool = intentMap[intent] || activeTool
+          if (tool !== activeTool) {
+            navigate('/statistik?tool=' + tool)
+          }
+          toast.success('Panduan selesai — silakan upload data kamu')
+        }}
+        onSkip={() => setShowWizard(false)}
+      />
 
       <ConfirmPaymentModal
         open={showConfirm}

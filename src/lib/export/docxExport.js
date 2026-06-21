@@ -11,12 +11,13 @@ import {
   TableCell,
   WidthType,
   AlignmentType,
-  HeadingLevel,
   BorderStyle,
 } from 'docx'
-import { saveAs } from 'file-saver'
 
 export async function exportToDOCX(result) {
+
+
+
   const sections = []
 
   // Helper: Create paragraph
@@ -620,5 +621,10 @@ export async function exportToDOCX(result) {
 
   // Save
   const blob = await Packer.toBlob(doc)
-  saveAs(blob, `${result.tool}_${Date.now()}.docx`)
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${result.tool}_${Date.now()}.docx`
+  a.click()
+  URL.revokeObjectURL(url)
 }

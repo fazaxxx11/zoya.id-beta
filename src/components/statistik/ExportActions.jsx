@@ -3,10 +3,10 @@
 
 import { useState } from 'react'
 import { Download, FileText } from 'lucide-react'
-import { exportToPDF } from '@/lib/export/pdfExport'
-import { exportToDOCX } from '@/lib/export/docxExport'
-import { exportToExcel } from '@/lib/export/excelExport'
-import { generateRSyntax } from '@/lib/export/rSyntaxGenerator'
+import { exportToPDF } from '../../lib/export/pdfExport'
+import { exportToDOCX } from '../../lib/export/docxExport'
+import { exportToExcel } from '../../lib/export/excelExport'
+import { generateRSyntax } from '../../lib/export/rSyntaxGenerator'
 import { toast } from '../../lib/toast'
 import ReportPreviewModal from './ReportPreviewModal'
 
