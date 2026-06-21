@@ -57,12 +57,24 @@ function StepIndicator({ current, completed }) {
 function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuide }) {
   const hasFile = file && file.name
   
+  const handleDragOver = (e) => { e.preventDefault() }
+  
+  const handleDrop = (e) => {
+    e.preventDefault()
+    const droppedFile = e.dataTransfer.files?.[0]
+    if (droppedFile) onFileUpload({ target: { files: [droppedFile] } })
+  }
+  
   return (
     <div className="border border-border bg-card rounded-xl p-6">
       <h2 className="text-lg font-semibold text-fg mb-1">Unggah Dataset</h2>
       <p className="text-sm text-muted mb-5">Format yang didukung: .xlsx, .xls, .csv</p>
 
-      <div className={`relative block border-2 border-dashed rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]/50 transition-colors active:scale-95 ${hasFile ? 'border-green-400 bg-green-50/50' : 'border-border'}`}>
+      <div
+        className={`relative block border-2 border-dashed rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]/50 transition-colors active:scale-95 ${hasFile ? 'border-green-400 bg-green-50/50' : 'border-border'}`}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
         {hasFile ? (
           <>
             <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-3" />
