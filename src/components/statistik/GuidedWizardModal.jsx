@@ -1,36 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
-  Compass, Upload, CheckCircle, ArrowRight, ArrowLeft,
+  Compass, CheckCircle, ArrowRight, ArrowLeft,
   X, Columns, GitCompare, TrendingUp, Microscope,
-  FileSearch, HelpCircle,
+  HelpCircle,
 } from 'lucide-react'
-import { toast } from '../../lib/toast'
 
 const STORAGE_KEY = 'azezmen_wizard_dismissed'
 
-/**
- * GuidedWizardModal — scholarly analysis wizard.
- *
- * Anti-AI-vibe checklist:
- * - No purple/blue gradient → scholarly gold accent
- * - No sparkle/✨ emoji → lucide icons
- * - No rounded chatbot bubbles → clean cards, editorial layout
- * - No "Hi! I'm your AI assistant" → numbered steps (matching Home.jsx)
- * - No Inter/Roboto → Source Serif 4 headings
- * - No "Generate with AI" → actionable Indonesian copy
- *
- * Props:
- * - open: boolean — show modal
- * - onClose: () => void
- * - onComplete: (analysisType: string) => void — called when user finishes wizard
- * - onSkip: () => void — user dismisses wizard
- */
 export default function GuidedWizardModal({ open, onClose, onComplete, onSkip }) {
   const [step, setStep] = useState(1)
   const [selectedIntent, setSelectedIntent] = useState(null)
-  const TOTAL_STEPS = 3
+  const TOTAL_STEPS = 2
 
-  // Reset state when modal opens
   useEffect(() => {
     if (open) {
       setStep(1)
@@ -51,51 +32,42 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
 
   if (!open) return null
 
-  // ──────────────────────────────────────────────
-  // INTENT OPTIONS — scholarly, non-corporate copy
-  // ──────────────────────────────────────────────
   const intents = [
     {
       id: 'compare-two',
       icon: GitCompare,
       label: 'Bandingkan 2 kelompok',
       desc: 'Mann-Whitney, T-Test',
-      analysis: 'ttest_independent',
     },
     {
       id: 'compare-many',
       icon: Columns,
       label: 'Bandingkan >2 kelompok',
       desc: 'ANOVA, Kruskal-Wallis',
-      analysis: 'anova',
     },
     {
       id: 'relationship',
       icon: TrendingUp,
       label: 'Cari hubungan antar variabel',
       desc: 'Pearson, Spearman, Chi-Square',
-      analysis: 'correlation',
     },
     {
       id: 'influence',
       icon: TrendingUp,
       label: 'Cek pengaruh X terhadap Y',
       desc: 'Regresi sederhana & berganda',
-      analysis: 'regression_simple',
     },
     {
       id: 'data-quality',
       icon: Microscope,
       label: 'Uji kualitas data',
       desc: 'Normalitas, validitas, reliabilitas',
-      analysis: 'normality',
     },
     {
       id: 'auto',
-      icon: Compass,
+      icon: HelpCircle,
       label: 'Saya belum tahu',
-      desc: 'Upload data dulu — sistem yang menyarankan',
-      analysis: 'auto',
+      desc: 'Arahkan ke semua alat — pilih sendiri nanti',
     },
   ]
 
@@ -206,79 +178,19 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
               </div>
             )}
 
-            {/* STEP 2: Upload */}
+            {/* STEP 2: Confirm & start */}
             {step === 2 && (
               <div>
                 <h2 className="font-heading font-bold text-xl text-[rgb(var(--fg))] mb-1.5">
-                  Upload data kamu
+                  Siap mulai?
                 </h2>
                 <p className="text-sm text-[rgb(var(--muted))] mb-5">
-                  CSV, Excel (.xlsx, .xls), atau paste langsung dari spreadsheet.
+                  Kami akan mengarahkan ke alat analisis yang sesuai. Upload data dilakukan setelahnya.
                 </p>
-
-                {/* Upload zone */}
-                <label
-                  className="
-                    flex flex-col items-center justify-center gap-3
-                    p-8 border-2 border-dashed border-[rgb(var(--border))]
-                    hover:border-[rgb(var(--accent))]/50
-                    bg-[rgb(var(--surface))] cursor-pointer
-                    transition-colors duration-150
-                  "
-                >
-                  <Upload className="w-8 h-8 text-[rgb(var(--muted))]" />
-                  <div className="text-center">
-                    <span className="font-heading font-semibold text-sm text-[rgb(var(--fg))]">
-                      Seret file ke sini
-                    </span>
-                    <span className="text-xs text-[rgb(var(--muted))] block mt-1">
-                      atau klik untuk memilih
-                    </span>
-                  </div>
-                  <input
-                    type="file"
-                    accept=".csv,.xlsx,.xls"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file) {
-                        toast.success(`File "${file.name}" siap dianalisis`)
-                        setStep(3)
-                      }
-                    }}
-                  />
-                </label>
-
-                {/* Paste zone */}
-                <div className="mt-3">
-                  <textarea
-                    placeholder="Atau paste data dari spreadsheet di sini…&#10;Contoh:&#10;Nama,Pre-test,Post-test&#10;Siswa A,22,27&#10;Siswa B,18,24"
-                    rows={6}
-                    className="
-                      w-full p-3 text-sm font-mono bg-[rgb(var(--surface))]
-                      border border-[rgb(var(--border))] resize-none
-                      placeholder:text-[rgb(var(--muted))]/60
-                      focus:outline-none focus:border-[rgb(var(--accent))]/50
-                    "
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* STEP 3: Confirm & analyze */}
-            {step === 3 && (
-              <div>
-                <h2 className="font-heading font-bold text-xl text-[rgb(var(--fg))] mb-1.5">
-                  Konfirmasi analisis
-                </h2>
 
                 {/* Summary card */}
                 <div className="border border-[rgb(var(--border))] p-4 mb-5">
                   <div className="flex flex-col gap-2.5 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-[rgb(var(--muted))]">Data</span>
-                      <span className="font-mono text-[rgb(var(--fg))]">40 baris · 5 kolom</span>
-                    </div>
                     <div className="flex justify-between">
                       <span className="text-[rgb(var(--muted))]">Uji yang disarankan</span>
                       <span className="font-heading font-semibold text-[rgb(var(--accent))]">
@@ -288,7 +200,7 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
                     <div className="flex justify-between">
                       <span className="text-[rgb(var(--muted))]">Metode spesifik</span>
                       <span className="font-heading font-semibold text-[rgb(var(--fg))]">
-                        {intents.find((i) => i.id === selectedIntent)?.desc || 'Akan dideteksi otomatis'}
+                        {intents.find((i) => i.id === selectedIntent)?.desc || 'Semua alat tersedia'}
                       </span>
                     </div>
                   </div>
@@ -298,8 +210,7 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
                 <div className="flex items-start gap-2.5 p-3 bg-[rgb(var(--surface))] border-l-2 border-[rgb(var(--accent))]">
                   <CheckCircle className="w-4 h-4 text-[rgb(var(--accent))] mt-0.5 shrink-0" />
                   <p className="text-xs text-[rgb(var(--muted))] leading-relaxed">
-                    Sistem akan otomatis memilih uji statistik yang sesuai dengan struktur data.
-                    Kamu tetap bisa mengganti uji secara manual setelahnya.
+                    Upload data dilakukan di halaman analisis. Di sana kamu bisa upload CSV/Excel dan langsung menjalankan uji.
                   </p>
                 </div>
               </div>
@@ -331,32 +242,12 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Skip: only on step 1 */}
-              {step === 1 && (
-                <button
-                  onClick={() => {
-                    setStep(2)
-                    setSelectedIntent('auto')
-                  }}
-                  className="
-                    inline-flex items-center gap-1 px-3 py-2 text-sm
-                    text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]
-                    transition-colors
-                  "
-                >
-                  <HelpCircle className="w-3.5 h-3.5" />
-                  Saya tidak tahu
-                </button>
-              )}
-
               {/* Primary CTA */}
               <button
                 disabled={step === 1 && !selectedIntent}
                 onClick={() => {
                   if (step === 1) {
                     setStep(2)
-                  } else if (step === 2) {
-                    setStep(3)
                   } else {
                     handleComplete(selectedIntent)
                   }

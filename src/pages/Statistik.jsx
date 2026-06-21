@@ -848,23 +848,24 @@ function Statistik() {
         </StatistikFlow>
       </div>
 
-      {/* ── Floating wizard trigger ── */}
+      {/* ── Floating wizard trigger — right-side, mobile-safe ── */}
       <button
         onClick={() => setShowWizard(true)}
         className="
-          fixed bottom-6 right-6 z-50
-          flex items-center gap-2 px-4 py-2.5
-          bg-[rgb(var(--card))] border border-[rgb(var(--border))]
-          shadow-[var(--shadow-md)]
-          font-heading font-semibold text-sm text-[rgb(var(--fg))]
-          hover:border-[rgb(var(--accent))] hover:shadow-lg
+          fixed right-0 top-1/3 z-40
+          flex items-center gap-1.5 pl-3 pr-3 py-2.5
+          bg-[rgb(var(--card))] border border-r-0 border-[rgb(var(--border))]
+          shadow-[var(--shadow-md)] rounded-l-md
+          font-heading font-semibold text-xs text-[rgb(var(--fg))]
+          hover:pr-4 hover:border-[rgb(var(--accent))]
           active:scale-[0.97]
-          transition-all duration-150
+          transition-all duration-200
+          sm:right-4 sm:top-28 sm:border-r sm:rounded-md sm:px-4 sm:py-2 sm:text-sm
         "
         aria-label="Buka panduan analisis"
       >
-        <Compass className="w-4 h-4 text-[rgb(var(--accent))]" />
-        Pandu
+        <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[rgb(var(--accent))]" />
+        <span className="hidden sm:inline">Pandu</span>
       </button>
 
       <GuidedWizardModal
@@ -884,7 +885,6 @@ function Statistik() {
           if (tool !== activeTool) {
             navigate('/statistik?tool=' + tool)
           }
-          toast.success('Panduan selesai — silakan upload data kamu')
         }}
         onSkip={() => setShowWizard(false)}
       />
