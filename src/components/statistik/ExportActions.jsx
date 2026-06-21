@@ -3,9 +3,10 @@
 
 import { useState } from 'react'
 import { Download, FileText } from 'lucide-react'
-import { exportToExcel } from '../../lib/export/excelExport'
-import { exportToPDF } from '../../lib/export/pdfExport'
-import { generateRSyntax } from '../../lib/export/rSyntaxGenerator'
+import { exportToPDF } from '@/lib/export/pdfExport'
+import { exportToDOCX } from '@/lib/export/docxExport'
+import { exportToExcel } from '@/lib/export/excelExport'
+import { generateRSyntax } from '@/lib/export/rSyntaxGenerator'
 import { toast } from '../../lib/toast'
 import ReportPreviewModal from './ReportPreviewModal'
 
@@ -22,16 +23,29 @@ export default function ExportActions({ result, containerRef }) {
     }
   }
 
-  const handlePdf = async () => {
-    if (exportingPdf) return
-    setExportingPdf(true)
+  const handleExportPdf = async () => {
     try {
-      await exportToPDF(result, containerRef?.current)
-      toast.success('PDF berhasil di-download')
-    } catch (e) {
-      toast.error('Gagal export PDF: ' + e.message)
+      setExportingPdf(true)
+      await exportToPDF(result, containerEl)
+      toast.success('PDF berhasil di-download!')
+    } catch (err) {
+      console.error('[PDF Export]', err)
+      toast.error('Gagal export PDF: ' + (err.message || 'Unknown error'))
     } finally {
       setExportingPdf(false)
+    }
+  }
+
+  const handleExportDocx = async () => {
+    try {
+      setExportingDocx(true)
+      await exportToDOCX(result)
+      toast.success('DOCX berhasil di-download!')
+    } catch (err) {
+      console.error('[DOCX Export]', err)
+      toast.error('Gagal export DOCX: ' + (err.message || 'Unknown error'))
+    } finally {
+      setExportingDocx(false)
     }
   }
 
