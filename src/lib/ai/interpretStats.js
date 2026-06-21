@@ -42,6 +42,64 @@ export async function generateInterpretation(result) {
 }
 
 // =====================================================================
+// Context-aware section writer — splits localTemplate into 3 sections
+// =====================================================================
+export function generateSectionInterpretation(r, section) {
+  const full = localTemplate(r)
+  if (!full) return null
+
+  const paragraphs = full.split('\n\n').filter(Boolean)
+
+  // Map paragraphs to sections based on their typical structure
+  // Paragraph 0: context + method (apa yang dilakukan)
+  // Paragraph 1: results + findings (apa yang ditemukan)
+  // Paragraph 2: conclusion + implication (apa artinya)
+
+  switch (section) {
+    case 'descriptive': {
+      // Combine paragraph 0 + 1: objective data reporting
+      const desc = [paragraphs[0], paragraphs[1]].filter(Boolean).join('\n\n')
+      // Add section-specific prefix if missing
+      if (!desc.toLowerCase().includes('hasil')) {
+        return `Hasil analisis menunjukkan bahwa ${desc.charAt(0).toLowerCase()}${desc.slice(1)}`
+      }
+      return desc
+    }
+
+    case 'discussion': {
+      // Use paragraph 1 + 2: interpretation + meaning
+      const discParts = [paragraphs[1], paragraphs[2]].filter(Boolean)
+      let disc = discParts.join('\n\n')
+      // Add discussion opener if needed
+      if (!disc.toLowerCase().includes('temuan ini')) {
+        disc = `Temuan ini mengindikasikan bahwa ${disc.charAt(0).toLowerCase()}${disc.slice(1)}`
+      }
+      // Add theoretical context suggestion
+      disc += '\n\nHasil ini sejalan dengan kerangka teori yang digunakan dalam penelitian ini. Keterkaitan antara variabel yang teridentifikasi memperkuat argumen bahwa konstruk yang diukur memiliki landasan empiris yang memadai. Diskusi lebih lanjut dapat mengelaborasi perbandingan dengan temuan studi terdahulu yang relevan.'
+      return disc
+    }
+
+    case 'conclusion': {
+      // Use paragraph 2: implication + closing
+      let conc = paragraphs[2] || paragraphs[paragraphs.length - 1]
+      // Sharpen as conclusion
+      conc = conc
+        .replace(/dengan demikian, /gi, '')
+        .replace(/secara praktis, /gi, '')
+        .replace(/secara substantif, /gi, '')
+      // Capitalize first letter
+      conc = conc.charAt(0).toUpperCase() + conc.slice(1)
+      // Add closing statement
+      conc += '\n\nImplikasi dari temuan ini dapat digunakan sebagai dasar pengambilan keputusan dalam konteks penelitian. Keterbatasan penelitian ini meliputi ukuran sampel dan desain yang digunakan, sehingga generalisasi perlu dilakukan secara hati-hati. Penelitian selanjutnya disarankan untuk memperluas cakupan variabel dan menggunakan desain yang lebih komprehensif.'
+      return conc
+    }
+
+    default:
+      return full
+  }
+}
+
+// =====================================================================
 // Local template — generates an APA-styled Indonesian interpretation
 // purely from the result object. Always available offline.
 // =====================================================================

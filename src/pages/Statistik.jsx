@@ -35,6 +35,7 @@ import {
 } from '../components/statistik/ResultCards'
 import ExportActions from '../components/statistik/ExportActions'
 import GuidedWizardModal from '../components/statistik/GuidedWizardModal'
+import ContextualWriter from '../components/statistik/ContextualWriter'
 import { exportToExcel } from '../lib/export/excelExport'
 import { exportToPDF } from '../lib/export/pdfExport'
 import {
@@ -1557,6 +1558,8 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
         {result.type === 'regression_multiple' && <AssumptionsPanel result={result} type="regression_multiple" />}
 
         <AIInterpretationPanel result={result} value={aiInterpretation} onChange={setAiInterpretation} />
+
+        <ContextualWriter result={result} />
 
         <ExplainChatPanel result={result} aiInterpretation={aiInterpretation} />
 
