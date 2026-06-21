@@ -36,6 +36,7 @@ import {
 import ExportActions from '../components/statistik/ExportActions'
 import GuidedWizardModal from '../components/statistik/GuidedWizardModal'
 import ContextualWriter from '../components/statistik/ContextualWriter'
+import StatEducation from '../components/statistik/StatEducation'
 import { exportToExcel } from '../lib/export/excelExport'
 import { exportToPDF } from '../lib/export/pdfExport'
 import {
@@ -1560,6 +1561,8 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
         <AIInterpretationPanel result={result} value={aiInterpretation} onChange={setAiInterpretation} />
 
         <ContextualWriter result={result} />
+
+        <StatEducation />
 
         <ExplainChatPanel result={result} aiInterpretation={aiInterpretation} />
 
