@@ -185,7 +185,7 @@ export async function analyzeNGain({ pre, post, maxScore = 100, names = [] }) {
 }
 
 export async function pearsonCorrelationBackend(x, y) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('correlation', { type: 'pearson', x, y })
@@ -197,7 +197,7 @@ export async function pearsonCorrelationBackend(x, y) {
 }
 
 export async function spearmanCorrelationBackend(x, y) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('correlation', { type: 'spearman', x, y })
@@ -209,7 +209,7 @@ export async function spearmanCorrelationBackend(x, y) {
 }
 
 export async function oneSampleTTestBackend(values, mu0) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('ttest', { mode: 'oneSample', values, mu0 })
@@ -221,7 +221,7 @@ export async function oneSampleTTestBackend(values, mu0) {
 }
 
 export async function pairedTTestBackend(before, after) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('ttest', { mode: 'paired', before, after })
@@ -233,7 +233,7 @@ export async function pairedTTestBackend(before, after) {
 }
 
 export async function independentTTestBackend(group1, group2) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('ttest', { mode: 'independent', group1, group2 })
@@ -245,7 +245,7 @@ export async function independentTTestBackend(group1, group2) {
 }
 
 export async function normalityBackend(values) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('normality', { values })
@@ -257,7 +257,7 @@ export async function normalityBackend(values) {
 }
 
 export async function anOVABackend(groups, groupNames) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('anova', { groups, groupNames })
@@ -269,7 +269,7 @@ export async function anOVABackend(groups, groupNames) {
 }
 
 export async function twoWayANOVABackend(y, a, b, nameA, nameB) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('twowayanova', { y, factorA: a, factorB: b })
@@ -281,7 +281,7 @@ export async function twoWayANOVABackend(y, a, b, nameA, nameB) {
 }
 
 export async function chiSquareBackend(var1, var2) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('chisquare', { var1, var2 })
@@ -293,7 +293,7 @@ export async function chiSquareBackend(var1, var2) {
 }
 
 export async function validityBackend(matrix) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('validity', { matrix })
@@ -305,7 +305,7 @@ export async function validityBackend(matrix) {
 }
 
 export async function reliabilityBackend(matrix) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('reliability', { matrix })
@@ -317,7 +317,7 @@ export async function reliabilityBackend(matrix) {
 }
 
 export async function kruskalWallisBackend(groups, groupNames) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('kruskal', { groups, groupNames })
@@ -329,7 +329,7 @@ export async function kruskalWallisBackend(groups, groupNames) {
 }
 
 export async function regressionBackend(x, y) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('regression', { x, y })
@@ -341,7 +341,7 @@ export async function regressionBackend(x, y) {
 }
 
 export async function regressionMultipleBackend(X, y, predictors) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
   if (usePython) {
     try {
       return await callPythonBackend('regression_multiple', { X, y, predictors })
@@ -356,7 +356,7 @@ export async function regressionMultipleBackend(X, y, predictors) {
  * Get backend status
  */
 export async function getBackendStatus() {
-  const available = await isPythonBackendAvailable()
+  const available = await waitForPythonBackend()
   return {
     pythonAvailable: available,
     backend: available ? 'scipy' : 'javascript',
