@@ -184,7 +184,6 @@ function Statistik() {
   const handleFileUpload = useCallback((e) => {
     const uploadedFile = e.target.files[0]
     if (!uploadedFile) return
-    console.log('[upload] selected file', uploadedFile.name, uploadedFile.type, uploadedFile.size)
     setFile(uploadedFile)
     setResult(null)
     setError(null)

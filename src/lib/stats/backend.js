@@ -59,6 +59,26 @@ async function isPythonBackendAvailable() {
 }
 
 /**
+ * Wait for Python backend to warm up (Vercel cold start).
+ * Retries with exponential backoff — total ~15s max.
+ * Caller shows loading/buffering UI during this wait naturally.
+ */
+async function waitForPythonBackend(maxRetries = 6, baseDelay = 1000) {
+  for (let i = 0; i < maxRetries; i++) {
+    // Force fresh check (ignore cache) on retries
+    if (i > 0) {
+      backendCache = null
+    }
+    const available = await isPythonBackendAvailable()
+    if (available) return true
+    if (i < maxRetries - 1) {
+      await new Promise(r => setTimeout(r, baseDelay * Math.pow(1.5, i)))
+    }
+  }
+  return false
+}
+
+/**
  * Call Python backend
  */
 async function callPythonBackend(method, data, options = {}) {
@@ -100,7 +120,7 @@ async function callPythonBackend(method, data, options = {}) {
  * @returns {Promise<Object>}
  */
 export async function wilcoxonSignedRank(before, after, alpha = 0.05) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
 
   if (usePython) {
     try {
@@ -110,9 +130,9 @@ export async function wilcoxonSignedRank(before, after, alpha = 0.05) {
     }
   }
 
-  // Fallback to JS
+  // Fallback to JS (only after retries exhausted or backend errors)
   const result = wilcoxonJS(before, after, alpha)
-  return { ...result, backend: 'javascript' }
+  return { ...result, backend: 'javascript', note: 'Backend scipy tidak tersedia' }
 }
 
 /**
@@ -124,7 +144,7 @@ export async function wilcoxonSignedRank(before, after, alpha = 0.05) {
  * @returns {Promise<Object>}
  */
 export async function mannWhitneyU(group1, group2, alpha = 0.05) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
 
   if (usePython) {
     try {
@@ -134,9 +154,9 @@ export async function mannWhitneyU(group1, group2, alpha = 0.05) {
     }
   }
 
-  // Fallback to JS
+  // Fallback to JS (only after retries exhausted or backend errors)
   const result = mannWhitneyJS(group1, group2, alpha)
-  return { ...result, backend: 'javascript' }
+  return { ...result, backend: 'javascript', note: 'Backend scipy tidak tersedia' }
 }
 
 /**
@@ -149,7 +169,7 @@ export async function mannWhitneyU(group1, group2, alpha = 0.05) {
  * @returns {Promise<Object>}
  */
 export async function analyzeNGain({ pre, post, maxScore = 100, names = [] }) {
-  const usePython = await isPythonBackendAvailable()
+  const usePython = await waitForPythonBackend()
 
   if (usePython) {
     try {
@@ -159,9 +179,9 @@ export async function analyzeNGain({ pre, post, maxScore = 100, names = [] }) {
     }
   }
 
-  // Fallback to JS
+  // Fallback to JS (only after retries exhausted or backend errors)
   const result = ngainJS({ pre, post, maxScore, names })
-  return { ...result, backend: 'javascript' }
+  return { ...result, backend: 'javascript', note: 'Backend scipy tidak tersedia' }
 }
 
 export async function pearsonCorrelationBackend(x, y) {
