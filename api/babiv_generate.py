@@ -23,7 +23,7 @@ if not API_KEYS:
             API_KEYS.append(key)
 
 BASE_URL = os.environ.get("AI1833_BASE_URL", "https://api.ai1833.shop/v1")
-MODEL = os.environ.get("AI1833_FREE_MODEL", "deepseek-v4-flash")
+MODEL = "deepseek-v4-flash"  # Hardcoded — env var not propagating
 
 _key_index = 0
 
