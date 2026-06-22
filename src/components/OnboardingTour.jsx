@@ -53,8 +53,12 @@ export default function OnboardingTour() {
 
     // Disable auto-open on public/service routes
     // Tour only shows on explicit trigger or authenticated/dashboard routes
-    const PUBLIC_ROUTES = ['/', '/statistik', '/kuesioner', '/assessment', '/kualitatif', '/referensi', '/wizard', '/sampling', '/mediasi', '/auth', '/payment', '/help']
-    if (PUBLIC_ROUTES.some(r => window.location.pathname === r || window.location.pathname.startsWith(r + '?'))) return
+    const PUBLIC_ROUTES = ['/', '/statistik', '/kuesioner', '/assessment', '/kualitatif', '/referensi', '/wizard', '/sampling', '/mediasi', '/auth', '/payment', '/help', '/eviews', '/panel-data', '/time-series', '/butir-soal', '/skripsi', '/privasi', '/syarat', '/bantuan', '/feedback', '/saran', '/pengaturan', '/logistik', '/efa']
+    if (PUBLIC_ROUTES.some(r =>
+      window.location.pathname === r ||
+      window.location.pathname.startsWith(r + '/') ||
+      window.location.pathname.startsWith(r + '?')
+    )) return
 
     const t = setTimeout(() => setOpen(true), 600)
     return () => clearTimeout(t)
