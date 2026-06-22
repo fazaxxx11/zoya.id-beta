@@ -10,7 +10,7 @@
 //
 // Strategi: deterministic template untuk struktur, AI optional untuk pembahasan.
 
-import { generateInterpretation } from './ai/interpretStats'
+import { generateInterpretation, generateSectionInterpretation } from './ai/interpretStats'
 
 const fmt = (v, d = 2) => {
   if (v == null || (typeof v === 'number' && !isFinite(v))) return '—'
@@ -354,6 +354,165 @@ export function buildReport(analyses) {
       buildInferentialSection(cats.inferential),
       buildDiscussionSection(cats.inferential),
     ],
+  }
+}
+
+/**
+ * AI-powered report builder — generates narrative per-analysis menggunakan
+ * ContextualWriter engine (localTemplate + section-aware splitting).
+ * Fallback ke deterministic jika AI/generation gagal.
+ * 
+ * @returns {Report} — same structure as buildReport()
+ */
+export async function buildAIReport(analyses) {
+  const cats = categorize(analyses)
+  const sections = []
+
+  // 4.1 Deskripsi Data — AI generated
+  const descSection = await buildAISection(
+    '4.1 Deskripsi Data Penelitian',
+    'descriptive',
+    cats.descriptive,
+    (items) => buildDescriptiveSection(items)
+  )
+  sections.push(descSection)
+
+  // 4.2 Uji Asumsi — AI generated
+  const asmSection = await buildAISection(
+    '4.2 Uji Asumsi',
+    'descriptive',
+    cats.assumptions,
+    (items) => buildAssumptionsSection(items)
+  )
+  sections.push(asmSection)
+
+  // 4.3 Pengujian Hipotesis — per-analysis AI narrative
+  const infItems = cats.inferential
+  const infParagraphs = []
+  const infTables = []
+  if (infItems.length > 0) {
+    for (const a of infItems) {
+      const r = a.result
+      if (!r) continue
+      // Generate deskriptif + diskusi narrative
+      const descText = generateSectionInterpretation(r, 'descriptive')
+      const discText = generateSectionInterpretation(r, 'discussion')
+      const combined = [descText, discText].filter(Boolean).join('\n\n')
+      if (combined) {
+        infParagraphs.push(combined)
+      }
+      // Collect tables from deterministic builder
+      const det = buildInferentialSection([a])
+      if (det.tables?.length) {
+        infTables.push(...det.tables)
+      }
+    }
+  }
+  sections.push({
+    title: '4.3 Pengujian Hipotesis',
+    paragraphs: infParagraphs.length > 0 ? infParagraphs : ['Hasil pengujian hipotesis disajikan berikut.'],
+    tables: infTables,
+  })
+
+  // 4.4 Pembahasan — AI discussion
+  const discSection = await buildAIDiscussionSectionEnhanced(cats.inferential)
+  sections.push(discSection)
+
+  return {
+    title: 'BAB IV — HASIL DAN PEMBAHASAN',
+    intro: `Bab ini menguraikan hasil analisis data yang diperoleh dari ${analyses.length} analisis statistik. Pembahasan disusun mengikuti urutan: deskripsi data, uji asumsi, pengujian hipotesis, dan pembahasan substantif.`,
+    sections,
+  }
+}
+
+/**
+ * AI section builder — tries AI generation, falls back to deterministic.
+ */
+async function buildAISection(title, sectionType, items, fallbackFn) {
+  if (items.length === 0) {
+    return {
+      title,
+      paragraphs: ['Sub-bab ini akan diisi setelah analisis terkait dijalankan dan disimpan.'],
+      tables: [],
+    }
+  }
+
+  const paragraphs = []
+  for (const a of items) {
+    const r = a.result
+    if (!r) continue
+    const text = generateSectionInterpretation(r, sectionType)
+    if (text) paragraphs.push(text)
+  }
+
+  // If AI generation failed for all, fallback
+  if (paragraphs.length === 0) {
+    return fallbackFn(items)
+  }
+
+  // Get tables from fallback
+  const fallback = fallbackFn(items)
+  return { title, paragraphs, tables: fallback.tables || [] }
+}
+
+/**
+ * Enhanced AI discussion section — generates comprehensive narrative.
+ */
+async function buildAIDiscussionSectionEnhanced(items) {
+  if (items.length === 0) {
+    return {
+      title: '4.4 Pembahasan Hasil Penelitian',
+      paragraphs: ['Pembahasan akan diisi setelah analisis inferensial selesai.'],
+      tables: [],
+    }
+  }
+
+  // Generate discussion per item
+  const paragraphs = []
+  for (const a of items) {
+    const r = a.result
+    if (!r) continue
+    const disc = generateSectionInterpretation(r, 'discussion')
+    if (disc) paragraphs.push(disc)
+  }
+
+  // Add AI-generated synthesis paragraph
+  try {
+    const synthesisPrompt = [
+      'Berdasarkan semua hasil analisis di atas, tulis satu paragraf pembahasan komprehensif',
+      'yang mengintegrasikan temuan-temuan kunci dan mengaitkannya dengan',
+      'implikasi praktis serta keterbatasan penelitian. Gunakan Bahasa Indonesia akademik.',
+      `Jumlah analisis: ${items.length}`,
+    ].join(' ')
+    
+    const aiOut = await generateInterpretation({
+      type: 'descriptive',
+      toolName: 'Pembahasan Komprehensif',
+      sampleSize: items.length,
+      stats: [],
+      _customContext: synthesisPrompt,
+    })
+    
+    if (aiOut?.ok && aiOut.text && !aiOut.fallback) {
+      paragraphs.push(aiOut.text)
+    }
+  } catch {
+    // silent fail — deterministic paragraphs already present
+  }
+
+  if (paragraphs.length === 0) {
+    paragraphs.push('Berdasarkan hasil pengujian hipotesis yang telah dilakukan, temuan penelitian ini memberikan gambaran empiris mengenai hubungan antar variabel yang diteliti. Interpretasi lebih lanjut dari setiap hasil analisis disajikan pada bagian 4.3.')
+  }
+
+  // Add closing paragraph
+  paragraphs.push(
+    'Secara keseluruhan, hasil analisis dalam bab ini memberikan bukti empiris yang mendukung beberapa hipotesis penelitian. Keterbatasan penelitian meliputi ukuran sampel dan generalisasi konteks, sehingga penelitian lanjutan disarankan untuk memperluas cakupan dan mengonfirmasi temuan ini pada populasi yang lebih luas.'
+  )
+
+  return {
+    title: '4.4 Pembahasan Hasil Penelitian',
+    paragraphs,
+    tables: [],
   }
 }
 

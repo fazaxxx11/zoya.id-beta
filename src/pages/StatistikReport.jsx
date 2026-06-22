@@ -6,22 +6,24 @@
 // Ditujukan sebagai *draft awal* — user tetap perlu polish substantif.
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { Copy, Download, CheckSquare, Square, RefreshCw, AlertCircle, FileText, Printer } from 'lucide-react'
+import { Copy, Download, CheckSquare, Square, RefreshCw, AlertCircle, FileText, Printer, Sparkles, Loader2 } from 'lucide-react'
 import { listAnalyses, getAnalysis } from '../lib/savedAnalyses'
-import { buildReport, reportToText, reportToHTML } from '../lib/reportBuilder'
+import { buildReport, buildAIReport, reportToText, reportToHTML } from '../lib/reportBuilder'
 import { reportToDocx, downloadDocx } from '../lib/docxExporter'
 import { toast } from '../lib/toast'
 import PageHeader from '../components/PageHeader'
 import ResultSummary from '../components/design/ResultSummary'
-import DetailsBlock from '../components/design/DetailsBlock'
 
 export default function StatistikReport() {
-  const [items, setItems] = useState([])     // list saved analyses (metadata only)
+  const [items, setItems] = useState([])
   const [selected, setSelected] = useState(new Set())
-  const [fullData, setFullData] = useState({}) // { [id]: full result }
+  const [fullData, setFullData] = useState({})
   const [loading, setLoading] = useState(true)
   const [loadingFull, setLoadingFull] = useState(false)
   const [error, setError] = useState(null)
+  const [aiMode, setAiMode] = useState(false)
+  const [aiReport, setAiReport] = useState(null)
+  const [generatingAI, setGeneratingAI] = useState(false)
   const previewRef = useRef(null)
 
   // -----------------------------------------------------------
@@ -70,7 +72,7 @@ export default function StatistikReport() {
 
   // -----------------------------------------------------------
   // Build report from selected analyses
-  // -----------------------------------------------------------
+  // Build report from selected analyses
   const report = useMemo(() => {
     const analyses = [...selected]
       .map(id => fullData[id])
@@ -78,6 +80,30 @@ export default function StatistikReport() {
     if (analyses.length === 0) return null
     return buildReport(analyses)
   }, [selected, fullData])
+
+  const displayReport = aiMode && aiReport ? aiReport : report
+
+  const generateAI = async () => {
+    const analyses = [...selected]
+      .map(id => fullData[id])
+      .filter(Boolean)
+    if (analyses.length === 0) {
+      toast.error('Pilih minimal 1 analisis')
+      return
+    }
+    setGeneratingAI(true)
+    try {
+      const ai = await buildAIReport(analyses)
+      setAiReport(ai)
+      setAiMode(true)
+      toast.success('AI report selesai digenerate')
+    } catch (e) {
+      console.error('AI report generation failed:', e)
+      toast.error('Gagal generate AI report')
+    } finally {
+      setGeneratingAI(false)
+    }
+  }
 
   // -----------------------------------------------------------
   // Actions
@@ -94,33 +120,31 @@ export default function StatistikReport() {
   }
 
   const copyText = async () => {
-    if (!report) return
+    if (!displayReport) return
     try {
-      await navigator.clipboard.writeText(reportToText(report))
+      await navigator.clipboard.writeText(reportToText(displayReport))
       toast.success('Draft Bab IV disalin (text)')
     } catch { toast.error('Gagal menyalin') }
   }
   const copyHTML = async () => {
-    if (!report) return
+    if (!displayReport) return
     try {
-      // For Word: prefer copy as HTML so tabel ke-paste sebagai tabel
-      const html = reportToHTML(report)
+      const html = reportToHTML(displayReport)
       const blob = new Blob([html], { type: 'text/html' })
-      const text = new Blob([reportToText(report)], { type: 'text/plain' })
+      const text = new Blob([reportToText(displayReport)], { type: 'text/plain' })
       await navigator.clipboard.write([
         new ClipboardItem({ 'text/html': blob, 'text/plain': text }),
       ])
       toast.success('Draft Bab IV disalin (formatted, paste ke Word)')
     } catch (e) {
-      // fallback ke text
       copyText()
     }
   }
   const downloadHTML = () => {
-    if (!report) return
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${report.title}</title>
+    if (!displayReport) return
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${displayReport.title}</title>
 <style>body{font-family:'Times New Roman',serif;font-size:12pt;line-height:1.6;max-width:800px;margin:40px auto;padding:0 20px;color:#222}h1{font-size:16pt;text-align:center;margin-bottom:18pt}h2{font-size:13pt;margin-top:18pt}p{text-align:justify;text-indent:1.27cm;margin:8pt 0}table{margin:8pt 0;font-size:11pt}</style>
-</head><body>${reportToHTML(report)}</body></html>`
+</head><body>${reportToHTML(displayReport)}</body></html>`
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -128,25 +152,15 @@ export default function StatistikReport() {
     a.download = `Bab_IV_Hasil_Pembahasan_${Date.now()}.html`
     a.click()
     URL.revokeObjectURL(url)
-    toast.success('File HTML di-download. Buka dengan Word untuk konversi otomatis.')
-  }
-  const downloadText = () => {
-    if (!report) return
-    const blob = new Blob([reportToText(report)], { type: 'text/plain;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `Bab_IV_Hasil_Pembahasan_${Date.now()}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
+    toast.success('File HTML di-download')
   }
 
   const [downloadingDocx, setDownloadingDocx] = useState(false)
   const downloadDOCX = async () => {
-    if (!report) return
+    if (!displayReport) return
     setDownloadingDocx(true)
     try {
-      const blob = await reportToDocx(report)
+      const blob = await reportToDocx(displayReport)
       downloadDocx(blob, `Bab_IV_Hasil_Pembahasan_${Date.now()}.docx`)
     } catch (e) {
       console.error('DOCX export gagal:', e)
@@ -221,65 +235,79 @@ export default function StatistikReport() {
           {/* Action toolbar — hidden saat print */}
           <div className="bg-card rounded-2xl border border-border p-4 flex items-center justify-between gap-3 flex-wrap print:hidden">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted font-medium">Preview Draft</div>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-muted font-medium">
+                {aiMode ? 'AI-Generated Draft' : 'Preview Draft'}
+              </div>
               <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-                {report ? `${report.sections.length} sub-bab dari ${selected.size} analisis` : 'Pilih analisis di kiri untuk mulai'}
+                {displayReport 
+                  ? `${displayReport.sections.length} sub-bab dari ${selected.size} analisis`
+                  : 'Pilih analisis di kiri untuk mulai'}
                 {loadingFull && <span className="ml-2 text-amber-600 inline-flex items-center gap-1"><RefreshCw className="w-3 h-3 animate-spin" />memuat…</span>}
               </div>
             </div>
-            {report && (
-              <div className="flex items-center gap-2 flex-wrap">
-                <button onClick={() => window.print()}
-                        className="text-xs text-gray-700 dark:text-gray-300 border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5"
-                        title="Cetak atau simpan sebagai PDF (browser dialog)">
-                  <Printer className="w-3.5 h-3.5" />
-                  Cetak / PDF
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* AI Generate */}
+              <button onClick={generateAI}
+                      disabled={generatingAI || selected.size === 0}
+                      className="text-xs font-heading font-semibold bg-[rgb(var(--accent))] text-[rgb(var(--accent-fg))] hover:brightness-110 disabled:opacity-40 px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all">
+                {generatingAI ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="w-3.5 h-3.5" />
+                )}
+                {generatingAI ? 'Generating…' : 'Generate AI'}
+              </button>
+
+              {aiMode && (
+                <button onClick={() => { setAiMode(false); setAiReport(null) }}
+                        className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] px-3 py-2 rounded-lg">
+                  Kembali ke template
                 </button>
-                <button onClick={copyHTML}
-                        className="text-xs text-gray-700 dark:text-gray-300 border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5">
-                  <Copy className="w-3.5 h-3.5" />
-                  Salin (untuk Word)
-                </button>
-                <button onClick={downloadHTML}
-                        className="text-xs bg-gray-900 hover:bg-black text-white px-3 py-2 rounded-lg flex items-center gap-1.5">
-                  <Download className="w-3.5 h-3.5" />
-                  Download HTML
-                </button>
-                <button onClick={downloadDOCX}
-                        disabled={downloadingDocx}
-                        className="text-xs bg-blue-700 hover:bg-blue-800 text-white px-3 py-2 rounded-lg flex items-center gap-1.5 disabled:opacity-60">
-                  <FileText className="w-3.5 h-3.5" />
-                  {downloadingDocx ? '...' : 'Download DOCX'}
-                </button>
-                <button onClick={downloadText}
-                        className="text-xs text-gray-600 dark:text-gray-400 border border-border hover:bg-surface px-3 py-2 rounded-lg">
-                  .txt
-                </button>
-              </div>
-            )}
+              )}
+
+              {displayReport && (
+                <>
+                  <span className="w-px h-5 bg-border" />
+                  <button onClick={() => window.print()}
+                          className="text-xs text-[rgb(var(--muted))] border border-[rgb(var(--border))] hover:bg-[rgb(var(--surface))] px-3 py-2 rounded-lg flex items-center gap-1.5">
+                    <Printer className="w-3.5 h-3.5" />
+                    Cetak
+                  </button>
+                  <button onClick={copyHTML}
+                          className="text-xs text-[rgb(var(--muted))] border border-[rgb(var(--border))] hover:bg-[rgb(var(--surface))] px-3 py-2 rounded-lg flex items-center gap-1.5">
+                    <Copy className="w-3.5 h-3.5" />
+                    Salin
+                  </button>
+                  <button onClick={downloadDOCX}
+                          disabled={downloadingDocx}
+                          className="text-xs bg-[rgb(var(--accent))] text-[rgb(var(--accent-fg))] hover:brightness-110 px-3 py-2 rounded-lg flex items-center gap-1.5 disabled:opacity-60 transition-all">
+                    <FileText className="w-3.5 h-3.5" />
+                    {downloadingDocx ? '...' : 'Download DOCX'}
+                  </button>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Preview body */}
-          {!report ? (
+          {!displayReport ? (
             <div className="bg-card rounded-2xl border border-border p-12 text-center">
-              <FileText className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-              <div className="text-sm text-muted">Pilih analisis di sidebar untuk men-generate draft</div>
+              <FileText className="w-10 h-10 text-[rgb(var(--muted))]/30 mx-auto mb-3" />
+              <div className="text-sm text-muted">Pilih analisis di sidebar & klik <strong>Generate AI</strong></div>
             </div>
           ) : (
             <>
-              {/* Summary: what's in this report */}
               <ResultSummary
                 status="info"
-                conclusion={`Draft Bab IV — ${report.sections.length} sub-bab`}
-                metric={`${selected.size} analisis dipilih`}
+                conclusion={`Draft Bab IV — ${displayReport.sections.length} sub-bab`}
+                metric={`${selected.size} analisis dipilih${aiMode ? ' · AI-generated' : ''}`}
                 meaning="Draft ini disusun otomatis dari analisis yang Anda pilih. Review setiap sub-bab, sesuaikan dengan konteks penelitian Anda, lalu polish sebelum digunakan."
               />
 
-              {/* Report preview with progressive disclosure for long content */}
               <div ref={previewRef} className="bg-card rounded-2xl border border-border p-8 lg:p-10 prose prose-sm max-w-none report-page">
-                <h1 className="text-center text-lg font-bold mb-6">{report.title}</h1>
-                <p className="text-justify indent-8 text-gray-800 dark:text-gray-200 leading-relaxed">{report.intro}</p>
-                {report.sections.map((sec, i) => (
+                <h1 className="text-center text-lg font-bold mb-6">{displayReport.title}</h1>
+                <p className="text-justify indent-8 text-gray-800 dark:text-gray-200 leading-relaxed">{displayReport.intro}</p>
+                {displayReport.sections.map((sec, i) => (
                   <ReportSection key={i} section={sec} />
                 ))}
               </div>
