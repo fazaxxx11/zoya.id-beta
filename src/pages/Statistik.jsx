@@ -37,6 +37,8 @@ import ExportActions from '../components/statistik/ExportActions'
 import GuidedWizardModal from '../components/statistik/GuidedWizardModal'
 import ContextualWriter from '../components/statistik/ContextualWriter'
 import StatEducation from '../components/statistik/StatEducation'
+import MessyDataBanner from '../components/statistik/MessyDataBanner'
+import { preprocessMessyData } from '../lib/messyDataPreprocessor'
 import { exportToExcel } from '../lib/export/excelExport'
 import { exportToPDF } from '../lib/export/pdfExport'
 import {
@@ -129,6 +131,7 @@ function Statistik() {
   const [showWizard, setShowWizard] = useState(
     !localStorage.getItem('azezmen_wizard_dismissed')
   )
+  const [rawRows, setRawRows] = useState(null) // for messy data detection
 
   // Backend status
   const { status: backendStatus, loading: backendLoading } = useStatsBackend()
@@ -199,6 +202,10 @@ function Statistik() {
         const arrayBuffer = event.target.result
         const jsonData = await parseExcelFile(arrayBuffer, uploadedFile.name)
         if (!jsonData.length) throw new Error('File kosong (tidak ada baris data)')
+
+        // Store raw rows for messy data detection
+        setRawRows(jsonData)
+        setFile(uploadedFile)
 
         // First row = headers
         const rawHeaders = Array.isArray(jsonData[0]) ? jsonData[0] : Object.values(jsonData[0])
@@ -828,6 +835,34 @@ function Statistik() {
       />
 
       <div className="max-w-5xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
+        {/* Messy Data Banner — appears after upload if issues detected */}
+        {rawRows && (
+          <div className="mb-4">
+            <MessyDataBanner
+              rawRows={rawRows}
+              fileName={file?.name}
+              onApply={(result) => {
+                if (result.error) {
+                  toast.error(result.error)
+                  return
+                }
+                setColumns(result.columns)
+                setData(result.data)
+                setRawRows(null)
+                setFilterColumn('')
+                setFilterValues([])
+                setCleaningReport(null)
+                toast.success(
+                  `Data dirapihkan: ${result.report.rowsAfter} baris, ${result.columnsAfter} kolom. ` +
+                  `${result.report.skippedRows.header > 0 ? `Skip ${result.report.skippedRows.header} baris header. ` : ''}` +
+                  `${result.report.skippedRows.summary > 0 ? `Hapus ${result.report.skippedRows.summary} baris summary. ` : ''}`
+                )
+              }}
+              onSkip={() => setRawRows(null)}
+            />
+          </div>
+        )}
+
         {/* Backend Status Indicator */}
         {!backendLoading && backendStatus && (
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
