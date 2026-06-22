@@ -10,6 +10,7 @@ import { Copy, Download, CheckSquare, Square, RefreshCw, AlertCircle, FileText, 
 import { listAnalyses, getAnalysis } from '../lib/savedAnalyses'
 import { buildReport, buildAIReport, reportToText, reportToHTML } from '../lib/reportBuilder'
 import { reportToDocx, downloadDocx } from '../lib/docxExporter'
+import { generateAllSections } from '../lib/babIVClient'
 import { toast } from '../lib/toast'
 import PageHeader from '../components/PageHeader'
 import ResultSummary from '../components/design/ResultSummary'
@@ -92,14 +93,89 @@ export default function StatistikReport() {
       return
     }
     setGeneratingAI(true)
+
     try {
-      const ai = await buildAIReport(analyses)
-      setAiReport(ai)
+      const sections = await generateAllSections(analyses, {
+        onProgress: ({ section, status }) => {
+          if (status === 'generating') {
+            // Could show per-section progress, but keep simple for now
+          }
+          if (status === 'failed') {
+            toast.error(`${section}: gagal generate, pakai template`)
+          }
+        },
+      })
+
+      // Build report object from API results
+      const reportSections = []
+      
+      if (sections.descriptive) {
+        reportSections.push({
+          title: '4.1 Deskripsi Data Penelitian',
+          paragraphs: [sections.descriptive],
+          tables: [],
+        })
+      }
+      if (sections.assumptions) {
+        reportSections.push({
+          title: '4.2 Uji Asumsi',
+          paragraphs: [sections.assumptions],
+          tables: [],
+        })
+      }
+      if (sections.hypothesis) {
+        reportSections.push({
+          title: '4.3 Pengujian Hipotesis',
+          paragraphs: [sections.hypothesis],
+          tables: [],
+        })
+      }
+      if (sections.discussion) {
+        reportSections.push({
+          title: '4.4 Pembahasan Hasil Penelitian',
+          paragraphs: [sections.discussion],
+          tables: [],
+        })
+      }
+      if (sections.synthesis) {
+        if (reportSections.length > 0) {
+          reportSections[reportSections.length - 1].paragraphs.push(sections.synthesis)
+        }
+      }
+
+      // Add tables from deterministic builder for the hypothesis section
+      const det = buildReport(analyses)
+      const infIdx = reportSections.findIndex(s => s.title === '4.3 Pengujian Hipotesis')
+      if (infIdx >= 0 && det) {
+        const detInf = det.sections.find(s => s.title.startsWith('4.3'))
+        if (detInf?.tables) {
+          reportSections[infIdx].tables = detInf.tables
+        }
+      }
+
+      // Add descriptive tables
+      const descIdx = reportSections.findIndex(s => s.title.startsWith('4.1'))
+      if (descIdx >= 0 && det) {
+        const detDesc = det.sections.find(s => s.title.startsWith('4.1'))
+        if (detDesc?.tables) {
+          reportSections[descIdx].tables = detDesc.tables
+        }
+      }
+
+      setAiReport({
+        title: 'BAB IV — HASIL DAN PEMBAHASAN',
+        intro: `Bab ini menguraikan hasil analisis data yang diperoleh dari ${analyses.length} analisis statistik. Pembahasan disusun mengikuti urutan: deskripsi data, uji asumsi, pengujian hipotesis, dan pembahasan substantif.`,
+        sections: reportSections,
+      })
       setAiMode(true)
-      toast.success('AI report selesai digenerate')
+      toast.success('AI report selesai digenerate!')
     } catch (e) {
-      console.error('AI report generation failed:', e)
-      toast.error('Gagal generate AI report')
+      console.error('AI generation failed:', e)
+      // Fallback ke deterministic
+      const fallback = await buildAIReport(analyses)
+      setAiReport(fallback)
+      setAiMode(true)
+      toast.success('Report digenerate (template — AI tidak tersedia)')
     } finally {
       setGeneratingAI(false)
     }
