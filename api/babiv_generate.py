@@ -1,7 +1,7 @@
 """
 Vercel serverless: /api/babiv_generate
 AI1833-powered Bab IV narrative generation.
-Free tier: deepseek-v4-flash-fast, 10 API keys rotation.
+Free tier: deepseek-v4-flash, 10 API keys rotation.
 """
 import json
 import os
@@ -23,7 +23,7 @@ if not API_KEYS:
             API_KEYS.append(key)
 
 BASE_URL = os.environ.get("AI1833_BASE_URL", "https://api.ai1833.shop/v1")
-MODEL = os.environ.get("AI1833_FREE_MODEL", "deepseek-v4-flash-fast")
+MODEL = os.environ.get("AI1833_FREE_MODEL", "deepseek-v4-flash")
 
 _key_index = 0
 
