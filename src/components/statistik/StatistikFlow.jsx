@@ -54,8 +54,10 @@ function StepIndicator({ current, completed }) {
 // ============================================================
 // Step 1: Upload
 // ============================================================
-function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuide }) {
+function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuide, onPasteData }) {
   const hasFile = file && file.name
+  const [mode, setMode] = useState('file') // 'file' | 'paste'
+  const [pasteText, setPasteText] = useState('')
   
   const handleDragOver = (e) => { e.preventDefault() }
   
@@ -64,50 +66,141 @@ function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuid
     const droppedFile = e.dataTransfer.files?.[0]
     if (droppedFile) onFileUpload({ target: { files: [droppedFile] } })
   }
+
+  const handlePasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText()
+      if (text) {
+        setPasteText(text)
+        onPasteData(text)
+      }
+    } catch {
+      // clipboard API not available — user types manually
+    }
+  }
   
   return (
     <div className="border border-border bg-card rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-fg mb-1">Unggah Dataset</h2>
-      <p className="text-sm text-muted mb-5">Format yang didukung: .xlsx, .xls, .csv</p>
-
-      <div
-        className={`relative block border-2 border-dashed rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]/50 transition-colors active:scale-95 ${hasFile ? 'border-green-400 bg-green-50/50' : 'border-border'}`}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-      >
-        {hasFile ? (
-          <>
-            <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-3" />
-            <p className="text-green-700 font-medium mb-1">✓ Berhasil diunggah</p>
-            <p className="text-sm text-green-600 font-semibold">{file.name}</p>
-            <p className="text-xs text-muted mt-2">Klik untuk ganti file lain</p>
-          </>
-        ) : (
-          <>
-            <FileSpreadsheet className="w-10 h-10 text-muted/40 mx-auto mb-3" />
-            <p className="text-muted font-medium mb-1">Klik atau seret file ke sini</p>
-            <p className="text-xs text-muted">Maksimal 10MB · header di baris pertama</p>
-          </>
-        )}
-        <input
-          type="file"
-          accept=".xlsx,.xls,.csv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          onChange={onFileUpload}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          aria-label="Upload dataset"
-        />
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-fg">Unggah Dataset</h2>
+        {/* Mode tabs */}
+        <div className="flex bg-[rgb(var(--surface))] rounded-lg p-0.5 text-xs">
+          <button
+            onClick={() => setMode('file')}
+            className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+              mode === 'file' 
+                ? 'bg-[rgb(var(--card))] text-[rgb(var(--fg))] shadow-sm' 
+                : 'text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]'
+            }`}
+          >
+            📁 File
+          </button>
+          <button
+            onClick={() => setMode('paste')}
+            className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+              mode === 'paste' 
+                ? 'bg-[rgb(var(--card))] text-[rgb(var(--fg))] shadow-sm' 
+                : 'text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]'
+            }`}
+          >
+            📋 Paste
+          </button>
+        </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted">
-        <span>Belum punya data?</span>
-        <button onClick={onExampleLoad} className="text-accent hover:text-accent font-medium">
-          Pakai Contoh Data
-        </button>
-        <span className="text-muted/30">|</span>
-        <button onClick={onOpenGuide} className="text-muted hover:text-fg font-medium">
-          Lihat Panduan Format
-        </button>
-      </div>
+      {mode === 'file' && (
+        <>
+          <div
+            className={`relative block border-2 border-dashed rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]/50 transition-colors active:scale-95 ${hasFile ? 'border-green-400 bg-green-50/50' : 'border-border'}`}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
+            {hasFile ? (
+              <>
+                <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-3" />
+                <p className="text-green-700 font-medium mb-1">✓ Berhasil diunggah</p>
+                <p className="text-sm text-green-600 font-semibold">{file.name}</p>
+                <p className="text-xs text-muted mt-2">Klik untuk ganti file lain</p>
+              </>
+            ) : (
+              <>
+                <FileSpreadsheet className="w-10 h-10 text-muted/40 mx-auto mb-3" />
+                <p className="text-muted font-medium mb-1">Klik atau seret file ke sini</p>
+                <p className="text-xs text-muted">.xlsx, .xls, .csv · maks 10MB</p>
+              </>
+            )}
+            <input
+              type="file"
+              accept=".xlsx,.xls,.csv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              onChange={onFileUpload}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              aria-label="Upload dataset"
+            />
+          </div>
+
+          <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted">
+            <span>Belum punya data?</span>
+            <button onClick={onExampleLoad} className="text-accent hover:text-accent font-medium">
+              Pakai Contoh Data
+            </button>
+            <span className="text-muted/30">|</span>
+            <button onClick={onOpenGuide} className="text-muted hover:text-fg font-medium">
+              Lihat Panduan Format
+            </button>
+          </div>
+        </>
+      )}
+
+      {mode === 'paste' && (
+        <div className="space-y-3">
+          <p className="text-sm text-muted">
+            Copy data dari Excel / Google Sheets, lalu paste di bawah. 
+            Format: baris pertama = header, pisahkan dengan tab atau koma.
+          </p>
+          
+          <div className="flex gap-2">
+            <button
+              onClick={handlePasteFromClipboard}
+              className="text-xs flex items-center gap-1 px-3 py-1.5 border border-[rgb(var(--border))] rounded-md hover:bg-[rgb(var(--surface))] transition-colors"
+            >
+              📋 Ambil dari clipboard
+            </button>
+            <button
+              onClick={() => {
+                setPasteText(
+                  'Nama\tPre-test\tPost-test\n' +
+                  'Siswa A\t22\t27\n' +
+                  'Siswa B\t18\t24\n' +
+                  'Siswa C\t25\t30\n' +
+                  'Siswa D\t20\t23\n' +
+                  'Siswa E\t21\t26'
+                )
+              }}
+              className="text-xs flex items-center gap-1 px-3 py-1.5 border border-[rgb(var(--border))] rounded-md hover:bg-[rgb(var(--surface))] transition-colors"
+            >
+              📝 Isi contoh
+            </button>
+          </div>
+
+          <textarea
+            value={pasteText}
+            onChange={(e) => setPasteText(e.target.value)}
+            placeholder={`Paste data di sini…\n\nNama\tPre-test\tPost-test\nSiswa A\t22\t27\nSiswa B\t18\t24`}
+            rows={8}
+            className="w-full p-3 text-sm font-mono bg-[rgb(var(--surface))] border border-[rgb(var(--border))] resize-y rounded-lg placeholder:text-[rgb(var(--muted))]/50 focus:outline-none focus:border-[rgb(var(--accent))]/50"
+            spellCheck={false}
+          />
+
+          <button
+            onClick={() => onPasteData(pasteText)}
+            disabled={!pasteText.trim()}
+            className="text-xs font-heading font-semibold bg-[rgb(var(--accent))] text-[rgb(var(--accent-fg))] hover:brightness-110 disabled:opacity-40 px-4 py-2 rounded-lg flex items-center gap-1.5 transition-all"
+          >
+            <ArrowRight className="w-3.5 h-3.5" />
+            Parse & Lanjutkan
+          </button>
+        </div>
+      )}
 
       {error && (
         <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700 flex items-start gap-2">
@@ -663,7 +756,7 @@ function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
 export default function StatistikFlow({
   file, data: propData, columns, numericColumns, categoricalColumns, error,
   activeTool, selectedTool, onSelectTool,
-  onFileUpload, onExampleLoad, onOpenGuide, onAnalyze, onDataChange,
+  onFileUpload, onExampleLoad, onOpenGuide, onAnalyze, onDataChange, onPasteData,
   analyzing, result, children, // result = analysis result, children = result/interpretation panels
 }) {
   // Editing state
@@ -767,6 +860,7 @@ export default function StatistikFlow({
         data={data}
         error={error}
         onFileUpload={onFileUpload}
+        onPasteData={onPasteData}
         onExampleLoad={onExampleLoad}
         onOpenGuide={onOpenGuide}
       />

@@ -256,8 +256,89 @@ function Statistik() {
       }
     }
     reader.readAsArrayBuffer(uploadedFile)
-    // Reset input so same file can be re-uploaded
     e.target.value = ''
+  }, [])
+
+  // Paste CSV/TSV data dari clipboard
+  const handlePasteData = useCallback((text) => {
+    if (!text || !text.trim()) return
+    try {
+      // Detect delimiter: tab vs comma
+      const firstLine = text.trim().split('\n')[0]
+      const delimiter = firstLine.includes('\t') ? '\t' : ','
+      
+      const lines = text.trim().split('\n').filter(l => l.trim())
+      if (lines.length < 2) throw new Error('Minimal 2 baris: 1 header + 1 data')
+      
+      const rawHeaders = lines[0].split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''))
+      if (rawHeaders.length < 1) throw new Error('Tidak ada header')
+      
+      // Clean headers
+      const headers = rawHeaders.map((h, i) => {
+        if (!h || h === 'undefined' || h.startsWith('Unnamed:')) return null
+        return { original: i, clean: h }
+      }).filter(Boolean)
+      
+      if (!headers.length) throw new Error('Header tidak valid')
+      
+      // Check dupes
+      const seen = new Set()
+      for (const h of headers) {
+        if (seen.has(h.clean)) throw new Error(`Header duplikat: ${h.clean}`)
+        seen.add(h.clean)
+      }
+      
+      // Parse rows
+      const dataRows = lines.slice(1).map(line => {
+        const vals = []
+        let current = ''
+        let inQuotes = false
+        for (const ch of line) {
+          if (ch === '"') { inQuotes = !inQuotes; continue }
+          if (ch === delimiter && !inQuotes) { vals.push(current.trim()); current = '' }
+          else current += ch
+        }
+        vals.push(current.trim())
+        return vals
+      })
+      
+      // Build column-oriented data (same format as parseExcelFile)
+      const parsed = {}
+      headers.forEach(({ original, clean }) => {
+        parsed[clean] = dataRows.map(row => {
+          const v = row[original] ?? ''
+          if (v === '' || v === null || v === undefined) return null
+          const trimmed = String(v).trim().replace(/^"|"$/g, '')
+          if (trimmed === '') return null
+          const num = Number(trimmed)
+          return isNaN(num) ? trimmed : num
+        })
+      })
+      
+      // Drop fully-null rows
+      const nRows = dataRows.length
+      const keepIdx = []
+      for (let i = 0; i < nRows; i++) {
+        if (!headers.every(h => parsed[h.clean][i] === null)) keepIdx.push(i)
+      }
+      if (!keepIdx.length) throw new Error('Semua baris kosong')
+      
+      const cleaned = {}
+      headers.forEach(({ clean }) => { cleaned[clean] = keepIdx.map(i => parsed[clean][i]) })
+      
+      setFile({ name: 'data-paste.csv' })
+      setColumns(headers.map(h => h.clean))
+      setData(cleaned)
+      setResult(null)
+      setError(null)
+      setFilterColumn('')
+      setFilterValues([])
+      setCleaningReport(null)
+      toast.success(`${keepIdx.length} baris, ${headers.length} kolom berhasil diparse`)
+    } catch (err) {
+      setError('Gagal parse data: ' + err.message)
+      toast.error('Gagal parse: ' + err.message)
+    }
   }, [])
 
   // ============================================================
@@ -767,6 +848,7 @@ function Statistik() {
           selectedTool={activeTool}
           onSelectTool={(id) => navigate('/statistik?tool=' + id)}
           onFileUpload={handleFileUpload}
+          onPasteData={handlePasteData}
           onExampleLoad={() => setExamplePickerOpen(true)}
           onOpenGuide={() => setShowGuide(true)}
           onAnalyze={handlePayClick}
