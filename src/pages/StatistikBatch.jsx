@@ -1,4 +1,4 @@
-// Multi-file batch analysis — upload N files, pick a numeric column,
+﻿// Multi-file batch analysis — upload N files, pick a numeric column,
 // render a side-by-side descriptive comparison matrix + bar chart.
 // Useful for comparing the same metric across multiple datasets/cohorts/periods.
 
@@ -292,7 +292,7 @@ export default function StatistikBatch() {
   // Render
   // -----------------------------------------------------------
   return (
-    <div className="min-h-screen bg-[#fafafa] pb-bottomnav">
+    <div className="min-h-screen bg-surface pb-bottomnav">
       <PageHeader
         title="Bandingkan Banyak File Sekaligus"
         subtitle="Batch Analysis"
@@ -307,7 +307,7 @@ export default function StatistikBatch() {
       <main className="max-w-6xl mx-auto px-3 sm:px-5 py-4 sm:py-6 space-y-4 sm:space-y-5">
         {/* Backend status */}
         {!backendLoading && backendStatus && (
-          <div className="bg-card rounded-2xl border border-border p-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl border border-border p-3 flex items-center gap-2">
             <span className="text-xs text-muted">Backend:</span>
             <span className="text-xs font-medium">
               {backendStatus.backend === 'scipy' ? 'scipy ✅ (SPSS-verified)' : 'JavaScript fallback'}
@@ -316,19 +316,19 @@ export default function StatistikBatch() {
         )}
         {/* Drop zone */}
         <div onDrop={onDrop} onDragOver={e => e.preventDefault()}
-             className="bg-card rounded-2xl border border-dashed border-border p-5 sm:p-8 text-center hover:border-gray-400 transition-colors active:scale-95">
-          <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+             className="bg-card rounded-xl border border-dashed border-border p-5 sm:p-8 text-center hover:border-border transition-colors active:scale-95">
+          <div className="text-sm text-muted mb-3">
             Drop beberapa file Excel/CSV di sini, atau pilih file. Tiap file dianggap satu dataset.
           </div>
           <input ref={inputRef} type="file" multiple accept=".xlsx,.xls,.csv"
                  onChange={onPick} className="hidden" />
           <button onClick={() => inputRef.current?.click()}
-                  className="bg-gray-900 hover:bg-black text-white text-sm font-medium px-5 py-2.5 rounded-lg">
+                  className="bg-fg hover:bg-fg text-white text-sm font-medium px-5 py-2.5 rounded-lg">
             {parsing ? 'Parsing…' : 'Pilih File'}
           </button>
           {files.length > 0 && (
             <button onClick={clearAll}
-                    className="ml-2 text-xs text-muted hover:text-gray-900 dark:text-gray-100 px-3 py-2.5">
+                    className="ml-2 text-xs text-muted hover:text-fg px-3 py-2.5">
               Hapus semua
             </button>
           )}
@@ -336,7 +336,7 @@ export default function StatistikBatch() {
 
         {/* File list */}
         {files.length > 0 && (
-          <div className="bg-card rounded-2xl border border-border p-5">
+          <div className="bg-card rounded-xl border border-border p-5">
             <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-3">
               File ({files.length})
             </div>
@@ -344,7 +344,7 @@ export default function StatistikBatch() {
               {files.map(f => (
                 <div key={f.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-surface border border-border">
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{f.name}</div>
+                    <div className="text-sm font-medium text-fg truncate">{f.name}</div>
                     {f.error ? (
                       <div className="text-xs text-red-600 mt-0.5">{f.error}</div>
                     ) : (
@@ -365,20 +365,20 @@ export default function StatistikBatch() {
 
         {/* Column picker */}
         {commonColumns.length > 0 && (
-          <div className="bg-card rounded-2xl border border-border p-5">
+          <div className="bg-card rounded-xl border border-border p-5">
             <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
               <div>
                 <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Kolom Numerik</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Pilih kolom yang ada di semua file untuk dibandingkan.</div>
+                <div className="text-sm text-muted">Pilih kolom yang ada di semua file untuk dibandingkan.</div>
               </div>
               {matrix.length > 0 && (
                 <div className="flex items-center gap-2">
                   <button onClick={exportPDF}
-                          className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-surface text-xs font-medium px-4 py-2 rounded-lg">
+                          className="text-fg hover:text-fg border border-border hover:bg-surface text-xs font-medium px-4 py-2 rounded-lg">
                     Export PDF
                   </button>
                   <button onClick={exportExcel}
-                          className="bg-gray-900 hover:bg-black text-white text-xs font-medium px-4 py-2 rounded-lg">
+                          className="bg-fg hover:bg-fg text-white text-xs font-medium px-4 py-2 rounded-lg">
                     Export Excel
                   </button>
                 </div>
@@ -389,8 +389,8 @@ export default function StatistikBatch() {
                 <button key={c} onClick={() => setSelectedColumn(c)}
                         className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
                           selectedColumn === c
-                            ? 'bg-gray-900 text-white border-gray-900'
-                            : 'bg-card text-gray-700 dark:text-gray-300 border-border hover:border-gray-400'
+                            ? 'bg-fg text-white border-fg'
+                            : 'bg-card text-fg border-border hover:border-border'
                         }`}>
                   {c}
                 </button>
@@ -400,7 +400,7 @@ export default function StatistikBatch() {
         )}
 
         {files.length > 0 && commonColumns.length === 0 && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+          <div className="bg-terracotta/10 border border-terracotta/30 rounded-xl p-4 text-sm text-terracotta">
             Tidak ada kolom numerik yang sama di semua file. Pastikan file punya header dan kolom angka yang serupa
             (mis. semua punya kolom “Nilai” atau “Skor”).
           </div>
@@ -408,10 +408,10 @@ export default function StatistikBatch() {
 
         {/* Comparison matrix */}
         {matrix.length > 0 && (
-          <div className="bg-card rounded-2xl border border-border overflow-hidden">
+          <div className="bg-card rounded-xl border border-border overflow-hidden">
             <div className="px-5 py-4 border-b border-border">
               <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Matriks Perbandingan</div>
-              <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">Statistik deskriptif: <span className="text-gray-600 dark:text-gray-400 font-normal">{selectedColumn}</span></div>
+              <div className="text-sm font-semibold text-fg">Statistik deskriptif: <span className="text-muted font-normal">{selectedColumn}</span></div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
@@ -422,22 +422,22 @@ export default function StatistikBatch() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-border">
                   {matrix.map(r => (
                     <tr key={r.id} className="hover:bg-surface/60">
-                      <td className="px-3 py-2.5 font-medium text-gray-800 dark:text-gray-200 truncate max-w-[200px]" title={r.name}>{r.name}</td>
+                      <td className="px-3 py-2.5 font-medium text-fg truncate max-w-[200px]" title={r.name}>{r.name}</td>
                       {r.stats ? (
                         <>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{r.stats.n}</td>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{fmt(r.stats.mean)}</td>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{fmt(r.stats.stdDev)}</td>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{fmt(r.stats.median)}</td>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{fmt(r.stats.min)}</td>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{fmt(r.stats.max)}</td>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{fmt(r.stats.q1)}</td>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{fmt(r.stats.q3)}</td>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{fmt(r.stats.skewness, 2)}</td>
-                          <td className="px-3 py-2.5 tabular-nums text-gray-700 dark:text-gray-300">{fmt(r.stats.kurtosis, 2)}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{r.stats.n}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{fmt(r.stats.mean)}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{fmt(r.stats.stdDev)}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{fmt(r.stats.median)}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{fmt(r.stats.min)}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{fmt(r.stats.max)}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{fmt(r.stats.q1)}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{fmt(r.stats.q3)}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{fmt(r.stats.skewness, 2)}</td>
+                          <td className="px-3 py-2.5 tabular-nums text-fg">{fmt(r.stats.kurtosis, 2)}</td>
                         </>
                       ) : (
                         <td colSpan={10} className="px-3 py-2.5 text-muted italic">Tidak ada data numerik valid</td>
@@ -469,7 +469,7 @@ export default function StatistikBatch() {
           />
         )}
         {inferential?.error && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+          <div className="bg-terracotta/10 border border-terracotta/30 rounded-xl p-4 text-sm text-terracotta">
             Tidak bisa menjalankan uji: {inferential.error}
           </div>
         )}
@@ -508,15 +508,15 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
   const matchesCurrent = recommendation === currentMethod
 
   return (
-    <div className="bg-card rounded-2xl border border-border p-5">
+    <div className="bg-card rounded-xl border border-border p-5">
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div>
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Cek Asumsi</div>
-          <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">Apakah asumsi ANOVA terpenuhi?</div>
+          <div className="text-sm font-semibold text-fg">Apakah asumsi ANOVA terpenuhi?</div>
         </div>
         {!matchesCurrent && (
           <button onClick={onApplyRecommendation}
-                  className="bg-gray-900 hover:bg-black text-white text-xs font-medium px-3 py-1.5 rounded-lg">
+                  className="bg-fg hover:bg-fg text-white text-xs font-medium px-3 py-1.5 rounded-lg">
             Pakai {recommendsKruskal ? 'Kruskal-Wallis' : 'ANOVA'} (rekomendasi)
           </button>
         )}
@@ -525,8 +525,8 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
       {/* Recommendation banner */}
       <div className={`rounded-lg px-4 py-3 mb-4 text-[13px] leading-relaxed ${
         recommendsKruskal
-          ? 'bg-amber-50 border border-amber-200 text-amber-900'
-          : 'bg-emerald-50 border border-emerald-200 text-emerald-900'
+          ? 'bg-terracotta/10 border border-terracotta/30 text-terracotta'
+          : 'bg-teal/10 border border-teal/30 text-teal'
       }`}>
         <div className="font-medium mb-0.5">
           {recommendsKruskal ? 'Rekomendasi: Kruskal-Wallis' : 'Rekomendasi: One-way ANOVA'}
@@ -540,8 +540,8 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
           <div className="flex items-center gap-2 mb-2">
             <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium">Normalitas (Shapiro-Wilk)</div>
             <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-              allNormal ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+              allNormal ? 'bg-teal/10 text-teal border border-teal/30'
+                        : 'bg-terracotta/10 text-terracotta border border-terracotta/30'
             }`}>
               {allNormal ? 'Semua normal' : 'Ada yang tidak normal'}
             </span>
@@ -549,7 +549,7 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
           <div className="space-y-1.5">
             {normality.map((n, i) => (
               <div key={i} className="flex items-center justify-between text-xs px-3 py-2 rounded-lg bg-surface border border-border">
-                <div className="truncate font-medium text-gray-800 dark:text-gray-200 mr-2" title={n.name}>{n.name}</div>
+                <div className="truncate font-medium text-fg mr-2" title={n.name}>{n.name}</div>
                 <div className="flex items-center gap-2 shrink-0">
                   {n.skipped ? (
                     <span className="text-muted italic">{n.skipped}</span>
@@ -557,10 +557,10 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
                     <span className="text-red-500 italic">{n.error}</span>
                   ) : (
                     <>
-                      <span className="tabular-nums text-gray-600 dark:text-gray-400">W = {fmt(n.W, 3)}</span>
-                      <span className="tabular-nums text-gray-600 dark:text-gray-400">p = {fmtP(n.pValue)}</span>
+                      <span className="tabular-nums text-muted">W = {fmt(n.W, 3)}</span>
+                      <span className="tabular-nums text-muted">p = {fmtP(n.pValue)}</span>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                        n.isNormal ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                        n.isNormal ? 'bg-teal/20 text-teal' : 'bg-terracotta/20 text-terracotta'
                       }`}>
                         {n.isNormal ? 'normal' : 'tidak'}
                       </span>
@@ -578,8 +578,8 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
             <div className="text-[11px] uppercase tracking-[0.16em] text-muted font-medium">Homogenitas Varians (Levene)</div>
             {homogeneous != null && (
               <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                homogeneous ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
+                homogeneous ? 'bg-teal/10 text-teal border border-teal/30'
+                            : 'bg-terracotta/10 text-terracotta border border-terracotta/30'
               }`}>
                 {homogeneous ? 'Homogen' : 'Tidak homogen'}
               </span>
@@ -593,11 +593,11 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
             <div className="px-3 py-3 rounded-lg bg-surface border border-border text-xs space-y-1.5">
               <div className="flex justify-between">
                 <span className="text-muted">F({levene.dfBetween}, {levene.dfWithin})</span>
-                <span className="tabular-nums font-medium text-gray-800 dark:text-gray-200">{fmt(levene.F, 3)}</span>
+                <span className="tabular-nums font-medium text-fg">{fmt(levene.F, 3)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted">p-value</span>
-                <span className="tabular-nums font-medium text-gray-800 dark:text-gray-200">{fmtP(levene.pValue)}</span>
+                <span className="tabular-nums font-medium text-fg">{fmtP(levene.pValue)}</span>
               </div>
               <div className="text-[11px] text-muted pt-1.5 border-t border-border/60 leading-relaxed">
                 Levene Brown-Forsythe (median-based). H₀: varians antar grup sama. p &lt; 0,05 → tolak H₀ (varians tidak homogen).
@@ -649,26 +649,26 @@ function BatchAIPanel({ payload }) {
   }
 
   return (
-    <div className="bg-card rounded-2xl border border-border p-5">
+    <div className="bg-card rounded-xl border border-border p-5">
       <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
         <div>
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Interpretasi AI</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Paragraf akademik siap-paste untuk skripsi (Bahasa Indonesia, format APA).</div>
+          <div className="text-sm text-muted">Paragraf akademik siap-paste untuk skripsi (Bahasa Indonesia, format APA).</div>
         </div>
         {!text && !loading && (
           <button onClick={generate}
-                  className="bg-gray-900 hover:bg-black text-white text-xs font-medium px-4 py-2 rounded-lg">
+                  className="bg-fg hover:bg-fg text-white text-xs font-medium px-4 py-2 rounded-lg">
             Generate
           </button>
         )}
         {text && (
           <div className="flex items-center gap-2">
             <button onClick={copy}
-                    className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-surface px-3 py-2 rounded-lg">
+                    className="text-xs text-muted hover:text-fg border border-border hover:bg-surface px-3 py-2 rounded-lg">
               Salin
             </button>
             <button onClick={generate} disabled={loading}
-                    className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-surface px-3 py-2 rounded-lg disabled:opacity-50">
+                    className="text-xs text-muted hover:text-fg border border-border hover:bg-surface px-3 py-2 rounded-lg disabled:opacity-50">
               {loading ? 'Memproses…' : 'Regenerate'}
             </button>
           </div>
@@ -677,7 +677,7 @@ function BatchAIPanel({ payload }) {
 
       {loading && (
         <div className="bg-surface border border-border/80 rounded-lg p-4 text-sm text-muted flex items-center gap-2">
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" />
+          <span className="w-2 h-2 bg-muted rounded-full animate-pulse" />
           Menulis interpretasi…
         </div>
       )}
@@ -691,11 +691,11 @@ function BatchAIPanel({ payload }) {
       {text && !loading && (
         <div className="bg-surface border border-border/80 rounded-lg p-4">
           {isFallback && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3 text-[11px] text-amber-800 leading-relaxed">
+            <div className="bg-terracotta/10 border border-terracotta/30 rounded-lg px-3 py-2 mb-3 text-[11px] text-terracotta leading-relaxed">
               <span className="font-medium">Mode offline:</span> AI provider sedang sibuk, jadi interpretasi disusun dari template lokal berdasarkan angka. Coba <em>Regenerate</em> beberapa saat lagi untuk versi AI.
             </div>
           )}
-          <div className="prose prose-sm max-w-none text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed text-[13.5px]">
+          <div className="prose prose-sm max-w-none text-fg whitespace-pre-wrap leading-relaxed text-[13.5px]">
             {text}
           </div>
           {provider && (
@@ -718,24 +718,24 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
   const pVal = result.pValue
 
   return (
-    <div className="bg-card rounded-2xl border border-border p-5">
+    <div className="bg-card rounded-xl border border-border p-5">
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div>
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Uji Inferensial</div>
-          <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-            Apakah <span className="text-gray-600 dark:text-gray-400 font-normal">{column}</span> berbeda nyata antar file?
+          <div className="text-sm font-semibold text-fg">
+            Apakah <span className="text-muted font-normal">{column}</span> berbeda nyata antar file?
           </div>
         </div>
         <div className="inline-flex border border-border rounded-lg p-0.5 bg-surface">
           <button onClick={() => onMethodChange('anova')}
                   className={`text-xs px-3 py-1.5 rounded-md transition-colors ${
-                    method === 'anova' ? 'bg-card text-gray-900 dark:text-gray-100 shadow-sm font-medium' : 'text-muted hover:text-gray-800 dark:text-gray-200'
+                    method === 'anova' ? 'bg-card text-fg shadow-sm font-medium' : 'text-muted hover:text-fg'
                   }`}>
             One-way ANOVA
           </button>
           <button onClick={() => onMethodChange('kruskal')}
                   className={`text-xs px-3 py-1.5 rounded-md transition-colors ${
-                    method === 'kruskal' ? 'bg-card text-gray-900 dark:text-gray-100 shadow-sm font-medium' : 'text-muted hover:text-gray-800 dark:text-gray-200'
+                    method === 'kruskal' ? 'bg-card text-fg shadow-sm font-medium' : 'text-muted hover:text-fg'
                   }`}>
             Kruskal-Wallis
           </button>
@@ -744,10 +744,10 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
 
       {/* Verdict pill */}
       <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium mb-4 ${
-        sig ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-            : 'bg-surface text-gray-600 dark:text-gray-400 border border-border'
+        sig ? 'bg-teal/10 text-teal border border-teal/30'
+            : 'bg-surface text-muted border border-border'
       }`}>
-        <span className={`w-1.5 h-1.5 rounded-full ${sig ? 'bg-emerald-500' : 'bg-gray-400'}`} />
+        <span className={`w-1.5 h-1.5 rounded-full ${sig ? 'bg-teal/100' : 'bg-muted'}`} />
         {sig ? 'Signifikan' : 'Tidak signifikan'} pada α = {result.alpha ?? 0.05}
       </div>
 
@@ -790,7 +790,7 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
 
       {/* Interpretation */}
       {result.interpretation && (
-        <div className="bg-surface border border-border/80 rounded-lg p-3 text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+        <div className="bg-surface border border-border/80 rounded-lg p-3 text-[13px] text-fg leading-relaxed mb-4">
           {result.interpretation}
         </div>
       )}
@@ -809,15 +809,15 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
                   <th className="px-3 py-2 text-left font-medium">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {result.postHoc.comparisons.map((c, i) => (
-                  <tr key={i} className={c.significant ? 'bg-emerald-50/40' : ''}>
-                    <td className="px-3 py-2 text-gray-800 dark:text-gray-200">{c.group1} vs {c.group2}</td>
-                    <td className="px-3 py-2 tabular-nums text-gray-700 dark:text-gray-300">{fmt(c.meanDiff, 3)}</td>
-                    <td className="px-3 py-2 tabular-nums text-gray-700 dark:text-gray-300">{fmtP(c.pValue)}</td>
+                  <tr key={i} className={c.significant ? 'bg-teal/10' : ''}>
+                    <td className="px-3 py-2 text-fg">{c.group1} vs {c.group2}</td>
+                    <td className="px-3 py-2 tabular-nums text-fg">{fmt(c.meanDiff, 3)}</td>
+                    <td className="px-3 py-2 tabular-nums text-fg">{fmtP(c.pValue)}</td>
                     <td className="px-3 py-2 text-xs">
                       {c.significant
-                        ? <span className="text-emerald-700 font-medium">Berbeda nyata</span>
+                        ? <span className="text-teal font-medium">Berbeda nyata</span>
                         : <span className="text-muted">Tidak signifikan</span>}
                     </td>
                   </tr>
@@ -842,7 +842,7 @@ function Stat({ label, value, sub, highlight, tooltip }) {
   return (
     <div className="bg-surface border border-border rounded-lg px-3 py-2.5" title={tooltip || ''}>
       <div className="text-[10px] uppercase tracking-[0.16em] text-muted font-medium">{label}</div>
-      <div className={`text-base tabular-nums font-semibold mt-0.5 ${highlight ? 'text-emerald-700' : 'text-gray-900 dark:text-gray-100'}`}>
+      <div className={`text-base tabular-nums font-semibold mt-0.5 ${highlight ? 'text-teal' : 'text-fg'}`}>
         {value}
       </div>
       {sub && <div className="text-[10px] text-muted mt-0.5 capitalize">{sub}</div>}
@@ -1137,9 +1137,9 @@ function MeanComparisonChart({ matrix, column }) {
   const ticks = Array.from({ length: yTicks + 1 }, (_, i) => yMin + (range * i) / yTicks)
 
   return (
-    <div className="bg-card rounded-2xl border border-border p-5">
+    <div className="bg-card rounded-xl border border-border p-5">
       <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Visualisasi</div>
-      <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">Mean ± SD per file: <span className="font-normal text-gray-600 dark:text-gray-400">{column}</span></div>
+      <div className="text-sm font-semibold text-fg mb-4">Mean ± SD per file: <span className="font-normal text-muted">{column}</span></div>
       <div className="overflow-x-auto">
         <svg width={W} height={H} className="block min-w-full">
           {/* Y-axis grid + labels */}

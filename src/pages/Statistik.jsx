@@ -5,6 +5,7 @@ import {
   Sparkles, Download, FileType, File as FileIcon, AlertCircle,
   Layers, Sigma, Clock, FileText, BookOpen, X, LayoutGrid,
   ArrowRight, RotateCcw, AlertTriangle, Compass,
+  Filter, Check, HelpCircle,
 } from 'lucide-react'
 import { parseExcelFile, getColumnNames } from '../utils/excelHelper'
 
@@ -1035,7 +1036,7 @@ function FilterPanel({
       <button onClick={() => setOpen(!open)}
               className="w-full px-5 py-3 flex items-center justify-between hover:bg-card/50 transition-colors active:scale-95">
         <div className="flex items-center gap-2 text-sm">
-          <span>🔎</span>
+          <Filter className="w-4 h-4 text-muted" />
           <span className="font-medium text-fg">Filter Data</span>
           <span className="text-xs text-muted">(opsional — analisis tetap jalan tanpa ini)</span>
           {isFiltered && (
@@ -1116,9 +1117,12 @@ function FilterPanel({
 function DataGuideModal({ open, onClose }) {
   return (
     <Modal open={open} onClose={onClose}
-      panelClassName="bg-card rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
+      panelClassName="bg-card rounded-xl border border-border max-w-3xl w-full max-h-[90vh] flex flex-col">
       <div className="flex-shrink-0 flex items-center justify-between p-6 pb-4 border-b border-border">
-        <h2 className="text-xl font-heading font-bold text-fg">📖 Panduan Format Data</h2>
+        <div className="flex items-center gap-2.5">
+          <BookOpen className="w-5 h-5 text-accent" />
+          <h2 className="text-xl font-heading font-bold text-fg">Panduan Format Data</h2>
+        </div>
         <button onClick={onClose} className="text-muted hover:text-fg text-2xl leading-none">×</button>
       </div>
 
@@ -1140,7 +1144,7 @@ function DataGuideModal({ open, onClose }) {
               <li>Hindari <strong>merged cells</strong>, baris kosong di tengah, atau judul tabel sebelum header</li>
             </ul>
             <div className="mt-2 bg-surface border border-border rounded-lg p-3 font-mono text-xs">
-              <div className="font-heading font-bold mb-1 text-teal">✅ Format yang BENAR:</div>
+              <div className="flex items-center gap-1.5 font-heading font-bold mb-1 text-teal"><Check className="w-3.5 h-3.5" /> Format yang BENAR:</div>
               <pre>{`nama,umur,skor_pre,skor_post,kelas
 Andi,18,72,80,A
 Budi,19,68,75,A
@@ -1148,7 +1152,7 @@ Citra,18,75,82,B
 ...`}</pre>
             </div>
             <div className="mt-2 bg-terracotta/8 border border-terracotta/20 rounded-lg p-3 font-mono text-xs">
-              <div className="font-heading font-bold mb-1 text-terracotta">❌ Yang harus DIHINDARI:</div>
+              <div className="flex items-center gap-1.5 font-heading font-bold mb-1 text-terracotta"><AlertTriangle className="w-3.5 h-3.5" /> Yang harus DIHINDARI:</div>
               <pre>{`Hasil Penelitian Skripsi    ← jangan ada judul!
                             ← jangan ada baris kosong
 nama,umur,skor
@@ -1175,13 +1179,13 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
 
           <section>
             <h3 className="font-heading font-semibold text-base text-fg mb-2">4. Tips Penting</h3>
-            <ul className="list-disc pl-5 space-y-1.5">
-              <li>🔹 <strong>Missing values</strong>: kosongkan saja sel-nya (jangan tulis "tidak ada", "-", "N/A"). Sistem akan abaikan otomatis.</li>
-              <li>🔹 <strong>Desimal</strong>: pakai titik <code className="bg-surface px-1 rounded">3.14</code>, bukan koma <code className="bg-surface px-1 rounded">3,14</code></li>
-              <li>🔹 <strong>Tidak ada satuan di angka</strong>: tulis <code>175</code> bukan <code>175 cm</code> atau <code>Rp 5000</code></li>
-              <li>🔹 <strong>Nama kolom</strong> sebaiknya tanpa spasi atau karakter aneh. Pakai <code>skor_pre</code> bukan <code>skor pre (test 1)</code></li>
-              <li>🔹 <strong>Banyak grup?</strong> Pakai 1 kolom kategorik (misal <code>kelas</code> = A/B/C), bukan 1 kolom per grup.</li>
-              <li>🔹 <strong>Sebelum/sesudah?</strong> Pisahkan jadi 2 kolom: <code>skor_pre</code> dan <code>skor_post</code> (paired t-test)</li>
+            <ul className="list-disc pl-5 space-y-1.5 marker:text-muted">
+              <li><strong>Missing values</strong>: kosongkan saja sel-nya (jangan tulis "tidak ada", "-", "N/A"). Sistem akan abaikan otomatis.</li>
+              <li><strong>Desimal</strong>: pakai titik <code className="bg-surface px-1 rounded">3.14</code>, bukan koma <code className="bg-surface px-1 rounded">3,14</code></li>
+              <li><strong>Tidak ada satuan di angka</strong>: tulis <code>175</code> bukan <code>175 cm</code> atau <code>Rp 5000</code></li>
+              <li><strong>Nama kolom</strong> sebaiknya tanpa spasi atau karakter aneh. Pakai <code>skor_pre</code> bukan <code>skor pre (test 1)</code></li>
+              <li><strong>Banyak grup?</strong> Pakai 1 kolom kategorik (misal <code>kelas</code> = A/B/C), bukan 1 kolom per grup.</li>
+              <li><strong>Sebelum/sesudah?</strong> Pisahkan jadi 2 kolom: <code>skor_pre</code> dan <code>skor_post</code> (paired t-test)</li>
             </ul>
           </section>
 
@@ -1208,7 +1212,7 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
 
           <section>
             <h3 className="font-heading font-semibold text-base text-fg mb-2">6. Punya Subset Data?</h3>
-            <p>Pakai fitur <strong>🔎 Filter Data</strong> di bawah upload. Misal data 150 baris (3 species), pilih species = <code>setosa</code> → analisis pakai 50 baris saja.</p>
+            <p>Pakai fitur <strong>Filter Data</strong> di bawah upload. Misal data 150 baris (3 species), pilih species = <code>setosa</code> → analisis pakai 50 baris saja.</p>
           </section>
       </div>
 
@@ -1745,7 +1749,7 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
 
   return (
     <Modal open={true} onClose={onClose}
-      panelClassName="bg-card rounded-2xl  max-w-md w-full p-6">
+      panelClassName="bg-card rounded-xl border border-border max-w-md w-full p-6">
       <div>
         <div className="mb-4">
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Simpan Analisis</div>
@@ -1885,7 +1889,8 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
 }
 
 // ============================================================
-// Explain Chat Panel — pop-up "Belum Paham?" dengan AI bahasa santai.
+// Explain Panel — "Belum Paham?" tanya AI dalam panel editorial.
+// Bukan chat bubble — tampilan Q&A thread bergaya jurnal/scholarly.
 // Max 5 pertanyaan per result session (free tier).
 // ============================================================
 function ExplainChatPanel({ result, aiInterpretation }) {
@@ -1911,7 +1916,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
     if (messages.length === 0) {
       setMessages([{
         role: 'assistant',
-        content: `Halo! 👋 Aku siap bantu jelasin hasil **${result.toolName || 'analisis'}**-mu pakai bahasa yang gampang dimengerti. Mau aku jelasin dari mana? Misalnya:\n\n• "Hasilnya artinya gimana sih?"\n• "Apa itu p-value?"\n• "Kesimpulannya untuk skripsi gimana?"\n\nTanya bebas aja — kamu punya jatah ${MAX_TURNS} pertanyaan ya 😊`
+        content: `Tanya apa saja tentang hasil **${result.toolName || 'analisis'}**-mu — misalnya "apa arti p-value ini?" atau "kesimpulan untuk skripsi seperti apa?". Tersedia ${MAX_TURNS} pertanyaan gratis per hasil.`
       }])
     }
     setOpen(true)
@@ -1959,11 +1964,13 @@ function ExplainChatPanel({ result, aiInterpretation }) {
     <>
       <div className="mt-5 bg-surface border border-border rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center flex-shrink-0 text-lg">💬</div>
+          <div className="w-10 h-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center flex-shrink-0">
+            <HelpCircle className="w-5 h-5" />
+          </div>
           <div className="min-w-0">
             <div className="font-heading font-semibold text-fg">Belum paham hasilnya?</div>
             <div className="text-sm text-muted">
-              Tanya AI! Bakal dijelasin pakai bahasa santai, kayak ngobrol sama temen. Gratis {MAX_TURNS} pertanyaan per hasil.
+              Tanya AI — dijelaskan dalam bahasa yang lugas dan ringkas. Gratis {MAX_TURNS} pertanyaan per hasil.
             </div>
           </div>
         </div>
@@ -1974,10 +1981,12 @@ function ExplainChatPanel({ result, aiInterpretation }) {
       </div>
 
       <Modal open={open} onClose={() => setOpen(false)}
-             panelClassName="bg-card rounded-2xl shadow-2xl max-w-2xl w-full h-[80vh] flex flex-col">
+             panelClassName="bg-card rounded-xl border border-border max-w-2xl w-full h-[80vh] flex flex-col">
         <div className="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-full bg-accent/10 text-accent flex items-center justify-center flex-shrink-0">💬</div>
+            <div className="w-9 h-9 rounded-lg bg-accent/10 text-accent flex items-center justify-center flex-shrink-0">
+              <HelpCircle className="w-5 h-5" />
+            </div>
             <div className="min-w-0">
               <div className="font-heading font-semibold text-fg truncate">Tanya AI tentang Hasil</div>
               <div className="text-xs text-muted">{result.toolName} · sisa {remaining}/{MAX_TURNS} pertanyaan</div>
@@ -1988,14 +1997,12 @@ function ExplainChatPanel({ result, aiInterpretation }) {
           </button>
         </div>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-surface/40">
-          {messages.map((m, i) => <ChatBubble key={i} role={m.role} content={m.content} />)}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-5 bg-surface/40">
+          {messages.map((m, i) => <QaEntry key={i} role={m.role} content={m.content} />)}
           {loading && (
-            <div className="flex items-center gap-2 text-sm text-muted pl-2">
-              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
-              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
-              <span className="ml-1">AI lagi mikir…</span>
+            <div className="border-l-2 border-accent/40 pl-3 py-1 text-sm italic text-muted">
+              <span className="font-heading not-italic font-semibold text-accent text-xs uppercase tracking-wider mr-2">AI</span>
+              menyusun penjelasan…
             </div>
           )}
           {error && !loading && (
@@ -2017,11 +2024,11 @@ function ExplainChatPanel({ result, aiInterpretation }) {
                 value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
                 placeholder={loading ? 'Tunggu AI…' : 'Tanya apa aja tentang hasilmu…'}
                 disabled={loading} rows={1}
-                className="flex-1 resize-none border border-border rounded-xl px-3 py-2.5 text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:bg-surface disabled:text-muted"
+                className="flex-1 resize-none border border-border rounded-lg px-3 py-2.5 text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:bg-surface disabled:text-muted"
                 style={{ maxHeight: '120px' }}
               />
               <button onClick={handleSend} disabled={!input.trim() || loading}
-                      className="bg-accent hover:bg-accent/90 disabled:bg-muted/30 disabled:cursor-not-allowed text-accent-fg text-sm font-heading font-semibold px-4 py-2.5 rounded-xl">
+                      className="bg-accent hover:bg-accent/90 disabled:bg-muted/30 disabled:cursor-not-allowed text-accent-fg text-sm font-heading font-semibold px-4 py-2.5 rounded-lg">
                 Kirim
               </button>
             </div>
@@ -2033,20 +2040,21 @@ function ExplainChatPanel({ result, aiInterpretation }) {
   )
 }
 
-function ChatBubble({ role, content }) {
+function QaEntry({ role, content }) {
   if (role === 'user') {
     return (
-      <div className="flex justify-end">
-        <div className="bg-accent text-accent-fg rounded-2xl rounded-br-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed">
+      <div className="border-l-2 border-border pl-3 py-1">
+        <div className="text-[10px] font-heading font-semibold uppercase tracking-[0.14em] text-muted mb-1">Anda</div>
+        <div className="text-sm italic text-muted leading-relaxed whitespace-pre-wrap">
           {content}
         </div>
       </div>
     )
   }
   return (
-    <div className="flex justify-start gap-2">
-      <div className="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center flex-shrink-0 text-base">💬</div>
-      <div className="bg-card border border-border rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed text-fg">
+    <div className="border-l-2 border-accent/40 pl-3 py-1">
+      <div className="text-[10px] font-heading font-semibold uppercase tracking-[0.14em] text-accent mb-1">AI</div>
+      <div className="text-sm leading-relaxed text-fg whitespace-pre-wrap">
         {content}
       </div>
     </div>

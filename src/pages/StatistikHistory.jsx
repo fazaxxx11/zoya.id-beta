@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search, Trash2, Eye, FileText, Calendar, X, GitCompare } from 'lucide-react'
 import { listAnalyses, getAnalysis, deleteAnalysis, updateAnalysis } from '../lib/savedAnalyses'
@@ -83,10 +83,10 @@ export default function StatistikHistory() {
     return (
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="max-w-md text-center">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Login dulu</h2>
+          <h2 className="text-xl font-bold text-fg mb-2">Login dulu</h2>
           <p className="text-sm text-muted mb-5">Riwayat analisis tersimpan per akun. Silakan login untuk akses fitur ini.</p>
           <button onClick={() => navigate('/login?next=/statistik/history')}
-            className="px-5 py-2.5 bg-gray-900 hover:bg-black text-white text-sm font-medium rounded-lg">
+            className="px-5 py-2.5 bg-fg hover:bg-fg text-white text-sm font-medium rounded-lg">
             Login
           </button>
         </div>
@@ -109,8 +109,8 @@ export default function StatistikHistory() {
           <button onClick={() => { setSelectMode(s => !s); setSelected(new Set()) }}
             className={`text-xs font-medium px-3 py-1.5 rounded-lg border flex items-center gap-1.5 ${
               selectMode
-                ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-card text-gray-700 dark:text-gray-300 border-border hover:bg-surface'
+                ? 'bg-fg text-white border-fg'
+                : 'bg-card text-fg border-border hover:bg-surface'
             }`}>
             <GitCompare className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{selectMode ? 'Batal' : 'Bandingkan'}</span>
@@ -122,7 +122,7 @@ export default function StatistikHistory() {
 
         {/* Compare action bar (sticky when in select mode) */}
         {selectMode && (
-          <div className="bg-gray-900 text-white rounded-xl p-3 mb-5 flex items-center justify-between gap-3 sticky top-2 z-10 shadow-lg">
+          <div className="bg-fg text-white rounded-xl p-3 mb-5 flex items-center justify-between gap-3 sticky top-2 z-10 shadow-lg">
             <div className="text-sm">
               {selected.size === 0 && 'Pilih 2 analisis untuk dibandingkan'}
               {selected.size === 1 && 'Pilih 1 lagi untuk membandingkan'}
@@ -134,7 +134,7 @@ export default function StatistikHistory() {
               <button
                 disabled={selected.size !== 2}
                 onClick={() => navigate(`/statistik/compare?ids=${Array.from(selected).join(',')}`)}
-                className="text-xs font-medium px-4 py-2 rounded-lg bg-card text-gray-900 dark:text-gray-100 hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed">
+                className="text-xs font-medium px-4 py-2 rounded-lg bg-card text-fg hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed">
                 Bandingkan →
               </button>
             </div>
@@ -151,7 +151,7 @@ export default function StatistikHistory() {
           </div>
           {tools.length > 1 && (
             <select value={filterTool} onChange={e => setFilterTool(e.target.value)}
-              className="px-3 py-2 bg-surface rounded-lg text-sm text-gray-700 dark:text-gray-300 border-0 outline-none">
+              className="px-3 py-2 bg-surface rounded-lg text-sm text-fg border-0 outline-none">
               <option value="all">Semua tool</option>
               {tools.map(([k, name]) => (
                 <option key={k} value={k}>{name}</option>
@@ -168,7 +168,7 @@ export default function StatistikHistory() {
         ) : filtered.length === 0 ? (
           <div className="bg-card border border-border/80 rounded-xl p-12 text-center">
             <FileText className="w-10 h-10 text-muted mx-auto mb-3" />
-            <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <h3 className="font-medium text-fg mb-1">
               {items.length === 0 ? 'Belum ada riwayat' : 'Tidak ada hasil'}
             </h3>
             <p className="text-sm text-muted mb-5">
@@ -178,7 +178,7 @@ export default function StatistikHistory() {
             </p>
             {items.length === 0 && (
               <button onClick={() => navigate('/statistik')}
-                className="px-4 py-2 bg-gray-900 hover:bg-black text-white text-sm font-medium rounded-lg">
+                className="px-4 py-2 bg-fg hover:bg-fg text-white text-sm font-medium rounded-lg">
                 Mulai Analisis
               </button>
             )}
@@ -196,7 +196,7 @@ export default function StatistikHistory() {
                   {!selectMode && <th className="px-4 py-3 font-medium text-right">Aksi</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {filtered.map(it => {
                   const isSelected = selected.has(it.id)
                   const toggleSelect = () => {
@@ -211,23 +211,23 @@ export default function StatistikHistory() {
                   return (
                   <tr key={it.id}
                       onClick={selectMode ? toggleSelect : undefined}
-                      className={`${selectMode ? 'cursor-pointer' : ''} ${isSelected ? 'bg-gray-900/5' : 'hover:bg-surface/60'}`}>
+                      className={`${selectMode ? 'cursor-pointer' : ''} ${isSelected ? 'bg-fg/5' : 'hover:bg-surface/60'}`}>
                     {selectMode && (
                       <td className="px-3 py-3 w-10">
                         <input type="checkbox" checked={isSelected} onChange={toggleSelect}
                           onClick={e => e.stopPropagation()}
-                          className="w-4 h-4 accent-gray-900 cursor-pointer" />
+                          className="w-4 h-4 accent-fg cursor-pointer" />
                       </td>
                     )}
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900 dark:text-gray-100">{it.title}</div>
+                      <div className="font-medium text-fg">{it.title}</div>
                       {it.notes && <div className="text-xs text-muted mt-0.5 truncate max-w-md">{it.notes}</div>}
                       {it.ai_interpretation && (
-                        <div className="text-[10px] uppercase tracking-wider text-emerald-600 mt-1">+ Interpretasi AI</div>
+                        <div className="text-[10px] uppercase tracking-wider text-teal mt-1">+ Interpretasi AI</div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{it.tool_name}</td>
-                    <td className="px-4 py-3 text-center text-gray-600 dark:text-gray-400">{it.sample_size ?? '—'}</td>
+                    <td className="px-4 py-3 text-muted">{it.tool_name}</td>
+                    <td className="px-4 py-3 text-center text-muted">{it.sample_size ?? '—'}</td>
                     <td className="px-4 py-3 text-muted whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3 h-3 text-muted" />
@@ -237,7 +237,7 @@ export default function StatistikHistory() {
                     {!selectMode && (
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         <button onClick={() => setParams({ id: it.id })}
-                          className="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 px-2 py-1 rounded">
+                          className="inline-flex items-center gap-1 text-xs text-muted hover:text-fg px-2 py-1 rounded">
                           <Eye className="w-3.5 h-3.5" /> Lihat
                         </button>
                         <button onClick={() => handleDelete(it.id, it.title)}
@@ -315,7 +315,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
 
   return (
     <Modal open={true} onClose={onClose}
-      panelClassName="bg-card rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col">
+      panelClassName="bg-card rounded-xl max-w-3xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="p-5 border-b border-border flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -327,12 +327,12 @@ function DetailDrawer({ id, onClose, onUpdated }) {
                 <input value={titleDraft} onChange={e => setTitleDraft(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSaveTitle()}
                   autoFocus
-                  className="flex-1 text-lg font-bold text-gray-900 dark:text-gray-100 bg-surface border border-border rounded px-2 py-1 outline-none focus:border-gray-400" />
-                <button onClick={handleSaveTitle} className="text-xs text-emerald-600 hover:text-emerald-700">Simpan</button>
-                <button onClick={() => { setEditingTitle(false); setTitleDraft(data.title) }} className="text-xs text-muted hover:text-gray-600 dark:text-gray-400">Batal</button>
+                  className="flex-1 text-lg font-bold text-fg bg-surface border border-border rounded px-2 py-1 outline-none focus:border-accent/40" />
+                <button onClick={handleSaveTitle} className="text-xs text-teal hover:text-teal">Simpan</button>
+                <button onClick={() => { setEditingTitle(false); setTitleDraft(data.title) }} className="text-xs text-muted hover:text-muted">Batal</button>
               </div>
             ) : (
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 cursor-pointer hover:text-gray-600 dark:text-gray-400" onClick={() => setEditingTitle(true)}
+              <h2 className="text-lg font-bold text-fg cursor-pointer hover:text-muted" onClick={() => setEditingTitle(true)}
                 title="Klik untuk edit">
                 {data?.title || 'Memuat…'}
               </h2>
@@ -343,7 +343,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
               </div>
             )}
           </div>
-          <button onClick={onClose} className="text-muted hover:text-gray-700 dark:text-gray-300 p-1">
+          <button onClick={onClose} className="text-muted hover:text-fg p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -357,7 +357,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
               {data.notes && (
                 <div>
                   <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Catatan</div>
-                  <div className="bg-surface border border-border/80 rounded-lg p-3 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                  <div className="bg-surface border border-border/80 rounded-lg p-3 text-sm text-fg whitespace-pre-wrap">
                     {data.notes}
                   </div>
                 </div>
@@ -366,14 +366,14 @@ function DetailDrawer({ id, onClose, onUpdated }) {
               {data.result?.interpretation && (
                 <div>
                   <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Interpretasi</div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{data.result.interpretation}</div>
+                  <div className="text-sm text-fg whitespace-pre-wrap leading-relaxed">{data.result.interpretation}</div>
                 </div>
               )}
 
               {data.ai_interpretation && (
                 <div>
                   <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Interpretasi AI</div>
-                  <div className="bg-surface border border-border/80 rounded-lg p-4 text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
+                  <div className="bg-surface border border-border/80 rounded-lg p-4 text-sm text-fg whitespace-pre-wrap leading-relaxed">
                     {data.ai_interpretation}
                   </div>
                 </div>
@@ -381,7 +381,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
 
               <div>
                 <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Data Hasil (JSON)</div>
-                <pre className="bg-gray-900 text-gray-100 text-[11px] rounded-lg p-4 overflow-auto max-h-80">
+                <pre className="bg-fg text-surface text-[11px] rounded-lg p-4 overflow-auto max-h-80">
 {JSON.stringify(data.result, null, 2)}
                 </pre>
               </div>
@@ -392,7 +392,7 @@ function DetailDrawer({ id, onClose, onUpdated }) {
         {/* Footer */}
         <div className="p-4 border-t border-border flex items-center justify-end gap-2">
           <button onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 rounded-lg">
+            className="px-4 py-2 text-sm text-muted hover:text-fg rounded-lg">
             Tutup
           </button>
         </div>
