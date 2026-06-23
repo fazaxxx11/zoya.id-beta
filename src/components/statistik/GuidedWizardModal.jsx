@@ -67,7 +67,7 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
       id: 'auto',
       icon: HelpCircle,
       label: 'Saya belum tahu',
-      desc: 'Arahkan ke semua alat — pilih sendiri nanti',
+      desc: 'Pilih sendiri nanti di halaman analisis',
     },
   ]
 
@@ -79,17 +79,17 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
         onClick={handleDismiss}
       />
 
-      {/* Modal */}
+      {/* Modal — compact, vertically centered */}
       <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
         <div
           className="
-            relative w-full max-w-lg bg-[rgb(var(--card))] border border-[rgb(var(--border))]
+            relative w-full max-w-md bg-[rgb(var(--card))] border border-[rgb(var(--border))]
             shadow-[var(--shadow-md)] overflow-hidden
           "
           onClick={(e) => e.stopPropagation()}
         >
           {/* ── PROGRESS BAR ── */}
-          <div className="flex gap-1 px-6 pt-5">
+          <div className="flex gap-1 px-4 pt-4">
             {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
               <div
                 key={i}
@@ -105,38 +105,32 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
           </div>
 
           {/* ── HEADER ── */}
-          <div className="flex items-center justify-between px-6 pt-4 pb-2">
-            <div className="flex items-center gap-3">
-              <span className="font-heading font-black text-2xl text-[rgb(var(--accent))]/15 select-none leading-none">
-                0{step}
-              </span>
-              <span className="font-heading font-semibold text-sm text-[rgb(var(--muted))]">
-                Langkah {step} dari {TOTAL_STEPS}
-              </span>
-            </div>
-
+          <div className="flex items-center justify-between px-4 pt-3 pb-1">
+            <span className="text-[10px] text-[rgb(var(--muted))] tracking-[0.16em] uppercase">
+              Langkah {step} dari {TOTAL_STEPS}
+            </span>
             <button
               onClick={handleDismiss}
-              className="p-1.5 hover:bg-[rgb(var(--surface))] rounded transition-colors"
+              className="p-1 hover:bg-[rgb(var(--surface))] rounded transition-colors"
               aria-label="Tutup"
             >
-              <X className="w-4 h-4 text-[rgb(var(--muted))]" />
+              <X className="w-3.5 h-3.5 text-[rgb(var(--muted))]" />
             </button>
           </div>
 
           {/* ── BODY ── */}
-          <div className="px-6 py-5">
-            {/* STEP 1: Pick analysis intent */}
+          <div className="px-4 py-3">
+            {/* STEP 1: Pick analysis intent — 2-column grid */}
             {step === 1 && (
               <div>
-                <h2 className="font-heading font-bold text-xl text-[rgb(var(--fg))] mb-1.5">
+                <h2 className="font-heading font-bold text-base text-[rgb(var(--fg))] mb-0.5">
                   Apa yang ingin dianalisis?
                 </h2>
-                <p className="text-sm text-[rgb(var(--muted))] mb-5">
-                  Pilih tujuan analisis — kami arahkan ke uji yang sesuai.
+                <p className="text-[11px] text-[rgb(var(--muted))] mb-3 leading-relaxed">
+                  Pilih tujuan — kami arahkan ke uji yang sesuai.
                 </p>
 
-                <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-2 gap-1.5">
                   {intents.map((item) => {
                     const Icon = item.icon
                     const isSelected = selectedIntent === item.id
@@ -146,7 +140,7 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
                         key={item.id}
                         onClick={() => setSelectedIntent(item.id)}
                         className={`
-                          group flex items-start gap-3 p-3.5 text-left border
+                          group flex flex-col items-start gap-1.5 p-2.5 text-left border
                           transition-all duration-150 cursor-pointer w-full
                           ${
                             isSelected
@@ -157,17 +151,17 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
                       >
                         <div
                           className={`
-                            mt-0.5 p-1.5 shrink-0 transition-colors
-                            ${isSelected ? 'text-[rgb(var(--accent))]' : 'text-[rgb(var(--muted))] group-hover:text-[rgb(var(--accent))]'}
+                            p-1.5 shrink-0 rounded-md transition-colors
+                            ${isSelected ? 'text-[rgb(var(--accent))] bg-[rgb(var(--accent))]/10' : 'text-[rgb(var(--muted))] group-hover:text-[rgb(var(--accent))]'}
                           `}
                         >
-                          <Icon className="w-4.5 h-4.5" />
+                          <Icon className="w-3.5 h-3.5" />
                         </div>
                         <div className="min-w-0">
-                          <div className="font-heading font-semibold text-sm text-[rgb(var(--fg))]">
+                          <div className="font-heading font-semibold text-[12px] text-[rgb(var(--fg))] leading-snug">
                             {item.label}
                           </div>
-                          <div className="text-xs text-[rgb(var(--muted))] mt-0.5 leading-relaxed">
+                          <div className="text-[10px] text-[rgb(var(--muted))] mt-0.5 leading-snug">
                             {item.desc}
                           </div>
                         </div>
@@ -181,16 +175,16 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
             {/* STEP 2: Confirm & start */}
             {step === 2 && (
               <div>
-                <h2 className="font-heading font-bold text-xl text-[rgb(var(--fg))] mb-1.5">
+                <h2 className="font-heading font-bold text-base text-[rgb(var(--fg))] mb-0.5">
                   Siap mulai?
                 </h2>
-                <p className="text-sm text-[rgb(var(--muted))] mb-5">
-                  Kami akan mengarahkan ke alat analisis yang sesuai. Upload data dilakukan setelahnya.
+                <p className="text-[11px] text-[rgb(var(--muted))] mb-3 leading-relaxed">
+                  Upload data dilakukan di halaman analisis.
                 </p>
 
                 {/* Summary card */}
-                <div className="border border-[rgb(var(--border))] p-4 mb-5">
-                  <div className="flex flex-col gap-2.5 text-sm">
+                <div className="border border-[rgb(var(--border))] p-3 mb-3">
+                  <div className="flex flex-col gap-1.5 text-[13px]">
                     <div className="flex justify-between">
                       <span className="text-[rgb(var(--muted))]">Uji yang disarankan</span>
                       <span className="font-heading font-semibold text-[rgb(var(--accent))]">
@@ -207,10 +201,10 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
                 </div>
 
                 {/* Note */}
-                <div className="flex items-start gap-2.5 p-3 bg-[rgb(var(--surface))] border-l-2 border-[rgb(var(--accent))]">
-                  <CheckCircle className="w-4 h-4 text-[rgb(var(--accent))] mt-0.5 shrink-0" />
-                  <p className="text-xs text-[rgb(var(--muted))] leading-relaxed">
-                    Upload data dilakukan di halaman analisis. Di sana kamu bisa upload CSV/Excel dan langsung menjalankan uji.
+                <div className="flex items-start gap-2 p-2.5 bg-[rgb(var(--surface))] border-l-2 border-[rgb(var(--accent))]">
+                  <CheckCircle className="w-3.5 h-3.5 text-[rgb(var(--accent))] mt-0.5 shrink-0" />
+                  <p className="text-[11px] text-[rgb(var(--muted))] leading-relaxed">
+                    Upload CSV/Excel di halaman analisis, lalu langsung jalankan uji.
                   </p>
                 </div>
               </div>
@@ -218,23 +212,23 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
           </div>
 
           {/* ── FOOTER ── */}
-          <div className="flex items-center justify-between px-6 py-4 border-t border-[rgb(var(--border))] bg-[rgb(var(--surface))]">
+          <div className="flex items-center justify-between px-4 py-2.5 border-t border-[rgb(var(--border))] bg-[rgb(var(--surface))]">
             <div>
               {step > 1 ? (
                 <button
                   onClick={() => setStep((s) => s - 1)}
                   className="
-                    inline-flex items-center gap-1.5 px-3 py-2 text-sm text-[rgb(var(--muted))]
+                    inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-[rgb(var(--muted))]
                     hover:text-[rgb(var(--fg))] transition-colors
                   "
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <ArrowLeft className="w-3 h-3" />
                   Kembali
                 </button>
               ) : (
                 <button
                   onClick={handleDismiss}
-                  className="text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] transition-colors px-3 py-2"
+                  className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] transition-colors px-2.5 py-1.5"
                 >
                   Nanti saja
                 </button>
@@ -242,7 +236,6 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Primary CTA */}
               <button
                 disabled={step === 1 && !selectedIntent}
                 onClick={() => {
@@ -253,7 +246,7 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
                   }
                 }}
                 className="
-                  inline-flex items-center gap-1.5 px-4 py-2 text-sm font-heading font-semibold
+                  inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-heading font-semibold
                   bg-[rgb(var(--accent))] text-[rgb(var(--accent-fg))]
                   hover:brightness-110 active:brightness-95
                   disabled:opacity-40 disabled:cursor-not-allowed
@@ -263,12 +256,12 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
                 {step === TOTAL_STEPS ? (
                   <>
                     Mulai analisis
-                    <CheckCircle className="w-3.5 h-3.5" />
+                    <CheckCircle className="w-3 h-3" />
                   </>
                 ) : (
                   <>
                     Lanjut
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3 h-3" />
                   </>
                 )}
               </button>

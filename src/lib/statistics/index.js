@@ -32,7 +32,7 @@ export function cohensD(group1, group2) {
   const d = (mean1 - mean2) / pooledStd;
   return { d, n1, n2, mean1, mean2, pooledStd };
 }
-export { cleanNumeric, listwisePair, groupBy, parseCSV, column } from './data.js';
+export { cleanNumeric, listwisePair, groupBy, splitByGroup, parseCSV, column } from './data.js';
 export {
   normalCDF, normalPDF,
   tCDF, tPDF, tPValue,

@@ -1,12 +1,10 @@
 // src/components/statistik/ResultCards.jsx
-// Result display components for all statistical tests
-// Extracted from Statistik.jsx for code splitting
+// Result display components for all statistical tests — Scholarly Editorial redesign.
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Sparkles } from 'lucide-react';
-import InterpretationPanel from './InterpretationPanel';
 import { Histogram, QQPlot, ScatterPlot, BoxPlot, ChartGrid } from '../charts/StatCharts'
-import { HistogramChart, QQPlotChart, ScatterPlotChart } from '../charts'
+import { HistogramChart, QQPlotChart } from '../charts'
 import { ExportChartButton } from '../charts/ExportChartButton'
 import { processHistogramData, processQQPlot, processScatterData } from '../../lib/chartUtils'
 import StatTooltip from '../StatTooltip'
@@ -14,68 +12,120 @@ import StatTooltip from '../StatTooltip'
 const num = (v, d = 3) => typeof v === 'number' ? v.toFixed(d) : (v ?? '—')
 const pct = (p) => typeof p === 'number' ? (p < 0.001 ? '< 0.001' : p.toFixed(4)) : '—'
 
+// ============================================================
+// Shared primitives — scholarly, consistent
+// ============================================================
+
+// Status color helper — consistent mapping across all cards
+function statusColor(ok) {
+  return ok ? 'text-accent' : 'text-terracotta'
+}
+
 export const Stat = ({ label, value, accent, term }) => (
-  <div className="bg-card/50 rounded-lg p-3">
-    <div className="text-xs text-muted">
+  <div className="rounded-lg p-2.5 bg-surface border border-border">
+    <div className="text-[10px] text-muted tracking-wide uppercase font-heading">
       {term ? <StatTooltip term={term}>{label}</StatTooltip> : label}
     </div>
-    <div className={`font-semibold mt-0.5 ${accent || 'text-fg'}`}>{value}</div>
+    <div className={`text-sm font-semibold font-mono mt-1 ${accent || 'text-fg'}`}>{value}</div>
   </div>
 )
 
 export const InterpBox = ({ children }) => (
-  <div className="mt-4 p-4 bg-accent/5 border-l-4 border-accent rounded-r-lg">
-    <p className="text-sm font-semibold text-accent mb-1">Interpretasi:</p>
-    <p className="text-sm text-fg">{children}</p>
+  <div className="mt-5 p-4 bg-accent/5 border-l-2 border-accent rounded-r-lg">
+    <div className="flex items-center gap-1.5 mb-1.5">
+      <Sparkles className="w-3 h-3 text-accent" />
+      <p className="text-[10px] font-heading font-semibold text-accent tracking-wider uppercase">Interpretasi</p>
+    </div>
+    <p className="text-sm text-fg leading-relaxed">{children}</p>
   </div>
 )
 
 export const ResultHeader = ({ title, significant, testLabel }) => (
-  <div className={`flex items-center justify-between p-3 rounded-xl mb-4 ${
-    significant ? 'bg-accent/10 border border-accent/30' : 'bg-muted/10 border border-border'
+  <div className={`flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-xl mb-5 border ${
+    significant ? 'bg-accent/5 border-accent/30' : 'bg-surface border-border'
   }`}>
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-heading font-semibold text-fg">{title}</span>
-      {testLabel && <span className="text-xs text-muted px-2 py-0.5 rounded bg-surface">{testLabel}</span>}
+    <div className="flex items-center gap-2.5">
+      <div className={`w-1.5 h-8 rounded-full ${significant ? 'bg-accent' : 'bg-muted/30'}`} />
+      <div>
+        <h3 className="font-heading font-bold text-base tracking-tight">{title}</h3>
+        {testLabel && (
+          <span className="text-[11px] text-muted">{testLabel}</span>
+        )}
+      </div>
     </div>
     <div className="flex items-center gap-2">
-      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+      <span className="text-[10px] px-2 py-0.5 rounded-full bg-teal/8 text-teal border border-teal/20 font-medium font-heading">
         ✓ Sesuai SPSS
       </span>
-      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-        significant ? 'bg-accent text-white' : 'bg-muted/20 text-muted'
+      <span className={`text-[11px] font-heading font-semibold px-3 py-1 rounded-full ${
+        significant ? 'bg-accent text-accent-fg' : 'bg-muted/10 text-muted'
       }`}>
-        {significant ? 'Signifikan ✓' : 'Tidak Signifikan'}
+        {significant ? 'Signifikan' : 'Tidak Signifikan'}
       </span>
     </div>
   </div>
 )
 
 export const KeyMetric = ({ label, value, highlight }) => (
-  <div className={`text-center px-4 py-3 rounded-xl ${highlight ? 'bg-accent/10' : 'bg-card/50'}`}>
-    <div className="text-xs text-muted mb-1">{label}</div>
-    <div className={`text-xl font-bold font-mono ${highlight ? 'text-accent' : 'text-fg'}`}>{value}</div>
+  <div className={`text-center px-4 py-3 rounded-lg border ${
+    highlight ? 'bg-accent/8 border-accent/30' : 'bg-surface border-border'
+  }`}>
+    <div className="text-[10px] text-muted tracking-wider uppercase mb-1 font-heading">{label}</div>
+    <div className={`text-xl font-heading font-bold font-mono ${highlight ? 'text-accent' : 'text-fg'}`}>{value}</div>
   </div>
 )
 
+// Reusable table wrapper — scholarly frame
+const TableFrame = ({ children, note }) => (
+  <div className="overflow-x-auto">
+    <table className="w-full text-sm border-collapse">
+      {children}
+    </table>
+    {note && <p className="text-[11px] text-muted mt-2">{note}</p>}
+  </div>
+)
+
+// Table header cell — scholarly serif
+const Th = ({ children, className = '' }) => (
+  <th className={`px-3 py-2 text-left font-heading font-semibold text-muted text-xs uppercase tracking-wider border-b border-border bg-surface/50 ${className}`}>
+    {children}
+  </th>
+)
+
+// Table data cell
+const Td = ({ children, className = '' }) => (
+  <td className={`px-3 py-2 border-b border-border/40 ${className}`}>{children}</td>
+)
+
+// Section sub-heading
+const SubHeading = ({ children }) => (
+  <div className="flex items-center gap-2 mb-2 mt-1">
+    <h4 className="font-heading font-semibold text-sm tracking-tight">{children}</h4>
+    <span className="flex-1 h-px bg-border" />
+  </div>
+)
+
+// ============================================================
+// 1. Descriptive
+// ============================================================
 export function DescriptiveResult({ r }) {
   return (
     <div>
-    <div className="overflow-x-auto">
+      <div className="overflow-x-auto border border-border rounded-lg overflow-hidden">
       <table className="w-full text-sm">
-        <thead className="bg-card/50">
+        <thead className="bg-surface/60">
           <tr>
             {['Variabel','N','Mean','Median','Modus','SD','Var','Min','Max','Skew','Kurt','SEM'].map(h => (
-              <th key={h} className="px-3 py-2 text-left font-semibold text-fg">{h}</th>
+              <th key={h} className="px-3 py-2 text-left font-heading font-semibold text-muted text-xs uppercase tracking-wider">{h}</th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-border/40">
           {r.stats.map((s, i) => (
-            <tr key={i} className="hover:bg-card/50">
+            <tr key={i} className="hover:bg-surface/30">
               <td className="px-3 py-2 font-medium">{s.column}</td>
               <td className="px-3 py-2">{s.n}</td>
-              <td className="px-3 py-2 font-semibold text-accent">{s.mean}</td>
+              <td className="px-3 py-2 font-semibold text-accent font-mono">{s.mean}</td>
               <td className="px-3 py-2">{s.median}</td>
               <td className="px-3 py-2">{s.mode}</td>
               <td className="px-3 py-2">{s.stdDev}</td>
@@ -89,8 +139,8 @@ export function DescriptiveResult({ r }) {
           ))}
         </tbody>
       </table>
-      <p className="text-xs text-muted mt-3">SD &amp; Variance dihitung dengan formula sample (n−1).</p>
-    </div>
+      </div>
+      <p className="text-[11px] text-muted mt-3">SD &amp; Variance dihitung dengan formula sample (n−1).</p>
       <ChartGrid>
         {r.stats.map((s, i) => (
           <Histogram key={i} values={s.values} title={`Histogram: ${s.column}`} xLabel={s.column} />
@@ -100,103 +150,85 @@ export function DescriptiveResult({ r }) {
   )
 }
 
+// ============================================================
+// 2. Normality
+// ============================================================
 export function NormalityResult({ r }) {
-  const [showInterpretation, setShowInterpretation] = useState(false);
   const rows = r.results || [{ column: r.column, ...r }]
   const anyNotNormal = rows.some(row => !row.isNormal)
-  
-  // Refs for export functionality
+
   const histogramRef = useRef(null)
   const qqPlotRef = useRef(null)
 
   return (
     <div>
       <ResultHeader title="Uji Normalitas" significant={anyNotNormal} />
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto border border-border rounded-lg overflow-hidden mb-4">
       <table className="w-full text-sm">
-        <thead className="bg-card/50">
+        <thead className="bg-surface/60">
           <tr>
             {['Variabel', 'Metode', 'Statistik', 'p-value', 'Status', 'Kesimpulan'].map(h => (
-              <th key={h} className="px-3 py-2 text-left font-semibold text-fg">{h}</th>
+              <th key={h} className="px-3 py-2 text-left font-heading font-semibold text-muted text-xs uppercase tracking-wider">{h}</th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-border/40">
           {rows.map((row, i) => (
-            <tr key={i} className="hover:bg-card/50 align-top">
+            <tr key={i} className="hover:bg-surface/30 align-top">
               <td className="px-3 py-2 font-medium">{row.column}</td>
               <td className="px-3 py-2">{row.method}</td>
-              <td className="px-3 py-2">{num(row.W ?? row.D, 4)}</td>
-              <td className="px-3 py-2 font-semibold">{pct(row.pValue)}</td>
-              <td className={'px-3 py-2 font-semibold ' + (row.isNormal ? 'text-accent' : 'text-red-600')}>
-                {row.isNormal ? 'Normal ✅' : 'Tidak Normal ❌'}
+              <td className="px-3 py-2 font-mono">{num(row.W ?? row.D, 4)}</td>
+              <td className="px-3 py-2 font-semibold font-mono">{pct(row.pValue)}</td>
+              <td className={'px-3 py-2 font-semibold ' + statusColor(row.isNormal)}>
+                {row.isNormal ? 'Normal' : 'Tidak Normal'}
               </td>
               <td className="px-3 py-2 text-xs text-muted max-w-md">{row.interpretation}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="text-xs text-muted mt-3">
+      </div>
+      <p className="text-[11px] text-muted mb-4">
         H₀: data berdistribusi normal. Jika p &gt; 0.05 → tidak ada bukti tolak H₀ → data dianggap normal.
       </p>
 
-      <div className="mt-4 flex justify-center">
-        <button
-          onClick={() => setShowInterpretation(true)}
-          className="group relative overflow-hidden inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 font-semibold rounded-lg shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 hover:scale-[1.02]"
-        >
-          <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400 transition-transform duration-200 group-hover:rotate-12" />
-          <span>Interpretasi AI</span>
-          {/* Subtle hover gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/0 via-blue-50/50 to-blue-50/0 dark:from-blue-900/0 dark:via-blue-900/20 dark:to-blue-900/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-        </button>
-      </div>
-      
-      {/* Enhanced Recharts visualization with export */}
       {rows.map((row, i) => row.values && (
-        <div key={i} className="mt-4 space-y-3">
+        <div key={i} className="mt-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="font-semibold text-sm text-fg">Visualisasi: {row.column}</h4>
+            <SubHeading>Visualisasi: {row.column}</SubHeading>
             <div className="flex gap-2">
               <ExportChartButton chartRef={histogramRef} filename={`histogram-${row.column}`} />
               <ExportChartButton chartRef={qqPlotRef} filename={`qqplot-${row.column}`} />
             </div>
           </div>
-          
-          <div ref={histogramRef} className="bg-white p-3 rounded-lg border">
-            <HistogramChart 
-              data={processHistogramData(row.values)} 
+
+          <div ref={histogramRef} className="bg-card p-3 rounded-lg border border-border">
+            <HistogramChart
+              data={processHistogramData(row.values)}
               title={`Histogram: ${row.column}`}
             />
           </div>
-          
-          <div ref={qqPlotRef} className="bg-white p-3 rounded-lg border">
-            <QQPlotChart 
-              data={processQQPlot(row.values)} 
+
+          <div ref={qqPlotRef} className="bg-card p-3 rounded-lg border border-border">
+            <QQPlotChart
+              data={processQQPlot(row.values)}
               title="Q-Q Plot (Normalitas)"
             />
           </div>
-          
-          {/* Legacy SVG charts (fallback) */}
+
           <ChartGrid>
             <Histogram values={row.values} title="Histogram + kurva normal" xLabel={row.column} overlayNormal />
             <QQPlot values={row.values} title="Q-Q Plot (Normal)" />
           </ChartGrid>
         </div>
       ))}
-      </div>
-
-      {showInterpretation && (
-        <InterpretationPanel
-          testType="normalitas"
-          results={r}
-          onClose={() => setShowInterpretation(false)}
-        />
-      )}
     </div>
   )
 }
 
+// ============================================================
+// 3. Correlation
+// ============================================================
 export function CorrelationResult({ r }) {
   const methodLabel = r.method === 'spearman' ? 'Spearman' : r.method === 'kendall' ? "Kendall's τ" : 'Pearson'
   return (
@@ -227,6 +259,9 @@ export function CorrelationResult({ r }) {
   )
 }
 
+// ============================================================
+// 4. T-Test
+// ============================================================
 export function TTestResult({ r }) {
   return (
     <div>
@@ -240,7 +275,7 @@ export function TTestResult({ r }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="Effect Size" value={r.effectSize} />
         {r.ci95 && <Stat label="95% CI" value={`[${num(r.ci95[0])}, ${num(r.ci95[1])}]`} />}
-        <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'} accent={r.significant ? 'text-accent' : 'text-red-600'} />
+        <Stat label="Signifikan?" value={r.significant ? 'Ya' : 'Tidak'} accent={statusColor(r.significant)} />
       </div>
       {r.mode === 'independent' && r.group1 && (
         <div className="grid grid-cols-2 gap-3 mb-4">
@@ -272,48 +307,51 @@ export function TTestResult({ r }) {
   )
 }
 
+// ============================================================
+// 5. Validity & Reliability
+// ============================================================
 export function ValidityResult({ r }) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div>
         <ResultHeader title="Reliabilitas" significant={r.reliability.alpha >= 0.7} />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
           <KeyMetric label="Cronbach's α" value={num(r.reliability.alpha)} highlight={r.reliability.alpha >= 0.7} />
           <KeyMetric label="N item" value={r.reliability.k} />
           <Stat label="N responden" value={r.reliability.n} />
-          <Stat label="Status" value={r.reliability.alpha >= 0.7 ? 'Reliabel ✅' : 'Kurang Reliabel ⚠️'}
-                accent={r.reliability.alpha >= 0.7 ? 'text-accent' : 'text-amber-600'} />
+          <Stat label="Status" value={r.reliability.alpha >= 0.7 ? 'Reliabel' : 'Kurang Reliabel'}
+                accent={statusColor(r.reliability.alpha >= 0.7)} />
         </div>
         <InterpBox>{r.reliability.interpretation}</InterpBox>
       </div>
 
       <div>
-        <h4 className="font-semibold mb-2">Validitas Item (Pearson item-total)</h4>
-        <p className="text-xs text-muted mb-2">Kriteria: r ≥ {num(r.validity.rCritical)} dan p &lt; 0.05</p>
-        <div className="overflow-x-auto">
+        <SubHeading>Validitas Item (Pearson item-total)</SubHeading>
+        <p className="text-[11px] text-muted mb-2">Kriteria: r ≥ {num(r.validity.rCritical)} dan p &lt; 0.05</p>
+        <div className="overflow-x-auto border border-border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-card/50">
+            <thead className="bg-surface/60">
               <tr>
-                <th className="px-3 py-2 text-left">Item</th>
-                <th className="px-3 py-2 text-left" title="Corrected item-total (total dikurangi item ini)">r (corrected)</th>
-                <th className="px-3 py-2 text-left" title="Simple item-total (total termasuk item ini)">r (simple)</th>
-                <th className="px-3 py-2 text-left">p</th>
-                <th className="px-3 py-2 text-left">α jika dihapus</th>
-                <th className="px-3 py-2 text-left">Verdict</th>
+                <Th>Item</Th>
+                <Th>r (corrected)</Th>
+                <Th>r (simple)</Th>
+                <Th>p</Th>
+                <Th>α jika dihapus</Th>
+                <Th>Verdict</Th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border/40">
               {r.validity.items.map((it, i) => {
                 const alphaRaw = r.reliability.itemStats?.[i]?.alphaIfDeleted
                 const alpha = (typeof alphaRaw === 'number' && !isNaN(alphaRaw)) ? alphaRaw : null
                 return (
-                  <tr key={i} className={it.isValid ? '' : 'bg-red-50'}>
+                  <tr key={i} className={it.isValid ? '' : 'bg-terracotta/5'}>
                     <td className="px-3 py-2 font-medium">{r.items[i]}</td>
-                    <td className="px-3 py-2">{num(it.r)}</td>
-                    <td className="px-3 py-2 text-muted">{num(it.rSimple)}</td>
-                    <td className="px-3 py-2">{pct(it.pValue)}</td>
-                    <td className="px-3 py-2">{num(alpha)}</td>
-                    <td className={'px-3 py-2 font-semibold ' + (it.isValid ? 'text-accent' : 'text-red-600')}>
+                    <td className="px-3 py-2 font-mono">{num(it.r)}</td>
+                    <td className="px-3 py-2 text-muted font-mono">{num(it.rSimple)}</td>
+                    <td className="px-3 py-2 font-mono">{pct(it.pValue)}</td>
+                    <td className="px-3 py-2 font-mono">{num(alpha)}</td>
+                    <td className={'px-3 py-2 font-semibold ' + statusColor(it.isValid)}>
                       {it.verdict}
                     </td>
                   </tr>
@@ -322,10 +360,9 @@ export function ValidityResult({ r }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-muted mt-2">
-          <strong>r (corrected)</strong> = korelasi item vs total tanpa item tsb (standar R/SPSS RELIABILITY). 
-          <strong> r (simple)</strong> = korelasi item vs total termasuk item tsb (SPSS CORRELATIONS). 
-          Verdict berdasarkan r corrected.
+        <p className="text-[11px] text-muted mt-2">
+          <strong>r (corrected)</strong> = korelasi item vs total tanpa item tsb (standar R/SPSS RELIABILITY).
+          <strong> r (simple)</strong> = korelasi item vs total termasuk item tsb (SPSS CORRELATIONS).
         </p>
         <p className="text-sm mt-3 text-fg">{r.validity.summary}</p>
       </div>
@@ -333,6 +370,9 @@ export function ValidityResult({ r }) {
   )
 }
 
+// ============================================================
+// 6. ANOVA
+// ============================================================
 export function ANOVAResult({ r }) {
   return (
     <div>
@@ -341,39 +381,38 @@ export function ANOVAResult({ r }) {
         <KeyMetric label="p-value" value={pct(r.pValue)} highlight={r.significant} />
         <KeyMetric label="F" value={num(r.F)} highlight={r.significant} />
         <KeyMetric label="η²" value={num(r.etaSquared)} />
-        <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'}
-              accent={r.significant ? 'text-accent' : 'text-red-600'} />
+        <Stat label="Signifikan?" value={r.significant ? 'Ya' : 'Tidak'} accent={statusColor(r.significant)} />
       </div>
 
-      <h4 className="font-semibold mb-2">Statistik Per Grup</h4>
-      <div className="overflow-x-auto mb-4">
+      <SubHeading>Statistik Per Grup</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
-            <tr>{['Grup','n','Mean','SD'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+          <thead className="bg-surface/60">
+            <tr>{['Grup','n','Mean','SD'].map(h => <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border/40">
             {r.groupStats.map((g, i) => (
               <tr key={i}>
                 <td className="px-3 py-2 font-medium">{g.label}</td>
                 <td className="px-3 py-2">{g.n}</td>
-                <td className="px-3 py-2 font-semibold text-accent">{num(g.mean)}</td>
-                <td className="px-3 py-2">{num(g.sd)}</td>
+                <td className="px-3 py-2 font-semibold text-accent font-mono">{num(g.mean)}</td>
+                <td className="px-3 py-2 font-mono">{num(g.sd)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <h4 className="font-semibold mb-2">Tabel ANOVA</h4>
-      <div className="overflow-x-auto mb-4">
+      <SubHeading>Tabel ANOVA</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
-            <tr>{['Sumber','SS','df','MS','F','p'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+          <thead className="bg-surface/60">
+            <tr>{['Sumber','SS','df','MS','F','p'].map(h => <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
-            <tr><td className="px-3 py-2">Antar grup</td><td className="px-3 py-2">{num(r.ssBetween)}</td><td className="px-3 py-2">{r.dfBetween}</td><td className="px-3 py-2">{num(r.msBetween)}</td><td className="px-3 py-2 font-semibold text-accent">{num(r.F)}</td><td className="px-3 py-2 font-semibold">{pct(r.pValue)}</td></tr>
-            <tr><td className="px-3 py-2">Dalam grup</td><td className="px-3 py-2">{num(r.ssWithin)}</td><td className="px-3 py-2">{r.dfWithin}</td><td className="px-3 py-2">{num(r.msWithin)}</td><td colSpan="2" /></tr>
-            <tr className="font-semibold bg-card/50"><td className="px-3 py-2">Total</td><td className="px-3 py-2">{num(r.ssTotal)}</td><td className="px-3 py-2">{r.dfTotal}</td><td colSpan="3" /></tr>
+          <tbody className="divide-y divide-border/40">
+            <tr><td className="px-3 py-2">Antar grup</td><td className="px-3 py-2 font-mono">{num(r.ssBetween)}</td><td className="px-3 py-2">{r.dfBetween}</td><td className="px-3 py-2 font-mono">{num(r.msBetween)}</td><td className="px-3 py-2 font-semibold text-accent font-mono">{num(r.F)}</td><td className="px-3 py-2 font-mono">{pct(r.pValue)}</td></tr>
+            <tr><td className="px-3 py-2">Dalam grup</td><td className="px-3 py-2 font-mono">{num(r.ssWithin)}</td><td className="px-3 py-2">{r.dfWithin}</td><td className="px-3 py-2 font-mono">{num(r.msWithin)}</td><td colSpan="2" /></tr>
+            <tr className="font-semibold bg-surface/30"><td className="px-3 py-2">Total</td><td className="px-3 py-2 font-mono">{num(r.ssTotal)}</td><td className="px-3 py-2">{r.dfTotal}</td><td colSpan="3" /></tr>
           </tbody>
         </table>
       </div>
@@ -385,21 +424,21 @@ export function ANOVAResult({ r }) {
 
       {r.postHoc && (
         <div className="mb-4">
-          <h4 className="font-semibold mb-2">Post-hoc: {r.postHoc.method}</h4>
-          <div className="overflow-x-auto">
+          <SubHeading>Post-hoc: {r.postHoc.method}</SubHeading>
+          <div className="overflow-x-auto border border-border rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-card/50">
-                <tr>{['Pasangan','Mean Diff','t','p (Bonferroni)','Signifikan'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+              <thead className="bg-surface/60">
+                <tr>{['Pasangan','Mean Diff','t','p (Bonferroni)','Signifikan'].map(h => <Th key={h}>{h}</Th>)}</tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border/40">
                 {r.postHoc.comparisons.map((c, i) => (
                   <tr key={i}>
                     <td className="px-3 py-2">{c.group1} vs {c.group2}</td>
-                    <td className="px-3 py-2">{num(c.meanDiff)}</td>
-                    <td className="px-3 py-2">{num(c.t)}</td>
-                    <td className="px-3 py-2">{pct(c.pBonferroni)}</td>
+                    <td className="px-3 py-2 font-mono">{num(c.meanDiff)}</td>
+                    <td className="px-3 py-2 font-mono">{num(c.t)}</td>
+                    <td className="px-3 py-2 font-mono">{pct(c.pBonferroni)}</td>
                     <td className={'px-3 py-2 font-semibold ' + (c.significant ? 'text-accent' : 'text-muted')}>
-                      {c.significant ? '✅ Ya' : 'Tidak'}
+                      {c.significant ? 'Ya' : 'Tidak'}
                     </td>
                   </tr>
                 ))}
@@ -419,6 +458,9 @@ export function ANOVAResult({ r }) {
   )
 }
 
+// ============================================================
+// 7. Simple Regression
+// ============================================================
 export function SimpleRegressionResult({ r }) {
   return (
     <div>
@@ -433,22 +475,22 @@ export function SimpleRegressionResult({ r }) {
         <Stat label="Adj. R²" value={num(r.adjustedR2)} term="adjusted_r_squared" />
         <Stat label="SE Estimate" value={num(r.standardErrorOfEstimate)} />
         <Stat label="β (standardized)" value={num(r.standardizedBeta)} />
-        <Stat label="Signifikan?" value={r.significant ? 'Ya ✅' : 'Tidak ❌'} accent={r.significant ? 'text-accent' : 'text-red-600'} />
+        <Stat label="Signifikan?" value={r.significant ? 'Ya' : 'Tidak'} accent={statusColor(r.significant)} />
       </div>
 
-      <div className="overflow-x-auto mb-4">
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
-            <tr>{['Koefisien','b','SE','t','p','95% CI'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+          <thead className="bg-surface/60">
+            <tr>{['Koefisien','b','SE','t','p','95% CI'].map(h => <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
-            <tr><td className="px-3 py-2">Intercept (b₀)</td><td className="px-3 py-2 font-semibold">{num(r.intercept)}</td><td className="px-3 py-2">{num(r.intercept_se)}</td><td className="px-3 py-2">{num(r.intercept_t)}</td><td className="px-3 py-2">{pct(r.intercept_p)}</td><td className="px-3 py-2">[{num(r.intercept_ci?.[0])}, {num(r.intercept_ci?.[1])}]</td></tr>
-            <tr><td className="px-3 py-2">Slope ({r.x})</td><td className="px-3 py-2 font-semibold text-accent">{num(r.slope)}</td><td className="px-3 py-2">{num(r.slope_se)}</td><td className="px-3 py-2">{num(r.slope_t)}</td><td className="px-3 py-2">{pct(r.slope_p)}</td><td className="px-3 py-2">[{num(r.slope_ci?.[0])}, {num(r.slope_ci?.[1])}]</td></tr>
+          <tbody className="divide-y divide-border/40">
+            <tr><td className="px-3 py-2">Intercept (b₀)</td><td className="px-3 py-2 font-semibold font-mono">{num(r.intercept)}</td><td className="px-3 py-2 font-mono">{num(r.intercept_se)}</td><td className="px-3 py-2 font-mono">{num(r.intercept_t)}</td><td className="px-3 py-2 font-mono">{pct(r.intercept_p)}</td><td className="px-3 py-2 font-mono">[{num(r.intercept_ci?.[0])}, {num(r.intercept_ci?.[1])}]</td></tr>
+            <tr><td className="px-3 py-2">Slope ({r.x})</td><td className="px-3 py-2 font-semibold text-accent font-mono">{num(r.slope)}</td><td className="px-3 py-2 font-mono">{num(r.slope_se)}</td><td className="px-3 py-2 font-mono">{num(r.slope_t)}</td><td className="px-3 py-2 font-mono">{pct(r.slope_p)}</td><td className="px-3 py-2 font-mono">[{num(r.slope_ci?.[0])}, {num(r.slope_ci?.[1])}]</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p className="text-sm bg-card/50 p-3 rounded font-mono">{r.equation}</p>
+      <p className="text-sm bg-surface border border-border rounded-lg p-3 font-mono">{r.equation}</p>
       {r.xValues && r.yValues && (
         <div className="mt-4">
           <ScatterPlot x={r.xValues} y={r.yValues}
@@ -462,6 +504,9 @@ export function SimpleRegressionResult({ r }) {
   )
 }
 
+// ============================================================
+// 8. Multiple Regression
+// ============================================================
 export function MultipleRegressionResult({ r }) {
   return (
     <div>
@@ -476,23 +521,23 @@ export function MultipleRegressionResult({ r }) {
         <Stat label="SE Estimate" value={num(r.standardErrorOfEstimate)} />
         <Stat label="N" value={r.n} />
         <Stat label="p (predictors)" value={r.p} />
-        <Stat label="Multikolinearitas" value={r.multicollinearity} accent={r.multicollinearity.includes('TERDETEKSI') ? 'text-red-600' : 'text-accent'} />
+        <Stat label="Multikolinearitas" value={r.multicollinearity} accent={r.multicollinearity.includes('TERDETEKSI') ? 'text-terracotta' : 'text-accent'} />
       </div>
 
-      <h4 className="font-semibold mb-2">Koefisien</h4>
-      <div className="overflow-x-auto mb-4">
+      <SubHeading>Koefisien</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
-            <tr>{['Variabel','b','SE','t','p'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+          <thead className="bg-surface/60">
+            <tr>{['Variabel','b','SE','t','p'].map(h => <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border/40">
             {r.coefficients.map((c, i) => (
-              <tr key={i} className={c.p < 0.05 ? 'bg-green-50/50' : ''}>
+              <tr key={i} className={c.p < 0.05 ? 'bg-accent/5' : ''}>
                 <td className="px-3 py-2 font-medium">{c.name}</td>
-                <td className="px-3 py-2 font-semibold">{num(c.b)}</td>
-                <td className="px-3 py-2">{num(c.se)}</td>
-                <td className="px-3 py-2">{num(c.t)}</td>
-                <td className="px-3 py-2">{pct(c.p)}</td>
+                <td className="px-3 py-2 font-semibold font-mono">{num(c.b)}</td>
+                <td className="px-3 py-2 font-mono">{num(c.se)}</td>
+                <td className="px-3 py-2 font-mono">{num(c.t)}</td>
+                <td className="px-3 py-2 font-mono">{pct(c.p)}</td>
               </tr>
             ))}
           </tbody>
@@ -501,23 +546,26 @@ export function MultipleRegressionResult({ r }) {
 
       {r.vifs?.length > 0 && (
         <div className="mb-4">
-          <h4 className="font-semibold mb-2">VIF (Multikolinearitas)</h4>
-          <p className="text-xs text-muted mb-2">VIF &gt; 10 mengindikasikan masalah multikolinearitas berat.</p>
+          <SubHeading>VIF (Multikolinearitas)</SubHeading>
+          <p className="text-[11px] text-muted mb-2">VIF &gt; 10 mengindikasikan masalah multikolinearitas berat.</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {r.vifs.map((v, i) => (
               <Stat key={i} label={v.predictor} value={num(v.vif)}
-                    accent={v.vif > 10 ? 'text-red-600' : v.vif > 5 ? 'text-amber-600' : 'text-accent'} />
+                    accent={v.vif > 10 ? 'text-terracotta' : v.vif > 5 ? 'text-accent' : 'text-teal'} />
             ))}
           </div>
         </div>
       )}
 
-      <p className="text-sm bg-card/50 p-3 rounded font-mono">{r.equation}</p>
+      <p className="text-sm bg-surface border border-border rounded-lg p-3 font-mono">{r.equation}</p>
       <InterpBox>{r.interpretation}</InterpBox>
     </div>
   )
 }
 
+// ============================================================
+// 9. Chi-Square
+// ============================================================
 export function ChiSquareResult({ r }) {
   return (
     <div>
@@ -532,45 +580,45 @@ export function ChiSquareResult({ r }) {
         <Stat label="df" value={r.df} term="df" />
         {r.phi !== null && <Stat label="Phi (φ)" value={num(r.phi)} />}
         <Stat label="Effect Size" value={r.effectSizeLabel} />
-        <Stat label="Status" value={r.isSignificant ? 'Signifikan ✅' : 'Tidak signifikan'}
+        <Stat label="Status" value={r.isSignificant ? 'Signifikan' : 'Tidak signifikan'}
               accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
       </div>
 
-      <h4 className="font-semibold mb-2">Tabel Kontingensi (Observed)</h4>
-      <div className="overflow-x-auto mb-4">
-        <table className="w-full text-sm border border-border">
-          <thead className="bg-card/50">
+      <SubHeading>Tabel Kontingensi (Observed)</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
+        <table className="w-full text-sm border-collapse">
+          <thead className="bg-surface/60">
             <tr>
-              <th className="px-3 py-2 text-left border">{r.var1} \ {r.var2}</th>
-              {r.colLabels.map(c => <th key={c} className="px-3 py-2 text-left border">{c}</th>)}
-              <th className="px-3 py-2 text-left border bg-surface">Total</th>
+              <th className="px-3 py-2 text-left font-heading font-semibold text-muted text-xs uppercase tracking-wider border border-border">{r.var1} \ {r.var2}</th>
+              {r.colLabels.map(c => <th key={c} className="px-3 py-2 text-left font-heading font-semibold text-muted text-xs uppercase tracking-wider border border-border">{c}</th>)}
+              <th className="px-3 py-2 text-left font-heading font-semibold text-muted text-xs uppercase tracking-wider border border-border bg-surface">Total</th>
             </tr>
           </thead>
           <tbody>
             {r.observed.map((row, i) => (
-              <tr key={i} className="border-t">
-                <td className="px-3 py-2 font-medium border bg-card/50">{r.rowLabels[i]}</td>
+              <tr key={i}>
+                <td className="px-3 py-2 font-medium border border-border bg-surface/30">{r.rowLabels[i]}</td>
                 {row.map((v, j) => (
-                  <td key={j} className="px-3 py-2 border">
+                  <td key={j} className="px-3 py-2 border border-border">
                     {v}
                     <span className="text-xs text-muted ml-1">(E={r.expected[i][j].toFixed(1)})</span>
                   </td>
                 ))}
-                <td className="px-3 py-2 border bg-card/50 font-semibold">{r.rowTotals[i]}</td>
+                <td className="px-3 py-2 border border-border bg-surface/30 font-semibold">{r.rowTotals[i]}</td>
               </tr>
             ))}
-            <tr className="border-t bg-card/50">
-              <td className="px-3 py-2 font-semibold border">Total</td>
-              {r.colTotals.map((c, j) => <td key={j} className="px-3 py-2 border font-semibold">{c}</td>)}
-              <td className="px-3 py-2 border font-bold">{r.N}</td>
+            <tr>
+              <td className="px-3 py-2 font-semibold border border-border bg-surface/30">Total</td>
+              {r.colTotals.map((c, j) => <td key={j} className="px-3 py-2 border border-border bg-surface/30 font-semibold">{c}</td>)}
+              <td className="px-3 py-2 border border-border bg-surface/30 font-bold">{r.N}</td>
             </tr>
           </tbody>
         </table>
-        <p className="text-xs text-muted mt-2">Angka dalam kurung = expected frequency.</p>
+        <p className="text-[11px] text-muted mt-2 px-1">Angka dalam kurung = expected frequency.</p>
       </div>
 
       {r.assumptionWarning && (
-        <div className="mb-3 p-3 bg-amber-50 border-l-4 border-amber-500 rounded-r text-sm text-amber-900">
+        <div className="mb-3 p-3 bg-accent/5 border-l-2 border-accent rounded-r text-sm text-accent">
           {r.assumptionWarning}
         </div>
       )}
@@ -580,6 +628,9 @@ export function ChiSquareResult({ r }) {
   )
 }
 
+// ============================================================
+// 10. Mann-Whitney U
+// ============================================================
 export function MannWhitneyResult({ r }) {
   return (
     <div>
@@ -593,19 +644,19 @@ export function MannWhitneyResult({ r }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat label="N total" value={r.N} />
         <Stat label="Magnitude" value={r.effectSizeLabel} />
-        <Stat label="Status" value={r.isSignificant ? 'Signifikan ✅' : 'Tidak signifikan'}
+        <Stat label="Status" value={r.isSignificant ? 'Signifikan' : 'Tidak signifikan'}
               accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
       </div>
 
-      <h4 className="font-semibold mb-2">Statistik per Grup</h4>
-      <div className="overflow-x-auto mb-4">
+      <SubHeading>Statistik per Grup</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
-            <tr>{['Grup', 'n', 'Mean Rank', 'Sum Rank'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+          <thead className="bg-surface/60">
+            <tr>{['Grup', 'n', 'Mean Rank', 'Sum Rank'].map(h => <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
-            <tr><td className="px-3 py-2 font-medium">{r.groupNames[0]}</td><td className="px-3 py-2">{r.n1}</td><td className="px-3 py-2">{num(r.meanRank1, 2)}</td><td className="px-3 py-2">{num(r.R1, 1)}</td></tr>
-            <tr><td className="px-3 py-2 font-medium">{r.groupNames[1]}</td><td className="px-3 py-2">{r.n2}</td><td className="px-3 py-2">{num(r.meanRank2, 2)}</td><td className="px-3 py-2">{num(r.R2, 1)}</td></tr>
+          <tbody className="divide-y divide-border/40">
+            <tr><td className="px-3 py-2 font-medium">{r.groupNames[0]}</td><td className="px-3 py-2">{r.n1}</td><td className="px-3 py-2 font-mono">{num(r.meanRank1, 2)}</td><td className="px-3 py-2 font-mono">{num(r.R1, 1)}</td></tr>
+            <tr><td className="px-3 py-2 font-medium">{r.groupNames[1]}</td><td className="px-3 py-2">{r.n2}</td><td className="px-3 py-2 font-mono">{num(r.meanRank2, 2)}</td><td className="px-3 py-2 font-mono">{num(r.R2, 1)}</td></tr>
           </tbody>
         </table>
       </div>
@@ -620,6 +671,9 @@ export function MannWhitneyResult({ r }) {
   )
 }
 
+// ============================================================
+// 11. Wilcoxon
+// ============================================================
 export function WilcoxonResult({ r }) {
   return (
     <div>
@@ -649,6 +703,9 @@ export function WilcoxonResult({ r }) {
   )
 }
 
+// ============================================================
+// 12. Kruskal-Wallis
+// ============================================================
 export function KruskalResult({ r }) {
   return (
     <div>
@@ -663,23 +720,23 @@ export function KruskalResult({ r }) {
         <Stat label="df" value={r.df} />
         <Stat label="k grup" value={r.k} />
         <Stat label="Magnitude" value={r.effectSizeLabel} />
-        <Stat label="Status" value={r.isSignificant ? 'Signifikan ✅' : 'Tidak signifikan'}
+        <Stat label="Status" value={r.isSignificant ? 'Signifikan' : 'Tidak signifikan'}
               accent={r.isSignificant ? 'text-accent' : 'text-fg'} />
       </div>
 
-      <h4 className="font-semibold mb-2">Statistik per Grup</h4>
-      <div className="overflow-x-auto mb-4">
+      <SubHeading>Statistik per Grup</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
-            <tr>{['Grup', 'n', 'Median', 'Mean Rank'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+          <thead className="bg-surface/60">
+            <tr>{['Grup', 'n', 'Median', 'Mean Rank'].map(h => <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border/40">
             {r.groupStats.map((g, i) => (
               <tr key={i}>
                 <td className="px-3 py-2 font-medium">{g.name}</td>
                 <td className="px-3 py-2">{g.n}</td>
-                <td className="px-3 py-2">{num(g.median, 2)}</td>
-                <td className="px-3 py-2">{num(g.meanRank, 2)}</td>
+                <td className="px-3 py-2 font-mono">{num(g.median, 2)}</td>
+                <td className="px-3 py-2 font-mono">{num(g.meanRank, 2)}</td>
               </tr>
             ))}
           </tbody>
@@ -696,6 +753,9 @@ export function KruskalResult({ r }) {
   )
 }
 
+// ============================================================
+// 13. N-Gain
+// ============================================================
 export function NGainResult({ r }) {
   const sig = r.signifTest
   const totalKategori = r.distribusi.Tinggi + r.distribusi.Sedang + r.distribusi.Rendah
@@ -716,44 +776,44 @@ export function NGainResult({ r }) {
         <Stat
           label="Kategori Kelas"
           value={r.kategoriKelas}
-          accent={r.kategoriKelas === 'Tinggi' ? 'text-accent' : r.kategoriKelas === 'Sedang' ? 'text-amber-600' : 'text-red-600'}
+          accent={r.kategoriKelas === 'Tinggi' ? 'text-accent' : r.kategoriKelas === 'Sedang' ? 'text-teal' : 'text-terracotta'}
         />
       </div>
 
-      <div className={`rounded-xl p-3 mb-4 text-sm border ${
-        r.tafsiranEfektivitas === 'Efektif'        ? 'bg-green-50 border-green-200 text-green-800' :
-        r.tafsiranEfektivitas === 'Cukup Efektif'  ? 'bg-accent/5 border-sky-200 text-accent' :
-        r.tafsiranEfektivitas === 'Kurang Efektif' ? 'bg-amber-50 border-amber-200 text-amber-800' :
-                                                     'bg-red-50 border-red-200 text-red-800'
+      <div className={`rounded-lg p-3 mb-4 text-sm border-l-2 ${
+        r.tafsiranEfektivitas === 'Efektif'        ? 'bg-accent/5 border-accent text-accent' :
+        r.tafsiranEfektivitas === 'Cukup Efektif'  ? 'bg-teal/5 border-teal text-teal' :
+        r.tafsiranEfektivitas === 'Kurang Efektif' ? 'bg-accent/5 border-accent text-accent' :
+                                                     'bg-terracotta/8 border-terracotta text-terracotta'
       }`}>
         <strong>Tafsiran Efektivitas:</strong> {r.tafsiranEfektivitas} ({num(r.efektivitasPersen, 2)}%) ·
         kategori klasifikasi Hake (1998).
       </div>
 
-      <h4 className="font-semibold mb-2">Statistik Pre-test vs Post-test</h4>
-      <div className="overflow-x-auto mb-4">
+      <SubHeading>Statistik Pre-test vs Post-test</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
-            <tr>{['Variabel', 'Mean', 'SD', 'Min', 'Max'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+          <thead className="bg-surface/60">
+            <tr>{['Variabel', 'Mean', 'SD', 'Min', 'Max'].map(h => <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border/40">
             <tr>
               <td className="px-3 py-2 font-medium">Pre-test ({r.column1})</td>
-              <td className="px-3 py-2">{num(r.preStats.mean, 2)}</td>
-              <td className="px-3 py-2">{num(r.preStats.sd, 2)}</td>
-              <td className="px-3 py-2">{num(r.preStats.min, 2)}</td>
-              <td className="px-3 py-2">{num(r.preStats.max, 2)}</td>
+              <td className="px-3 py-2 font-mono">{num(r.preStats.mean, 2)}</td>
+              <td className="px-3 py-2 font-mono">{num(r.preStats.sd, 2)}</td>
+              <td className="px-3 py-2 font-mono">{num(r.preStats.min, 2)}</td>
+              <td className="px-3 py-2 font-mono">{num(r.preStats.max, 2)}</td>
             </tr>
             <tr>
               <td className="px-3 py-2 font-medium">Post-test ({r.column2})</td>
-              <td className="px-3 py-2">{num(r.postStats.mean, 2)}</td>
-              <td className="px-3 py-2">{num(r.postStats.sd, 2)}</td>
-              <td className="px-3 py-2">{num(r.postStats.min, 2)}</td>
-              <td className="px-3 py-2">{num(r.postStats.max, 2)}</td>
+              <td className="px-3 py-2 font-mono">{num(r.postStats.mean, 2)}</td>
+              <td className="px-3 py-2 font-mono">{num(r.postStats.sd, 2)}</td>
+              <td className="px-3 py-2 font-mono">{num(r.postStats.min, 2)}</td>
+              <td className="px-3 py-2 font-mono">{num(r.postStats.max, 2)}</td>
             </tr>
-            <tr className="bg-accent/5/50">
+            <tr className="bg-accent/5">
               <td className="px-3 py-2 font-medium">Rata-rata Selisih</td>
-              <td className="px-3 py-2 font-bold text-sky-700" colSpan={4}>
+              <td className="px-3 py-2 font-bold text-accent font-mono" colSpan={4}>
                 {num(r.postStats.mean - r.preStats.mean, 2)} poin
               </td>
             </tr>
@@ -761,29 +821,29 @@ export function NGainResult({ r }) {
         </table>
       </div>
 
-      <h4 className="font-semibold mb-2">Distribusi Kategori N-Gain</h4>
-      <div className="overflow-x-auto mb-4">
+      <SubHeading>Distribusi Kategori N-Gain</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
-            <tr>{['Kategori', 'Rentang', 'Jumlah', '%', 'Visualisasi'].map(h => <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+          <thead className="bg-surface/60">
+            <tr>{['Kategori', 'Rentang', 'Jumlah', '%', 'Visualisasi'].map(h => <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border/40">
             {[
-              { kat: 'Tinggi',  range: 'g ≥ 0.7',           color: 'bg-green-500' },
-              { kat: 'Sedang',  range: '0.3 ≤ g < 0.7',     color: 'bg-amber-500' },
-              { kat: 'Rendah',  range: 'g < 0.3',           color: 'bg-red-500' },
+              { kat: 'Tinggi',  range: 'g ≥ 0.7',           color: 'bg-accent' },
+              { kat: 'Sedang',  range: '0.3 ≤ g < 0.7',     color: 'bg-teal' },
+              { kat: 'Rendah',  range: 'g < 0.3',           color: 'bg-terracotta' },
             ].map(({ kat, range, color }) => {
               const n = r.distribusi[kat] || 0
-              const pct = totalKategori > 0 ? (n / totalKategori) * 100 : 0
+              const pctVal = totalKategori > 0 ? (n / totalKategori) * 100 : 0
               return (
                 <tr key={kat}>
                   <td className="px-3 py-2 font-medium">{kat}</td>
                   <td className="px-3 py-2 text-muted">{range}</td>
                   <td className="px-3 py-2 font-bold">{n}</td>
-                  <td className="px-3 py-2">{pct.toFixed(1)}%</td>
+                  <td className="px-3 py-2 font-mono">{pctVal.toFixed(1)}%</td>
                   <td className="px-3 py-2">
                     <div className="w-full bg-surface rounded-full h-2 overflow-hidden">
-                      <div className={`${color} h-2 rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                      <div className={`${color} h-2 rounded-full transition-all`} style={{ width: `${pctVal}%` }} />
                     </div>
                   </td>
                 </tr>
@@ -794,51 +854,51 @@ export function NGainResult({ r }) {
       </div>
 
       {sig && (
-        <div className={`rounded-xl p-4 mb-4 border ${
-          sig.significant ? 'bg-green-50 border-green-200' : 'bg-card/50 border-border'
+        <div className={`rounded-lg p-4 mb-4 border ${
+          sig.significant ? 'bg-accent/5 border-accent/30' : 'bg-surface border-border'
         }`}>
-          <h4 className="font-semibold mb-2 text-sm">Uji Signifikansi (Paired t-test)</h4>
+          <h4 className="font-heading font-semibold mb-2 text-sm">Uji Signifikansi (Paired t-test)</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div><span className="text-muted">t:</span> <strong>{num(sig.t, 3)}</strong></div>
-            <div><span className="text-muted">df:</span> <strong>{sig.df}</strong></div>
-            <div><span className="text-muted">p-value:</span> <strong>{pct(sig.pValue)}</strong></div>
-            <div><span className="text-muted">Cohen's d:</span> <strong>{num(sig.cohensD, 3)}</strong></div>
+            <div><span className="text-muted">t:</span> <strong className="font-mono">{num(sig.t, 3)}</strong></div>
+            <div><span className="text-muted">df:</span> <strong className="font-mono">{sig.df}</strong></div>
+            <div><span className="text-muted">p-value:</span> <strong className="font-mono">{pct(sig.pValue)}</strong></div>
+            <div><span className="text-muted">Cohen's d:</span> <strong className="font-mono">{num(sig.cohensD, 3)}</strong></div>
           </div>
-          <p className="text-xs mt-2 text-fg">
+          <p className={`text-xs mt-2 ${sig.significant ? 'text-accent' : 'text-muted'}`}>
             {sig.significant
-              ? `✅ Peningkatan signifikan secara statistik (p < 0.05). Selisih rata-rata: ${num(sig.meanDiff, 2)} poin.`
-              : `❌ Peningkatan TIDAK signifikan secara statistik (p ≥ 0.05). Selisih rata-rata: ${num(sig.meanDiff, 2)} poin.`
+              ? `Peningkatan signifikan secara statistik (p < 0.05). Selisih rata-rata: ${num(sig.meanDiff, 2)} poin.`
+              : `Peningkatan TIDAK signifikan secara statistik (p ≥ 0.05). Selisih rata-rata: ${num(sig.meanDiff, 2)} poin.`
             }
           </p>
         </div>
       )}
 
-      <details className="border border-border rounded-xl overflow-hidden mb-4">
-        <summary className="px-4 py-2.5 bg-card/50 hover:bg-surface cursor-pointer text-sm font-medium">
+      <details className="border border-border rounded-lg overflow-hidden mb-4">
+        <summary className="px-4 py-2.5 bg-surface hover:bg-surface/70 cursor-pointer text-sm font-heading font-medium">
           Detail per Subjek ({r.pairs.length}) — klik untuk buka
         </summary>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-card/50 sticky top-0">
+            <thead className="bg-surface/60 sticky top-0">
               <tr>{['No', 'Nama', 'Pre', 'Post', 'Gain', 'N-Gain', 'Kategori'].map(h =>
-                <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+                <th key={h} className="px-3 py-2 text-left font-heading font-semibold text-muted uppercase tracking-wider">{h}</th>)}</tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border/40">
               {r.pairs.map((p, i) => (
                 <tr key={i}>
                   <td className="px-3 py-1.5">{i + 1}</td>
                   <td className="px-3 py-1.5 font-medium">{p.name}</td>
-                  <td className="px-3 py-1.5">{p.pre}</td>
-                  <td className="px-3 py-1.5">{p.post}</td>
-                  <td className={`px-3 py-1.5 ${p.gain > 0 ? 'text-accent' : p.gain < 0 ? 'text-red-600' : ''}`}>
+                  <td className="px-3 py-1.5 font-mono">{p.pre}</td>
+                  <td className="px-3 py-1.5 font-mono">{p.post}</td>
+                  <td className={`px-3 py-1.5 font-mono ${p.gain > 0 ? 'text-accent' : p.gain < 0 ? 'text-terracotta' : ''}`}>
                     {p.gain > 0 ? '+' : ''}{p.gain}
                   </td>
-                  <td className="px-3 py-1.5 font-bold">{num(p.nGain, 3)}</td>
+                  <td className="px-3 py-1.5 font-bold font-mono">{num(p.nGain, 3)}</td>
                   <td className="px-3 py-1.5">
                     <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium ${
-                      p.kategori === 'Tinggi' ? 'bg-green-100 text-green-700' :
-                      p.kategori === 'Sedang' ? 'bg-amber-100 text-amber-700' :
-                                                'bg-red-100 text-red-700'
+                      p.kategori === 'Tinggi' ? 'bg-accent/10 text-accent' :
+                      p.kategori === 'Sedang' ? 'bg-teal/10 text-teal' :
+                                                'bg-terracotta/10 text-terracotta'
                     }`}>{p.kategori}</span>
                   </td>
                 </tr>
@@ -864,10 +924,13 @@ export function NGainResult({ r }) {
   )
 }
 
+// ============================================================
+// 14. Two-Way ANOVA
+// ============================================================
 export function TwoWayANOVAResult({ r }) {
   if (r.error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+      <div className="bg-terracotta/8 border-l-2 border-terracotta rounded-r-lg p-4 text-sm text-terracotta">
         <strong>Error:</strong> {r.error}
       </div>
     )
@@ -875,8 +938,8 @@ export function TwoWayANOVAResult({ r }) {
   const anySignificant = r.significantA || r.significantB || r.significantInteraction
   const fmtP = (p) => p === null ? '—' : (p < 0.001 ? '< 0.001' : num(p, 4))
   const verdict = (sig, name) => sig
-    ? `✅ Pengaruh ${name} signifikan`
-    : `❌ Pengaruh ${name} tidak signifikan`
+    ? `Pengaruh ${name} signifikan`
+    : `Pengaruh ${name} tidak signifikan`
   return (
     <div>
       <ResultHeader title="Two-Way ANOVA" significant={anySignificant} />
@@ -890,11 +953,11 @@ export function TwoWayANOVAResult({ r }) {
         <Stat label={`p ${r.nameA}`} value={fmtP(r.factorA.pValue)} accent={r.significantA ? 'text-accent' : 'text-muted'} />
         <Stat label={`p ${r.nameB}`} value={fmtP(r.factorB.pValue)} accent={r.significantB ? 'text-accent' : 'text-muted'} />
         <Stat label="Grand Mean" value={num(r.grandMean, 3)} />
-        <Stat label="Desain" value={r.isBalanced ? 'Balanced' : 'Unbalanced'} accent={r.isBalanced ? 'text-accent' : 'text-amber-600'} />
+        <Stat label="Desain" value={r.isBalanced ? 'Balanced' : 'Unbalanced'} accent={r.isBalanced ? 'text-teal' : 'text-accent'} />
       </div>
 
-      <div className={`rounded-xl p-3 mb-4 text-sm border ${
-        r.significantInteraction ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-card/50 border-border text-fg'
+      <div className={`rounded-lg p-3.5 mb-4 text-sm border-l-2 ${
+        r.significantInteraction ? 'bg-accent/5 border-accent text-accent' : 'bg-surface border-border text-fg'
       }`}>
         <strong>Ringkasan:</strong>
         <ul className="mt-1 space-y-0.5 list-disc list-inside">
@@ -904,28 +967,28 @@ export function TwoWayANOVAResult({ r }) {
         </ul>
         {r.significantInteraction && (
           <p className="mt-2 text-xs italic">
-            ⚠️ Karena interaksi signifikan, efek utama harus diinterpretasikan dengan hati-hati — efek satu faktor bergantung pada level faktor lain (lihat tabel cell means).
+            Karena interaksi signifikan, efek utama harus diinterpretasikan dengan hati-hati — efek satu faktor bergantung pada level faktor lain (lihat tabel cell means).
           </p>
         )}
       </div>
 
-      <h4 className="font-semibold mb-2">Tabel ANOVA</h4>
-      <div className="overflow-x-auto mb-4">
+      <SubHeading>Tabel ANOVA</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
+          <thead className="bg-surface/60">
             <tr>{['Source', 'SS', 'df', 'MS', 'F', 'p-value', 'partial η²', 'Effect'].map(h =>
-              <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+              <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border/40">
             {r.anovaTable.map((row, i) => (
-              <tr key={i} className={row.significant ? 'bg-green-50/40' : ''}>
+              <tr key={i} className={row.significant ? 'bg-accent/5' : ''}>
                 <td className="px-3 py-2 font-medium">{row.source}</td>
-                <td className="px-3 py-2">{num(row.SS, 3)}</td>
+                <td className="px-3 py-2 font-mono">{num(row.SS, 3)}</td>
                 <td className="px-3 py-2">{row.df}</td>
-                <td className="px-3 py-2">{row.MS === null ? '—' : num(row.MS, 3)}</td>
-                <td className="px-3 py-2 font-bold">{row.F === null ? '—' : num(row.F, 3)}</td>
-                <td className="px-3 py-2">{fmtP(row.pValue)}</td>
-                <td className="px-3 py-2">{row.partialEtaSquared === null ? '—' : num(row.partialEtaSquared, 3)}</td>
+                <td className="px-3 py-2 font-mono">{row.MS === null ? '—' : num(row.MS, 3)}</td>
+                <td className="px-3 py-2 font-bold font-mono">{row.F === null ? '—' : num(row.F, 3)}</td>
+                <td className="px-3 py-2 font-mono">{fmtP(row.pValue)}</td>
+                <td className="px-3 py-2 font-mono">{row.partialEtaSquared === null ? '—' : num(row.partialEtaSquared, 3)}</td>
                 <td className="px-3 py-2 text-xs text-muted">{row.effectSize || '—'}</td>
               </tr>
             ))}
@@ -933,54 +996,58 @@ export function TwoWayANOVAResult({ r }) {
         </table>
       </div>
 
-      <h4 className="font-semibold mb-2">Cell Means ({r.nameA} × {r.nameB})</h4>
-      <div className="overflow-x-auto mb-4">
+      <SubHeading>Cell Means ({r.nameA} × {r.nameB})</SubHeading>
+      <div className="overflow-x-auto mb-4 border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-card/50">
+          <thead className="bg-surface/60">
             <tr>{[r.nameA, r.nameB, 'n', 'Mean', 'SD'].map(h =>
-              <th key={h} className="px-3 py-2 text-left">{h}</th>)}</tr>
+              <Th key={h}>{h}</Th>)}</tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border/40">
             {r.cellTable.map((c, i) => (
               <tr key={i}>
                 <td className="px-3 py-2 font-medium">{c.levelA}</td>
                 <td className="px-3 py-2 font-medium">{c.levelB}</td>
                 <td className="px-3 py-2">{c.n}</td>
-                <td className="px-3 py-2 font-bold">{num(c.mean, 3)}</td>
-                <td className="px-3 py-2">{num(c.sd, 3)}</td>
+                <td className="px-3 py-2 font-bold font-mono">{num(c.mean, 3)}</td>
+                <td className="px-3 py-2 font-mono">{num(c.sd, 3)}</td>
               </tr>
             ))}
           </tbody>
         </table>
         {!r.isBalanced && (
-          <p className="text-xs text-amber-700 mt-2">
-            ⚠️ Desain unbalanced (n sel: {r.cellSizesRange.min}–{r.cellSizesRange.max}). F-test menggunakan pendekatan cell-means (mendekati Type III). Untuk inference ketat, verifikasi di R/SPSS.
+          <p className="text-[11px] text-accent mt-2 px-1">
+            Desain unbalanced (n sel: {r.cellSizesRange.min}–{r.cellSizesRange.max}). F-test menggunakan pendekatan cell-means (mendekati Type III). Untuk inference ketat, verifikasi di R/SPSS.
           </p>
         )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <h4 className="font-semibold mb-2 text-sm">Marginal Means: {r.nameA}</h4>
-          <table className="w-full text-sm">
-            <thead className="bg-card/50"><tr><th className="px-3 py-2 text-left">Level</th><th className="px-3 py-2 text-left">n</th><th className="px-3 py-2 text-left">Mean</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
-              {r.marginalA.map((m, i) => (
-                <tr key={i}><td className="px-3 py-2 font-medium">{m.level}</td><td className="px-3 py-2">{m.n}</td><td className="px-3 py-2 font-bold">{num(m.mean, 3)}</td></tr>
-              ))}
-            </tbody>
-          </table>
+          <SubHeading>Marginal Means: {r.nameA}</SubHeading>
+          <div className="border border-border rounded-lg overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-surface/60"><tr><Th>Level</Th><Th>n</Th><Th>Mean</Th></tr></thead>
+              <tbody className="divide-y divide-border/40">
+                {r.marginalA.map((m, i) => (
+                  <tr key={i}><td className="px-3 py-2 font-medium">{m.level}</td><td className="px-3 py-2">{m.n}</td><td className="px-3 py-2 font-bold font-mono">{num(m.mean, 3)}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
         <div>
-          <h4 className="font-semibold mb-2 text-sm">Marginal Means: {r.nameB}</h4>
-          <table className="w-full text-sm">
-            <thead className="bg-card/50"><tr><th className="px-3 py-2 text-left">Level</th><th className="px-3 py-2 text-left">n</th><th className="px-3 py-2 text-left">Mean</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
-              {r.marginalB.map((m, i) => (
-                <tr key={i}><td className="px-3 py-2 font-medium">{m.level}</td><td className="px-3 py-2">{m.n}</td><td className="px-3 py-2 font-bold">{num(m.mean, 3)}</td></tr>
-              ))}
-            </tbody>
-          </table>
+          <SubHeading>Marginal Means: {r.nameB}</SubHeading>
+          <div className="border border-border rounded-lg overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-surface/60"><tr><Th>Level</Th><Th>n</Th><Th>Mean</Th></tr></thead>
+              <tbody className="divide-y divide-border/40">
+                {r.marginalB.map((m, i) => (
+                  <tr key={i}><td className="px-3 py-2 font-medium">{m.level}</td><td className="px-3 py-2">{m.n}</td><td className="px-3 py-2 font-bold font-mono">{num(m.mean, 3)}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

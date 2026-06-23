@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
-  BarChart3, Upload, FileSpreadsheet, CheckCircle,
+  Activity, Upload, FileSpreadsheet, CheckCircle,
   Sparkles, Download, FileType, File as FileIcon, AlertCircle,
   Layers, Sigma, Clock, FileText, BookOpen, X, LayoutGrid,
   ArrowRight, RotateCcw, AlertTriangle, Compass,
@@ -54,6 +54,7 @@ import {
   mannWhitneyAdapter as mannWhitneyU, wilcoxonAdapter as wilcoxonSignedRank, kruskalWallisAdapter as kruskalWallis,
   analyzeNGain,
   chiSquareIndependence,
+  splitByGroup,
 } from '../lib/statistics'
 import { wilcoxonSignedRank as wilcoxonBackend, mannWhitneyU as mannWhitneyBackend, analyzeNGain as ngainBackend,
   pearsonCorrelationBackend, spearmanCorrelationBackend,
@@ -548,16 +549,7 @@ function Statistik() {
             analysisResult = { type: 'ttest', mode: 'paired', column1: params.column1, column2: params.column2, beforeValues: data[params.column1], afterValues: data[params.column2], ...r }
           } else {
             // independent — split by grouping
-            const groupingVals = data[params.grouping]
-            const outcome = data[params.column1]
-            const groups = {}
-            outcome.forEach((v, i) => {
-              const g = groupingVals[i]
-              if (g === null || g === undefined || g === '') return
-              if (!groups[g]) groups[g] = []
-              groups[g].push(v)
-            })
-            const groupKeys = Object.keys(groups)
+            const { groups, keys: groupKeys } = splitByGroup(data[params.column1], data[params.grouping], { numericOnly: false })
             if (groupKeys.length !== 2) {
               throw new Error(`Independent t-test butuh 2 grup, ditemukan ${groupKeys.length}: ${groupKeys.join(', ')}`)
             }
@@ -590,16 +582,7 @@ function Statistik() {
           }
         }
         else if (activeTool === 'anova') {
-          const groupingVals = data[params.grouping]
-          const outcome = data[params.outcome]
-          const groups = {}
-          outcome.forEach((v, i) => {
-            const g = groupingVals[i]
-            if (g === null || g === undefined || g === '') return
-            if (!groups[g]) groups[g] = []
-            groups[g].push(v)
-          })
-          const groupKeys = Object.keys(groups)
+          const { groups, keys: groupKeys } = splitByGroup(data[params.outcome], data[params.grouping], { numericOnly: false })
           if (groupKeys.length < 2) throw new Error('Butuh minimal 2 grup')
           let r
           try { r = await anOVABackend(groupKeys.map(k => groups[k]), groupKeys) } catch { r = oneWayANOVA(groupKeys.map(k => groups[k]), groupKeys) }
@@ -644,16 +627,7 @@ function Statistik() {
           analysisResult = { type: 'chisquare', var1: params.var1, var2: params.var2, ...r }
         }
         else if (activeTool === 'mannwhitney') {
-          const groupingVals = data[params.grouping]
-          const outcome = data[params.outcome]
-          const groups = {}
-          outcome.forEach((v, i) => {
-            const g = String(groupingVals[i])
-            if (g === 'null' || g === 'undefined' || g === '' || typeof v !== 'number') return
-            if (!groups[g]) groups[g] = []
-            groups[g].push(v)
-          })
-          const allKeys = Object.keys(groups)
+          const { groups, keys: allKeys } = splitByGroup(data[params.outcome], data[params.grouping])
           let g1, g2
           if (allKeys.length === 2) {
             [g1, g2] = allKeys
@@ -676,16 +650,7 @@ function Statistik() {
           analysisResult = { type: 'wilcoxon', column1: params.column1, column2: params.column2, beforeValues: data[params.column1], afterValues: data[params.column2], ...r }
         }
         else if (activeTool === 'kruskal') {
-          const groupingVals = data[params.grouping]
-          const outcome = data[params.outcome]
-          const groups = {}
-          outcome.forEach((v, i) => {
-            const g = groupingVals[i]
-            if (g === null || g === undefined || g === '' || typeof v !== 'number') return
-            if (!groups[g]) groups[g] = []
-            groups[g].push(v)
-          })
-          const keys = Object.keys(groups)
+          const { groups, keys } = splitByGroup(data[params.outcome], data[params.grouping])
           if (keys.length < 2) throw new Error('Butuh minimal 2 grup')
           let r
           try { r = await kruskalWallisBackend(keys.map(k => groups[k]), keys) } catch { r = kruskalWallis(keys.map(k => groups[k]), keys) }
@@ -824,7 +789,7 @@ function Statistik() {
         parentPath="/"
         parentLabel="Beranda"
         subNav={[
-          { path: '/statistik',         label: 'Analisis', icon: BarChart3 },
+          { path: '/statistik',         label: 'Analisis', icon: Activity },
           { path: '/statistik/batch',   label: 'Batch',    icon: Layers },
           { path: '/statistik/power',   label: 'Power',    icon: Sigma },
           { path: '/statistik/history', label: 'Riwayat',  icon: Clock },
@@ -863,11 +828,16 @@ function Statistik() {
           </div>
         )}
 
-        {/* Backend Status Indicator */}
-        {!backendLoading && backendStatus && (
-          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            Backend: <span className={backendStatus.backend === 'scipy' ? 'text-green-600 dark:text-green-400 font-semibold' : ''}>
-              {backendStatus.backend === 'scipy' ? 'scipy ✅ (SPSS-verified)' : 'JavaScript fallback'}
+        {/* Backend Status Indicator — only surfaces in prod when NOT on SciPy (worth user knowing) */}
+        {!backendLoading && backendStatus && (import.meta.env.DEV || backendStatus.backend !== 'scipy') && (
+          <div className="flex items-center gap-2 mb-3 text-[11px]">
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-heading font-medium ${
+              backendStatus.backend === 'scipy'
+                ? 'bg-teal/8 text-teal border-teal/20'
+                : 'bg-terracotta/8 text-terracotta border-terracotta/20'
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${backendStatus.backend === 'scipy' ? 'bg-teal' : 'bg-terracotta'}`} />
+              {backendStatus.backend === 'scipy' ? 'Backend: SciPy (SPSS-verified)' : 'Backend: JavaScript fallback — hasil kurang presisi'}
             </span>
           </div>
         )}
@@ -887,17 +857,16 @@ function Statistik() {
           onExampleLoad={() => setExamplePickerOpen(true)}
           onOpenGuide={() => setShowGuide(true)}
           onAnalyze={handlePayClick}
+          onClearFile={handleReset}
           analyzing={analyzing}
           result={result}
+          priceLabel={
+            pricing.betaFree ? 'Gratis (beta)'
+            : pricing.price === 0 ? 'Gratis'
+            : formatIDR(pricing.price)
+          }
         >
-          {/* Main panel */}
-          <div className="lg:col-span-3 space-y-6">
-
-            </div>
-
-
-
-            {/* Filter panel — hidden when result is showing */}
+          {/* Filter panel — hidden when result is showing */}
             {data && categoricalColumns.length > 0 && !result && (
               <FilterPanel
                 categoricalColumns={categoricalColumns}
@@ -973,17 +942,17 @@ function Statistik() {
         className="
           fixed right-0 top-1/3 z-40
           flex items-center gap-1.5 pl-3 pr-3 py-2.5
-          bg-[rgb(var(--card))] border border-r-0 border-[rgb(var(--border))]
-          shadow-[var(--shadow-md)] rounded-l-md
-          font-heading font-semibold text-xs text-[rgb(var(--fg))]
-          hover:pr-4 hover:border-[rgb(var(--accent))]
+          bg-card border border-r-0 border-border
+          shadow-md rounded-l-md
+          font-heading font-semibold text-xs text-fg
+          hover:pr-4 hover:border-accent
           active:scale-[0.97]
           transition-all duration-200
           sm:right-4 sm:top-28 sm:border-r sm:rounded-md sm:px-4 sm:py-2 sm:text-sm
         "
         aria-label="Buka panduan analisis"
       >
-        <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[rgb(var(--accent))]" />
+        <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
         <span className="hidden sm:inline">Pandu</span>
       </button>
 
@@ -1127,11 +1096,11 @@ function FilterPanel({
             )}
           </div>
           {isFiltered && (
-            <div className="mt-3 flex items-center justify-between p-2 bg-accent/5 rounded text-xs text-sky-900">
-              <span>📊 Analisis akan pakai <strong>{filteredSize}</strong> dari {rawSampleSize} baris</span>
+            <div className="mt-3 flex items-center justify-between p-2.5 bg-accent/5 border border-accent/20 rounded-lg text-xs text-accent">
+              <span>Analisis akan pakai <strong>{filteredSize}</strong> dari {rawSampleSize} baris</span>
               <button onClick={() => { setFilterColumn(''); setFilterValues([]) }}
-                      className="text-red-600 hover:text-red-700 font-medium">
-                ✕ Hapus
+                      className="text-terracotta hover:text-terracotta/80 font-heading font-semibold">
+                Hapus
               </button>
             </div>
           )}
@@ -1149,13 +1118,13 @@ function DataGuideModal({ open, onClose }) {
     <Modal open={open} onClose={onClose}
       panelClassName="bg-card rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
       <div className="flex-shrink-0 flex items-center justify-between p-6 pb-4 border-b border-border">
-        <h2 className="text-xl font-bold text-fg">📖 Panduan Format Data</h2>
-        <button onClick={onClose} className="text-muted hover:text-muted text-2xl leading-none">×</button>
+        <h2 className="text-xl font-heading font-bold text-fg">📖 Panduan Format Data</h2>
+        <button onClick={onClose} className="text-muted hover:text-fg text-2xl leading-none">×</button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-5 text-sm text-fg">
           <section>
-            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">1. Format File yang Didukung</h3>
+            <h3 className="font-heading font-semibold text-base text-fg mb-2">1. Format File yang Didukung</h3>
             <ul className="list-disc pl-5 space-y-1">
               <li><code className="bg-surface px-1 rounded">.xlsx</code> / <code className="bg-surface px-1 rounded">.xls</code> — Excel</li>
               <li><code className="bg-surface px-1 rounded">.csv</code> — Comma-separated values</li>
@@ -1163,23 +1132,23 @@ function DataGuideModal({ open, onClose }) {
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">2. Struktur Data</h3>
+            <h3 className="font-heading font-semibold text-base text-fg mb-2">2. Struktur Data</h3>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>Baris pertama = nama variabel/kolom</strong> (header). Contoh: <code className="bg-surface px-1 rounded">nama, umur, skor_pre, skor_post, kelas</code></li>
               <li><strong>Tiap baris berikutnya = 1 responden / observasi</strong></li>
               <li><strong>Tiap kolom = 1 variabel</strong> (jangan campur 2 variabel di 1 kolom)</li>
               <li>Hindari <strong>merged cells</strong>, baris kosong di tengah, atau judul tabel sebelum header</li>
             </ul>
-            <div className="mt-2 bg-card/50 border border-border rounded-lg p-3 font-mono text-xs">
-              <div className="font-bold mb-1">✅ Format yang BENAR:</div>
+            <div className="mt-2 bg-surface border border-border rounded-lg p-3 font-mono text-xs">
+              <div className="font-heading font-bold mb-1 text-teal">✅ Format yang BENAR:</div>
               <pre>{`nama,umur,skor_pre,skor_post,kelas
 Andi,18,72,80,A
 Budi,19,68,75,A
 Citra,18,75,82,B
 ...`}</pre>
             </div>
-            <div className="mt-2 bg-red-50 border border-red-200 rounded-lg p-3 font-mono text-xs">
-              <div className="font-bold mb-1 text-red-700">❌ Yang harus DIHINDARI:</div>
+            <div className="mt-2 bg-terracotta/8 border border-terracotta/20 rounded-lg p-3 font-mono text-xs">
+              <div className="font-heading font-bold mb-1 text-terracotta">❌ Yang harus DIHINDARI:</div>
               <pre>{`Hasil Penelitian Skripsi    ← jangan ada judul!
                             ← jangan ada baris kosong
 nama,umur,skor
@@ -1190,12 +1159,12 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">3. Tipe Data per Kolom</h3>
+            <h3 className="font-heading font-semibold text-base text-fg mb-2">3. Tipe Data per Kolom</h3>
             <table className="w-full text-xs border border-border rounded">
-              <thead className="bg-card/50">
-                <tr><th className="p-2 text-left">Tipe</th><th className="p-2 text-left">Contoh</th><th className="p-2 text-left">Tool yang cocok</th></tr>
+              <thead className="bg-surface/60">
+                <tr><th className="p-2 text-left font-heading font-semibold text-muted uppercase tracking-wider">Tipe</th><th className="p-2 text-left font-heading font-semibold text-muted uppercase tracking-wider">Contoh</th><th className="p-2 text-left font-heading font-semibold text-muted uppercase tracking-wider">Tool yang cocok</th></tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-border/40">
                 <tr><td className="p-2 font-medium">Numerik kontinu</td><td className="p-2">tinggi (cm), berat, IQ, skor</td><td className="p-2">Deskriptif, Korelasi, t-test, Regresi</td></tr>
                 <tr><td className="p-2 font-medium">Numerik diskrit</td><td className="p-2">jumlah anak, frekuensi</td><td className="p-2">Deskriptif, Korelasi</td></tr>
                 <tr><td className="p-2 font-medium">Skala Likert</td><td className="p-2">1-5 atau 1-7 (per item)</td><td className="p-2">Validitas-Reliabilitas (semua item di kolom terpisah)</td></tr>
@@ -1205,7 +1174,7 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">4. Tips Penting</h3>
+            <h3 className="font-heading font-semibold text-base text-fg mb-2">4. Tips Penting</h3>
             <ul className="list-disc pl-5 space-y-1.5">
               <li>🔹 <strong>Missing values</strong>: kosongkan saja sel-nya (jangan tulis "tidak ada", "-", "N/A"). Sistem akan abaikan otomatis.</li>
               <li>🔹 <strong>Desimal</strong>: pakai titik <code className="bg-surface px-1 rounded">3.14</code>, bukan koma <code className="bg-surface px-1 rounded">3,14</code></li>
@@ -1217,28 +1186,28 @@ Budi,19 tahun,68            ← jangan campur teks dengan angka`}</pre>
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">5. Contoh Skema per Tool</h3>
+            <h3 className="font-heading font-semibold text-base text-fg mb-2">5. Contoh Skema per Tool</h3>
             <div className="space-y-2 text-xs">
-              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-accent/5 border-l-2 border-accent p-2 rounded-r text-fg">
                 <strong>Korelasi & Regresi Sederhana</strong> — minimal 2 kolom numerik (X dan Y).
               </div>
-              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-teal/5 border-l-2 border-teal p-2 rounded-r text-fg">
                 <strong>Independent t-test / ANOVA</strong> — 1 kolom numerik (outcome) + 1 kolom kategorik (grouping). Independent t-test = 2 grup, ANOVA = ≥2 grup.
               </div>
-              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-terracotta/5 border-l-2 border-terracotta p-2 rounded-r text-fg">
                 <strong>Paired t-test</strong> — 2 kolom numerik (sebelum, sesudah) untuk responden yang sama.
               </div>
-              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-accent/5 border-l-2 border-accent p-2 rounded-r text-fg">
                 <strong>Validitas-Reliabilitas</strong> — minimal 2 kolom item Likert (1-5 atau 1-7). Skala harus sama antar item. Item negatif sudah harus di-reverse code dulu.
               </div>
-              <div className="bg-accent/5 border-l-4 border-sky-500 p-2 rounded-r">
+              <div className="bg-teal/5 border-l-2 border-teal p-2 rounded-r text-fg">
                 <strong>Regresi Berganda</strong> — 1 kolom outcome (Y) + ≥2 kolom predictor (X₁, X₂, ...) numerik.
               </div>
             </div>
           </section>
 
           <section>
-            <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100 mb-2">6. Punya Subset Data?</h3>
+            <h3 className="font-heading font-semibold text-base text-fg mb-2">6. Punya Subset Data?</h3>
             <p>Pakai fitur <strong>🔎 Filter Data</strong> di bawah upload. Misal data 150 baris (3 species), pilih species = <code>setosa</code> → analisis pakai 50 baris saja.</p>
           </section>
       </div>
@@ -1365,11 +1334,12 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
               const r = testNormality(data[params.x], 0.05)
               if (r && !r.isNormal && (params.method || 'pearson') === 'pearson') {
                 return (
-                  <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-800 dark:text-amber-300">
-                    ⚠️ Variabel <strong>{params.x}</strong> terdeteksi tidak normal.
+                  <div className="p-3 rounded-lg bg-terracotta/5 border-l-2 border-terracotta text-sm text-terracotta">
+                    <AlertTriangle className="w-3.5 h-3.5 inline-block mr-1 -mt-0.5" />
+                    Variabel <strong>{params.x}</strong> terdeteksi tidak normal.
                     Disarankan pakai{' '}
                     <button onClick={() => update('method', 'spearman')}
-                      className="underline font-semibold hover:text-amber-900">Spearman</button>.
+                      className="underline font-semibold hover:text-terracotta/80">Spearman</button>.
                   </div>
                 )
               }
@@ -1532,7 +1502,7 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
                 value={params.maxScore ?? 100}
                 onChange={e => update('maxScore', e.target.value)}
                 placeholder="100"
-                className="w-full text-sm border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-200"
+                className="w-full text-sm border border-border rounded-lg px-3 py-2 focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/15 bg-bg"
               />
             </div>
             <Select
@@ -1542,8 +1512,8 @@ function ParamPanel({ tool, columns, numericColumns, categoricalColumns = [], da
               options={['', ...columns.filter(c => !numericColumns.includes(c))]}
             />
           </div>
-          <div className="bg-accent/5 border border-sky-100 rounded-lg p-3 text-xs text-sky-900 leading-relaxed">
-            <strong>Rumus N-Gain (Hake, 1998):</strong> g = (post − pre) / (max − pre)<br />
+          <div className="bg-accent/5 border border-accent/20 rounded-lg p-3 text-xs text-fg leading-relaxed">
+            <strong className="text-accent">Rumus N-Gain (Hake, 1998):</strong> g = (post − pre) / (max − pre)<br />
             <strong>Kategori:</strong> Tinggi (g ≥ 0.7), Sedang (0.3 ≤ g &lt; 0.7), Rendah (g &lt; 0.3).<br />
             Mengukur efektivitas pembelajaran/treatment dengan desain pre-test → post-test.
           </div>
@@ -1575,26 +1545,26 @@ function DataValidationBadge({ data, columns, numericColumns, sampleSize, onOpen
 
   if (issues.length === 0) {
     return (
-      <div className="flex items-center gap-2 px-4 py-3 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 rounded-xl text-sm">
-        <CheckCircle className="w-4 h-4 text-emerald-600" />
-        <span className="text-emerald-700 dark:text-emerald-300 font-medium">Data valid — {sampleSize} baris, {columns.length} kolom siap analisis</span>
+      <div className="flex items-center gap-2 px-4 py-3 bg-teal/8 border border-teal/20 rounded-xl text-sm">
+        <CheckCircle className="w-4 h-4 text-teal flex-shrink-0" />
+        <span className="text-teal font-medium">Data valid — {sampleSize} baris, {columns.length} kolom siap analisis</span>
       </div>
     )
   }
   return (
     <div className="space-y-2">
       {issues.map((issue, i) => (
-        <div key={i} className="flex items-center gap-2 px-4 py-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl text-sm">
-          <AlertTriangle className="w-4 h-4 text-amber-600" />
-          <span className="text-amber-700 dark:text-amber-300">{issue}</span>
+        <div key={i} className="flex items-center gap-2 px-4 py-3 bg-terracotta/8 border border-terracotta/20 rounded-xl text-sm">
+          <AlertTriangle className="w-4 h-4 text-terracotta flex-shrink-0" />
+          <span className="text-terracotta">{issue}</span>
         </div>
       ))}
       {issues.some(i => String(i).includes('missing values')) && onOpenCleaner && (
         <button
           onClick={onOpenCleaner}
-          className="mt-1 text-xs px-3 py-1.5 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-1.5 mt-1 text-xs px-3 py-1.5 bg-accent hover:bg-accent/90 text-accent-fg rounded-lg font-heading font-semibold transition-colors active:scale-[0.98]"
         >
-          Clear Data
+          Bersihkan Data
         </button>
       )}
     </div>
@@ -1611,9 +1581,24 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
   const [saveModalOpen, setSaveModalOpen] = useState(false)
   const [savedId, setSavedId] = useState(null)
 
+  // Build TOC dynamically — only sections that actually render for this result type
+  const hasAssumptions =
+    (result.type === 'ttest' && result.mode === 'independent') ||
+    ['anova', 'regression_simple', 'regression_multiple'].includes(result.type)
 
+  const toc = [
+    { id: 'result-summary', label: 'Hasil' },
+    ...(hasAssumptions ? [{ id: 'assumptions', label: 'Asumsi' }] : []),
+    { id: 'ai-interpretation', label: 'Interpretasi AI' },
+    { id: 'contextual-writer', label: 'Tulis Hasil' },
+    { id: 'stat-education', label: 'Edukasi' },
+    { id: 'methodology', label: 'Untuk Skripsi' },
+  ]
 
-
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <div className="border border-border bg-card rounded-xl overflow-hidden animate-fade-in-up">
@@ -1626,15 +1611,15 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
           <button onClick={() => setSaveModalOpen(true)}
             className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border transition-colors ${
               savedId
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                : 'bg-card border-border text-fg hover:bg-card/50'
+                ? 'bg-teal/8 border-teal/20 text-teal'
+                : 'bg-card border-border text-fg hover:bg-surface'
             }`}>
             <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3.5L3 18V4z" /></svg>
             {savedId ? 'Tersimpan' : 'Simpan'}
           </button>
           <ExportActions result={result} containerRef={contentRef} />
           <button onClick={onBackToAnalysis}
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-accent text-white hover:bg-accent/90 transition-colors flex items-center gap-2">
+            className="px-4 py-2 rounded-lg text-sm font-heading font-semibold bg-accent text-accent-fg hover:bg-accent/90 transition-colors flex items-center gap-2">
             <ArrowRight className="w-4 h-4" /> Analisis Lain
           </button>
           <button onClick={onReset}
@@ -1651,39 +1636,69 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
         aiInterpretation={aiInterpretation}
         onSaved={(id) => { setSavedId(id); setSaveModalOpen(false) }}
       />
+
+      {/* Sticky section nav — quick jump across the long result page */}
+      <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border">
+        <div className="flex items-center gap-1 px-3 py-2 overflow-x-auto no-scrollbar">
+          {toc.map(item => (
+            <button
+              key={item.id}
+              onClick={() => scrollToSection(item.id)}
+              className="flex-shrink-0 text-[11px] font-medium px-2.5 py-1 rounded-md text-muted hover:text-accent hover:bg-accent/5 transition-colors whitespace-nowrap"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="p-5" ref={contentRef}>
-        {result.type === 'descriptive' && <DescriptiveResult r={result} />}
-        {result.type === 'normality' && <NormalityResult r={result} />}
-        {result.type === 'correlation' && <CorrelationResult r={result} />}
-        {result.type === 'ttest' && <TTestResult r={result} />}
-        {result.type === 'validity_reliability' && <ValidityResult r={result} />}
-        {result.type === 'anova' && <ANOVAResult r={result} />}
-        {result.type === 'regression_simple' && <SimpleRegressionResult r={result} />}
-        {result.type === 'regression_multiple' && <MultipleRegressionResult r={result} />}
-        {result.type === 'chisquare' && <ChiSquareResult r={result} />}
-        {result.type === 'mannwhitney' && <MannWhitneyResult r={result} />}
-        {result.type === 'wilcoxon' && <WilcoxonResult r={result} />}
-        {result.type === 'kruskal' && <KruskalResult r={result} />}
-        {result.type === 'ngain' && <NGainResult r={result} />}
-        {result.type === 'twowayanova' && <TwoWayANOVAResult r={result} />}
+        <section id="result-summary" className="scroll-mt-20">
+          {result.type === 'descriptive' && <DescriptiveResult r={result} />}
+          {result.type === 'normality' && <NormalityResult r={result} />}
+          {result.type === 'correlation' && <CorrelationResult r={result} />}
+          {result.type === 'ttest' && <TTestResult r={result} />}
+          {result.type === 'validity_reliability' && <ValidityResult r={result} />}
+          {result.type === 'anova' && <ANOVAResult r={result} />}
+          {result.type === 'regression_simple' && <SimpleRegressionResult r={result} />}
+          {result.type === 'regression_multiple' && <MultipleRegressionResult r={result} />}
+          {result.type === 'chisquare' && <ChiSquareResult r={result} />}
+          {result.type === 'mannwhitney' && <MannWhitneyResult r={result} />}
+          {result.type === 'wilcoxon' && <WilcoxonResult r={result} />}
+          {result.type === 'kruskal' && <KruskalResult r={result} />}
+          {result.type === 'ngain' && <NGainResult r={result} />}
+          {result.type === 'twowayanova' && <TwoWayANOVAResult r={result} />}
+        </section>
 
         {/* Tier 1: Assumption checks panel — auto-render untuk t-test/ANOVA/regression */}
-        {result.type === 'ttest' && result.mode === 'independent' && (
-          <AssumptionsPanel result={result} type="ttest_independent" />
+        {hasAssumptions && (
+          <section id="assumptions" className="scroll-mt-20">
+            {result.type === 'ttest' && result.mode === 'independent' && (
+              <AssumptionsPanel result={result} type="ttest_independent" />
+            )}
+            {result.type === 'anova' && <AssumptionsPanel result={result} type="anova" />}
+            {result.type === 'regression_simple' && <AssumptionsPanel result={result} type="regression_simple" />}
+            {result.type === 'regression_multiple' && <AssumptionsPanel result={result} type="regression_multiple" />}
+          </section>
         )}
-        {result.type === 'anova' && <AssumptionsPanel result={result} type="anova" />}
-        {result.type === 'regression_simple' && <AssumptionsPanel result={result} type="regression_simple" />}
-        {result.type === 'regression_multiple' && <AssumptionsPanel result={result} type="regression_multiple" />}
 
-        <AIInterpretationPanel result={result} value={aiInterpretation} onChange={setAiInterpretation} />
+        <section id="ai-interpretation" className="scroll-mt-20">
+          <AIInterpretationPanel result={result} value={aiInterpretation} onChange={setAiInterpretation} />
+        </section>
 
-        <ContextualWriter result={result} />
+        <section id="contextual-writer" className="scroll-mt-20">
+          <ContextualWriter result={result} />
+        </section>
 
-        <StatEducation />
+        <section id="stat-education" className="scroll-mt-20">
+          <StatEducation />
+        </section>
 
         <ExplainChatPanel result={result} aiInterpretation={aiInterpretation} />
 
-        <MethodologyPanel result={result} />
+        <section id="methodology" className="scroll-mt-20">
+          <MethodologyPanel result={result} />
+        </section>
       </div>
     </div>
   )
@@ -1734,7 +1749,7 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
       <div>
         <div className="mb-4">
           <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Simpan Analisis</div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Simpan ke Riwayat</h3>
+          <h3 className="text-lg font-heading font-bold text-fg">Simpan ke Riwayat</h3>
           <p className="text-sm text-muted mt-1">Akses lagi kapan saja dari halaman Riwayat.</p>
         </div>
 
@@ -1742,17 +1757,17 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
           <div>
             <label className="block text-xs font-medium text-muted mb-1.5">Judul</label>
             <input value={title} onChange={e => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-gray-400"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-bg focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/15"
               placeholder="Misal: Pre-test Eksperimen Kelompok A" />
           </div>
           <div>
             <label className="block text-xs font-medium text-muted mb-1.5">Catatan (opsional)</label>
             <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-gray-400 resize-none"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-bg focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/15 resize-none"
               placeholder="Misal: data dari kuesioner X, n=50 setelah cleaning" />
           </div>
           {aiInterpretation && (
-            <div className="text-xs text-muted bg-card/50 border border-border rounded-lg px-3 py-2">
+            <div className="text-xs text-muted bg-surface border border-border rounded-lg px-3 py-2">
               Interpretasi AI yang sudah Anda generate akan ikut tersimpan.
             </div>
           )}
@@ -1760,11 +1775,11 @@ function SaveAnalysisModal({ open, onClose, result, aiInterpretation, onSaved })
 
         <div className="flex items-center justify-end gap-2 mt-5 pt-5 border-t border-border">
           <button onClick={onClose} disabled={saving}
-            className="px-4 py-2 text-sm font-medium text-muted hover:text-gray-900 dark:text-gray-100 rounded-lg disabled:opacity-50">
+            className="px-4 py-2 text-sm font-medium text-muted hover:text-fg rounded-lg disabled:opacity-50">
             Batal
           </button>
           <button onClick={handleSave} disabled={saving || !title.trim()}
-            className="px-4 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-black rounded-lg disabled:opacity-50">
+            className="px-4 py-2 text-sm font-heading font-semibold text-accent-fg bg-accent hover:bg-accent/90 rounded-lg disabled:opacity-50 transition-colors">
             {saving ? 'Menyimpan…' : 'Simpan'}
           </button>
         </div>
@@ -1817,18 +1832,18 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
         </div>
         {!text && !loading && (
           <button onClick={handleGenerate}
-                  className="bg-gray-900 hover:bg-black text-white text-xs font-medium px-4 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
-            Generate
+                  className="bg-accent hover:bg-accent/90 text-accent-fg text-xs font-heading font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap transition-colors">
+            <Sparkles className="w-3.5 h-3.5" /> Generate
           </button>
         )}
         {text && (
           <div className="flex items-center gap-2">
             <button onClick={handleCopy}
-                    className="text-xs text-muted hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-card/50 px-3 py-2 rounded-lg">
+                    className="text-xs text-muted hover:text-fg border border-border hover:bg-surface px-3 py-2 rounded-lg transition-colors">
               Salin
             </button>
             <button onClick={handleGenerate} disabled={loading}
-                    className="text-xs text-muted hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-card/50 px-3 py-2 rounded-lg disabled:opacity-50">
+                    className="text-xs text-muted hover:text-fg border border-border hover:bg-surface px-3 py-2 rounded-lg disabled:opacity-50 transition-colors">
               {loading ? 'Memproses…' : 'Regenerate'}
             </button>
           </div>
@@ -1836,22 +1851,22 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
       </div>
 
       {loading && (
-        <div className="bg-card/50 border border-border/80 rounded-lg p-4 text-sm text-muted flex items-center gap-2">
-          <span className="w-2 h-2 bg-muted rounded-full animate-pulse" />
+        <div className="bg-surface border border-border rounded-lg p-4 text-sm text-muted flex items-center gap-2">
+          <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
           Menulis interpretasi… (biasanya 5-15 detik)
         </div>
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+        <div className="bg-terracotta/8 border-l-2 border-terracotta rounded-r-lg p-3 text-sm text-terracotta">
           Gagal menghasilkan interpretasi: {error}
         </div>
       )}
 
       {text && !loading && (
-        <div className="bg-card/50 border border-border/80 rounded-lg p-4">
+        <div className="bg-surface border border-border rounded-lg p-4">
           {isFallback && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3 text-[11px] text-amber-800 leading-relaxed">
+            <div className="bg-accent/5 border-l-2 border-accent rounded-r-lg px-3 py-2 mb-3 text-[11px] text-accent leading-relaxed">
               <span className="font-medium">Mode offline:</span> AI provider sedang sibuk, jadi interpretasi disusun dari template lokal berdasarkan angka hasil analisis. Hasil tetap akurat tapi gaya bahasanya lebih baku — coba <em>Regenerate</em> beberapa saat lagi untuk versi AI.
             </div>
           )}
@@ -1942,18 +1957,18 @@ function ExplainChatPanel({ result, aiInterpretation }) {
 
   return (
     <>
-      <div className="mt-5 bg-gradient-to-r from-surface border border-border rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
+      <div className="mt-5 bg-surface border border-border rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className="w-10 h-10 rounded-full bg-surface0 text-white flex items-center justify-center flex-shrink-0 text-lg">💬</div>
+          <div className="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center flex-shrink-0 text-lg">💬</div>
           <div className="min-w-0">
-            <div className="font-semibold text-fg">Belum paham hasilnya?</div>
+            <div className="font-heading font-semibold text-fg">Belum paham hasilnya?</div>
             <div className="text-sm text-muted">
               Tanya AI! Bakal dijelasin pakai bahasa santai, kayak ngobrol sama temen. Gratis {MAX_TURNS} pertanyaan per hasil.
             </div>
           </div>
         </div>
         <button onClick={handleOpen}
-                className="bg-accent hover:bg-accent/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg flex-shrink-0">
+                className="bg-accent hover:bg-accent/90 text-accent-fg text-sm font-heading font-semibold px-5 py-2.5 rounded-lg flex-shrink-0 transition-colors active:scale-[0.98]">
           Tanya AI
         </button>
       </div>
@@ -1962,9 +1977,9 @@ function ExplainChatPanel({ result, aiInterpretation }) {
              panelClassName="bg-card rounded-2xl shadow-2xl max-w-2xl w-full h-[80vh] flex flex-col">
         <div className="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-full bg-surface0 text-white flex items-center justify-center flex-shrink-0">💬</div>
+            <div className="w-9 h-9 rounded-full bg-accent/10 text-accent flex items-center justify-center flex-shrink-0">💬</div>
             <div className="min-w-0">
-              <div className="font-semibold text-gray-900 dark:text-gray-100 truncate">Tanya AI tentang Hasil</div>
+              <div className="font-heading font-semibold text-fg truncate">Tanya AI tentang Hasil</div>
               <div className="text-xs text-muted">{result.toolName} · sisa {remaining}/{MAX_TURNS} pertanyaan</div>
             </div>
           </div>
@@ -1973,7 +1988,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
           </button>
         </div>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-card/50/50">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-surface/40">
           {messages.map((m, i) => <ChatBubble key={i} role={m.role} content={m.content} />)}
           {loading && (
             <div className="flex items-center gap-2 text-sm text-muted pl-2">
@@ -1984,7 +1999,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
             </div>
           )}
           {error && !loading && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+            <div className="bg-terracotta/8 border-l-2 border-terracotta rounded-r-lg p-3 text-sm text-terracotta">
               Error: {error}. Coba kirim ulang ya.
             </div>
           )}
@@ -1992,7 +2007,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
 
         <div className="flex-shrink-0 border-t border-border p-3">
           {limitReached ? (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800 text-center">
+            <div className="bg-accent/5 border-l-2 border-accent rounded-r-lg p-3 text-sm text-accent text-center">
               Kamu sudah pakai {MAX_TURNS}/{MAX_TURNS} pertanyaan untuk hasil ini.<br />
               <span className="text-xs">Buka analisis baru kalau mau tanya lagi.</span>
             </div>
@@ -2002,11 +2017,11 @@ function ExplainChatPanel({ result, aiInterpretation }) {
                 value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
                 placeholder={loading ? 'Tunggu AI…' : 'Tanya apa aja tentang hasilmu…'}
                 disabled={loading} rows={1}
-                className="flex-1 resize-none border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:bg-card/50 disabled:text-muted"
+                className="flex-1 resize-none border border-border rounded-xl px-3 py-2.5 text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:bg-surface disabled:text-muted"
                 style={{ maxHeight: '120px' }}
               />
               <button onClick={handleSend} disabled={!input.trim() || loading}
-                      className="bg-accent hover:bg-accent/90 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2.5 rounded-xl">
+                      className="bg-accent hover:bg-accent/90 disabled:bg-muted/30 disabled:cursor-not-allowed text-accent-fg text-sm font-heading font-semibold px-4 py-2.5 rounded-xl">
                 Kirim
               </button>
             </div>
@@ -2022,7 +2037,7 @@ function ChatBubble({ role, content }) {
   if (role === 'user') {
     return (
       <div className="flex justify-end">
-        <div className="bg-accent text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed">
+        <div className="bg-accent text-accent-fg rounded-2xl rounded-br-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed">
           {content}
         </div>
       </div>
@@ -2030,7 +2045,7 @@ function ChatBubble({ role, content }) {
   }
   return (
     <div className="flex justify-start gap-2">
-      <div className="w-8 h-8 rounded-full bg-surface text-accent flex items-center justify-center flex-shrink-0 text-base">💬</div>
+      <div className="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center flex-shrink-0 text-base">💬</div>
       <div className="bg-card border border-border rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm max-w-[85%] whitespace-pre-wrap leading-relaxed text-fg">
         {content}
       </div>

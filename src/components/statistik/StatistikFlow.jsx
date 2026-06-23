@@ -1,66 +1,118 @@
 // src/components/statistik/StatistikFlow.jsx
-// Guided step-based flow for Statistik page
-import Fuse from 'fuse.js'
-// Wraps existing logic, presents as Upload → Cek Data → Analisis → Hasil
+// Guided step-based flow for Statistik page — Scholarly Editorial redesign.
+// Presents as Upload → Cek Data → Analisis → Hasil.
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import {
-  Upload, Table, BarChart3, CheckCircle,
-  ChevronRight, AlertCircle, FileSpreadsheet, ArrowRight,
+  Upload, Table, Activity, CheckCircle,
+  ChevronRight, AlertCircle, FileSpreadsheet, ArrowRight, ClipboardList, X,
 } from 'lucide-react'
-import DataPreview from '../DataPreview'
+import Fuse from 'fuse.js'
 
 const STEPS = [
-  { id: 'upload',  label: 'Upload',    icon: Upload },
-  { id: 'review',  label: 'Cek Data',  icon: Table },
-  { id: 'select',  label: 'Analisis',  icon: BarChart3 },
-  { id: 'results', label: 'Hasil',     icon: CheckCircle },
+  { id: 'upload',  label: 'Upload',   icon: Upload, no: '01' },
+  { id: 'review',  label: 'Cek Data', icon: Table,  no: '02' },
+  { id: 'select',  label: 'Analisis', icon: Activity, no: '03' },
+  { id: 'results', label: 'Hasil',    icon: CheckCircle, no: '04' },
 ]
 
 // ============================================================
-// Step indicator (horizontal progress)
+// Step indicator — numbered scholarly, ruled-line connector
 // ============================================================
 function StepIndicator({ current, completed }) {
+  const currentIndex = STEPS.findIndex(s => s.id === current)
+
   return (
-    <nav className="flex items-center gap-1 overflow-x-auto pb-2 mb-6">
-      {STEPS.map((step, i) => {
-        const Ic = step.icon
-        const isActive = step.id === current
-        const isDone = completed.includes(step.id)
-        return (
-          <div key={step.id} className="flex items-center gap-1 flex-shrink-0">
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              isActive ? 'bg-accent/10 text-accent' :
-              isDone ? 'text-accent' :
-              'text-muted'
-            }`}>
-              {isDone ? (
-                <CheckCircle className="w-3.5 h-3.5" />
-              ) : (
-                <Ic className="w-3.5 h-3.5" />
+    <nav className="mb-6">
+      {/* Desktop: numbered with connecting line */}
+      <div className="hidden sm:flex items-center">
+        {STEPS.map((step, i) => {
+          const Ic = step.icon
+          const isActive = step.id === current
+          const isDone = completed.includes(step.id)
+          const isPast = i < currentIndex
+
+          return (
+            <div key={step.id} className="flex items-center flex-1 last:flex-none">
+              <div className="flex items-center gap-2.5">
+                <div className={`
+                  relative w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300
+                  ${isActive ? 'border-accent bg-accent text-accent-fg' :
+                    isDone || isPast ? 'border-accent/40 bg-accent/8 text-accent' :
+                    'border-border bg-card text-muted'}
+                `}>
+                  {isDone || isPast ? (
+                    <CheckCircle className="w-3.5 h-3.5" />
+                  ) : (
+                    <Ic className="w-3.5 h-3.5" />
+                  )}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[9px] text-muted/60 tracking-[0.14em] uppercase font-mono leading-none">{step.no}</span>
+                  <span className={`text-xs font-medium leading-tight ${isActive ? 'text-fg' : 'text-muted'}`}>
+                    {step.label}
+                  </span>
+                </div>
+              </div>
+              {/* Connector line */}
+              {i < STEPS.length - 1 && (
+                <div className={`flex-1 h-px mx-3 ${isPast ? 'bg-accent/30' : 'bg-border'}`} />
               )}
-              <span className="hidden sm:inline">{step.label}</span>
             </div>
-            {i < STEPS.length - 1 && (
-              <ChevronRight className="w-3 h-3 text-muted/40 flex-shrink-0" />
-            )}
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
+
+      {/* Mobile: compact horizontal scroll */}
+      <div className="sm:hidden flex items-center gap-1 overflow-x-auto no-scrollbar pb-1">
+        {STEPS.map((step, i) => {
+          const Ic = step.icon
+          const isActive = step.id === current
+          const isDone = completed.includes(step.id)
+          const isPast = i < currentIndex
+
+          return (
+            <div key={step.id} className="flex items-center gap-1 flex-shrink-0">
+              <div className={`
+                flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all
+                ${isActive ? 'border-accent/40 bg-accent/8 text-accent' :
+                  isDone || isPast ? 'text-accent' : 'text-muted border-transparent'}
+              `}>
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono font-semibold
+                  ${isActive ? 'bg-accent text-accent-fg' : isDone || isPast ? 'text-accent' : 'text-muted'}`}>
+                  {isDone || isPast ? '✓' : i + 1}
+                </div>
+                <span className="text-xs font-medium">{step.label}</span>
+              </div>
+              {i < STEPS.length - 1 && (
+                <ChevronRight className={`w-3 h-3 flex-shrink-0 ${isPast ? 'text-accent/40' : 'text-border'}`} />
+              )}
+            </div>
+          )
+        })}
+      </div>
     </nav>
   )
 }
 
 // ============================================================
-// Step 1: Upload
+// Step 1: Upload — calmer dropzone, scholarly
 // ============================================================
-function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuide, onPasteData }) {
+function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuide, onPasteData, onClearFile }) {
   const hasFile = file && file.name
   const [mode, setMode] = useState('file') // 'file' | 'paste'
   const [pasteText, setPasteText] = useState('')
-  
+  // After a successful upload, collapse to a compact summary row.
+  // User can click "Ganti" to expand the full dropzone again.
+  const [collapsed, setCollapsed] = useState(false)
+
+  // Auto-collapse whenever a new file is loaded (clears focus for next step)
+  useEffect(() => {
+    if (hasFile) setCollapsed(true)
+  }, [hasFile])
+
   const handleDragOver = (e) => { e.preventDefault() }
-  
+
   const handleDrop = (e) => {
     e.preventDefault()
     const droppedFile = e.dataTransfer.files?.[0]
@@ -75,145 +127,191 @@ function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuid
         onPasteData(text)
       }
     } catch {
-      // clipboard API not available — user types manually
+      // clipboard API not available
     }
   }
-  
+
   return (
-    <div className="border border-border bg-card rounded-xl p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-fg">Unggah Dataset</h2>
-        {/* Mode tabs */}
-        <div className="flex bg-[rgb(var(--surface))] rounded-lg p-0.5 text-xs">
+    <div className="border border-border rounded-xl bg-card overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <span className="font-heading text-2xl font-bold text-accent/15 leading-none italic select-none">01</span>
+          <div>
+            <h2 className="font-heading font-semibold text-sm tracking-tight">Unggah Dataset</h2>
+            <p className="text-[11px] text-muted">CSV, Excel, atau paste langsung</p>
+          </div>
+        </div>
+        {/* Mode toggle */}
+        <div className="flex bg-surface rounded-lg p-0.5 text-[11px]">
           <button
             onClick={() => setMode('file')}
-            className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-              mode === 'file' 
-                ? 'bg-[rgb(var(--card))] text-[rgb(var(--fg))] shadow-sm' 
-                : 'text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]'
+            className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
+              mode === 'file'
+                ? 'bg-card text-fg shadow-sm'
+                : 'text-muted hover:text-fg'
             }`}
           >
-            📁 File
+            File
           </button>
           <button
             onClick={() => setMode('paste')}
-            className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-              mode === 'paste' 
-                ? 'bg-[rgb(var(--card))] text-[rgb(var(--fg))] shadow-sm' 
-                : 'text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]'
+            className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
+              mode === 'paste'
+                ? 'bg-card text-fg shadow-sm'
+                : 'text-muted hover:text-fg'
             }`}
           >
-            📋 Paste
+            Paste
           </button>
         </div>
       </div>
 
-      {mode === 'file' && (
-        <>
-          <div
-            className={`relative block border-2 border-dashed rounded-xl p-10 text-center cursor-pointer hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]/50 transition-colors active:scale-95 ${hasFile ? 'border-green-400 bg-green-50/50' : 'border-border'}`}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-          >
-            {hasFile ? (
-              <>
-                <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-3" />
-                <p className="text-green-700 font-medium mb-1">✓ Berhasil diunggah</p>
-                <p className="text-sm text-green-600 font-semibold">{file.name}</p>
-                <p className="text-xs text-muted mt-2">Klik untuk ganti file lain</p>
-              </>
-            ) : (
-              <>
-                <FileSpreadsheet className="w-10 h-10 text-muted/40 mx-auto mb-3" />
-                <p className="text-muted font-medium mb-1">Klik atau seret file ke sini</p>
-                <p className="text-xs text-muted">.xlsx, .xls, .csv · maks 10MB</p>
-              </>
-            )}
-            <input
-              type="file"
-              accept=".xlsx,.xls,.csv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              onChange={onFileUpload}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              aria-label="Upload dataset"
+      <div className="p-5">
+        {/* Compact summary once a file is loaded — keeps focus on the active step */}
+        {hasFile && collapsed ? (
+          <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-teal/5 border border-teal/20">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-teal/10 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-4 h-4 text-teal" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-heading font-medium text-fg truncate">{file.name}</p>
+                <p className="text-[11px] text-muted">Dataset siap · klik untuk mengganti</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <button
+                onClick={() => setCollapsed(false)}
+                className="text-[11px] text-accent hover:text-accent/80 font-medium px-2.5 py-1.5 rounded-md border border-border hover:bg-surface transition-colors"
+              >
+                Ganti
+              </button>
+              {onClearFile && (
+                <button
+                  onClick={onClearFile}
+                  title="Hapus data"
+                  className="w-7 h-7 flex items-center justify-center rounded-md text-muted hover:text-terracotta hover:bg-terracotta/8 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+        ) : mode === 'file' && (
+          <>
+            <div
+              className={`relative block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all active:scale-[0.99] ${
+                hasFile
+                  ? 'border-teal/40 bg-teal/5'
+                  : 'border-border hover:border-accent/50 hover:bg-accent/3 bg-surface/40'
+              }`}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            >
+              {hasFile ? (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-3">
+                    <CheckCircle className="w-5 h-5 text-teal" />
+                  </div>
+                  <p className="font-heading font-medium text-sm text-fg mb-0.5">Berhasil diunggah</p>
+                  <p className="text-xs text-muted font-mono">{file.name}</p>
+                  <p className="text-[11px] text-muted mt-2">Klik untuk ganti file</p>
+                </>
+              ) : (
+                <>
+                  <FileSpreadsheet className="w-8 h-8 text-muted/40 mx-auto mb-2" strokeWidth={1.5} />
+                  <p className="text-sm text-muted font-medium mb-1">Klik atau seret file ke sini</p>
+                  <p className="text-[11px] text-muted/70">.xlsx, .xls, .csv · maks 10MB</p>
+                </>
+              )}
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                onChange={onFileUpload}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                aria-label="Upload dataset"
+              />
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px]">
+              <span className="text-muted">Belum punya data?</span>
+              <button onClick={onExampleLoad} className="text-accent hover:text-accent/80 font-medium transition-colors">
+                Pakai contoh data
+              </button>
+              <span className="text-border">·</span>
+              <button onClick={onOpenGuide} className="text-muted hover:text-fg font-medium transition-colors">
+                Panduan format
+              </button>
+            </div>
+          </>
+        )}
+
+        {mode === 'paste' && (
+          <div className="space-y-3">
+            <p className="text-xs text-muted leading-relaxed">
+              Copy data dari Excel / Google Sheets, lalu paste di bawah.
+              Format: baris pertama = header, pisahkan dengan tab atau koma.
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={handlePasteFromClipboard}
+                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 border border-border rounded-md hover:bg-surface hover:text-fg text-muted transition-colors"
+              >
+                <ClipboardList className="w-3 h-3" />
+                Ambil dari clipboard
+              </button>
+              <button
+                onClick={() => {
+                  setPasteText(
+                    'Nama\tPre-test\tPost-test\n' +
+                    'Siswa A\t22\t27\n' +
+                    'Siswa B\t18\t24\n' +
+                    'Siswa C\t25\t30\n' +
+                    'Siswa D\t20\t23\n' +
+                    'Siswa E\t21\t26'
+                  )
+                }}
+                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 border border-border rounded-md hover:bg-surface hover:text-fg text-muted transition-colors"
+              >
+                Isi contoh
+              </button>
+            </div>
+
+            <textarea
+              value={pasteText}
+              onChange={(e) => setPasteText(e.target.value)}
+              placeholder={`Paste data di sini…\n\nNama\tPre-test\tPost-test\nSiswa A\t22\t27\nSiswa B\t18\t24`}
+              rows={7}
+              className="w-full p-3 text-xs font-mono bg-surface border border-border resize-y rounded-lg placeholder:text-muted/50 focus:outline-none focus:border-accent/50 transition-colors"
+              spellCheck={false}
             />
-          </div>
 
-          <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted">
-            <span>Belum punya data?</span>
-            <button onClick={onExampleLoad} className="text-accent hover:text-accent font-medium">
-              Pakai Contoh Data
-            </button>
-            <span className="text-muted/30">|</span>
-            <button onClick={onOpenGuide} className="text-muted hover:text-fg font-medium">
-              Lihat Panduan Format
-            </button>
-          </div>
-        </>
-      )}
-
-      {mode === 'paste' && (
-        <div className="space-y-3">
-          <p className="text-sm text-muted">
-            Copy data dari Excel / Google Sheets, lalu paste di bawah. 
-            Format: baris pertama = header, pisahkan dengan tab atau koma.
-          </p>
-          
-          <div className="flex gap-2">
             <button
-              onClick={handlePasteFromClipboard}
-              className="text-xs flex items-center gap-1 px-3 py-1.5 border border-[rgb(var(--border))] rounded-md hover:bg-[rgb(var(--surface))] transition-colors"
+              onClick={() => onPasteData(pasteText)}
+              disabled={!pasteText.trim()}
+              className="inline-flex items-center gap-1.5 text-xs font-heading font-semibold bg-accent text-accent-fg hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed px-4 py-2 rounded-lg transition-all"
             >
-              📋 Ambil dari clipboard
-            </button>
-            <button
-              onClick={() => {
-                setPasteText(
-                  'Nama\tPre-test\tPost-test\n' +
-                  'Siswa A\t22\t27\n' +
-                  'Siswa B\t18\t24\n' +
-                  'Siswa C\t25\t30\n' +
-                  'Siswa D\t20\t23\n' +
-                  'Siswa E\t21\t26'
-                )
-              }}
-              className="text-xs flex items-center gap-1 px-3 py-1.5 border border-[rgb(var(--border))] rounded-md hover:bg-[rgb(var(--surface))] transition-colors"
-            >
-              📝 Isi contoh
+              <ArrowRight className="w-3 h-3" />
+              Parse & Lanjutkan
             </button>
           </div>
+        )}
 
-          <textarea
-            value={pasteText}
-            onChange={(e) => setPasteText(e.target.value)}
-            placeholder={`Paste data di sini…\n\nNama\tPre-test\tPost-test\nSiswa A\t22\t27\nSiswa B\t18\t24`}
-            rows={8}
-            className="w-full p-3 text-sm font-mono bg-[rgb(var(--surface))] border border-[rgb(var(--border))] resize-y rounded-lg placeholder:text-[rgb(var(--muted))]/50 focus:outline-none focus:border-[rgb(var(--accent))]/50"
-            spellCheck={false}
-          />
-
-          <button
-            onClick={() => onPasteData(pasteText)}
-            disabled={!pasteText.trim()}
-            className="text-xs font-heading font-semibold bg-[rgb(var(--accent))] text-[rgb(var(--accent-fg))] hover:brightness-110 disabled:opacity-40 px-4 py-2 rounded-lg flex items-center gap-1.5 transition-all"
-          >
-            <ArrowRight className="w-3.5 h-3.5" />
-            Parse & Lanjutkan
-          </button>
-        </div>
-      )}
-
-      {error && (
-        <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700 flex items-start gap-2">
-          <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-          {error}
-        </div>
-      )}
+        {error && (
+          <div className="mt-4 p-3 rounded-lg bg-terracotta/8 border-l-2 border-terracotta text-sm text-terracotta flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
 // ============================================================
-// Step 2: Review Variables
+// Step 2: Review — compact summary, scholarly table
 // ============================================================
 function StepReview({ columns, data, numericColumns, categoricalColumns, editingCell, draftValue, hasEdits, onCellClick, onCellChange, onCellSave, onCellCancel, onReset }) {
   if (!data) return null
@@ -222,14 +320,12 @@ function StepReview({ columns, data, numericColumns, categoricalColumns, editing
   const safeNumeric = Array.isArray(numericColumns) ? numericColumns : []
   const safeCategorical = Array.isArray(categoricalColumns) ? categoricalColumns : []
 
-  // Consistent missing value policy
   const isMissing = (v) =>
     v === null ||
     v === undefined ||
     v === '' ||
     ['NA', 'N/A', 'NULL', 'null', '-'].includes(String(v).trim())
 
-  // data is column-oriented: { col1: [values...], col2: [values...] }
   const totalRows = safeColumns[0] ? (data?.[safeColumns[0]]?.length || 0) : 0
   const missingByCol = safeColumns.map(col => {
     const values = Array.isArray(data?.[col]) ? data[col] : []
@@ -239,187 +335,179 @@ function StepReview({ columns, data, numericColumns, categoricalColumns, editing
   const totalMissing = missingByCol.filter(m => m.count > 0)
 
   return (
-    <div className="border border-border bg-card rounded-xl p-6">
-      <div className="flex items-start justify-between mb-1">
-        <h2 className="text-lg font-semibold text-fg">Data kamu sudah terbaca</h2>
+    <div className="border border-border rounded-xl bg-card overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-3.5 border-b border-border flex items-start justify-between">
+        <div className="flex items-center gap-2.5">
+          <span className="font-heading text-2xl font-bold text-accent/15 leading-none italic select-none">02</span>
+          <div>
+            <h2 className="font-heading font-semibold text-sm tracking-tight">Cek Data</h2>
+            <p className="text-[11px] text-muted">Pastikan tipe variabel terbaca benar</p>
+          </div>
+        </div>
         {hasEdits && (
           <button
             onClick={onReset}
-            className="text-xs text-muted hover:text-fg border border-border rounded-lg px-3 py-1.5 transition-colors active:scale-95"
+            className="text-[11px] text-muted hover:text-fg border border-border rounded-lg px-2.5 py-1 transition-colors active:scale-95"
           >
-            Reset ke file asli
+            Reset
           </button>
         )}
       </div>
-      <p className="text-sm text-muted mb-5">
-        Cek beberapa baris pertama untuk memastikan header, angka, dan kategori terbaca dengan benar sebelum memilih analisis.
-      </p>
 
-      {/* Edit status */}
-      {hasEdits && (
-        <div className="mb-5 p-3 rounded-lg bg-accent/5 border border-accent/20 text-sm text-accent">
-          Data sudah diubah — hasil analisis akan memakai data terbaru.
-        </div>
-      )}
+      <div className="p-5">
+        {/* Edit notice */}
+        {hasEdits && (
+          <div className="mb-4 p-2.5 rounded-lg bg-accent/5 border-l-2 border-accent text-xs text-accent">
+            Data sudah diubah — hasil analisis memakai data terbaru.
+          </div>
+        )}
 
-      {/* Summary stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-        <div className="p-3 rounded-lg bg-card/50 border border-border">
-          <div className="text-xs text-muted">Baris</div>
-          <div className="text-lg font-semibold">{totalRows.toLocaleString()}</div>
+        {/* Summary grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+          {[
+            { label: 'Baris', value: totalRows.toLocaleString(), accent: false },
+            { label: 'Variabel', value: columns.length, accent: false },
+            { label: 'Numerik', value: numericColumns.length, accent: true },
+            { label: 'Kategorik', value: categoricalColumns.length, accent: false },
+          ].map(s => (
+            <div key={s.label} className="p-2.5 rounded-lg bg-surface border border-border">
+              <div className="text-[10px] text-muted tracking-wider uppercase">{s.label}</div>
+              <div className={`text-lg font-heading font-bold ${s.accent ? 'text-accent' : 'text-fg'}`}>{s.value}</div>
+            </div>
+          ))}
         </div>
-        <div className="p-3 rounded-lg bg-card/50 border border-border">
-          <div className="text-xs text-muted">Variabel</div>
-          <div className="text-lg font-semibold">{columns.length}</div>
-        </div>
-        <div className="p-3 rounded-lg bg-card/50 border border-border">
-          <div className="text-xs text-muted">Numerik</div>
-          <div className="text-lg font-semibold text-accent">{numericColumns.length}</div>
-        </div>
-        <div className="p-3 rounded-lg bg-card/50 border border-border">
-          <div className="text-xs text-muted">Kategorik</div>
-          <div className="text-lg font-semibold">{categoricalColumns.length}</div>
-        </div>
-      </div>
 
-      {/* Missing values alert */}
-      {totalMissing.length > 0 && (
-        <div className="mb-5 p-3 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-800">
-          <strong>{totalMissing.length} variabel</strong> memiliki missing values. Pertimbangkan untuk membersihkan data sebelum analisis.
-        </div>
-      )}
+        {/* Missing values warning */}
+        {totalMissing.length > 0 && (
+          <div className="mb-4 p-3 rounded-lg bg-terracotta/8 border-l-2 border-terracotta text-xs text-terracotta flex items-start gap-2">
+            <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+            <span><strong>{totalMissing.length} variabel</strong> memiliki missing values. Pertimbangkan membersihkan data sebelum analisis.</span>
+          </div>
+        )}
 
-      {/* Variable list */}
-      <p className="text-xs text-muted mb-2">
-        Azezmen mendeteksi tipe variabel secara otomatis. Kamu bisa lanjut jika tipe sudah sesuai.
-      </p>
-      <div className="overflow-x-auto mb-6">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="py-2 text-left font-medium text-muted">Variabel</th>
-              <th className="py-2 text-left font-medium text-muted">Tipe</th>
-              <th className="py-2 text-left font-medium text-muted">Contoh</th>
-              <th className="py-2 text-left font-medium text-muted">Missing</th>
-            </tr>
-          </thead>
-          <tbody>
-            {safeColumns.map(col => {
-              const isNum = safeNumeric.includes(col)
-              const values = Array.isArray(data?.[col]) ? data[col] : []
-              const sample = values.find(v => !isMissing(v))
-              const m = missingByCol.find(x => x.col === col)
-              return (
-                <tr key={col} className="border-b border-border/50">
-                  <td className="py-2 font-medium">{col}</td>
-                  <td className="py-2">
-                    <span className={`text-xs px-2 py-0.5 rounded ${isNum ? 'bg-accent/10 text-accent' : 'bg-muted/10 text-muted'}`}>
-                      {isNum ? 'Numerik' : 'Kategorik'}
-                    </span>
-                  </td>
-                  <td className="py-2 text-muted font-mono text-xs">{String(sample ?? '—').substring(0, 30)}</td>
-                  <td className="py-2">
-                    {m && m.count > 0 ? (
-                      <span className="text-amber-600 text-xs">{m.count} ({m.pct}%)</span>
-                    ) : (
-                      <span className="text-accent text-xs">0</span>
-                    )}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Spreadsheet preview — editable */}
-      {totalRows > 0 && safeColumns.length > 0 && (
-        <div className="mt-2">
-          <h3 className="text-sm font-semibold text-fg mb-1">Preview Dataset</h3>
-          <p className="text-xs text-muted mb-1">
-            Klik cell untuk memperbaiki nilai kecil. Untuk edit besar, ubah file Excel lalu upload ulang.
-          </p>
-          <p className="text-xs text-muted mb-3">
-            Menampilkan {Math.min(totalRows, 20)} baris pertama dari {totalRows.toLocaleString()} baris.
-          </p>
-          <div className="border border-border rounded-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="bg-card/80 border-b border-border">
-                    <th className="px-3 py-2 text-left font-medium text-muted border-r border-border w-10">#</th>
-                    {safeColumns.map(col => (
-                      <th key={col} className="px-3 py-2 text-left font-medium text-muted border-r border-border last:border-r-0 whitespace-nowrap">
-                        {col}
-                      </th>
-                    ))}
+        {/* Variable list */}
+        <p className="text-[11px] text-muted mb-2">Tipe variabel terdeteksi otomatis. Lanjut jika sudah sesuai.</p>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="py-2 pr-3 text-left font-heading font-semibold text-muted">Variabel</th>
+                <th className="py-2 pr-3 text-left font-heading font-semibold text-muted">Tipe</th>
+                <th className="py-2 pr-3 text-left font-heading font-semibold text-muted">Contoh</th>
+                <th className="py-2 text-left font-heading font-semibold text-muted">Missing</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/50">
+              {safeColumns.map(col => {
+                const isNum = safeNumeric.includes(col)
+                const values = Array.isArray(data?.[col]) ? data[col] : []
+                const sample = values.find(v => !isMissing(v))
+                const m = missingByCol.find(x => x.col === col)
+                return (
+                  <tr key={col}>
+                    <td className="py-1.5 pr-3 font-medium text-fg">{col}</td>
+                    <td className="py-1.5 pr-3">
+                      <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                        isNum ? 'bg-accent/10 text-accent' : 'bg-muted/10 text-muted'
+                      }`}>
+                        {isNum ? 'Numerik' : 'Kategorik'}
+                      </span>
+                    </td>
+                    <td className="py-1.5 pr-3 text-muted font-mono">{String(sample ?? '—').substring(0, 30)}</td>
+                    <td className="py-1.5">
+                      {m && m.count > 0 ? (
+                        <span className="text-terracotta">{m.count} ({m.pct}%)</span>
+                      ) : (
+                        <span className="text-teal">0</span>
+                      )}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: Math.min(totalRows, 20) }, (_, i) => (
-                    <tr key={i} className="border-b border-border/50 hover:bg-card/30">
-                      <td className="px-3 py-1.5 text-muted border-r border-border w-10 font-mono">
-                        {i + 1}
-                      </td>
-                      {safeColumns.map(col => {
-                        const values = Array.isArray(data?.[col]) ? data[col] : []
-                        const value = values[i]
-                        const isEditing = editingCell?.rowIndex === i && editingCell?.col === col
-                        const display = isMissing(value) ? '—' : String(value)
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
 
-                        if (isEditing) {
+        {/* Spreadsheet preview */}
+        {totalRows > 0 && safeColumns.length > 0 && (
+          <div>
+            <h3 className="text-xs font-heading font-semibold mb-1">Preview Dataset</h3>
+            <p className="text-[11px] text-muted mb-2">
+              Klik cell untuk perbaiki nilai. Menampilkan {Math.min(totalRows, 20)} dari {totalRows.toLocaleString()} baris.
+            </p>
+            <div className="border border-border rounded-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-[11px]">
+                  <thead>
+                    <tr className="bg-surface border-b border-border">
+                      <th className="px-2 py-1.5 text-left font-heading font-medium text-muted border-r border-border w-8">#</th>
+                      {safeColumns.map(col => (
+                        <th key={col} className="px-2 py-1.5 text-left font-heading font-medium text-muted border-r border-border last:border-r-0 whitespace-nowrap">
+                          {col}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: Math.min(totalRows, 20) }, (_, i) => (
+                      <tr key={i} className="border-b border-border/30 last:border-b-0 hover:bg-surface/50">
+                        <td className="px-2 py-1 text-muted border-r border-border w-8 font-mono">{i + 1}</td>
+                        {safeColumns.map(col => {
+                          const values = Array.isArray(data?.[col]) ? data[col] : []
+                          const value = values[i]
+                          const isEditing = editingCell?.rowIndex === i && editingCell?.col === col
+                          const display = isMissing(value) ? '—' : String(value)
+
+                          if (isEditing) {
+                            return (
+                              <td key={col} className="px-1 py-0.5 border-r border-border last:border-r-0">
+                                <input
+                                  autoFocus
+                                  type="text"
+                                  value={draftValue}
+                                  onChange={(e) => onCellChange(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') onCellSave(col, i)
+                                    if (e.key === 'Escape') onCellCancel()
+                                  }}
+                                  onBlur={() => onCellSave(col, i)}
+                                  className="w-full px-1.5 py-0.5 text-[11px] font-mono border border-accent rounded bg-card text-fg outline-none"
+                                />
+                              </td>
+                            )
+                          }
+
                           return (
-                            <td key={col} className="px-1 py-0.5 border-r border-border last:border-r-0">
-                              <input
-                                autoFocus
-                                type="text"
-                                value={draftValue}
-                                onChange={(e) => onCellChange(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') onCellSave(col, i)
-                                  if (e.key === 'Escape') onCellCancel()
-                                }}
-                                onBlur={() => onCellSave(col, i)}
-                                className="w-full px-1.5 py-0.5 text-xs font-mono border border-accent rounded bg-card text-fg outline-none"
-                              />
+                            <td
+                              key={col}
+                              onClick={() => onCellClick(i, col, value)}
+                              className="px-2 py-1 border-r border-border last:border-r-0 font-mono max-w-[140px] truncate cursor-pointer hover:bg-accent/5 transition-colors"
+                              title={display === '—' ? 'empty — klik untuk edit' : `${display} — klik untuk edit`}
+                            >
+                              {display === '—' ? (
+                                <span className="text-muted/40">—</span>
+                              ) : (
+                                display
+                              )}
                             </td>
                           )
-                        }
-
-                        return (
-                          <td
-                            key={col}
-                            onClick={() => onCellClick(i, col, value)}
-                            className="px-3 py-1.5 border-r border-border last:border-r-0 font-mono max-w-[180px] truncate cursor-pointer hover:bg-accent/5 transition-colors active:scale-95"
-                            title={display === '—' ? 'empty — klik untuk edit' : `${display} — klik untuk edit`}
-                          >
-                            {display === '—' ? (
-                              <span className="text-muted/40">—</span>
-                            ) : (
-                              display
-                            )}
-                          </td>
-                        )
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-          {totalRows > 20 && (
-            <p className="text-xs text-muted mt-2 italic">
-              Untuk perubahan besar, sebaiknya edit file Excel lalu upload ulang.
-            </p>
-          )}
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
 
 // ============================================================
-// Step 3: Select Analysis (guided recommendations)
+// Step 3: Select Analysis — scholarly grid with tier badges
 // ============================================================
 const categoryHints = {
   Hubungan: 'Cari tahu apakah dua variabel saling berkaitan.',
@@ -433,8 +521,40 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
   const safeNumeric = Array.isArray(numericColumns) ? numericColumns : []
   const safeCategorical = Array.isArray(categoricalColumns) ? categoricalColumns : []
 
-  // Show flat list when no data, recommendations when data exists
   const showRecommendations = hasData && (safeNumeric.length > 0 || safeCategorical.length > 0)
+
+  // Tier-based full list
+  const tieredTools = useMemo(() => [
+    {
+      tier: 'Dasar',
+      items: [
+        { id: 'deskriptif', name: 'Statistik Deskriptif', desc: 'Mean, median, SD, skewness' },
+        { id: 'normalitas', name: 'Uji Normalitas', desc: 'Shapiro-Wilk / K-S' },
+        { id: 'korelasi', name: 'Korelasi', desc: 'Pearson & Spearman' },
+        { id: 'ttest', name: 'T-Test', desc: '1-sample, independent, paired' },
+      ],
+    },
+    {
+      tier: 'Menengah',
+      items: [
+        { id: 'validitas', name: 'Validitas & Reliabilitas', desc: 'Item-total + Cronbach α' },
+        { id: 'anova', name: 'One-way ANOVA', desc: 'F-test + post-hoc' },
+        { id: 'regresi', name: 'Regresi Sederhana', desc: '1 predictor → outcome' },
+        { id: 'chisquare', name: 'Chi-Square', desc: 'Asosiasi kategorik' },
+        { tier: 'Menengah', id: 'mannwhitney', name: 'Mann-Whitney U', desc: 'Non-parametrik 2 grup' },
+        { id: 'wilcoxon', name: 'Wilcoxon', desc: 'Non-parametrik berpasangan' },
+        { id: 'kruskal', name: 'Kruskal-Wallis', desc: 'Non-parametrik ≥3 grup' },
+        { id: 'ngain', name: 'N-Gain (Hake)', desc: 'Efektivitas pre-post' },
+      ],
+    },
+    {
+      tier: 'Lanjutan',
+      items: [
+        { id: 'twowayanova', name: 'Two-way ANOVA', desc: 'Faktorial 2 faktor' },
+        { id: 'regresiganda', name: 'Regresi Berganda', desc: 'Multi predictor + VIF' },
+      ],
+    },
+  ], [])
 
   // Build recommendations based on data types
   const recommendations = useMemo(() => {
@@ -485,152 +605,169 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
     return recs
   }, [safeNumeric, safeCategorical])
 
-  // All tools (for advanced mode)
-  const allTools = [
-    { id: 'deskriptif', name: 'Deskriptif' },
-    { id: 'normalitas', name: 'Normalitas' },
-    { id: 'korelasi', name: 'Korelasi' },
-    { id: 'ttest', name: 'T-Test' },
-    { id: 'validitas', name: 'Validitas & Reliabilitas' },
-    { id: 'anova', name: 'ANOVA' },
-    { id: 'twowayanova', name: 'Two-way ANOVA' },
-    { id: 'regresi', name: 'Regresi Sederhana' },
-    { id: 'regresiganda', name: 'Regresi Berganda' },
-    { id: 'chisquare', name: 'Chi-Square' },
-    { id: 'mannwhitney', name: 'Mann-Whitney U' },
-    { id: 'wilcoxon', name: 'Wilcoxon' },
-    { id: 'kruskal', name: 'Kruskal-Wallis' },
-    { id: 'ngain', name: 'N-Gain (Hake)' },
-  ]
-
-  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [showAll, setShowAll] = useState(false)
   const [search, setSearch] = useState('')
-  const fuse = useMemo(() => new Fuse(allTools, { keys: ['name', 'desc'], threshold: 0.3 }), [])
-  const filteredAllTools = search.trim() ? fuse.search(search).map(r => r.item) : allTools
+
+  // Flatten tiered for search
+  const allToolsFlat = tieredTools.flatMap(t => t.items)
+  const fuse = useMemo(() => new Fuse(allToolsFlat, { keys: ['name', 'desc'], threshold: 0.3 }), [allToolsFlat])
+  const searchResults = search.trim() ? fuse.search(search).map(r => r.item) : []
 
   return (
-    <div className="border border-border bg-card rounded-xl p-6">
-      <GuideSection />
-      <h2 className="text-lg font-semibold text-fg mb-1">Analisis apa yang ingin kamu lakukan?</h2>
-      <p className="text-sm text-muted mb-5">
-        {showRecommendations
-          ? 'Azezmen merekomendasikan analisis berdasarkan tipe data yang terdeteksi.'
-          : 'Pilih analisis yang sesuai kebutuhan penelitianmu.'}
-      </p>
-
-      {!hasData && (
-        <div className="mb-4 p-3 rounded-lg bg-accent/5 border border-accent/20 text-sm text-accent flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          Upload dataset terlebih dahulu untuk menjalankan analisis.
+    <div className="border border-border rounded-xl bg-card overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-3.5 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <span className="font-heading text-2xl font-bold text-accent/15 leading-none italic select-none">03</span>
+          <div>
+            <h2 className="font-heading font-semibold text-sm tracking-tight">Pilih Analisis</h2>
+            <p className="text-[11px] text-muted">
+              {showRecommendations
+                ? 'Direkomendasikan berdasarkan tipe data terdeteksi'
+                : 'Pilih uji yang sesuai kebutuhan penelitianmu'}
+            </p>
+          </div>
         </div>
-      )}
-
-      {/* Search bar */}
-      <div className="mb-4">
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Cari uji statistik... (tekan /)"
-          className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent"
-          onKeyDown={e => { if (e.key === '/') { e.preventDefault(); e.target.focus() } }}
-        />
       </div>
 
-      {showRecommendations && !search.trim() ? (
-        /* Recommendations by category */
-        <div className="space-y-5">
-          {recommendations.map(rec => (
-            <div key={rec.category}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">{rec.category}</h3>
-              <p className="text-xs text-muted/70 mb-2">{categoryHints[rec.category] || ''}</p>
-              <div className="space-y-2">
-                {rec.items.map(item => (
-                  <button
-                    key={item.id}
-                    onClick={() => onSelectTool(item.id)}
-                    className={`w-full text-left p-4 rounded-xl border transition-colors ${
-                      selectedTool === item.id
-                        ? 'border-accent bg-accent/5'
-                        : 'border-border hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-sm">{item.label}</div>
-                        <div className="text-xs text-muted mt-0.5">{item.desc}</div>
-                      </div>
-                      <ArrowRight className={`w-4 h-4 ${selectedTool === item.id ? 'text-accent' : 'text-muted/40'}`} />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        /* Flat list — all tools or search results */
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {filteredAllTools.map(tool => (
-            <button
-              key={tool.id}
-              onClick={() => hasData && onSelectTool(tool.id)}
-              disabled={!hasData}
-              className={`text-left px-3 py-3 rounded-lg border text-xs transition-colors ${
-                !hasData ? 'opacity-50 cursor-not-allowed border-border bg-card text-muted' :
-                selectedTool === tool.id
-                  ? 'border-accent bg-accent/5 text-accent font-medium'
-                  : 'border-border hover:border-accent/30 text-muted hover:text-fg'
-              }`}
-            >
-              <div className="font-medium">{tool.name}</div>
-            </button>
-          ))}
-          {search.trim() && filteredAllTools.length === 0 && (
-            <p className="col-span-full text-sm text-muted text-center py-4">Tidak ada uji yang cocok dengan \"{search}\"</p>
-          )}
-        </div>
-      )}
+      <div className="p-5">
+        {!hasData && (
+          <div className="mb-4 p-3 rounded-lg bg-accent/5 border-l-2 border-accent text-xs text-accent flex items-center gap-2">
+            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+            Upload dataset terlebih dahulu untuk menjalankan analisis.
+          </div>
+        )}
 
-      {/* Advanced toggle — only show when recommendations are visible */}
-      {showRecommendations && (
-      <div className="mt-6 pt-4 border-t border-border">
-        <button
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className="text-xs text-muted hover:text-fg transition-colors active:scale-95"
-        >
-          {showAdvanced ? 'Sembunyikan semua analisis' : 'Lihat semua analisis →'}
-        </button>
-        {showAdvanced && (
-          <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {filteredAllTools.map(tool => (
-              <button
-                key={tool.id}
-                onClick={() => onSelectTool(tool.id)}
-                className={`text-left px-3 py-2 rounded-lg border text-xs transition-colors ${
-                  selectedTool === tool.id
-                    ? 'border-accent bg-accent/5 text-accent font-medium'
-                    : 'border-border hover:border-accent/30 text-muted'
-                }`}
-              >
-                {tool.name}
-              </button>
+        {/* Search */}
+        <div className="mb-4 relative">
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Cari uji statistik… (mis. korelasi, t-test)"
+            className="w-full pl-3 pr-3 py-2 text-xs border border-border rounded-lg bg-surface text-fg placeholder:text-muted focus:outline-none focus:border-accent/50 transition-colors"
+          />
+        </div>
+
+        {/* Search results */}
+        {search.trim() ? (
+          <div className="space-y-2">
+            {searchResults.length === 0 ? (
+              <p className="text-xs text-muted text-center py-6">Tidak ada uji cocok dengan "{search}"</p>
+            ) : (
+              searchResults.map(item => (
+                <ToolCard
+                  key={item.id}
+                  item={item}
+                  selected={selectedTool === item.id}
+                  onClick={() => hasData && onSelectTool(item.id)}
+                  disabled={!hasData}
+                />
+              ))
+            )}
+          </div>
+        ) : showRecommendations && !showAll ? (
+          /* Recommendations by category */
+          <div className="space-y-5">
+            {recommendations.map(rec => (
+              <div key={rec.category}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-heading font-semibold uppercase tracking-[0.14em] text-accent">{rec.category}</span>
+                  <span className="flex-1 h-px bg-border" />
+                </div>
+                <p className="text-[11px] text-muted mb-2">{categoryHints[rec.category]}</p>
+                <div className="space-y-2">
+                  {rec.items.map(item => (
+                    <ToolCard
+                      key={item.id}
+                      item={item}
+                      selected={selectedTool === item.id}
+                      onClick={() => hasData && onSelectTool(item.id)}
+                      disabled={!hasData}
+                    />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-        )} 
+        ) : (
+          /* Tiered full grid */
+          <div className="space-y-5">
+            {tieredTools.map(group => (
+              <div key={group.tier}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-heading font-semibold uppercase tracking-[0.14em] text-muted">{group.tier}</span>
+                  <span className="flex-1 h-px bg-border" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {group.items.map(item => (
+                    <ToolCard
+                      key={item.id}
+                      item={item}
+                      selected={selectedTool === item.id}
+                      onClick={() => hasData && onSelectTool(item.id)}
+                      disabled={!hasData}
+                      compact
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Toggle all / recommendations */}
+        {showRecommendations && !search.trim() && (
+          <div className="mt-5 pt-4 border-t border-border">
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="inline-flex items-center gap-1 text-[11px] text-muted hover:text-accent transition-colors"
+            >
+              {showAll ? '← Tampilkan rekomendasi' : 'Lihat semua 14 uji'}
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+        )}
       </div>
-      )}
     </div>
   )
 }
 
-// ============================================================
-// Export
-// ============================================================
-// ============================================================
-// Always-visible Test Selection Panel
-// Shows all 13 tests even before upload
-// ============================================================
+// Tool card — reusable, scholarly
+function ToolCard({ item, selected, onClick, disabled, compact }) {
+  const tier = item.tier || (['deskriptif', 'normalitas', 'korelasi', 'ttest'].includes(item.id) ? 'Dasar' :
+    ['twowayanova', 'regresiganda'].includes(item.id) ? 'Lanjutan' : 'Menengah')
+  const tierColor = tier === 'Dasar' ? 'text-teal bg-teal/10' : tier === 'Lanjutan' ? 'text-terracotta bg-terracotta/10' : 'text-accent bg-accent/10'
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        w-full text-left p-3 rounded-lg border transition-all duration-200
+        ${disabled ? 'opacity-40 cursor-not-allowed border-border' :
+          selected ? 'border-accent bg-accent/5 shadow-sm' :
+          'border-border hover:border-accent/40 hover:bg-surface/50 bg-card'}
+      `}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <span className={`font-heading font-medium text-sm ${selected ? 'text-accent' : 'text-fg'}`}>
+              {item.name || item.label}
+            </span>
+            {!compact && (
+              <span className={`text-[9px] font-medium uppercase tracking-wider px-1.5 py-px rounded-full ${tierColor}`}>{tier}</span>
+            )}
+          </div>
+          <p className="text-[11px] text-muted mt-0.5 leading-relaxed">{item.desc}</p>
+        </div>
+        <ArrowRight className={`w-3.5 h-3.5 mt-1 flex-shrink-0 transition-colors ${selected ? 'text-accent' : 'text-muted/30'}`} />
+      </div>
+    </button>
+  )
+}
+
 // ============================================================
 // Guide Section (collapsible how-to)
 // ============================================================
@@ -645,29 +782,29 @@ function GuideSection() {
   ]
 
   return (
-    <div className="mb-6">
+    <div className="mb-4">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm text-muted hover:text-fg transition-colors active:scale-95"
+        className="inline-flex items-center gap-1.5 text-[11px] text-muted hover:text-fg transition-colors"
       >
-        <span>{open ? '▾' : '▸'}</span>
-        <span className="font-medium">Cara Menggunakan Azezmen</span>
+        <ChevronRight className={`w-3 h-3 transition-transform ${open ? 'rotate-90' : ''}`} />
+        <span className="font-medium">Cara menggunakan Azezmen</span>
       </button>
 
       {open && (
-        <div className="mt-4 pl-4 border-l-2 border-accent/20">
+        <div className="mt-3 pl-4 border-l-2 border-accent/20">
           {steps.map((step) => (
-            <div key={step.num} className="mb-4 last:mb-0">
+            <div key={step.num} className="mb-3 last:mb-0">
               <div className="flex items-baseline gap-2">
-                <span className="text-xs font-mono text-accent">{step.num}.</span>
+                <span className="text-[10px] font-mono text-accent font-semibold">{step.num}.</span>
                 <div>
-                  <div className="text-sm font-medium text-fg">{step.title}</div>
-                  <div className="text-xs text-muted mt-0.5">{step.desc}</div>
+                  <div className="text-xs font-heading font-medium text-fg">{step.title}</div>
+                  <div className="text-[11px] text-muted mt-0.5 leading-relaxed">{step.desc}</div>
                 </div>
               </div>
             </div>
           ))}
-          <p className="text-xs text-muted mt-4 italic">
+          <p className="text-[11px] text-muted mt-3 italic">
             Tips: Mulai dari Statistik Deskriptif dulu untuk lihat gambaran umum data kamu.
           </p>
         </div>
@@ -676,108 +813,27 @@ function GuideSection() {
   )
 }
 
-const ALL_TESTS = [
-  { id: 'deskriptif', label: 'Deskriptif', desc: 'Mean, median, SD, skewness, kurtosis', tooltip: 'Gunakan untuk gambaran umum data. Langkah pertama sebelum analisis lanjutan.' },
-  { id: 'normalitas', label: 'Normalitas', desc: 'Shapiro-Wilk / Kolmogorov-Smirnov', tooltip: 'Cek apakah data berdistribusi normal. Syarat wajib sebelum pakai uji parametrik.' },
-  { id: 'korelasi', label: 'Korelasi', desc: 'Pearson / Spearman', tooltip: 'Uji hubungan antar 2 variabel numerik. Pearson untuk data normal, Spearman untuk non-parametrik.' },
-  { id: 'ttest', label: 'T-Test', desc: 'Bandingkan rata-rata antar grup', tooltip: 'Independent untuk 2 grup berbeda, Paired untuk sebelum-sesudah. Syarat: data normal.' },
-  { id: 'anova', label: 'ANOVA', desc: 'Bandingkan rata-rata ≥3 grup', tooltip: 'Uji F untuk 3+ grup. Jika signifikan, lanjut post-hoc (Tukey). Syarat: normal + homogen.' },
-  { id: 'regresi', label: 'Regresi Sederhana', desc: '1 prediktor → 1 outcome', tooltip: 'Prediksi Y dari 1 variabel X. Output: R², koefisien β, persamaan garis.' },
-  { id: 'regresiganda', label: 'Regresi Berganda', desc: '≥2 prediktor → 1 outcome', tooltip: 'Prediksi Y dari beberapa X. Cek VIF untuk multikolinearitas. Output: R², adj-R², F.' },
-  { id: 'chisquare', label: 'Chi-Square', desc: 'Asosiasi antar variabel kategorik', tooltip: 'Uji hubungan antar 2 variabel kategori (Laki-laki/Perempuan × Setuju/Tidak).' },
-  { id: 'validitas', label: 'Validitas & Reliabilitas', desc: 'Cronbach Alpha + korelasi item', tooltip: 'Untuk instrumen kuesioner. Validitas = korelasi item-total. Reliabilitas = Cronbach α ≥ 0.7.' },
-  { id: 'mannwhitney', label: 'Mann-Whitney U', desc: 'Non-parametrik, 2 grup', tooltip: 'Alternatif T-Test jika data tidak normal. Cocok untuk data ordinal atau skewed.' },
-  { id: 'wilcoxon', label: 'Wilcoxon', desc: 'Non-parametrik, berpasangan', tooltip: 'Alternatif Paired T-Test jika data tidak normal. Cocok untuk pre-test/post-test.' },
-  { id: 'kruskal', label: 'Kruskal-Wallis', desc: 'Non-parametrik, ≥3 grup', tooltip: 'Alternatif ANOVA jika data tidak normal. Jika signifikan, lanjut Dunn test.' },
-  { id: 'ngain', label: 'N-Gain', desc: 'Efektivitas pre-post', tooltip: 'Skor gain ternormalisasi. Cocok untuk skripsi pendidikan. Interpretasi: rendah/sedang/tinggi.' },
-]
-
-function TestSelectionPanel({ data, selectedTool, onSelectTool }) {
-  const [notify, setNotify] = useState(null)
-  const [search, setSearch] = useState('')
-  const fuse = useMemo(() => new Fuse(ALL_TESTS, { keys: ['label', 'desc', 'tooltip'], threshold: 0.3 }), [])
-  const filtered = search.trim() ? fuse.search(search).map(r => r.item) : ALL_TESTS
-
-  const handleClick = (id) => {
-    if (!data) {
-      setNotify(id)
-      setTimeout(() => setNotify(null), 3000)
-    }
-    onSelectTool(id)
-  }
-
-  return (
-    <div className="border border-border bg-card rounded-xl p-6">
-      <GuideSection />
-      <h2 className="text-base font-semibold text-fg mb-1">Pilih Uji Statistik</h2>
-      <p className="text-xs text-muted mb-4">Klik uji yang ingin dijalankan. {data ? 'Pilih kolom yang sesuai di data Anda.' : 'Upload dataset terlebih dahulu untuk menjalankan analisis.'}</p>
-
-      {!data && notify && (
-        <div className="mb-3 p-2.5 rounded-lg bg-accent/5 border border-accent/20 text-xs text-accent flex items-center gap-2">
-          <AlertCircle className="w-3.5 h-3.5" />
-          Upload dataset untuk menjalankan <strong>{ALL_TESTS.find(t => t.id === notify)?.label}</strong>
-        </div>
-      )}
-
-      <div className="mb-3">
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Cari uji statistik... (tekan /)"
-          className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent"
-        />
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {filtered.map(test => (
-          <button
-            key={test.id}
-            onClick={() => handleClick(test.id)}
-            className={`text-left p-3 rounded-lg border text-xs transition-colors ${
-              selectedTool === test.id
-                ? 'border-accent bg-accent/5'
-                : 'border-border hover:border-accent hover:bg-accent/5 bg-card active:scale-[0.98]'
-            }`}
-          >
-            <div className="flex items-center gap-1.5">
-              <div className="font-medium text-fg">{test.label}</div>
-              {test.tooltip && (
-                <span className="opacity-50 cursor-help text-xs" title={test.tooltip}>ⓘ</span>
-              )}
-            </div>
-            <div className="text-muted mt-0.5 leading-tight">{test.desc}</div>
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export default function StatistikFlow({
   file, data: propData, columns, numericColumns, categoricalColumns, error,
   activeTool, selectedTool, onSelectTool,
-  onFileUpload, onExampleLoad, onOpenGuide, onAnalyze, onDataChange, onPasteData,
-  analyzing, result, children, // result = analysis result, children = result/interpretation panels
+  onFileUpload, onExampleLoad, onOpenGuide, onAnalyze, onDataChange, onPasteData, onClearFile,
+  analyzing, result, priceLabel, children,
 }) {
-  // Editing state
   const [originalData, setOriginalData] = useState(null)
   const [editedData, setEditedData] = useState(null)
-  const [editingCell, setEditingCell] = useState(null) // { rowIndex, col }
+  const [editingCell, setEditingCell] = useState(null)
   const [draftValue, setDraftValue] = useState('')
   const [hasEdits, setHasEdits] = useState(false)
 
-  // Use edited data if available, otherwise prop data
   const data = editedData || propData
 
-  // Store original data when file changes
-  useMemo(() => {
+  useEffect(() => {
     if (propData && !originalData) {
       setOriginalData(propData)
     }
-  }, [propData])
+  }, [propData]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Reset originalData when file changes (new upload)
-  useMemo(() => {
+  useEffect(() => {
     if (file) {
       setOriginalData(null)
       setEditedData(null)
@@ -786,7 +842,6 @@ export default function StatistikFlow({
     }
   }, [file])
 
-  // Cell edit handlers
   const handleCellClick = useCallback((rowIndex, col, value) => {
     setEditingCell({ rowIndex, col })
     setDraftValue(value === null || value === undefined ? '' : String(value))
@@ -799,12 +854,10 @@ export default function StatistikFlow({
   const handleCellSave = useCallback((col, rowIndex) => {
     setEditingCell(null)
     const trimmed = draftValue.trim()
-    // Convert to number if valid (supports comma decimal), otherwise string, empty = null
     let newValue
     if (trimmed === '') {
       newValue = null
     } else {
-      // Replace comma with dot for number parsing
       const normalized = trimmed.replace(',', '.')
       if (!isNaN(normalized) && normalized !== '') {
         newValue = Number(normalized)
@@ -816,7 +869,7 @@ export default function StatistikFlow({
       const base = prev || propData
       if (!base) return base
       const colValues = Array.isArray(base[col]) ? [...base[col]] : []
-      if (colValues[rowIndex] === newValue) return prev // no change
+      if (colValues[rowIndex] === newValue) return prev
       colValues[rowIndex] = newValue
       return { ...base, [col]: colValues }
     })
@@ -834,12 +887,11 @@ export default function StatistikFlow({
     if (onDataChange) onDataChange(originalData)
   }, [originalData, onDataChange])
 
-  // Determine current step based on state
   const currentStep = useMemo(() => {
     if (!file || !data) return 'upload'
     if (result) return 'results'
-    if (analyzing) return 'select'       // user clicked Analisis
-    return 'review'                      // reviewing data after upload
+    if (analyzing) return 'select'
+    return 'review'
   }, [file, data, result, analyzing])
 
   const completed = useMemo(() => {
@@ -854,7 +906,7 @@ export default function StatistikFlow({
     <div>
       <StepIndicator current={currentStep} completed={completed} />
 
-      {/* Step 1: Upload (always show) */}
+      {/* Step 1: Upload */}
       <StepUpload
         file={file}
         data={data}
@@ -863,11 +915,12 @@ export default function StatistikFlow({
         onPasteData={onPasteData}
         onExampleLoad={onExampleLoad}
         onOpenGuide={onOpenGuide}
+        onClearFile={onClearFile}
       />
 
-      {/* Step 2: Review (show after upload) */}
+      {/* Step 2: Review */}
       {data && (
-        <div className="mt-4">
+        <div className="mt-3">
           <StepReview
             columns={columns}
             data={data}
@@ -885,51 +938,50 @@ export default function StatistikFlow({
         </div>
       )}
 
-      {/* Data Preview — compact summary */}
-      {data && columns.length > 0 && (
-        <div className="mt-4">
-          <DataPreview data={data} columns={columns} compact />
-        </div>
+      {/* Step 3: Select — only after data is uploaded */}
+      {data && (
+      <div className="mt-3">
+        <StepSelect
+          numericColumns={numericColumns}
+          categoricalColumns={categoricalColumns}
+          selectedTool={selectedTool}
+          onSelectTool={onSelectTool}
+          onAnalyze={onAnalyze}
+          hasData={!!data}
+        />
+      </div>
       )}
 
-      {/* Step 3: Select — always visible */}
-        <div className="mt-4">
-          <StepSelect
-            numericColumns={numericColumns}
-            categoricalColumns={categoricalColumns}
-            selectedTool={selectedTool}
-            onSelectTool={onSelectTool}
-            onAnalyze={onAnalyze}
-            hasData={!!data}
-          />
-        </div>
-
-      {/* Analyze button — sticky on mobile */}
+      {/* Analyze button */}
       {data && selectedTool && (
-        <div className="mt-4 sticky bottom-0 bg-bg/80 backdrop-blur-sm py-3 -mx-4 px-4 border-t border-border md:border-0 md:bg-transparent md:backdrop-blur-none md:py-0 md:mx-0 md:px-0">
+        <div className="mt-4 sticky bottom-[calc(72px+env(safe-area-inset-bottom))] lg:bottom-0 bg-bg/85 backdrop-blur-sm py-3 -mx-4 px-4 border-t border-border md:border-0 md:bg-transparent md:backdrop-blur-none md:py-0 md:mx-0 md:px-0 md:mt-4">
           <button
             onClick={onAnalyze}
             disabled={analyzing}
-            className="w-full py-3 rounded-xl bg-accent text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg md:shadow-none"
+            className="group w-full py-3 rounded-xl bg-accent hover:bg-accent/90 text-accent-fg font-heading font-semibold text-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.98]"
           >
             {analyzing ? (
               <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Menganalisis...
+                <div className="w-4 h-4 border-2 border-accent-fg/30 border-t-accent-fg rounded-full animate-spin" />
+                Menganalisis…
               </>
             ) : (
               <>
-                <BarChart3 className="w-4 h-4" />
-                Jalankan Analisis
+                <Activity className="w-4 h-4" />
+                <span>Jalankan Analisis</span>
+                {priceLabel && (
+                  <span className="ml-1 text-[11px] font-medium opacity-80 border-l border-accent-fg/30 pl-2">
+                    {priceLabel}
+                  </span>
+                )}
               </>
             )}
           </button>
         </div>
       )}
 
-      {/* Step 4+: Results (children) */}
+      {/* Results (children) */}
       {children}
     </div>
   )
 }
-// redeploy trigger Mon Jun 15 11:57:25 PM CST 2026

@@ -61,6 +61,39 @@ export function groupBy(values, groups) {
 }
 
 /**
+ * Split an outcome column into per-group arrays based on a grouping column.
+ *
+ * Used by the analysis dispatcher (t-test/ANOVA/Mann-Whitney/Kruskal-Wallis)
+ * to bucket rows by category before running the test. Unifies what was
+ * previously 4 near-duplicate inline loops with subtle differences.
+ *
+ * - Rows whose group value is null/undefined/''/'null'/'undefined' are skipped.
+ * - When `numericOnly` is true (default), non-numeric outcomes are also skipped
+ *   (Mann-Whitney/Kruskal-Wallis expect numbers only).
+ * - Group keys are coerced to String for consistent lookup.
+ *
+ * @param {Array} outcome   values to bucket
+ * @param {Array} grouping  parallel array of group labels
+ * @param {{ numericOnly?: boolean }} [opts]
+ * @returns {{ groups: Record<string, any[]>, keys: string[] }}
+ */
+export function splitByGroup(outcome, grouping, { numericOnly = true } = {}) {
+  const groups = {}
+  const len = Math.min(outcome.length, grouping.length)
+  for (let i = 0; i < len; i++) {
+    const g = grouping[i]
+    if (g === null || g === undefined || g === '') continue
+    const key = String(g)
+    if (key === 'null' || key === 'undefined') continue
+    const v = outcome[i]
+    if (numericOnly && typeof v !== 'number') continue
+    if (!groups[key]) groups[key] = []
+    groups[key].push(v)
+  }
+  return { groups, keys: Object.keys(groups) }
+}
+
+/**
  * Parse CSV string to array of objects.
  * @param {string} csv
  * @returns {Array<Object>}
