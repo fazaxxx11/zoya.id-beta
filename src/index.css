@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&family=Source+Serif+4:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -38,22 +38,22 @@
    Light default. .dark class di <html> override-nya.
 ===================================================== */
 :root {
-  --bg:        247 243 234;   /* warm ivory #F7F3EA */
-  --fg:        23 32 51;      /* deep navy #172033 */
-  --card:      255 255 255;   /* soft white */
-  --surface:   252 250 246;   /* #FCFAF6 */
-  --border:    216 208 195;   /* warm beige-gray #D8D0C3 */
-  --muted:     98 95 88;      /* warm gray #625F58 */
-  --accent:    181 139 69;    /* scholarly gold #B58B45 */
-  --accent-fg: 255 255 255;   /* white on accent */
-  --accent-soft: 245 238 220; /* #F5EEDC */
-  --table-head: 239 232 220;  /* #EFE8DC */
-  --input:     255 255 255;   /* white input */
-  --accent-2:  79 70 229;     /* indigo soft */
-  --warm-rose: 190 120 110;   /* soft terracotta */
-  --deep-teal: 15 118 110;    /* original teal, for variety */
+  --bg:        243 239 230;   /* #F3EFE6 — warm aged paper */
+  --fg:        28 30 38;      /* #1C1E26 — ink */
+  --card:      248 245 238;   /* #F8F5EE — slightly lifted from bg */
+  --surface:   237 233 225;   /* #EDE9E1 — warm surface */
+  --border:    218 214 205;   /* #DAD6CD — softer border */
+  --muted:     118 115 108;   /* #76736C */
+  --accent:    154 103 33;    /* #9A6721 — amber-brown, cleaner */
+  --accent-fg: 255 255 255;
+  --accent-soft: 240 232 217; /* #F0E8D9 */
+  --table-head: 233 229 222;  /* #E9E5DE */
+  --input:     248 245 238;   /* match card */
+  --accent-2:  79 70 229;
+  --warm-rose: 178 95 88;    /* #B25F58 */
+  --deep-teal: 22 108 102;    /* #166C66 */
   /* Typography */
-  --heading-font: 'Source Serif 4', 'Georgia', serif;
+  --heading-font: 'EB Garamond', 'Georgia', 'Times New Roman', serif;
   --body-font: 'IBM Plex Sans', 'Segoe UI', sans-serif;
   --mono-font: 'IBM Plex Mono', 'Menlo', monospace;
   /* Shadows */
@@ -298,65 +298,60 @@ body::before { display: none; }
   }
   .link:hover { opacity: 0.8; }
 
-  /* Glassmorphism card */
+  /* Glassmorphism card — DEPRECATED: pakai .panel / .panel-soft.
+     Tetap dipertahankan sebagai alias solid untuk backward-compat,
+     blur dihilangkan agar konsisten dengan look scholarly (bukan SaaS glass). */
   .glass {
-    background: rgb(var(--card) / 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgb(var(--border) / 0.6);
+    background: rgb(var(--card));
+    border: 1px solid rgb(var(--border));
     border-radius: 1rem;
   }
   .dark .glass {
-    background: rgb(var(--card) / 0.5);
-    border-color: rgb(255 255 255 / 0.08);
+    background: rgb(var(--card));
+    border-color: rgb(var(--border));
   }
 
-  /* Glass solid (less transparency, untuk konten penting) */
+  /* Glass solid (alias ke .panel-style) */
   .glass-solid {
     background: rgb(var(--card));
     border: 1px solid rgb(var(--border));
     border-radius: 1rem;
   }
   .dark .glass-solid {
-    background: rgb(var(--card) / 0.95);
-    border-color: rgb(255 255 255 / 0.08);
+    background: rgb(var(--card));
+    border-color: rgb(var(--border));
   }
 
-  /* Card hover with glow */
+  /* Card interactive — lift halus, tanpa glow shadow */
   .card-interactive {
     @apply glass transition-all duration-300;
   }
   .card-interactive:hover {
     transform: translateY(-2px);
     border-color: rgb(var(--accent) / 0.4);
-    box-shadow: 0 10px 40px -10px rgb(var(--accent) / 0.25);
   }
 
-  /* Gradient text */
+  /* Gradient text — DEPRECATED: hindari gradient text (AI-vibe).
+     Diturunkan jadi accent solid supaya tidak break yang sudah pakai. */
   .text-gradient {
-    background: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent-2)));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: rgb(var(--accent));
   }
 
-  /* Buttons */
+  /* Buttons — solid scholarly gold, tanpa glow */
   .btn-primary {
     @apply font-semibold px-6 py-3 rounded-xl transition-all duration-200
-           shadow-lg active:scale-95 inline-flex items-center justify-center gap-2;
-    background: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent-2)));
-    color: white;
+           active:scale-95 inline-flex items-center justify-center gap-2;
+    background: rgb(var(--accent));
+    color: rgb(var(--accent-fg));
   }
   .btn-primary:hover {
-    box-shadow: 0 0 30px rgb(var(--accent) / 0.4);
+    background: rgb(var(--accent) / 0.9);
     transform: translateY(-1px);
   }
   .btn-primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    box-shadow: none;
   }
 
   .btn-secondary {
@@ -394,13 +389,12 @@ body::before { display: none; }
     box-shadow: 0 0 0 3px rgb(var(--accent) / 0.15);
   }
 
-  /* Card hover (legacy alias) */
+  /* Card hover (legacy alias) — lift halus tanpa glow */
   .card-hover {
     @apply transition-all duration-300;
   }
   .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px -15px rgb(var(--accent) / 0.2);
+    transform: translateY(-3px);
   }
 
   /* Section heading wrapper */
@@ -422,13 +416,12 @@ body::before { display: none; }
     );
   }
 
-  /* Stat card */
+  /* Stat card — lift halus tanpa glow */
   .stat-card {
     @apply glass p-6 rounded-2xl transition-all duration-300;
   }
   .stat-card:hover {
     border-color: rgb(var(--accent) / 0.4);
-    box-shadow: 0 0 40px -10px rgb(var(--accent) / 0.3);
   }
 }
 
@@ -711,34 +704,24 @@ body::before { display: none; }
 .stagger > *:nth-child(9)  { animation-delay: 0.36s; }
 .stagger > *:nth-child(10) { animation-delay: 0.40s; }
 
-/* Hover magnetic-like (button) */
+/* Hover magnetic-like (button) — lift halus tanpa glow shadow */
 .hover-lift {
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.25s ease,
               border-color 0.25s ease;
 }
 .hover-lift:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 30px -10px rgb(var(--accent) / 0.35);
+  border-color: rgb(var(--accent) / 0.4);
 }
 
-/* Hover glow ring */
+/* Hover glow ring — DEPRECATED: dihapus karena glow = AI-vibe.
+   Class tetap dipertahankan sebagai no-op untuk backward-compat. */
 .hover-glow {
-  position: relative;
   transition: all 0.3s ease;
 }
 .hover-glow::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgb(var(--accent) / 0.5), rgb(var(--accent-2) / 0.5));
-  opacity: 0;
-  z-index: -1;
-  filter: blur(12px);
-  transition: opacity 0.3s ease;
+  content: none;
 }
-.hover-glow:hover::before { opacity: 1; }
 
 /* Reduce motion preference */
 @media (prefers-reduced-motion: reduce) {
@@ -1051,3 +1034,10 @@ code, .tabular {
   animation: float 5s ease-in-out infinite;
   animation-delay: 1s;
 }
+
+/* Ambient gradient blob — STATIC (no movement).
+   Sebelumnya animate-blob bikin page "tergoyang" seperti bubble.
+   User minta paten/pinned. Blob tetap ada untuk warna ambient, tapi diam. */
+.animate-blob       { animation: none; }
+.animate-blob-slow  { animation: none; }
+.animate-blob-fast  { animation: none; }

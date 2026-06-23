@@ -1,8 +1,12 @@
 # Azezmen — Project Instructions for AI Agents
 
+## ⚠️ WAJIB BACA DULU
+- **Baca [`laporan.md`](./laporan.md) SEBELUM mengerjakan frontend apapun.** Berisi progress redesign terkini, token warna final, dan daftar "Yang Dilarang".
+- Design system di bawah ini adalah baseline lama. **Yang otoritatif ada di `laporan.md`** — jika ada konflik, `laporan.md` menang.
+
 ## Stack
 - Vite + React 18, Tailwind CSS 3
-- Package manager: **pnpm** (NOT npm/yarn)
+- Package manager: **pnpm** (NOT npm/yarn). Di env tanpa pnpm global: gunakan `npx pnpm <cmd>`.
 - Python/Scipy backend (Vercel serverless functions)
 
 ## Critical Rules
