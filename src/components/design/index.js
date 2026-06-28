@@ -8,3 +8,5 @@ export { default as ResultSummary } from './ResultSummary';
 export { default as MethodNote } from './MethodNote';
 export { default as DetailsBlock } from './DetailsBlock';
 export { default as RecommendationList } from './RecommendationList';
+export { default as AmbientBlobs } from './AmbientBlobs';
+export { default as Flourish } from './Flourish';

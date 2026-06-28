@@ -65,13 +65,13 @@ export default function SaveAnalysisButton({ result, defaultTitle = '', toolName
                   Butuh login.
                 </p>
               </div>
-              <button onClick={() => setOpen(false)} className="text-muted hover:text-gray-600 dark:text-gray-400">
+              <button onClick={() => setOpen(false)} className="text-muted hover:text-accent">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Judul (opsional)</label>
+              <label className="block text-xs font-medium text-fg/80 mb-1">Judul (opsional)</label>
               <input
                 type="text" value={title} onChange={e => setTitle(e.target.value)}
                 placeholder={defaultTitle || `${toolName || result.toolName || result.type} — ${new Date().toLocaleDateString('id-ID')}`}
@@ -80,7 +80,7 @@ export default function SaveAnalysisButton({ result, defaultTitle = '', toolName
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Catatan (opsional)</label>
+              <label className="block text-xs font-medium text-fg/80 mb-1">Catatan (opsional)</label>
               <textarea
                 value={notes} onChange={e => setNotes(e.target.value)}
                 rows={3} placeholder="Konteks penelitian, hipotesis, dll."

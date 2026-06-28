@@ -70,7 +70,7 @@ function Auth() {
     return (
       <div className="min-h-screen bg-pattern flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-muted">
-          <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent-fg" />
           <p className="text-sm">Mengarahkan ke {redirectTo === '/dashboard' ? 'dashboard' : 'tujuan'}…</p>
         </div>
       </div>
@@ -206,29 +206,29 @@ function Auth() {
   if (currentUser) {
     return (
       <div className="min-h-screen bg-pattern">
-        <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <header className="bg-bg border-b border-border shadow-sm sticky top-0 z-50">
           <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
             <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <h1 className="font-bold text-gray-800 dark:text-gray-200">Akun Saya</h1>
+            <h1 className="font-bold text-fg">Akun Saya</h1>
             <div className="w-8"></div>
           </div>
         </header>
 
         <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
           {/* User Info Card */}
-          <div className="bg-gradient-to-br from-sky-500 to-cyan-600 rounded-2xl p-6 text-white">
+          <div className="bg-accent rounded-xl p-6 text-white">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
                 <User className="w-8 h-8" />
               </div>
               <div>
                 <h2 className="text-xl font-bold">{currentUser.name}</h2>
-                <p className="text-sky-100">{currentUser.email}</p>
+                <p className="text-white/80">{currentUser.email}</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={handleLogout}
               className="mt-4 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm"
             >
@@ -237,12 +237,12 @@ function Auth() {
           </div>
 
           {/* Wallet Card */}
-          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+          <div className="bg-card rounded-xl p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-800 dark:text-gray-200">💰 Saldo Saya</h3>
+              <h3 className="font-bold text-fg">Saldo Saya</h3>
               <button 
                 onClick={() => setMode('topup')}
-                className="text-sm text-sky-600 hover:underline"
+                className="text-sm text-accent-fg hover:underline"
               >
                 {BETA_FREE ? 'Top-up Soon' : 'Top-up'}
               </button>
@@ -261,7 +261,7 @@ function Auth() {
             
             <div className="mt-4 pt-4 border-t">
               <p className="text-sm text-muted">
-                Total: <span className="font-bold text-gray-800 dark:text-gray-200">Rp {(wallet.balance + wallet.bonus).toLocaleString('id-ID')}</span>
+                Total: <span className="font-bold text-fg">Rp {(wallet.balance + wallet.bonus).toLocaleString('id-ID')}</span>
               </p>
             </div>
           </div>
@@ -292,21 +292,21 @@ function Auth() {
 
           {/* Top-up packages */}
           {mode === 'topup' && (
-            <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+            <div className="bg-card rounded-xl p-6 border border-border">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-gray-800 dark:text-gray-200">📦 Paket Top-up</h3>
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 ${BETA_FREE ? 'text-sky-600 bg-sky-50' : 'text-emerald-600 bg-emerald-50'}`}>
+                <h3 className="font-bold text-fg">Paket Top-up</h3>
+                <span className={`text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 ${BETA_FREE ? 'text-accent-fg bg-accent-soft' : 'text-emerald-600 bg-emerald-50'}`}>
                   <Sparkles className="w-3 h-3" /> {BETA_FREE ? 'Coming Soon' : 'Bonus 2× untuk semua paket'}
                 </span>
               </div>
               {BETA_FREE && (
-                <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 mb-4 text-sm text-sky-800">
+                <div className="bg-accent-soft border border-accent/30 rounded-xl p-4 mb-4 text-sm text-accent-fg">
                   Selama beta, semua tools inti bisa digunakan gratis. Pricing, top-up, Pro, dan Premium akan dibuka setelah audit payment selesai.
                 </div>
               )}
               {BETA_FREE ? (
-                <div className="rounded-xl border-2 border-dashed border-sky-200 bg-card p-5 text-center">
-                  <p className="font-bold text-gray-800 dark:text-gray-200">Top-up belum dibuka</p>
+                <div className="rounded-xl border-2 border-dashed border-border bg-surface p-5 text-center">
+                  <p className="font-bold text-fg">Top-up belum dibuka</p>
                   <p className="text-sm text-muted mt-1">
                     Semua fitur beta saat ini gratis setelah login. Informasi paket Pro/Premium akan diumumkan saat payment siap.
                   </p>
@@ -320,7 +320,7 @@ function Auth() {
                     className={`relative p-4 rounded-xl border-2 text-left transition-all ${
                       pkg.recommended
                         ? 'border-emerald-500 bg-emerald-50'
-                        : 'border-border hover:border-sky-300'
+                        : 'border-border hover:border-accent'
                     }`}
                   >
                     {pkg.recommended && (
@@ -328,10 +328,10 @@ function Auth() {
                         REKOMENDASI
                       </span>
                     )}
-                    <p className="font-bold text-gray-800 dark:text-gray-200">Paket {pkg.label}</p>
+                    <p className="font-bold text-fg">Paket {pkg.label}</p>
                     <div className="mt-2 flex items-baseline gap-1">
                       <span className="text-xs text-muted">Bayar</span>
-                      <span className="text-xl font-bold text-sky-700">{formatIDR(pkg.pay)}</span>
+                      <span className="text-xl font-bold text-accent-fg">{formatIDR(pkg.pay)}</span>
                     </div>
                     <div className="mt-1 flex items-baseline gap-1">
                       <span className="text-xs text-muted">Dapat saldo</span>
@@ -370,13 +370,13 @@ function Auth() {
 
           {/* Transaction History */}
           {wallet.transactions.length > 0 && (
-            <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
-              <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-4">📜 Riwayat Transaksi</h3>
+            <div className="bg-card rounded-xl p-6 border border-border">
+              <h3 className="font-bold text-fg mb-4">Riwayat Transaksi</h3>
               <div className="space-y-3">
                 {wallet.transactions.slice(0, 10).map(t => (
                   <div key={t.id} className="flex justify-between items-center p-3 bg-surface rounded-lg">
                     <div>
-                      <p className="font-medium text-gray-800 dark:text-gray-200">{t.id}</p>
+                      <p className="font-medium text-fg">{t.id}</p>
                       <p className="text-xs text-muted">{t.date}</p>
                     </div>
                     <div className="text-right">
@@ -398,13 +398,13 @@ function Auth() {
   // Login/Register Forms
   return (
     <div className="min-h-screen bg-pattern flex items-center justify-center p-4">
-      <div className="bg-card rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow w-full max-w-md">
+      <div className="bg-card rounded-xl border border-border p-8 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-accent rounded-xl flex items-center justify-center mx-auto mb-4">
             <Zap className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+          <h1 className="text-2xl font-bold text-fg">
             {mode === 'login' ? 'Login'
               : mode === 'register' ? 'Daftar'
               : mode === 'otp' ? 'Login dengan Kode'
@@ -439,7 +439,7 @@ function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-accent outline-none"
                 />
               </div>
             </div>
@@ -452,7 +452,7 @@ function Auth() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan password"
-                  className="w-full pl-10 pr-12 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-12 py-3 rounded-lg border-2 border-border focus:border-accent outline-none"
                 />
                 <button
                   type="button"
@@ -463,7 +463,7 @@ function Auth() {
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
+            <button type="submit" disabled={loading} className="btn-primary w-full font-semibold px-6 py-3 rounded-lg transition-all flex items-center justify-center gap-2">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Login'}
             </button>
 
@@ -494,11 +494,11 @@ function Auth() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="email@example.com"
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-accent outline-none"
                     />
                   </div>
                 </div>
-                <button type="submit" disabled={loading || !email} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-sky-600 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
+                <button type="submit" disabled={loading || !email} className="btn-primary w-full font-semibold px-6 py-3 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-60">
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Kirim Kode <KeyRound className="w-4 h-4" /></>}
                 </button>
               </form>
@@ -521,11 +521,11 @@ function Auth() {
                       onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                       placeholder="123456"
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none tracking-[0.4em] text-center font-mono text-lg"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-accent outline-none tracking-[0.4em] text-center font-mono text-lg"
                     />
                   </div>
                 </div>
-                <button type="submit" disabled={loading || otpCode.length !== 6} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-sky-600 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
+                <button type="submit" disabled={loading || otpCode.length !== 6} className="btn-primary w-full font-semibold px-6 py-3 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-60">
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verifikasi & Login'}
                 </button>
                 <button
@@ -552,7 +552,7 @@ function Auth() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nama Anda"
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-accent outline-none"
                 />
               </div>
             </div>
@@ -565,7 +565,7 @@ function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-accent outline-none"
                 />
               </div>
             </div>
@@ -578,7 +578,7 @@ function Auth() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="0812 3456 7890"
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-border focus:border-accent outline-none"
                 />
               </div>
             </div>
@@ -591,7 +591,7 @@ function Auth() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Buat password"
-                  className="w-full pl-10 pr-12 py-3 rounded-lg border-2 border-border focus:border-sky-500 outline-none"
+                  className="w-full pl-10 pr-12 py-3 rounded-lg border-2 border-border focus:border-accent outline-none"
                 />
                 <button
                   type="button"
@@ -602,7 +602,7 @@ function Auth() {
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="w-full bg-sky-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
+            <button type="submit" disabled={loading} className="btn-primary w-full font-semibold px-6 py-3 rounded-lg transition-all flex items-center justify-center gap-2">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Daftar'}
             </button>
 
@@ -628,13 +628,13 @@ function Auth() {
             </div>
             <button
               onClick={() => { setMode('login'); setError(''); }}
-              className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold px-6 py-3 rounded-xl"
+              className="w-full btn-primary text-white font-semibold px-6 py-3 rounded-xl"
             >
               Login
             </button>
             <button
               onClick={() => { setMode('register'); setError(''); }}
-              className="w-full bg-card border-2 border-sky-500 text-sky-600 hover:bg-sky-50 font-semibold px-6 py-3 rounded-xl"
+              className="w-full bg-card border-2 border-border text-muted hover:bg-surface hover:text-fg font-semibold px-6 py-3 rounded-xl"
             >
               Daftar Akun Baru
             </button>
@@ -646,7 +646,7 @@ function Auth() {
           {mode === 'login' && (
             <p className="text-muted">
               Belum punya akun?{' '}
-              <button onClick={() => { setMode('register'); setError(''); }} className="text-sky-600 hover:underline font-medium">
+              <button onClick={() => { setMode('register'); setError(''); }} className="text-accent-fg hover:underline font-medium">
                 Daftar
               </button>
             </p>
@@ -654,7 +654,7 @@ function Auth() {
           {mode === 'register' && (
             <p className="text-muted">
               Sudah punya akun?{' '}
-              <button onClick={() => { setMode('login'); setError(''); }} className="text-sky-600 hover:underline font-medium">
+              <button onClick={() => { setMode('login'); setError(''); }} className="text-accent-fg hover:underline font-medium">
                 Login
               </button>
             </p>
@@ -662,7 +662,7 @@ function Auth() {
           {mode === 'otp' && (
             <p className="text-muted">
               Pakai password?{' '}
-              <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-sky-600 hover:underline font-medium">
+              <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }} className="text-accent-fg hover:underline font-medium">
                 Login dengan password
               </button>
             </p>
@@ -670,13 +670,13 @@ function Auth() {
           {(mode === 'login' || mode === 'register') && (
             <p className="text-muted text-sm mt-3">
               atau{' '}
-              <button onClick={() => navigate('/')} className="text-sky-600 hover:underline">
+              <button onClick={() => navigate('/')} className="text-accent-fg hover:underline">
                 kembali ke beranda
               </button>
             </p>
           )}
           {mode === 'topup' && currentUser && (
-            <button onClick={() => setMode('login')} className="text-sky-600 hover:underline">
+            <button onClick={() => setMode('login')} className="text-accent-fg hover:underline">
               Kembali
             </button>
           )}
@@ -698,15 +698,15 @@ function AltLoginMethods({ loading, onGoogle, onOtp, variant = 'login' }) {
   return (
     <div className="pt-2">
       <div className="flex items-center gap-3 my-3">
-        <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+        <div className="flex-1 h-px bg-border" />
         <span className="text-xs text-muted uppercase tracking-wider">atau</span>
-        <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+        <div className="flex-1 h-px bg-border" />
       </div>
       <button
         type="button"
         onClick={onGoogle}
         disabled={loading}
-        className="w-full bg-card border-2 border-border hover:border-border hover:bg-surface text-gray-700 dark:text-gray-300 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+        className="w-full bg-card border-2 border-border hover:border-accent hover:bg-surface text-fg font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
       >
         <GoogleIcon className="w-5 h-5" />
         {variant === 'signup' ? 'Daftar dengan Google' : 'Login dengan Google'}
@@ -715,9 +715,9 @@ function AltLoginMethods({ loading, onGoogle, onOtp, variant = 'login' }) {
         type="button"
         onClick={onOtp}
         disabled={loading}
-        className="mt-2 w-full bg-card border-2 border-border hover:border-sky-300 hover:bg-sky-50 text-gray-700 dark:text-gray-300 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+        className="mt-2 w-full bg-card border-2 border-border hover:border-accent hover:bg-surface text-fg font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
       >
-        <KeyRound className="w-5 h-5 text-sky-600" />
+        <KeyRound className="w-5 h-5 text-accent-fg" />
         Login pakai kode OTP (tanpa password)
       </button>
     </div>

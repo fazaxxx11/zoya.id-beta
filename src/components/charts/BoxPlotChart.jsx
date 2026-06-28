@@ -8,7 +8,7 @@ import { formatNumber } from '../../lib/format'
 export function BoxPlotChart({ data, title = 'Perbandingan Kelompok' }) {
   if (!data || data.length === 0) {
     return (
-      <div className="w-full p-4 text-center text-gray-500">
+      <div className="w-full p-4 text-center text-muted">
         Tidak ada data untuk ditampilkan
       </div>
     )
@@ -22,11 +22,12 @@ export function BoxPlotChart({ data, title = 'Perbandingan Kelompok' }) {
     errorUpper: g.q3 - g.mean,
   }))
 
-  const colors = ['#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#ef4444']
+  // Scholarly palette — sinkron dengan design tokens
+  const colors = ['#9A6721', '#166C66', '#B25F58', '#73665A', '#5C8B6F']
 
   return (
     <div className="w-full space-y-2">
-      <h3 className="text-base font-semibold text-gray-800">{title}</h3>
+      <h3 className="text-base font-semibold text-fg">{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData} margin={{ top: 20, right: 20, left: 10, bottom: 30 }}>
           <XAxis 
@@ -48,25 +49,25 @@ export function BoxPlotChart({ data, title = 'Perbandingan Kelompok' }) {
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
             ))}
-            <ErrorBar 
-              dataKey="errorLower" 
-              width={4} 
-              strokeWidth={2} 
-              stroke="#374151"
+            <ErrorBar
+              dataKey="errorLower"
+              width={4}
+              strokeWidth={2}
+              stroke="#1C1E26"
               direction="y"
             />
-            <ErrorBar 
-              dataKey="errorUpper" 
-              width={4} 
-              strokeWidth={2} 
-              stroke="#374151"
+            <ErrorBar
+              dataKey="errorUpper"
+              width={4}
+              strokeWidth={2}
+              stroke="#1C1E26"
               direction="y"
             />
             <LabelList dataKey="mean" position="top" formatter={(val) => formatNumber(val)} style={{ fontSize: 10 }} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-      <p className="text-xs text-gray-600 text-center">
+      <p className="text-xs text-fg/60 text-center">
         Bar = Mean, Error bars = Q1-Q3 range
       </p>
     </div>

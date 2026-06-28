@@ -270,22 +270,6 @@ body::before { display: none; }
 ::-webkit-scrollbar-thumb:hover { background: rgb(var(--muted)); background-clip: padding-box; }
 
 /* =====================================================
-   Aurora background blobs (used by <Aurora /> component)
-===================================================== */
-.aurora-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.5;
-  pointer-events: none;
-  will-change: transform;
-}
-.dark .aurora-blob {
-  opacity: 0.6; /* lebih dramatic di dark mode = galaxy vibe */
-  filter: blur(110px);
-}
-
-/* =====================================================
    Component utilities
 ===================================================== */
 @layer components {
@@ -725,7 +709,6 @@ body::before { display: none; }
 
 /* Reduce motion preference */
 @media (prefers-reduced-motion: reduce) {
-  .aurora-blob,
   *[class*="animate-"],
   .stagger > * {
     animation: none !important;
@@ -739,7 +722,6 @@ body::before { display: none; }
 ===================================================== */
 @media print {
   /* Hide framework chrome */
-  .aurora-blob,
   .bg-pattern::before,
   nav,
   header.sticky,

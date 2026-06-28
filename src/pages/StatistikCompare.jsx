@@ -2,6 +2,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Calendar, AlertCircle } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
+import { STATISTIK_SUBNAV } from '../lib/statistikNav'
 import { getAnalysis } from '../lib/savedAnalyses'
 import { extractCompareMetrics } from '../lib/compareMetrics'
 import { toast } from '../lib/toast'
@@ -63,11 +64,11 @@ export default function StatistikCompare() {
     return (
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="max-w-md text-center">
-          <AlertCircle className="w-10 h-10 text-amber-400 mx-auto mb-3" />
+          <AlertCircle className="w-10 h-10 text-accent mx-auto mb-3" />
           <h2 className="text-xl font-bold text-fg mb-2">Pilih 2 analisis</h2>
           <p className="text-sm text-muted mb-5">Untuk membandingkan, pilih tepat 2 analisis dari halaman Riwayat.</p>
           <button onClick={() => navigate('/statistik/history')}
-            className="px-5 py-2.5 bg-fg hover:bg-fg text-white text-sm font-medium rounded-lg">
+            className="px-5 py-2.5 bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium rounded-lg">
             Buka Riwayat
           </button>
         </div>
@@ -84,7 +85,7 @@ export default function StatistikCompare() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <div className="max-w-6xl mx-auto p-6 md:p-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-5 py-5 sm:py-6">
         <PageHeader
           title="Bandingkan Analisis"
           subtitle="Modul Statistik"
@@ -95,6 +96,7 @@ export default function StatistikCompare() {
             { path: '/statistik/history', label: 'Riwayat' },
             { label: 'Bandingkan' },
           ]}
+          subNav={STATISTIK_SUBNAV}
         />
           {!sameTool && a && b && (
             <div className="mt-3 bg-terracotta/10 border border-terracotta/30 rounded-lg p-3 text-sm text-terracotta flex items-start gap-2">
@@ -125,7 +127,7 @@ export default function StatistikCompare() {
                   </div>
                 </>
               ) : (
-                <div className="text-sm text-red-600">Gagal memuat</div>
+                <div className="text-sm text-terracotta">Gagal memuat</div>
               )}
             </div>
           ))}
@@ -145,10 +147,10 @@ export default function StatistikCompare() {
                     return (
                       <tr key={rIdx} className="border-t border-border first:border-t-0">
                         <td className="px-4 py-2.5 text-muted w-1/3">{row.label}</td>
-                        <td className={`px-4 py-2.5 font-mono text-[13px] ${aDiff ? 'bg-terracotta/10/40' : ''}`}>
+                        <td className={`px-4 py-2.5 font-mono text-[13px] ${aDiff ? 'bg-accent/15' : ''}`}>
                           <CellValue item={row.a} />
                         </td>
-                        <td className={`px-4 py-2.5 font-mono text-[13px] border-l border-border ${aDiff ? 'bg-terracotta/10/40' : ''}`}>
+                        <td className={`px-4 py-2.5 font-mono text-[13px] border-l border-border ${aDiff ? 'bg-accent/15' : ''}`}>
                           <CellValue item={row.b} />
                         </td>
                       </tr>
@@ -161,7 +163,7 @@ export default function StatistikCompare() {
         </div>
 
         <div className="mt-4 text-xs text-muted flex items-center gap-2">
-          <span className="inline-block w-3 h-3 rounded-sm bg-terracotta/10/70 border border-terracotta/30/60" />
+          <span className="inline-block w-3 h-3 rounded-sm bg-accent/30 border border-accent/40" />
           Highlight kuning = ada perbedaan nilai di kedua sisi
         </div>
 

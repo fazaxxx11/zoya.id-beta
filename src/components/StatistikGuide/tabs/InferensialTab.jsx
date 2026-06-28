@@ -44,7 +44,7 @@ const InferensialTab = () => {
 
             <div className={styles.card} style={{ marginTop: 12 }}>
               <p>
-                <span className={styles.badge} style={{ background: '#fef3c7', color: '#92400e' }}>H₁</span>
+                <span className={styles.badge}>H₁</span>
                 <strong>Hipotesis Alternatif</strong> — Ada perbedaan atau pengaruh yang signifikan.
                 Contoh: "Ada perbedaan rata-rata skor antara kelompok A dan B."
               </p>

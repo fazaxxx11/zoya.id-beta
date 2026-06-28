@@ -8,8 +8,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import {
-  Sparkles, BarChart3, FileText, BookOpen,
-  ChevronRight, ChevronLeft, X, Rocket,
+  Rocket, Activity, FileText, ClipboardCheck,
+  ChevronRight, ChevronLeft, X,
 } from 'lucide-react'
 
 const STORAGE_KEY = 'onboarding_completed_v1'
@@ -22,20 +22,20 @@ const STEPS = [
     body: 'Aplikasi ini dirancang untuk membantu skripsi & penelitianmu lebih cepat dan rapi. Mari kita kenalan dengan fitur-fiturnya.',
   },
   {
-    icon: BarChart3,
-    iconBg: 'from-emerald-500 to-teal-600',
+    icon: Activity,
+    iconBg: 'from-teal-500 to-teal-700',
     title: 'Analisis Statistik Lengkap',
     body: 't-test, ANOVA, regresi, korelasi, chi-square — semua dilengkapi pemeriksaan asumsi (Levene, Welch, Durbin-Watson, dll), effect size dengan 95% CI, dan post-hoc test sesuai standar APA 7.',
   },
   {
-    icon: Sparkles,
-    iconBg: 'from-purple-500 to-pink-500',
+    icon: ClipboardCheck,
+    iconBg: 'from-accent to-accent-2',
     title: 'AI Assessment & Rubrik',
     body: 'Punya tugas siswa untuk dinilai? Upload file, AI akan menilai sesuai rubrik. Bahkan rubriknya bisa dibuat otomatis pakai AI tinggal input topik soal.',
   },
   {
     icon: FileText,
-    iconBg: 'from-amber-500 to-orange-600',
+    iconBg: 'from-terracotta to-terracotta/70',
     title: 'Bab IV Auto-Generate',
     body: 'Setelah analisis, klik "Bab IV" untuk generate draft Hasil & Pembahasan otomatis dengan format ilmiah, tabel rapi, dan interpretasi siap-paste ke skripsimu.',
   },
@@ -147,7 +147,7 @@ export default function OnboardingTour() {
               key={i}
               onClick={() => setStep(i)}
               className={`h-1.5 rounded-full transition-all ${
-                i === step ? 'w-6 bg-gray-900' : 'w-1.5 bg-border hover:bg-gray-400'
+                i === step ? 'w-6 bg-accent' : 'w-1.5 bg-border hover:bg-muted'
               }`}
               aria-label={`Step ${i + 1}`}
             />
@@ -178,7 +178,7 @@ export default function OnboardingTour() {
           >
             {step === STEPS.length - 1 ? (
               <>
-                <Sparkles className="w-4 h-4" /> Mulai Sekarang
+                <Rocket className="w-4 h-4" /> Mulai Sekarang
               </>
             ) : (
               <>

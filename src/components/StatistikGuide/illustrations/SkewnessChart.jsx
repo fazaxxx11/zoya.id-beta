@@ -11,11 +11,11 @@ const SkewnessChart = ({ className }) => {
       <g>
         <path
           d="M 10,90 C 25,90 35,88 45,80 C 55,65 60,40 70,25 C 75,20 80,20 85,25 C 95,40 100,65 110,80 C 120,88 130,90 145,90"
-          fill="#dbeafe"
-          stroke="#3b82f6"
+          fill="rgb(var(--accent) / 0.08)"
+          stroke="rgb(var(--accent))"
           strokeWidth="1.5"
         />
-        <text x="77" y="108" textAnchor="middle" fontSize="10" fill="#3b82f6" fontWeight="600">
+        <text x="77" y="108" textAnchor="middle" fontSize="10" fill="rgb(var(--accent))" fontWeight="600">
           Normal
         </text>
       </g>
@@ -24,11 +24,11 @@ const SkewnessChart = ({ className }) => {
       <g>
         <path
           d="M 130,90 C 140,88 148,82 155,72 C 162,60 170,35 180,22 C 185,18 190,18 195,22 C 202,30 208,50 215,68 C 222,80 230,88 240,90"
-          fill="#ede9fe"
-          stroke="#7c3aed"
+          fill="rgb(var(--deep-teal) / 0.08)"
+          stroke="rgb(var(--deep-teal))"
           strokeWidth="1.5"
         />
-        <text x="185" y="108" textAnchor="middle" fontSize="10" fill="#7c3aed" fontWeight="600">
+        <text x="185" y="108" textAnchor="middle" fontSize="10" fill="rgb(var(--deep-teal))" fontWeight="600">
           Left-Skewed
         </text>
       </g>
@@ -37,11 +37,11 @@ const SkewnessChart = ({ className }) => {
       <g>
         <path
           d="M 230,90 C 240,88 248,82 255,72 C 262,60 268,35 275,22 C 280,18 285,18 290,22 C 298,30 305,50 315,68 C 325,82 335,88 350,90"
-          fill="#dcfce7"
-          stroke="#16a34a"
+          fill="rgb(var(--warm-rose) / 0.08)"
+          stroke="rgb(var(--warm-rose))"
           strokeWidth="1.5"
         />
-        <text x="290" y="108" textAnchor="middle" fontSize="10" fill="#16a34a" fontWeight="600">
+        <text x="290" y="108" textAnchor="middle" fontSize="10" fill="rgb(var(--warm-rose))" fontWeight="600">
           Right-Skewed
         </text>
       </g>

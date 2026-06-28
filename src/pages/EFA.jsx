@@ -98,14 +98,14 @@ export default function EFAPage() {
 
       <div className="max-w-5xl mx-auto px-3 sm:px-5 py-4 space-y-4">
         {/* Hero */}
-        <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50 border border-violet-200 rounded-xl p-4">
+        <div className="bg-accent-soft border border-accent/30 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-violet-600 text-white flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-accent text-white flex items-center justify-center flex-shrink-0">
               <Layers className="w-5 h-5" />
             </div>
             <div className="flex-1">
-              <h2 className="font-semibold text-violet-900 mb-1">Exploratory Factor Analysis</h2>
-              <p className="text-xs text-violet-800">
+              <h2 className="font-semibold text-fg mb-1">Exploratory Factor Analysis</h2>
+              <p className="text-xs text-muted">
                 Untuk uji <strong>validitas konstruk</strong> kuesioner Likert. Cek apakah item-item benar-benar
                 mengukur faktor laten yang terstruktur. Output: KMO ≥ 0.6 + Bartlett p &lt; 0.05 = data layak;
                 eigenvalue &gt; 1 = jumlah faktor; loading ≥ 0.4 = item masuk faktor tersebut.
@@ -118,7 +118,7 @@ export default function EFAPage() {
         <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Data CSV (item per kolom, responden per baris)</span>
-            <button onClick={() => fileRef.current?.click()} className="text-xs text-violet-600 hover:text-violet-700 flex items-center gap-1">
+            <button onClick={() => fileRef.current?.click()} className="text-xs text-accent hover:text-accent/80 flex items-center gap-1">
               <Upload className="w-3.5 h-3.5" /> Upload CSV
             </button>
             <input ref={fileRef} type="file" accept=".csv,.txt" onChange={handleFile} className="hidden" />
@@ -137,10 +137,10 @@ export default function EFAPage() {
             <div className="space-y-2 pt-2 border-t border-border">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Item yang dimasukkan</label>
+                  <label className="block text-xs font-medium text-fg/80">Item yang dimasukkan</label>
                   <button
                     onClick={() => setSelectedItems(itemsToUse.length === parsed.headers.length ? [] : parsed.headers)}
-                    className="text-xs text-violet-600 hover:text-violet-700 font-medium"
+                    className="text-xs text-accent hover:text-accent/80 font-medium"
                   >
                     {itemsToUse.length === parsed.headers.length ? 'Hapus Semua' : 'Pilih Semua'}
                   </button>
@@ -158,7 +158,7 @@ export default function EFAPage() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Jumlah Faktor</label>
+                  <label className="block text-xs font-medium text-fg/80 mb-1">Jumlah Faktor</label>
                   <select value={nFactorsInput} onChange={e => setNFactorsInput(e.target.value)}
                           className="w-full border border-border rounded-lg px-3 py-2 text-sm">
                     <option value="auto">Otomatis (Kaiser λ ≥ 1)</option>
@@ -271,7 +271,7 @@ function SamplingAdequacySection({ result }) {
                   <th className="px-2 py-1.5 text-left">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {result.itemNames.map((nm, i) => {
                   const msa = k.perVariable[i]
                   const status = msa >= 0.6 ? '✓ OK' : msa >= 0.5 ? '~ borderline' : '✗ drop'
@@ -380,13 +380,13 @@ function VarianceTableSection({ result }) {
               <th className="px-2 py-1.5 text-center">Retained?</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {eigs.map((e, i) => {
               let cum = 0
               for (let k = 0; k <= i; k++) cum += eigs[k] / p
               const retained = i < result.nFactors
               return (
-                <tr key={i} className={retained ? 'bg-violet-50/50' : 'opacity-60'}>
+                <tr key={i} className={retained ? 'bg-accent/5' : 'opacity-60'}>
                   <td className="px-2 py-1.5">{i + 1}</td>
                   <td className="px-2 py-1.5 text-right font-mono">{e.toFixed(3)}</td>
                   <td className="px-2 py-1.5 text-right font-mono">{(e / p * 100).toFixed(1)}%</td>
@@ -413,7 +413,7 @@ function LoadingsSection({ result }) {
     <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-violet-600" />
+          <Sparkles className="w-4 h-4 text-accent" />
           {showRotated ? 'Rotated Component Matrix (Varimax)' : 'Component Matrix (Unrotated)'}
         </h3>
         <label className="text-xs flex items-center gap-2">
@@ -436,28 +436,28 @@ function LoadingsSection({ result }) {
               <th className="px-2 py-1.5 text-center">Best</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {result.itemNames.map((nm, i) => (
               <tr key={i}>
                 <td className="px-2 py-1.5 font-medium">{nm}</td>
                 {matrix[i].map((v, k) => (
                   <td key={k} className="px-2 py-1.5 text-right font-mono"
                       style={{
-                        backgroundColor: Math.abs(v) >= highlight ? 'rgb(124 58 237 / 0.12)' : 'transparent',
+                        backgroundColor: Math.abs(v) >= highlight ? 'rgb(var(--accent) / 0.12)' : 'transparent',
                         fontWeight: Math.abs(v) >= highlight ? 600 : 400,
                       }}>
                     {v.toFixed(3)}
                   </td>
                 ))}
                 <td className="px-2 py-1.5 text-right font-mono">{result.communalities[i].toFixed(3)}</td>
-                <td className="px-2 py-1.5 text-center font-bold text-violet-700">F{result.factorTable[i].primaryFactor}</td>
+                <td className="px-2 py-1.5 text-center font-bold text-accent">F{result.factorTable[i].primaryFactor}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <p className="text-[11px] text-muted mt-2">
-        Loading ≥ 0.4 (warna ungu) = item secara substantif memuat ke faktor tersebut.
+        Loading ≥ 0.4 (warna gold) = item secara substantif memuat ke faktor tersebut.
         h² (communality) = proporsi varians item yang dijelaskan oleh semua faktor.
       </p>
     </div>
@@ -480,9 +480,9 @@ Berdasarkan kriteria Kaiser (eigenvalue ≥ 1), terbentuk ${result.nFactors} fak
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }}
-                className="text-xs text-violet-600 hover:text-violet-700">Salin</button>
+                className="text-xs text-accent hover:text-accent/80">Salin</button>
       </div>
-      <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{text}</p>
+      <p className="text-xs leading-relaxed text-fg/80 whitespace-pre-wrap">{text}</p>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { X, AlertTriangle, CheckCircle2, Sparkles, Table2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, AlertTriangle, CheckCircle2, Wand2, Table2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { analyzeColumns, findDuplicateRows, applyCleaning } from '../lib/dataCleaner'
 import Modal from './Modal'
 
@@ -122,14 +122,14 @@ function ModalBody({ data, columns, onClose, onApply }) {
         <div className="p-5 border-b border-border flex items-start justify-between gap-3">
           <div>
             <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-1">Pre-Analysis</div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Bersihkan Dataset</h2>
+            <h2 className="text-lg font-bold text-fg">Bersihkan Dataset</h2>
             <p className="text-sm text-muted mt-1">
               {totalIssues > 0
                 ? `Ditemukan ${totalIssues} isu (missing + outlier + duplikat). Pilih cara penanganan.`
                 : 'Dataset bersih — tidak ada missing, outlier, atau duplikat terdeteksi.'}
             </p>
           </div>
-          <button onClick={onClose} className="text-muted hover:text-gray-700 dark:text-gray-300 p-1">
+          <button onClick={onClose} className="text-muted hover:text-fg p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -138,16 +138,16 @@ function ModalBody({ data, columns, onClose, onApply }) {
         <div className="px-5 py-3 border-b border-border flex items-center justify-between gap-3 flex-wrap bg-surface/60">
           <div className="flex items-center gap-2">
             <button onClick={handleSmartClean}
-              className="text-xs font-medium px-3 py-2 rounded-lg bg-gray-900 hover:bg-black text-white flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" /> Smart Clean
+              className="text-xs font-medium px-3 py-2 rounded-lg bg-accent hover:bg-accent/90 text-accent-fg flex items-center gap-1.5">
+              <Wand2 className="w-3.5 h-3.5" /> Smart Clean
             </button>
             <button onClick={handleReset}
-              className="text-xs font-medium px-3 py-2 rounded-lg border border-border hover:bg-card text-gray-700 dark:text-gray-300">
+              className="text-xs font-medium px-3 py-2 rounded-lg border border-border hover:bg-card text-fg">
               Reset
             </button>
           </div>
           <div className="flex items-center gap-3 text-xs text-muted">
-            <span>Total baris: <strong className="text-gray-900 dark:text-gray-100">{totalRows}</strong></span>
+            <span>Total baris: <strong className="text-fg">{totalRows}</strong></span>
             <span>→</span>
             <span>Setelah bersihkan: <strong className={preview.report.rowsAfter < totalRows ? 'text-amber-700' : 'text-emerald-700'}>{preview.report.rowsAfter}</strong></span>
           </div>
@@ -168,13 +168,13 @@ function ModalBody({ data, columns, onClose, onApply }) {
                   <th className="px-3 py-2.5 font-medium">Aksi Outlier</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {columns.map(col => {
                   const a = analysis[col]
                   const op = colOps[col]
                   return (
                     <tr key={col} className="hover:bg-surface/40">
-                      <td className="px-3 py-2.5 font-medium text-gray-900 dark:text-gray-100">{col}</td>
+                      <td className="px-3 py-2.5 font-medium text-fg">{col}</td>
                       <td className="px-3 py-2.5">
                         <TypeBadge type={a.type} />
                       </td>
@@ -193,7 +193,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
                         ) : (
                           <select value={op.missing}
                             onChange={e => updateOp(col, 'missing', e.target.value)}
-                            className="text-xs px-2 py-1 border border-border rounded bg-card outline-none focus:border-gray-400">
+                            className="text-xs px-2 py-1 border border-border rounded bg-card outline-none focus:border-muted">
                             <option value="keep">Biarkan</option>
                             <option value="drop">Drop baris</option>
                             {a.type === 'numeric' && <option value="mean">Isi: mean</option>}
@@ -217,7 +217,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
                         ) : (
                           <select value={op.outliers}
                             onChange={e => updateOp(col, 'outliers', e.target.value)}
-                            className="text-xs px-2 py-1 border border-border rounded bg-card outline-none focus:border-gray-400">
+                            className="text-xs px-2 py-1 border border-border rounded bg-card outline-none focus:border-muted">
                             <option value="keep">Biarkan</option>
                             <option value="clip">Clip ke batas IQR</option>
                             <option value="drop">Drop baris</option>
@@ -239,16 +239,16 @@ function ModalBody({ data, columns, onClose, onApply }) {
               <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
             )}
             <div className="flex-1 text-sm">
-              <span className="font-medium text-gray-900 dark:text-gray-100">
+              <span className="font-medium text-fg">
                 {dupes.length === 0 ? 'Tidak ada baris duplikat' : `${dupes.length} baris duplikat ditemukan`}
               </span>
               {dupes.length > 0 && <span className="text-muted ml-2">(seluruh kolom identik)</span>}
             </div>
             {dupes.length > 0 && (
-              <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-fg/70 cursor-pointer">
                 <input type="checkbox" checked={dropDuplicates}
                   onChange={e => setDropDuplicates(e.target.checked)}
-                  className="w-4 h-4 accent-gray-900" />
+                  className="w-4 h-4 accent-fg" />
                 Drop duplikat
               </label>
             )}
@@ -265,13 +265,13 @@ function ModalBody({ data, columns, onClose, onApply }) {
               className="w-full flex items-center justify-between px-4 py-3 bg-surface hover:bg-surface transition-colors text-left"
             >
               <div className="flex items-center gap-2">
-                <Table2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Lihat & Edit Data</span>
+                <Table2 className="w-4 h-4 text-muted" />
+                <span className="text-sm font-medium text-fg">Lihat & Edit Data</span>
                 <span className="text-xs text-muted">
                   {totalRows} baris × {columns.length} kolom
                 </span>
                 {editedCells.size > 0 && (
-                  <span className="text-[10px] uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">
+                  <span className="text-[10px] uppercase tracking-wider bg-terracotta/15 text-terracotta px-2 py-0.5 rounded-full font-medium">
                     {editedCells.size} sel diubah
                   </span>
                 )}
@@ -285,11 +285,11 @@ function ModalBody({ data, columns, onClose, onApply }) {
                   <table className="w-full text-sm border-collapse">
                     <thead className="bg-surface sticky top-0 z-10">
                       <tr>
-                        <th className="border-b border-r border-border px-2 py-1.5 w-12 text-center text-[11px] font-semibold text-gray-600 dark:text-gray-400 sticky left-0 bg-surface z-20">
+                        <th className="border-b border-r border-border px-2 py-1.5 w-12 text-center text-[11px] font-semibold text-muted sticky left-0 bg-surface z-20">
                           #
                         </th>
                         {columns.map(col => (
-                          <th key={col} className="border-b border-r border-border px-2 py-1.5 text-left text-[11px] font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                          <th key={col} className="border-b border-r border-border px-2 py-1.5 text-left text-[11px] font-semibold text-fg/70 whitespace-nowrap">
                             <div className="flex items-center gap-1.5">
                               {col}
                               <TypeBadge type={analysis[col]?.type} />
@@ -311,14 +311,14 @@ function ModalBody({ data, columns, onClose, onApply }) {
                               const isEmpty = v === null || v === undefined || v === ''
                               const isEdited = editedCells.has(`${col}|${i}`)
                               return (
-                                <td key={col} className={`border-b border-r border-border p-0 ${isEdited ? 'bg-amber-50' : ''}`}>
+                                <td key={col} className={`border-b border-r border-border p-0 ${isEdited ? 'bg-terracotta/10' : ''}`}>
                                   <input
                                     type="text"
                                     value={isEmpty ? '' : String(v)}
                                     onChange={e => updateCell(col, i, e.target.value)}
                                     placeholder={isEmpty ? '(kosong)' : ''}
-                                    className={`w-full px-2 py-1.5 text-xs bg-transparent border-0 focus:bg-card focus:ring-2 focus:ring-sky-300 focus:outline-none ${
-                                      isEmpty ? 'text-red-400 italic' : 'text-gray-800 dark:text-gray-200'
+                                    className={`w-full px-2 py-1.5 text-xs bg-transparent border-0 focus:bg-card focus:ring-2 focus:ring-accent/40 focus:outline-none ${
+                                      isEmpty ? 'text-terracotta italic' : 'text-fg'
                                     } ${analysis[col]?.type === 'numeric' ? 'font-mono text-right' : ''}`}
                                   />
                                 </td>
@@ -340,7 +340,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
 
                 {/* Pagination footer */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-3 py-2 bg-surface border-t border-border text-xs text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center justify-between px-3 py-2 bg-surface border-t border-border text-xs text-muted">
                     <span>Baris {startRow + 1}–{endRow} dari {totalRows}</span>
                     <div className="flex items-center gap-1">
                       <button
@@ -371,14 +371,14 @@ function ModalBody({ data, columns, onClose, onApply }) {
           {preview.report.actions.length > 0 && (
             <div className="mt-4 bg-surface border border-border rounded-xl p-4">
               <div className="text-[11px] uppercase tracking-[0.18em] text-muted font-medium mb-2">Preview Aksi</div>
-              <ul className="text-xs text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
+              <ul className="text-xs text-fg/70 space-y-1 list-disc list-inside">
                 {preview.report.actions.map((a, i) => <li key={i}>{a}</li>)}
               </ul>
               <div className="mt-3 pt-3 border-t border-border flex gap-4 text-xs flex-wrap">
-                <span className="text-gray-600 dark:text-gray-400">Drop: <strong className="text-red-700">{preview.report.dropped}</strong> baris</span>
-                <span className="text-gray-600 dark:text-gray-400">Filled: <strong className="text-emerald-700">{preview.report.filled}</strong> sel</span>
-                <span className="text-gray-600 dark:text-gray-400">Clipped: <strong className="text-orange-700">{preview.report.clipped}</strong> sel</span>
-                <span className="text-gray-600 dark:text-gray-400">Duplicates: <strong className="text-amber-700">{preview.report.duplicatesRemoved}</strong> baris</span>
+                <span className="text-muted">Drop: <strong className="text-red-700">{preview.report.dropped}</strong> baris</span>
+                <span className="text-muted">Filled: <strong className="text-emerald-700">{preview.report.filled}</strong> sel</span>
+                <span className="text-muted">Clipped: <strong className="text-orange-700">{preview.report.clipped}</strong> sel</span>
+                <span className="text-muted">Duplicates: <strong className="text-amber-700">{preview.report.duplicatesRemoved}</strong> baris</span>
               </div>
             </div>
           )}
@@ -393,12 +393,12 @@ function ModalBody({ data, columns, onClose, onApply }) {
           </div>
           <div className="flex items-center gap-2">
             <button onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 rounded-lg">
+              className="px-4 py-2 text-sm text-muted hover:text-fg rounded-lg">
               Batal
             </button>
             <button onClick={handleApply}
               disabled={preview.report.rowsAfter < 1}
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-black rounded-lg disabled:opacity-50">
+              className="px-4 py-2 text-sm font-medium text-accent-fg bg-accent hover:bg-accent/90 rounded-lg disabled:opacity-50">
               Terapkan
             </button>
           </div>
@@ -409,10 +409,10 @@ function ModalBody({ data, columns, onClose, onApply }) {
 
 function TypeBadge({ type }) {
   const cfg = {
-    numeric: { label: 'Numerik', cls: 'bg-blue-50 text-blue-700 border-blue-200' },
-    categorical: { label: 'Kategorik', cls: 'bg-purple-50 text-purple-700 border-purple-200' },
-    text: { label: 'Teks', cls: 'bg-surface text-gray-700 dark:text-gray-300 border-border' },
-    empty: { label: 'Kosong', cls: 'bg-red-50 text-red-700 border-red-200' },
-  }[type] || { label: type, cls: 'bg-surface text-gray-700 dark:text-gray-300 border-border' }
+    numeric: { label: 'Numerik', cls: 'bg-teal/10 text-teal border-teal/30' },
+    categorical: { label: 'Kategorik', cls: 'bg-accent/10 text-accent border-accent/30' },
+    text: { label: 'Teks', cls: 'bg-surface text-muted border-border' },
+    empty: { label: 'Kosong', cls: 'bg-terracotta/10 text-terracotta border-terracotta/30' },
+  }[type] || { label: type, cls: 'bg-surface text-muted border-border' }
   return <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${cfg.cls}`}>{cfg.label}</span>
 }

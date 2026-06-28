@@ -48,17 +48,17 @@ const ResultSummary = ({
 
         {/* Primary Metric */}
         <div className="pt-2 border-t border-border">
-          <div className="metric-value font-mono text-2xl font-medium text-gray-800 dark:text-gray-200 tracking-tight">
+          <div className="metric-value font-mono text-2xl font-medium text-fg tracking-tight">
             {metric}
           </div>
         </div>
 
         {/* Meaning Section */}
         <div className="pt-3 border-t border-border">
-          <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+          <h4 className="font-semibold text-fg/80 mb-2 flex items-center gap-2">
             <span className="text-muted">Apa artinya?</span>
           </h4>
-          <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+          <p className="text-muted leading-relaxed">
             {meaning}
           </p>
         </div>

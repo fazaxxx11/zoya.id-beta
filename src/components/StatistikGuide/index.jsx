@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import PageHeader from '../PageHeader';
+import { STATISTIK_SUBNAV } from '../../lib/statistikNav';
 import styles from './StatistikGuide.module.css';
 
 import OverviewTab from './tabs/OverviewTab';
@@ -20,23 +22,32 @@ const StatistikGuide = () => {
   const ActiveComponent = tabs.find((t) => t.id === activeTab)?.component || OverviewTab;
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Panduan Statistika</h1>
-      <p className={styles.subtitle}>Referensi lengkap analisis data untuk penelitian</p>
+    <div className="min-h-screen bg-bg text-fg pb-bottomnav">
+      <PageHeader
+        title="Panduan Statistika"
+        subtitle="Modul Statistik"
+        parentPath="/statistik"
+        parentLabel="Statistik"
+        subNav={STATISTIK_SUBNAV}
+      />
 
-      <nav className={styles.tabNav}>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={`${styles.tabButton} ${activeTab === tab.id ? styles.tabActive : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
+      <div className={styles.container}>
+        <p className={styles.subtitle}>Referensi lengkap analisis data untuk penelitian</p>
 
-      <ActiveComponent />
+        <nav className={styles.tabNav}>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`${styles.tabButton} ${activeTab === tab.id ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+
+        <ActiveComponent />
+      </div>
     </div>
   );
 };

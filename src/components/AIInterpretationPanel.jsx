@@ -52,18 +52,18 @@ export default function AIInterpretationPanel({ result, value = '', onChange }) 
         </div>
         {!text && !loading && (
           <button onClick={handleGenerate}
-                  className="bg-gray-900 hover:bg-black text-white text-xs font-medium px-4 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
+                  className="bg-accent hover:bg-accent/90 text-accent-fg text-xs font-medium px-4 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
             Generate
           </button>
         )}
         {text && (
           <div className="flex items-center gap-2">
             <button onClick={handleCopy}
-                    className="text-xs text-muted hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-card/50 px-3 py-2 rounded-lg">
+                    className="text-xs text-muted hover:text-fg border border-border hover:bg-card/50 px-3 py-2 rounded-lg">
               Salin
             </button>
             <button onClick={handleGenerate} disabled={loading}
-                    className="text-xs text-muted hover:text-gray-900 dark:text-gray-100 border border-border hover:bg-card/50 px-3 py-2 rounded-lg disabled:opacity-50">
+                    className="text-xs text-muted hover:text-fg border border-border hover:bg-card/50 px-3 py-2 rounded-lg disabled:opacity-50">
               {loading ? 'Memproses…' : 'Regenerate'}
             </button>
           </div>

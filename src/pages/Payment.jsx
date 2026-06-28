@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { 
-  ChevronLeft, CreditCard, QrCode, Wallet, Building, 
+import {
+  ChevronLeft, CreditCard, QrCode, Wallet, Building,
   CheckCircle, Loader2, Home, History,
-  ArrowRight, Gift, Zap, BarChart3, Sparkles
+  ArrowRight, Gift, Zap, Activity, BookOpen
 } from 'lucide-react'
 
 // Import order & auth helpers from lib (no longer from pages)
@@ -18,7 +18,7 @@ import { BETA_FREE } from '../lib/pricing'
 export const SERVICE_PRICES = {
   assessment: {
     name: 'Assessment Tulisan AI',
-    icon: '✍️',
+    icon: <BookOpen className="w-8 h-8" />,
     tiers: [
       { id: 'pendek', name: 'Pendek (≤500 kata)', price: 3000 },
       { id: 'sedang', name: 'Sedang (≤1000 kata)', price: 5000 },
@@ -27,7 +27,7 @@ export const SERVICE_PRICES = {
   },
   statistics: {
     name: 'Analisis Statistik',
-    icon: '📊',
+    icon: <Activity className="w-8 h-8" />,
     tiers: [
       { id: 'dasar', name: 'Statistik Dasar', price: 5000 },
       { id: 'lanjutan', name: 'Statistik Lanjutan', price: 10000 },
@@ -92,23 +92,23 @@ function Payment() {
   if (BETA_FREE) {
     return (
       <div className="min-h-screen bg-pattern">
-        <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <header className="bg-bg border-b border-border sticky top-0 z-50">
           <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
             <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <h1 className="font-bold text-gray-800 dark:text-gray-200">Beta Free</h1>
+            <h1 className="font-bold text-fg">Beta Free</h1>
             <div className="w-8"></div>
           </div>
         </header>
 
         <div className="max-w-2xl mx-auto px-4 py-10">
-          <div className="bg-card rounded-2xl shadow-sm p-8 border border-border text-center">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-4">
-              <Sparkles className="w-8 h-8" />
+          <div className="bg-card rounded-xl p-8 border border-border text-center">
+            <div className="w-16 h-16 mx-auto rounded-xl bg-accent-soft text-accent-fg flex items-center justify-center mb-4">
+              <BookOpen className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">Payment Coming Soon</h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+            <h2 className="text-2xl font-bold text-fg mb-2">Payment Coming Soon</h2>
+            <p className="text-muted leading-relaxed">
               Semua tools inti sedang dibuka gratis selama beta untuk user terdaftar. Pricing, top-up, dan paket Pro/Premium akan diumumkan setelah payment selesai diaudit.
             </p>
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -314,13 +314,13 @@ function Payment() {
 
     return (
       <div className="min-h-screen bg-pattern">
-        <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-border">
+        <header className="bg-card border-b border-border sticky top-0 z-50">
           <div className="max-w-3xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <button onClick={() => navigate('/')} className="flex items-center gap-2 text-muted hover:text-sky-600">
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <h1 className="font-bold text-gray-800 dark:text-gray-200">Hasil {service?.name}</h1>
+              <h1 className="font-bold text-fg">Hasil {service?.name}</h1>
               <div className="w-8"></div>
             </div>
           </div>
@@ -328,30 +328,30 @@ function Payment() {
 
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
           {/* Success Badge */}
-          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border text-center">
+          <div className="bg-card rounded-xl p-6 border border-border text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">🎉 Selesai!</h2>
+            <h2 className="text-2xl font-bold text-fg mb-2">Selesai!</h2>
             <p className="text-muted">
               Pesanan Anda telah diproses.
             </p>
             
-            <div className="bg-sky-50 rounded-xl p-3 mt-4">
+            <div className="bg-accent-soft rounded-xl p-3 mt-4">
               <p className="text-sm text-sky-600">Order ID</p>
               <p className="text-lg font-mono font-bold text-sky-700">{orderId}</p>
             </div>
           </div>
 
           {/* Next step card */}
-          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
-            <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Langkah Selanjutnya</h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <div className="bg-card rounded-xl p-6 border border-border">
+            <h3 className="font-bold text-fg mb-2">Langkah Selanjutnya</h3>
+            <p className="text-muted mb-4">
               Pembayaran berhasil. Silakan lanjutkan ke halaman {serviceLabel} untuk
               menjalankan layanan dan mendapatkan hasil.
             </p>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700">
-              ⚠️ Order ini tersimpan di status <strong>menunggu layanan</strong>.
+              Order ini tersimpan di status <strong>menunggu layanan</strong>.
               Hasil akan muncul setelah Anda menjalankan {serviceLabel} di halaman terkait.
             </div>
           </div>
@@ -366,7 +366,7 @@ function Payment() {
             </button>
             <button 
               onClick={() => navigate('/')}
-              className="w-full px-6 py-3 rounded-xl border-2 border-border text-gray-600 dark:text-gray-400 hover:bg-surface font-medium flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 rounded-xl border-2 border-border text-muted hover:bg-surface font-medium flex items-center justify-center gap-2"
             >
               <Home className="w-5 h-5" />
               Kembali ke Home
@@ -380,13 +380,13 @@ function Payment() {
   return (
     <div className="min-h-screen bg-pattern">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-border">
+      <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted hover:text-sky-600">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <h1 className="font-bold text-gray-800 dark:text-gray-200">Pembayaran</h1>
+            <h1 className="font-bold text-fg">Pembayaran</h1>
             <div className="w-8"></div>
           </div>
         </div>
@@ -395,7 +395,7 @@ function Payment() {
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
         {/* User Wallet Info (if logged in) */}
         {currentUser && (
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-4 text-white">
+          <div className="bg-teal rounded-xl p-4 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Wallet className="w-6 h-6" />
@@ -412,17 +412,17 @@ function Payment() {
         )}
 
         {/* Order Summary */}
-        <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
-          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">Ringkasan Pesanan</h2>
+        <div className="bg-card rounded-xl p-6 border border-border">
+          <h2 className="text-lg font-bold text-fg mb-4">Ringkasan Pesanan</h2>
           
-          <div className="flex items-center gap-4 p-4 bg-sky-50 rounded-xl">
-            <div className="text-3xl">{service?.icon}</div>
+          <div className="flex items-center gap-4 p-4 bg-surface rounded-xl">
+            <div className="text-accent-fg">{service?.icon}</div>
             <div>
-              <p className="font-semibold text-gray-800 dark:text-gray-200">{service?.name}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{tier?.name}</p>
+              <p className="font-semibold text-fg">{service?.name}</p>
+              <p className="text-sm text-muted">{tier?.name}</p>
             </div>
             <div className="ml-auto">
-              <p className="text-2xl font-bold text-sky-600">Rp {tier?.price?.toLocaleString('id-ID')}</p>
+              <p className="text-2xl font-bold text-accent-fg">Rp {tier?.price?.toLocaleString('id-ID')}</p>
             </div>
           </div>
 
@@ -437,7 +437,7 @@ function Payment() {
         {/* Insufficient Balance Alert */}
         {insufficientBalance && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-            <p className="text-red-700 font-medium mb-2">⚠️ Saldo tidak cukup</p>
+            <p className="text-red-700 font-medium mb-2">Saldo tidak cukup</p>
             <p className="text-sm text-red-600 mb-3">
               Saldo Anda: Rp {totalBalance.toLocaleString('id-ID')}
               <br />
@@ -456,8 +456,8 @@ function Payment() {
 
         {/* Payment Method Selection */}
         {!showQR && (
-          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">Metode Pembayaran</h2>
+          <div className="bg-card rounded-xl p-6 border border-border">
+            <h2 className="text-lg font-bold text-fg mb-4">Metode Pembayaran</h2>
             
             <div className="grid grid-cols-2 gap-3">
               {PAYMENT_METHODS.map(method => (
@@ -467,14 +467,14 @@ function Payment() {
                   disabled={method.id === 'wallet' && !currentUser}
                   className={`p-4 rounded-xl border-2 transition-all text-left ${
                     paymentMethod === method.id 
-                      ? 'border-sky-500 bg-sky-50' 
-                      : 'border-border hover:border-sky-300'
+                      ? 'border-accent bg-accent-soft'
+                      : 'border-border hover:border-accent'
                   } ${method.id === 'wallet' && !currentUser ? 'opacity-50' : ''}`}
                 >
-                  <div className={`${paymentMethod === method.id ? 'text-sky-600' : 'text-gray-600 dark:text-gray-400'} mb-1`}>
+                  <div className={`${paymentMethod === method.id ? 'text-accent-fg' : 'text-muted'} mb-1`}>
                     {method.icon}
                   </div>
-                  <p className="font-semibold text-gray-800 dark:text-gray-200">{method.name}</p>
+                  <p className="font-semibold text-fg">{method.name}</p>
                   <p className="text-xs text-muted">{method.desc}</p>
                 </button>
               ))}
@@ -502,12 +502,12 @@ function Payment() {
 
         {/* QRIS Display */}
         {showQR && (
-          <div className="bg-card rounded-2xl shadow-sm p-6 border border-border">
+          <div className="bg-card rounded-xl p-6 border border-border">
             <div className="text-center">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-10 h-10 text-green-600" />
               </div>
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Silakan Scan QRIS</h2>
+              <h2 className="text-xl font-bold text-fg mb-2">Silakan Scan QRIS</h2>
               <p className="text-muted mb-4">Order ID: {orderId}</p>
               
               <div className="w-48 h-48 bg-surface rounded-xl mx-auto mb-4 flex items-center justify-center">
@@ -520,7 +520,7 @@ function Payment() {
               
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
                 <p className="text-sm text-amber-700">
-                  ⚠️ Scan dalam 5 menit. QRIS akan expire setelah itu.
+                  Scan dalam 5 menit. QRIS akan expire setelah itu.
                 </p>
               </div>
 

@@ -7,7 +7,7 @@ import { useState, useMemo, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ClipboardCheck, Upload, Download, Play, Info, Check, X,
-  AlertTriangle, RefreshCw, FileText, Eye, EyeOff, Sparkles,
+  AlertTriangle, RefreshCw, FileText, Eye, EyeOff, Wand2,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
@@ -140,14 +140,14 @@ export default function ItemAnalysis() {
 
       <div className="max-w-6xl mx-auto px-3 sm:px-5 py-4 space-y-4">
         {/* Intro */}
-        <div className="bg-gradient-to-br from-sky-50 to-cyan-50 border border-sky-200 rounded-xl p-4">
+        <div className="bg-gradient-to-br bg-accent/10 border border-accent/30 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-sky-500 text-white flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-accent/100 text-white flex items-center justify-center flex-shrink-0">
               <ClipboardCheck className="w-5 h-5" />
             </div>
             <div className="flex-1">
-              <h2 className="font-semibold text-sky-900 mb-1">Analisis Butir Soal</h2>
-              <p className="text-xs text-sky-800">
+              <h2 className="font-semibold text-fg mb-1">Analisis Butir Soal</h2>
+              <p className="text-xs text-fg/80">
                 Untuk evaluasi instrumen tes objektif (pilihan ganda atau benar-salah).
                 Output: tingkat kesukaran (P), daya pembeda (D), point-biserial (r_pb), KR-20, dan keputusan butir (terima/revisi/buang).
               </p>
@@ -163,8 +163,8 @@ export default function ItemAnalysis() {
               onClick={() => setMode('scored')}
               className={`text-xs px-3 py-1.5 rounded-lg border ${
                 mode === 'scored'
-                  ? 'bg-sky-500 text-white border-sky-500'
-                  : 'bg-card text-gray-700 dark:text-gray-300 border-border hover:border-sky-300'
+                  ? 'bg-accent/100 text-white border-accent'
+                  : 'bg-card text-fg/80 border-border hover:border-accent/50'
               }`}
             >
               Skor 0/1
@@ -173,15 +173,15 @@ export default function ItemAnalysis() {
               onClick={() => setMode('responses')}
               className={`text-xs px-3 py-1.5 rounded-lg border ${
                 mode === 'responses'
-                  ? 'bg-sky-500 text-white border-sky-500'
-                  : 'bg-card text-gray-700 dark:text-gray-300 border-border hover:border-sky-300'
+                  ? 'bg-accent/100 text-white border-accent'
+                  : 'bg-card text-fg/80 border-border hover:border-accent/50'
               }`}
             >
               Jawaban Mentah (A/B/C/D)
             </button>
             <button
               onClick={() => fileRef.current?.click()}
-              className="text-xs text-muted hover:text-sky-600 ml-auto flex items-center gap-1"
+              className="text-xs text-muted hover:text-accent ml-auto flex items-center gap-1"
             >
               <Upload className="w-3.5 h-3.5" /> Upload CSV
             </button>
@@ -196,7 +196,7 @@ export default function ItemAnalysis() {
 
           {mode === 'scored' ? (
             <>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-xs font-medium text-fg/80 mb-1">
                 Matrix skor (siswa × butir, 1 = benar, 0 = salah). Format: koma/tab/spasi.
               </label>
               <textarea
@@ -212,7 +212,7 @@ export default function ItemAnalysis() {
             </>
           ) : (
             <>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-xs font-medium text-fg/80 mb-1">
                 Matrix jawaban mentah (siswa × butir, mis. A/B/C/D)
               </label>
               <textarea
@@ -224,7 +224,7 @@ export default function ItemAnalysis() {
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs font-medium text-fg/80 mb-1">
                     Kunci jawaban (urut sesuai butir)
                   </label>
                   <input
@@ -236,7 +236,7 @@ export default function ItemAnalysis() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs font-medium text-fg/80 mb-1">
                     Opsi jawaban global
                   </label>
                   <input
@@ -252,7 +252,7 @@ export default function ItemAnalysis() {
           )}
 
           <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-border">
-            <label className="text-xs text-gray-700 dark:text-gray-300">
+            <label className="text-xs text-fg/80">
               Persentase kelompok atas/bawah:
               <select
                 value={fraction}
@@ -329,9 +329,9 @@ function ResultPanel({ result, onExport }) {
       <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <h3 className="font-semibold text-sm flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-sky-600" /> Ringkasan
+            <Wand2 className="w-4 h-4 text-accent" /> Ringkasan
           </h3>
-          <button onClick={onExport} className="text-xs text-sky-600 hover:text-sky-700 flex items-center gap-1">
+          <button onClick={onExport} className="text-xs text-accent hover:text-accent flex items-center gap-1">
             <Download className="w-3.5 h-3.5" /> Ekspor CSV
           </button>
         </div>
@@ -355,7 +355,7 @@ function ResultPanel({ result, onExport }) {
 
         {/* Decision summary */}
         <div className="mt-3 pt-3 border-t border-border">
-          <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">Keputusan butir:</div>
+          <div className="text-xs text-muted mb-2">Keputusan butir:</div>
           <div className="flex flex-wrap gap-2">
             <DecisionPill type="terima" count={summary.decisions.terima || 0} />
             <DecisionPill type="revisi" count={summary.decisions.revisi || 0} />
@@ -371,7 +371,7 @@ function ResultPanel({ result, onExport }) {
           {hasDistractor && (
             <button
               onClick={() => setShowDistractor(s => !s)}
-              className="text-xs text-muted hover:text-sky-600 flex items-center gap-1"
+              className="text-xs text-muted hover:text-accent flex items-center gap-1"
             >
               {showDistractor ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               {showDistractor ? 'Sembunyikan' : 'Tampilkan'} distraktor
@@ -392,7 +392,7 @@ function ResultPanel({ result, onExport }) {
                 <th className="px-2 py-2 text-center">Keputusan</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {items.map((it) => (
                 <ItemRow key={it.no} item={it} showDistractor={showDistractor && hasDistractor} />
               ))}
@@ -541,14 +541,14 @@ function HelpSection() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
         <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Apa itu Tingkat Kesukaran (P)?</summary>
-          <div className="mt-2 text-gray-600 dark:text-gray-400 space-y-1">
+          <div className="mt-2 text-muted space-y-1">
             <p>P = proporsi siswa yang menjawab benar.</p>
             <p><strong>Ideal:</strong> 0.30 ≤ P ≤ 0.70 (sedang). Terlalu sulit (P&lt;0.30) atau terlalu mudah (P&gt;0.70) kurang ideal.</p>
           </div>
         </details>
         <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Apa itu Daya Pembeda (D)?</summary>
-          <div className="mt-2 text-gray-600 dark:text-gray-400 space-y-1">
+          <div className="mt-2 text-muted space-y-1">
             <p>D mengukur sejauh mana butir membedakan siswa pintar dari siswa kurang.</p>
             <p>Hitung dari proporsi benar di kelompok atas (27%) dikurangi proporsi benar di kelompok bawah.</p>
             <p><strong>Ideal:</strong> D ≥ 0.30 (Ebel & Frisbie, 1991).</p>
@@ -556,21 +556,21 @@ function HelpSection() {
         </details>
         <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Apa itu r_pb (point-biserial)?</summary>
-          <div className="mt-2 text-gray-600 dark:text-gray-400 space-y-1">
+          <div className="mt-2 text-muted space-y-1">
             <p>Korelasi antara butir dengan skor total. Nilai positif = siswa yang menjawab benar cenderung skor tinggi (butir konsisten dengan tes).</p>
             <p><strong>Bagus:</strong> r_pb ≥ 0.30. Negatif → butir bermasalah (perlu dicek).</p>
           </div>
         </details>
         <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Apa itu KR-20?</summary>
-          <div className="mt-2 text-gray-600 dark:text-gray-400 space-y-1">
+          <div className="mt-2 text-muted space-y-1">
             <p>Reliabilitas internal untuk tes 0/1. Setara dengan Cronbach α versi dichotomous.</p>
             <p><strong>Bagus:</strong> ≥ 0.70. <strong>Sangat tinggi:</strong> ≥ 0.90.</p>
           </div>
         </details>
         <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Distraktor "berfungsi" artinya?</summary>
-          <div className="mt-2 text-gray-600 dark:text-gray-400 space-y-1">
+          <div className="mt-2 text-muted space-y-1">
             <p>Distraktor (jawaban salah) yang baik harus:</p>
             <ul className="list-disc ml-4">
               <li>Dipilih oleh ≥ 5% siswa</li>
@@ -581,7 +581,7 @@ function HelpSection() {
         </details>
         <details className="border border-border rounded-lg p-3">
           <summary className="cursor-pointer font-semibold">Lalu apa setelah dapat hasil?</summary>
-          <div className="mt-2 text-gray-600 dark:text-gray-400 space-y-1">
+          <div className="mt-2 text-muted space-y-1">
             <p>1. Butir <strong>Terima</strong> → simpan, pakai untuk tes selanjutnya.</p>
             <p>2. Butir <strong>Revisi</strong> → perbaiki redaksi, distraktor, atau tingkat kesukaran.</p>
             <p>3. Butir <strong>Buang</strong> → ganti total atau hapus.</p>
@@ -620,7 +620,7 @@ function reliabilityColor(cat) {
     tinggi:        'bg-green-100 text-green-700',
     sedang:        'bg-yellow-100 text-yellow-700',
     rendah:        'bg-red-100 text-red-700',
-  }[cat] || 'bg-surface text-gray-700 dark:text-gray-300'
+  }[cat] || 'bg-surface text-fg/80'
 }
 
 function labelReliability(cat) {

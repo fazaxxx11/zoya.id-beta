@@ -154,7 +154,7 @@ export default function LogisticPage() {
           {parsed.headers.length > 0 && (
             <div className="space-y-2 pt-2 border-t border-border">
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Outcome (Y, harus 0/1)</label>
+                <label className="block text-xs font-medium text-fg/80 mb-1">Outcome (Y, harus 0/1)</label>
                 <select value={yColumn} onChange={e => setYColumn(e.target.value)}
                         className="w-full border border-border rounded-lg px-3 py-2 text-sm">
                   {parsed.headers.map(h => <option key={h} value={h}>{h}</option>)}
@@ -162,7 +162,7 @@ export default function LogisticPage() {
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Predictors (X)</label>
+                  <label className="block text-xs font-medium text-fg/80">Predictors (X)</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -261,7 +261,7 @@ function CoefficientsTable({ fit }) {
               <th className="px-2 py-1.5 text-center">Sig</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {fit.coefficients.map((c, i) => {
               const sig = c.p < 0.001 ? '***' : c.p < 0.01 ? '**' : c.p < 0.05 ? '*' : ''
               return (
@@ -334,7 +334,7 @@ function ClassificationSection({ cm, threshold, setThreshold }) {
         <Target className="w-4 h-4 text-amber-600" /> Classification Table
       </h3>
       <div className="mb-3">
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-xs font-medium text-fg/80 mb-1">
           Threshold: <span className="text-amber-700 font-bold">{threshold.toFixed(2)}</span>
         </label>
         <input
@@ -494,7 +494,7 @@ Pada threshold ${threshold.toFixed(2)}, model mencapai akurasi ${(cm.accuracy*10
         <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }}
                 className="text-xs text-amber-600 hover:text-amber-700">Salin</button>
       </div>
-      <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{text}</p>
+      <p className="text-xs leading-relaxed text-fg/80 whitespace-pre-wrap">{text}</p>
     </div>
   )
 }

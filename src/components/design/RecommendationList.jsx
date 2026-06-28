@@ -26,7 +26,7 @@ const RecommendationList = ({
                 {idx + 1}.
               </span>
             </div>
-            <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
+            <p className="text-sm text-fg leading-relaxed">
               {item}
             </p>
           </li>

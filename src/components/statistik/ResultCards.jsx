@@ -54,9 +54,6 @@ export const ResultHeader = ({ title, significant, testLabel }) => (
       </div>
     </div>
     <div className="flex items-center gap-2">
-      <span className="text-[10px] px-2 py-0.5 rounded-full bg-teal/8 text-teal border border-teal/20 font-medium font-heading">
-        ✓ Sesuai SPSS
-      </span>
       <span className={`text-[11px] font-heading font-semibold px-3 py-1 rounded-full ${
         significant ? 'bg-accent text-accent-fg' : 'bg-muted/10 text-muted'
       }`}>

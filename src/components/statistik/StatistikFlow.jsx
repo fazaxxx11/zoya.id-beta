@@ -2,94 +2,74 @@
 // Guided step-based flow for Statistik page — Scholarly Editorial redesign.
 // Presents as Upload → Cek Data → Analisis → Hasil.
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import {
-  Upload, Table, Activity, CheckCircle,
-  ChevronRight, AlertCircle, FileSpreadsheet, ArrowRight, ClipboardList, X,
+  Activity, CheckCircle,
+  ChevronRight, AlertCircle, FileSpreadsheet, ArrowRight, ClipboardCheck, X,
 } from 'lucide-react'
 import Fuse from 'fuse.js'
+import ScrollReveal from '../ScrollReveal'
+import { AmbientBlobs, Flourish } from '../design'
 
+// Step order — dot indicator + watermark angka di kartu masing-masing.
 const STEPS = [
-  { id: 'upload',  label: 'Upload',   icon: Upload, no: '01' },
-  { id: 'review',  label: 'Cek Data', icon: Table,  no: '02' },
-  { id: 'select',  label: 'Analisis', icon: Activity, no: '03' },
-  { id: 'results', label: 'Hasil',    icon: CheckCircle, no: '04' },
+  { id: 'upload',  label: 'Upload' },
+  { id: 'review',  label: 'Cek Data' },
+  { id: 'select',  label: 'Analisis' },
+  { id: 'results', label: 'Hasil' },
 ]
 
 // ============================================================
-// Step indicator — numbered scholarly, ruled-line connector
+// Step indicator — progress dot-only (no nomor ganda).
+// Nomor watermark tetap di tiap kartu step — indikator ini murni progress.
 // ============================================================
 function StepIndicator({ current, completed }) {
   const currentIndex = STEPS.findIndex(s => s.id === current)
 
-  return (
-    <nav className="mb-6">
-      {/* Desktop: numbered with connecting line */}
-      <div className="hidden sm:flex items-center">
-        {STEPS.map((step, i) => {
-          const Ic = step.icon
-          const isActive = step.id === current
-          const isDone = completed.includes(step.id)
-          const isPast = i < currentIndex
+  const renderDot = (step, i) => {
+    const isActive = step.id === current
+    const isDone = completed.includes(step.id) || i < currentIndex
 
-          return (
-            <div key={step.id} className="flex items-center flex-1 last:flex-none">
-              <div className="flex items-center gap-2.5">
-                <div className={`
-                  relative w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300
-                  ${isActive ? 'border-accent bg-accent text-accent-fg' :
-                    isDone || isPast ? 'border-accent/40 bg-accent/8 text-accent' :
-                    'border-border bg-card text-muted'}
-                `}>
-                  {isDone || isPast ? (
-                    <CheckCircle className="w-3.5 h-3.5" />
-                  ) : (
-                    <Ic className="w-3.5 h-3.5" />
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[9px] text-muted/60 tracking-[0.14em] uppercase font-mono leading-none">{step.no}</span>
-                  <span className={`text-xs font-medium leading-tight ${isActive ? 'text-fg' : 'text-muted'}`}>
-                    {step.label}
-                  </span>
-                </div>
-              </div>
-              {/* Connector line */}
-              {i < STEPS.length - 1 && (
-                <div className={`flex-1 h-px mx-3 ${isPast ? 'bg-accent/30' : 'bg-border'}`} />
-              )}
-            </div>
-          )
-        })}
+    return (
+      <div key={step.id} className="flex items-center gap-1.5 flex-shrink-0">
+        <div className={`
+          w-2 h-2 rounded-full transition-all duration-300
+          ${isActive ? 'bg-accent scale-125' :
+            isDone ? 'bg-accent/50' : 'bg-border'}
+        `} />
+        <span className={`text-[11px] font-medium transition-colors ${
+          isActive ? 'text-fg' : isDone ? 'text-accent/70' : 'text-muted/60'
+        }`}>
+          {step.label}
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <nav className="mb-6 mt-5">
+      {/* Desktop: dots + connector line */}
+      <div className="hidden sm:flex items-center gap-2">
+        {STEPS.map((step, i) => (
+          <div key={step.id} className="flex items-center gap-2 flex-1 last:flex-none">
+            {renderDot(step, i)}
+            {i < STEPS.length - 1 && (
+              <div className={`flex-1 h-px ${i < currentIndex ? 'bg-accent/30' : 'bg-border'}`} />
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Mobile: compact horizontal scroll */}
-      <div className="sm:hidden flex items-center gap-1 overflow-x-auto no-scrollbar pb-1">
-        {STEPS.map((step, i) => {
-          const Ic = step.icon
-          const isActive = step.id === current
-          const isDone = completed.includes(step.id)
-          const isPast = i < currentIndex
-
-          return (
-            <div key={step.id} className="flex items-center gap-1 flex-shrink-0">
-              <div className={`
-                flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all
-                ${isActive ? 'border-accent/40 bg-accent/8 text-accent' :
-                  isDone || isPast ? 'text-accent' : 'text-muted border-transparent'}
-              `}>
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono font-semibold
-                  ${isActive ? 'bg-accent text-accent-fg' : isDone || isPast ? 'text-accent' : 'text-muted'}`}>
-                  {isDone || isPast ? '✓' : i + 1}
-                </div>
-                <span className="text-xs font-medium">{step.label}</span>
-              </div>
-              {i < STEPS.length - 1 && (
-                <ChevronRight className={`w-3 h-3 flex-shrink-0 ${isPast ? 'text-accent/40' : 'text-border'}`} />
-              )}
-            </div>
-          )
-        })}
+      <div className="sm:hidden flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        {STEPS.map((step, i) => (
+          <div key={step.id} className="flex items-center gap-1 flex-shrink-0">
+            {renderDot(step, i)}
+            {i < STEPS.length - 1 && (
+              <ChevronRight className={`w-3 h-3 flex-shrink-0 ${i < currentIndex ? 'text-accent/30' : 'text-border'}`} />
+            )}
+          </div>
+        ))}
       </div>
     </nav>
   )
@@ -259,7 +239,7 @@ function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuid
                 onClick={handlePasteFromClipboard}
                 className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 border border-border rounded-md hover:bg-surface hover:text-fg text-muted transition-colors"
               >
-                <ClipboardList className="w-3 h-3" />
+                <ClipboardCheck className="w-3 h-3" />
                 Ambil dari clipboard
               </button>
               <button
@@ -707,7 +687,6 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
                       selected={selectedTool === item.id}
                       onClick={() => hasData && onSelectTool(item.id)}
                       disabled={!hasData}
-                      compact
                     />
                   ))}
                 </div>
@@ -734,7 +713,7 @@ function StepSelect({ numericColumns, categoricalColumns, selectedTool, onSelect
 }
 
 // Tool card — reusable, scholarly
-function ToolCard({ item, selected, onClick, disabled, compact }) {
+function ToolCard({ item, selected, onClick, disabled }) {
   const tier = item.tier || (['deskriptif', 'normalitas', 'korelasi', 'ttest'].includes(item.id) ? 'Dasar' :
     ['twowayanova', 'regresiganda'].includes(item.id) ? 'Lanjutan' : 'Menengah')
   const tierColor = tier === 'Dasar' ? 'text-teal bg-teal/10' : tier === 'Lanjutan' ? 'text-terracotta bg-terracotta/10' : 'text-accent bg-accent/10'
@@ -752,13 +731,12 @@ function ToolCard({ item, selected, onClick, disabled, compact }) {
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span className={`font-heading font-medium text-sm ${selected ? 'text-accent' : 'text-fg'}`}>
               {item.name || item.label}
             </span>
-            {!compact && (
-              <span className={`text-[9px] font-medium uppercase tracking-wider px-1.5 py-px rounded-full ${tierColor}`}>{tier}</span>
-            )}
+            {/* Tier badge selalu tampil — color coding penting walau mode compact. */}
+            <span className={`text-[9px] font-medium uppercase tracking-wider px-1.5 py-px rounded-full ${tierColor}`}>{tier}</span>
           </div>
           <p className="text-[11px] text-muted mt-0.5 leading-relaxed">{item.desc}</p>
         </div>
@@ -769,47 +747,77 @@ function ToolCard({ item, selected, onClick, disabled, compact }) {
 }
 
 // ============================================================
-// Guide Section (collapsible how-to)
+// Hero — editorial empty state (hanya saat belum upload).
+// Ruled-lines pattern (notebook) + floating shape samar.
 // ============================================================
-function GuideSection() {
-  const [open, setOpen] = useState(false)
-
-  const steps = [
-    { num: '1', title: 'Upload Data', desc: 'Siapkan file CSV atau Excel. Baris pertama = nama kolom, isi = data.' },
-    { num: '2', title: 'Cek Variabel', desc: 'Azezmen otomatis deteksi kolom numerik dan kategori. Pastikan benar.' },
-    { num: '3', title: 'Pilih Uji', desc: 'Pilih analisis yang sesuai. Kalau bingung, gunakan rekomendasi otomatis.' },
-    { num: '4', title: 'Lihat Hasil', desc: 'Hasil perhitungan + interpretasi muncul langsung. Bisa download.' },
+function StatistikHero() {
+  const FLOW = [
+    { icon: FileSpreadsheet, label: 'Upload', tint: 'text-accent' },
+    { icon: Activity, label: 'Analisis', tint: 'text-teal' },
+    { icon: ClipboardCheck, label: 'Interpretasi', tint: 'text-terracotta' },
+    { icon: ArrowRight, label: 'Export DOCX', tint: 'text-accent', strong: true },
   ]
-
   return (
-    <div className="mb-4">
-      <button
-        onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 text-[11px] text-muted hover:text-fg transition-colors"
-      >
-        <ChevronRight className={`w-3 h-3 transition-transform ${open ? 'rotate-90' : ''}`} />
-        <span className="font-medium">Cara menggunakan Azezmen</span>
-      </button>
+    <section
+      className="relative overflow-hidden border-b border-border"
+      style={{
+        background: 'rgb(var(--surface))',
+        backgroundImage:
+          'repeating-linear-gradient(0deg, transparent, transparent 22px, rgb(var(--border) / 0.12) 22px, rgb(var(--border) / 0.12) 23px)',
+      }}
+    >
+      {/* Ambient gradient blobs — shared component, hero variant */}
+      <AmbientBlobs variant="hero" />
 
-      {open && (
-        <div className="mt-3 pl-4 border-l-2 border-accent/20">
-          {steps.map((step) => (
-            <div key={step.num} className="mb-3 last:mb-0">
-              <div className="flex items-baseline gap-2">
-                <span className="text-[10px] font-mono text-accent font-semibold">{step.num}.</span>
-                <div>
-                  <div className="text-xs font-heading font-medium text-fg">{step.title}</div>
-                  <div className="text-[11px] text-muted mt-0.5 leading-relaxed">{step.desc}</div>
+      <div className="relative max-w-3xl px-5 pt-8 sm:pt-10 pb-6 sm:pb-8">
+        <ScrollReveal>
+          <div className="flex items-center gap-2.5 mb-4">
+            <span className="w-6 h-px bg-accent" />
+            <span className="text-[10px] font-semibold text-accent tracking-[0.18em] uppercase">
+              Modul Statistik
+            </span>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.04}>
+          <h2 className="font-heading text-xl sm:text-3xl font-bold text-fg leading-[1.1] tracking-tight">
+            Dari data mentah menjadi{' '}
+            <span className="italic text-accent">kesimpulan</span>{' '}
+            yang siap ditulis.
+          </h2>
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.1}>
+          <div className="mt-4"><Flourish /></div>
+        </ScrollReveal>
+
+        {/* Flow hint — compact pill row, sama motif dengan Home hero */}
+        <ScrollReveal delay={0.2}>
+          <div className="mt-6 flex flex-wrap items-center gap-2 text-[13px]">
+            {FLOW.map((f, i) => (
+              <div key={f.label} className="flex items-center gap-2">
+                <div
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border bg-card ${
+                    f.strong ? 'border-accent/30 bg-accent/5' : 'border-border'
+                  }`}
+                >
+                  <f.icon className={`w-3.5 h-3.5 ${f.tint}`} />
+                  <span className={f.strong ? 'text-accent font-medium' : 'text-muted'}>
+                    {f.label}
+                  </span>
                 </div>
+                {i < FLOW.length - 1 && (
+                  <span className="text-accent/30 hidden sm:block">→</span>
+                )}
               </div>
-            </div>
-          ))}
-          <p className="text-[11px] text-muted mt-3 italic">
-            Tips: Mulai dari Statistik Deskriptif dulu untuk lihat gambaran umum data kamu.
+            ))}
+          </div>
+          <p className="mt-3 text-[12px] text-muted/70">
+            Mulai dari upload file Excel/CSV, lalu pilih uji statistik yang sesuai.
           </p>
-        </div>
-      )}
-    </div>
+        </ScrollReveal>
+      </div>
+    </section>
   )
 }
 
@@ -827,20 +835,26 @@ export default function StatistikFlow({
 
   const data = editedData || propData
 
+  // Snapshot "original" (sebelum edit) berdasarkan signature dataset.
+  // Saat struktur berubah (upload/paste/example/clean → kolom atau baris beda),
+  // re-snapshot fresh & reset state edit. Saan hanya nilai cell diubah (edit),
+  // signature identik → originalData dipertahankan untuk Reset.
+  // Sebelumnya pakai effect [file] terpisah → race condition bisa menyisakan
+  // originalData=null lalu Reset mengirim null ke parent (data hilang).
+  const lastSigRef = useRef('')
   useEffect(() => {
-    if (propData && !originalData) {
+    if (!propData) { lastSigRef.current = ''; return }
+    const cols = Object.keys(propData)
+    const n = cols.length ? (propData[cols[0]]?.length || 0) : 0
+    const sig = cols.join(',') + '|' + n
+    if (sig !== lastSigRef.current) {
+      lastSigRef.current = sig
       setOriginalData(propData)
-    }
-  }, [propData]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (file) {
-      setOriginalData(null)
       setEditedData(null)
       setHasEdits(false)
       setEditingCell(null)
     }
-  }, [file])
+  }, [propData])
 
   const handleCellClick = useCallback((rowIndex, col, value) => {
     setEditingCell({ rowIndex, col })
@@ -865,16 +879,18 @@ export default function StatistikFlow({
         newValue = trimmed
       }
     }
-    setEditedData(prev => {
-      const base = prev || propData
-      if (!base) return base
-      const colValues = Array.isArray(base[col]) ? [...base[col]] : []
-      if (colValues[rowIndex] === newValue) return prev
-      colValues[rowIndex] = newValue
-      return { ...base, [col]: colValues }
-    })
+    const base = editedData || propData
+    if (!base) return
+    const colValues = Array.isArray(base[col]) ? [...base[col]] : []
+    if (colValues[rowIndex] === newValue) return // no-op: nilai tak berubah
+    colValues[rowIndex] = newValue
+    const next = { ...base, [col]: colValues }
+    setEditedData(next)
     setHasEdits(true)
-  }, [draftValue, propData])
+    // Propagasi ke parent agar analisis, pricing, filter & deteksi tipe kolom
+    // memakai data teredit — tanpa ini edit di preview cuma kosmetik.
+    if (onDataChange) onDataChange(next)
+  }, [draftValue, propData, editedData, onDataChange])
 
   const handleCellCancel = useCallback(() => {
     setEditingCell(null)
@@ -904,6 +920,9 @@ export default function StatistikFlow({
 
   return (
     <div>
+      {/* Hero hanya saat belum upload — kasih konteks editorial, hilang setelah data masuk */}
+      {!file && <StatistikHero />}
+
       <StepIndicator current={currentStep} completed={completed} />
 
       {/* Step 1: Upload */}
@@ -954,7 +973,7 @@ export default function StatistikFlow({
 
       {/* Analyze button */}
       {data && selectedTool && (
-        <div className="mt-4 sticky bottom-[calc(72px+env(safe-area-inset-bottom))] lg:bottom-0 bg-bg/85 backdrop-blur-sm py-3 -mx-4 px-4 border-t border-border md:border-0 md:bg-transparent md:backdrop-blur-none md:py-0 md:mx-0 md:px-0 md:mt-4">
+        <div className="mt-4 sticky bottom-[calc(72px+env(safe-area-inset-bottom))] lg:bottom-0 bg-card py-3 -mx-4 px-4 border-t border-border md:border-0 md:bg-transparent md:py-0 md:mx-0 md:px-0 md:mt-4">
           <button
             onClick={onAnalyze}
             disabled={analyzing}

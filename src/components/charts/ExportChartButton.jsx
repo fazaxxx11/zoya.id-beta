@@ -45,7 +45,7 @@ export function ExportChartButton({ chartRef, filename = 'azezmen-chart', classN
 
         // Cleanup
         URL.revokeObjectURL(url)
-        toast.success('Grafik berhasil diexport! 📊✨')
+        toast.success('Grafik berhasil diexport!')
       }, 'image/png', 0.95)
     } catch (err) {
       console.error('[ExportChartButton]', err)
@@ -59,7 +59,7 @@ export function ExportChartButton({ chartRef, filename = 'azezmen-chart', classN
     <button
       onClick={handleExport}
       disabled={exporting}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${className}`}
+      className={`inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-fg bg-card border border-border rounded-lg hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${className}`}
       title="Export grafik sebagai gambar PNG (HD)"
     >
       {exporting ? (
@@ -128,7 +128,7 @@ export function ExportAllChartsButton({ chartRefs, baseFilename = 'azezmen', cla
         }
       }
 
-      toast.success(`${successCount} grafik berhasil diexport! 📊✨`)
+      toast.success(`${successCount} grafik berhasil diexport!`)
     } catch (err) {
       console.error('[ExportAllChartsButton]', err)
       toast.error(`Export gagal: ${err.message}`)
@@ -141,7 +141,7 @@ export function ExportAllChartsButton({ chartRefs, baseFilename = 'azezmen', cla
     <button
       onClick={handleExportAll}
       disabled={exporting}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${className}`}
+      className={`inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-accent bg-accent-soft border border-accent/30 rounded-lg hover:bg-accent/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${className}`}
       title="Export semua grafik sebagai PNG"
     >
       {exporting ? (

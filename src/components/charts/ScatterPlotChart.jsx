@@ -16,7 +16,7 @@ export function ScatterPlotChart({
 }) {
   if (!data || data.length === 0) {
     return (
-      <div className="w-full p-4 text-center text-gray-500">
+      <div className="w-full p-4 text-center text-muted">
         Tidak ada data untuk ditampilkan
       </div>
     )
@@ -35,10 +35,10 @@ export function ScatterPlotChart({
 
   return (
     <div className="w-full space-y-2">
-      <h3 className="text-base font-semibold text-gray-800">{title}</h3>
+      <h3 className="text-base font-semibold text-fg">{title}</h3>
       <ResponsiveContainer width="100%" height={350}>
         <ScatterChart margin={{ top: 10, right: 20, left: 10, bottom: 30 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#DAD6CD" />
           <XAxis 
             dataKey={xKey} 
             type="number" 
@@ -58,25 +58,25 @@ export function ScatterPlotChart({
             formatter={(value) => formatNumber(value)}
           />
           <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Scatter 
-            name="Data Points" 
-            data={data} 
-            fill="#4f46e5" 
+          <Scatter
+            name="Data Points"
+            data={data}
+            fill="#166C66"
             fillOpacity={0.6}
           />
           {regressionData && (
-            <Scatter 
-              name="Garis Regresi" 
-              data={regressionData} 
-              fill="#ef4444" 
-              line={{ stroke: '#ef4444', strokeWidth: 2 }}
+            <Scatter
+              name="Garis Regresi"
+              data={regressionData}
+              fill="#B25F58"
+              line={{ stroke: '#B25F58', strokeWidth: 2 }}
               shape={() => null}
             />
           )}
         </ScatterChart>
       </ResponsiveContainer>
       {regressionLine && (
-        <p className="text-xs text-gray-600 text-center">
+        <p className="text-xs text-fg/60 text-center">
           ŷ = {formatNumber(regressionLine.slope)}x + {formatNumber(regressionLine.intercept)}
         </p>
       )}

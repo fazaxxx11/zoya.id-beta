@@ -11,7 +11,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   HelpCircle, Search, ChevronDown, BookOpen, Compass, Calculator,
-  FileText, ClipboardList, Award, Mail, ExternalLink, Sparkles,
+  FileText, ClipboardCheck, Award, Mail, ExternalLink, Sparkles,
   AlertCircle, CheckCircle2,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
@@ -294,7 +294,7 @@ const CATEGORIES = [
   { id: 'hasil',  label: 'Membaca Hasil',    icon: Calculator },
   { id: 'asumsi', label: 'Asumsi & Batasan', icon: AlertCircle },
   { id: 'data',   label: 'Data & Privasi',   icon: FileText },
-  { id: 'akun',   label: 'Akun & Bayar',     icon: ClipboardList },
+  { id: 'akun',   label: 'Akun & Bayar',     icon: ClipboardCheck },
 ]
 
 // ============================================================
@@ -384,7 +384,7 @@ export default function Help() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Cari pertanyaan… (mis: 'p value', 'mediasi', 'sample size')"
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
             style={{
               backgroundColor: 'rgb(var(--card))',
               borderColor: 'rgb(var(--border))',

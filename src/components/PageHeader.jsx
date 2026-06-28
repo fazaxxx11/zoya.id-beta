@@ -5,7 +5,7 @@
 // - Breadcrumb hierarchy
 // - Sub-navigation links (opsional)
 // - Title + subtitle
-// - Sticky di top dengan glass blur
+// - Sticky di top dengan solid background (no glass)
 
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { ChevronLeft, Home } from 'lucide-react'
@@ -45,13 +45,9 @@ export default function PageHeader({
 
   return (
     <header
-      className="sticky top-0 z-30 backdrop-blur-md border-b"
+      className="sticky top-0 z-30 bg-card border-b"
       style={{
-        // 92% opacity supaya aurora blob (purple/magenta/cyan) tidak tembus
-        // bikin header terlihat warna-warni & terlalu cerah, tapi tetap ada hint blur.
-        backgroundColor: 'rgb(var(--card) / 0.92)',
-        borderColor: 'rgb(var(--border) / 0.7)',
-        boxShadow: '0 1px 0 rgb(var(--border) / 0.3), 0 4px 16px -8px rgb(0 0 0 / 0.04)',
+        borderColor: 'rgb(var(--border))',
       }}
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-5 py-3">

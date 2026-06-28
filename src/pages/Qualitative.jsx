@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   MessageSquare, FileText, Tag, BarChart2, Users, Plus, Trash2, Edit3,
   Upload, Download, Search, X, Check, Save, Highlighter, Eye, Copy,
-  AlertTriangle, Info, Sparkles,
+  AlertTriangle, Info, Wand2,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
@@ -128,7 +128,7 @@ export default function Qualitative() {
                 className={`px-4 py-2 text-sm flex items-center gap-1.5 whitespace-nowrap border-b-2 transition-colors ${
                   active
                     ? 'border-rose-500 text-rose-700 font-medium'
-                    : 'border-transparent text-muted hover:text-gray-700 dark:text-gray-300'
+                    : 'border-transparent text-muted hover:text-fg/80'
                 }`}
               >
                 <Icon className="w-4 h-4" /> {t.label}
@@ -217,7 +217,7 @@ function DocsTab({ docs, refresh }) {
             }}
             className="btn-ghost text-xs py-2"
           >
-            <Sparkles className="w-4 h-4" /> Muat Contoh
+            <Wand2 className="w-4 h-4" /> Muat Contoh
           </button>
         )}
       </div>
@@ -262,7 +262,7 @@ function DocCard({ doc, onEdit, onDelete }) {
           )}
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => setExpanded(!expanded)} className="text-muted hover:text-gray-700 dark:text-gray-300 p-1" title={expanded ? 'Tutup' : 'Lihat'}>
+          <button onClick={() => setExpanded(!expanded)} className="text-muted hover:text-fg/80 p-1" title={expanded ? 'Tutup' : 'Lihat'}>
             <Eye className="w-4 h-4" />
           </button>
           <button onClick={onEdit} className="text-muted hover:text-rose-600 p-1" title="Edit">
@@ -285,7 +285,7 @@ function DocEditor({ initial, onSave, onCancel }) {
       <div className="bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">{initial.title ? 'Edit Dokumen' : 'Tambah Dokumen'}</h3>
-          <button onClick={onCancel} className="text-muted hover:text-gray-700 dark:text-gray-300"><X className="w-5 h-5" /></button>
+          <button onClick={onCancel} className="text-muted hover:text-fg/80"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
           <input
@@ -344,7 +344,7 @@ function CodebookTab({ codes, refresh }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-gray-600 dark:text-gray-400">{codes.length} kode dalam codebook</p>
+        <p className="text-xs text-muted">{codes.length} kode dalam codebook</p>
         <button onClick={handleAdd} className="btn-primary text-xs py-2">
           <Plus className="w-4 h-4" /> Tambah Kode
         </button>
@@ -363,7 +363,7 @@ function CodebookTab({ codes, refresh }) {
               <div className="w-3 h-3 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: c.color }} />
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-sm">{c.label}</div>
-                {c.description && <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{c.description}</div>}
+                {c.description && <div className="text-xs text-muted mt-0.5">{c.description}</div>}
               </div>
               <button onClick={() => setEditing(c)} className="text-muted hover:text-rose-600 p-1"><Edit3 className="w-4 h-4" /></button>
               <button onClick={() => handleDelete(c.id)} className="text-muted hover:text-red-600 p-1"><Trash2 className="w-4 h-4" /></button>
@@ -385,11 +385,11 @@ function CodeEditor({ initial, onSave, onCancel }) {
       <div className="bg-card rounded-2xl max-w-md w-full">
         <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">{initial.label ? 'Edit Kode' : 'Tambah Kode'}</h3>
-          <button onClick={onCancel} className="text-muted hover:text-gray-700 dark:text-gray-300"><X className="w-5 h-5" /></button>
+          <button onClick={onCancel} className="text-muted hover:text-fg/80"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Label *</label>
+            <label className="block text-xs font-medium text-fg/80 mb-1">Label *</label>
             <input
               type="text" value={code.label} onChange={e => update({ label: e.target.value })}
               placeholder="mis. 'motivasi intrinsik'"
@@ -397,7 +397,7 @@ function CodeEditor({ initial, onSave, onCancel }) {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi</label>
+            <label className="block text-xs font-medium text-fg/80 mb-1">Deskripsi</label>
             <textarea
               value={code.description} onChange={e => update({ description: e.target.value })}
               rows={3} placeholder="Definisi operasional & kapan menggunakan kode ini..."
@@ -405,13 +405,13 @@ function CodeEditor({ initial, onSave, onCancel }) {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Warna</label>
+            <label className="block text-xs font-medium text-fg/80 mb-1">Warna</label>
             <div className="flex gap-1.5 flex-wrap">
               {CODE_COLORS.map(col => (
                 <button
                   key={col}
                   onClick={() => update({ color: col })}
-                  className={`w-7 h-7 rounded-full border-2 ${code.color === col ? 'border-gray-900' : 'border-transparent'}`}
+                  className={`w-7 h-7 rounded-full border-2 ${code.color === col ? 'border-fg' : 'border-transparent'}`}
                   style={{ backgroundColor: col }}
                 />
               ))}
@@ -483,7 +483,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
     <div className="space-y-3">
       {/* Doc picker */}
       <div className="flex items-center gap-2">
-        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Dokumen:</label>
+        <label className="text-xs font-medium text-fg/80">Dokumen:</label>
         <select value={docId} onChange={e => { setDocId(e.target.value); setSelection(null) }} className="border border-border rounded-lg px-2 py-1.5 text-xs">
           {docs.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}
         </select>
@@ -542,7 +542,7 @@ function CodingTab({ docs, codes, codings, refresh }) {
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0" style={{ backgroundColor: code.color + '22', color: code.color }}>
                         {code.label}
                       </span>
-                      <span className="flex-1 italic text-gray-700 dark:text-gray-300">"{cd.segment}"</span>
+                      <span className="flex-1 italic text-fg/80">"{cd.segment}"</span>
                       <button onClick={() => removeCoding(cd.id)} className="text-muted hover:text-red-600">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -594,17 +594,17 @@ function AnalysisTab({ docs, codes, codings }) {
       {/* Controls */}
       <div className="bg-card border border-border rounded-xl p-3 flex flex-wrap items-center gap-3">
         <div>
-          <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">Scope</label>
+          <label className="block text-[11px] font-medium text-fg/80 mb-0.5">Scope</label>
           <select value={scope} onChange={e => setScope(e.target.value)} className="border border-border rounded-lg px-2 py-1.5 text-xs">
             <option value="all">Semua dokumen ({docs.length})</option>
             {docs.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">Top N</label>
+          <label className="block text-[11px] font-medium text-fg/80 mb-0.5">Top N</label>
           <input type="number" min={5} max={100} value={topN} onChange={e => setTopN(Number(e.target.value) || 30)} className="border border-border rounded-lg px-2 py-1.5 text-xs w-20" />
         </div>
-        <label className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300 mt-3">
+        <label className="flex items-center gap-1.5 text-xs text-fg/80 mt-3">
           <input type="checkbox" checked={removeStop} onChange={e => setRemoveStop(e.target.checked)} />
           Hilangkan stopwords (ID + EN)
         </label>
@@ -646,7 +646,7 @@ function AnalysisTab({ docs, codes, codings }) {
                   <span className="w-32 truncate font-mono">{w.word}</span>
                   <div className="flex-1 bg-surface rounded-full h-4 overflow-hidden relative">
                     <div className="h-full bg-rose-400" style={{ width: `${(w.count / maxCount) * 100}%` }} />
-                    <span className="absolute inset-0 flex items-center px-2 font-medium text-gray-800 dark:text-gray-200">
+                    <span className="absolute inset-0 flex items-center px-2 font-medium text-fg/85">
                       {w.count} ({w.percent.toFixed(1)}%)
                     </span>
                   </div>
@@ -686,7 +686,7 @@ function AnalysisTab({ docs, codes, codings }) {
                   <th className="px-2 py-1.5 text-right">Jumlah Dokumen</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {stats.map(s => (
                   <tr key={s.id}>
                     <td className="px-2 py-1.5 flex items-center gap-1.5">

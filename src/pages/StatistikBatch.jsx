@@ -4,21 +4,19 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { describe, oneWayANOVA, kruskalWallis, shapiroWilk } from '../lib/stats'
-import { useStatsBackend } from '../lib/hooks/useStatsBackend'
 import jstat from 'jstat'
 import { toast } from '../lib/toast'
 import { generateInterpretation } from '../lib/ai/interpretStats'
 import { EXAMPLE_DATASETS } from '../lib/exampleDatasets'
 import MethodologyPanel from '../components/MethodologyPanel'
 import PageHeader from '../components/PageHeader'
+import { STATISTIK_SUBNAV } from '../lib/statistikNav'
 
 export default function StatistikBatch() {
   const [files, setFiles] = useState([]) // [{ id, name, columns, data, error? }]
   const [selectedColumn, setSelectedColumn] = useState('')
   const [parsing, setParsing] = useState(false)
   const inputRef = useRef(null)
-  const { status: backendStatus, loading: backendLoading } = useStatsBackend()
-
   // -----------------------------------------------------------
   // File upload — accepts multiple
   // -----------------------------------------------------------
@@ -302,18 +300,10 @@ export default function StatistikBatch() {
           { path: '/statistik', label: 'Statistik' },
           { label: 'Batch Analysis' },
         ]}
+        subNav={STATISTIK_SUBNAV}
       />
 
       <main className="max-w-6xl mx-auto px-3 sm:px-5 py-4 sm:py-6 space-y-4 sm:space-y-5">
-        {/* Backend status */}
-        {!backendLoading && backendStatus && (
-          <div className="bg-card rounded-xl border border-border p-3 flex items-center gap-2">
-            <span className="text-xs text-muted">Backend:</span>
-            <span className="text-xs font-medium">
-              {backendStatus.backend === 'scipy' ? 'scipy ✅ (SPSS-verified)' : 'JavaScript fallback'}
-            </span>
-          </div>
-        )}
         {/* Drop zone */}
         <div onDrop={onDrop} onDragOver={e => e.preventDefault()}
              className="bg-card rounded-xl border border-dashed border-border p-5 sm:p-8 text-center hover:border-border transition-colors active:scale-95">
@@ -323,7 +313,7 @@ export default function StatistikBatch() {
           <input ref={inputRef} type="file" multiple accept=".xlsx,.xls,.csv"
                  onChange={onPick} className="hidden" />
           <button onClick={() => inputRef.current?.click()}
-                  className="bg-fg hover:bg-fg text-white text-sm font-medium px-5 py-2.5 rounded-lg">
+                  className="bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium px-5 py-2.5 rounded-lg">
             {parsing ? 'Parsing…' : 'Pilih File'}
           </button>
           {files.length > 0 && (
@@ -346,7 +336,7 @@ export default function StatistikBatch() {
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-fg truncate">{f.name}</div>
                     {f.error ? (
-                      <div className="text-xs text-red-600 mt-0.5">{f.error}</div>
+                      <div className="text-xs text-terracotta mt-0.5">{f.error}</div>
                     ) : (
                       <div className="text-xs text-muted mt-0.5">
                         {f.rowCount} baris · {f.columns?.length} kolom · {f.numericColumns?.length} numerik
@@ -354,7 +344,7 @@ export default function StatistikBatch() {
                     )}
                   </div>
                   <button onClick={() => removeFile(f.id)}
-                          className="text-xs text-muted hover:text-red-600 px-2 py-1">
+                          className="text-xs text-muted hover:text-terracotta px-2 py-1">
                     Hapus
                   </button>
                 </div>
@@ -378,7 +368,7 @@ export default function StatistikBatch() {
                     Export PDF
                   </button>
                   <button onClick={exportExcel}
-                          className="bg-fg hover:bg-fg text-white text-xs font-medium px-4 py-2 rounded-lg">
+                          className="bg-accent hover:bg-accent/90 text-accent-fg text-xs font-medium px-4 py-2 rounded-lg">
                     Export Excel
                   </button>
                 </div>
@@ -389,7 +379,7 @@ export default function StatistikBatch() {
                 <button key={c} onClick={() => setSelectedColumn(c)}
                         className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
                           selectedColumn === c
-                            ? 'bg-fg text-white border-fg'
+                            ? 'bg-accent text-accent-fg border-accent'
                             : 'bg-card text-fg border-border hover:border-border'
                         }`}>
                   {c}
@@ -489,8 +479,8 @@ export default function StatistikBatch() {
           <div className="text-center py-16 text-sm">
             <div className="text-muted mb-3">Belum ada file. Upload minimal 2 file untuk membandingkan.</div>
             <button onClick={loadDemoBatch}
-                    className="text-sky-600 hover:text-sky-700 font-medium inline-flex items-center gap-1 text-xs">
-              ✨ Coba dengan contoh data (IPK 4 jurusan)
+                    className="text-accent-fg hover:underline font-medium inline-flex items-center gap-1 text-xs">
+              Coba dengan contoh data (IPK 4 jurusan)
             </button>
           </div>
         )}
@@ -516,7 +506,7 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
         </div>
         {!matchesCurrent && (
           <button onClick={onApplyRecommendation}
-                  className="bg-fg hover:bg-fg text-white text-xs font-medium px-3 py-1.5 rounded-lg">
+                  className="bg-accent hover:bg-accent/90 text-accent-fg text-xs font-medium px-3 py-1.5 rounded-lg">
             Pakai {recommendsKruskal ? 'Kruskal-Wallis' : 'ANOVA'} (rekomendasi)
           </button>
         )}
@@ -554,7 +544,7 @@ function AssumptionsPanel({ data, onApplyRecommendation, currentMethod }) {
                   {n.skipped ? (
                     <span className="text-muted italic">{n.skipped}</span>
                   ) : n.error ? (
-                    <span className="text-red-500 italic">{n.error}</span>
+                    <span className="text-terracotta italic">{n.error}</span>
                   ) : (
                     <>
                       <span className="tabular-nums text-muted">W = {fmt(n.W, 3)}</span>
@@ -657,7 +647,7 @@ function BatchAIPanel({ payload }) {
         </div>
         {!text && !loading && (
           <button onClick={generate}
-                  className="bg-fg hover:bg-fg text-white text-xs font-medium px-4 py-2 rounded-lg">
+                  className="bg-accent hover:bg-accent/90 text-accent-fg text-xs font-medium px-4 py-2 rounded-lg">
             Generate
           </button>
         )}
@@ -683,7 +673,7 @@ function BatchAIPanel({ payload }) {
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+        <div className="bg-terracotta/10 border border-terracotta/30 rounded-lg p-3 text-sm text-terracotta">
           Gagal: {error}
         </div>
       )}
@@ -781,9 +771,9 @@ function InferentialPanel({ result, method, onMethodChange, column }) {
       </div>
 
       {/* p-value note */}
-      <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5 mb-3">
-        <div className="flex items-start gap-2 text-xs text-blue-900 dark:text-blue-100">
-          <span className="text-blue-600 dark:text-blue-400 font-medium">ℹ️</span>
+      <div className="bg-accent/8 border border-accent/25 rounded-lg p-2.5 mb-3">
+        <div className="flex items-start gap-2 text-xs text-accent">
+          <span className="font-medium">ℹ️</span>
           <span><strong>p-value</strong> di hasil ini setara dengan <strong>Sig. (2-tailed)</strong> di output SPSS. Nilai {'<'} 0.05 menunjukkan perbedaan signifikan pada alpha 5%.</span>
         </div>
       </div>
@@ -1146,8 +1136,8 @@ function MeanComparisonChart({ matrix, column }) {
           {ticks.map((t, i) => (
             <g key={i}>
               <line x1={padL} x2={W - padR} y1={yScale(t)} y2={yScale(t)}
-                    stroke="#f3f4f6" strokeWidth={1} />
-              <text x={padL - 8} y={yScale(t) + 4} fontSize={10} fill="#9ca3af" textAnchor="end">
+                    stroke="rgb(var(--border) / 0.5)" strokeWidth={1} />
+              <text x={padL - 8} y={yScale(t) + 4} fontSize={10} fill="rgb(var(--muted))" textAnchor="end">
                 {fmt(t, 1)}
               </text>
             </g>
@@ -1155,7 +1145,7 @@ function MeanComparisonChart({ matrix, column }) {
           {/* Zero line */}
           {yMin < 0 && yMax > 0 && (
             <line x1={padL} x2={W - padR} y1={yScale(0)} y2={yScale(0)}
-                  stroke="#d1d5db" strokeWidth={1} />
+                  stroke="rgb(var(--border))" strokeWidth={1} />
           )}
 
           {/* Bars + error bars */}
@@ -1168,21 +1158,21 @@ function MeanComparisonChart({ matrix, column }) {
             const errBot = yScale(d.mean - d.sd)
             return (
               <g key={i}>
-                <rect x={x} y={y} width={barW} height={h} fill="#374151" rx={2} />
+                <rect x={x} y={y} width={barW} height={h} fill="rgb(var(--accent) / 0.85)" rx={2} />
                 {/* error bars */}
-                <line x1={cx} x2={cx} y1={errTop} y2={errBot} stroke="#111827" strokeWidth={1.5} />
-                <line x1={cx - 6} x2={cx + 6} y1={errTop} y2={errTop} stroke="#111827" strokeWidth={1.5} />
-                <line x1={cx - 6} x2={cx + 6} y1={errBot} y2={errBot} stroke="#111827" strokeWidth={1.5} />
+                <line x1={cx} x2={cx} y1={errTop} y2={errBot} stroke="rgb(var(--fg))" strokeWidth={1.5} />
+                <line x1={cx - 6} x2={cx + 6} y1={errTop} y2={errTop} stroke="rgb(var(--fg))" strokeWidth={1.5} />
+                <line x1={cx - 6} x2={cx + 6} y1={errBot} y2={errBot} stroke="rgb(var(--fg))" strokeWidth={1.5} />
                 {/* mean label */}
-                <text x={cx} y={Math.min(errTop, y) - 6} fontSize={10} fill="#374151" textAnchor="middle" fontWeight={500}>
+                <text x={cx} y={Math.min(errTop, y) - 6} fontSize={10} fill="rgb(var(--fg))" textAnchor="middle" fontWeight={500}>
                   {fmt(d.mean, 1)}
                 </text>
                 {/* x-axis label */}
-                <text x={cx} y={H - padB + 14} fontSize={10} fill="#6b7280" textAnchor="end"
+                <text x={cx} y={H - padB + 14} fontSize={10} fill="rgb(var(--muted))" textAnchor="end"
                       transform={`rotate(-30 ${cx} ${H - padB + 14})`}>
                   {d.name.length > 18 ? d.name.slice(0, 16) + '…' : d.name}
                 </text>
-                <text x={cx} y={H - padB + 30} fontSize={9} fill="#9ca3af" textAnchor="end"
+                <text x={cx} y={H - padB + 30} fontSize={9} fill="rgb(var(--muted) / 0.7)" textAnchor="end"
                       transform={`rotate(-30 ${cx} ${H - padB + 30})`}>
                   n={d.n}
                 </text>
@@ -1191,8 +1181,8 @@ function MeanComparisonChart({ matrix, column }) {
           })}
 
           {/* Axes */}
-          <line x1={padL} x2={padL} y1={padT} y2={H - padB} stroke="#9ca3af" strokeWidth={1} />
-          <line x1={padL} x2={W - padR} y1={H - padB} y2={H - padB} stroke="#9ca3af" strokeWidth={1} />
+          <line x1={padL} x2={padL} y1={padT} y2={H - padB} stroke="rgb(var(--muted))" strokeWidth={1} />
+          <line x1={padL} x2={W - padR} y1={H - padB} y2={H - padB} stroke="rgb(var(--muted))" strokeWidth={1} />
         </svg>
       </div>
     </div>

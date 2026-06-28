@@ -8,7 +8,7 @@ import { formatNumber } from '../../lib/format'
 export function QQPlotChart({ data, title = 'Q-Q Plot (Normalitas)' }) {
   if (!data || data.length === 0) {
     return (
-      <div className="w-full p-4 text-center text-gray-500">
+      <div className="w-full p-4 text-center text-muted">
         Tidak ada data untuk ditampilkan
       </div>
     )
@@ -16,10 +16,10 @@ export function QQPlotChart({ data, title = 'Q-Q Plot (Normalitas)' }) {
 
   return (
     <div className="w-full space-y-2">
-      <h3 className="text-base font-semibold text-gray-800">{title}</h3>
+      <h3 className="text-base font-semibold text-fg">{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#DAD6CD" />
           <XAxis 
             dataKey="theoretical" 
             type="number"
@@ -37,25 +37,25 @@ export function QQPlotChart({ data, title = 'Q-Q Plot (Normalitas)' }) {
             formatter={(value) => formatNumber(value)}
           />
           {/* Reference line y=x (perfect normal distribution) */}
-          <ReferenceLine 
+          <ReferenceLine
             segment={[
               { x: Math.min(...data.map(d => d.theoretical)), y: Math.min(...data.map(d => d.theoretical)) },
               { x: Math.max(...data.map(d => d.theoretical)), y: Math.max(...data.map(d => d.theoretical)) }
-            ]} 
-            stroke="#ef4444" 
+            ]}
+            stroke="#B25F58"
             strokeDasharray="5 5"
             strokeWidth={2}
           />
-          <Line 
-            type="monotone" 
-            dataKey="observed" 
-            stroke="#4f46e5" 
+          <Line
+            type="monotone"
+            dataKey="observed"
+            stroke="#166C66"
             strokeWidth={2}
-            dot={{ fill: '#4f46e5', r: 3 }}
+            dot={{ fill: '#166C66', r: 3 }}
           />
         </LineChart>
       </ResponsiveContainer>
-      <p className="text-xs text-gray-600 text-center">
+      <p className="text-xs text-fg/60 text-center">
         Jika titik mendekati garis diagonal merah → data normal
       </p>
     </div>

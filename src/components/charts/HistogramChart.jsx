@@ -8,7 +8,7 @@ import { formatNumber } from '../../lib/format'
 export function HistogramChart({ data, title = 'Distribusi Data' }) {
   if (!data || data.length === 0) {
     return (
-      <div className="w-full p-4 text-center text-gray-500">
+      <div className="w-full p-4 text-center text-muted">
         Tidak ada data untuk ditampilkan
       </div>
     )
@@ -16,7 +16,7 @@ export function HistogramChart({ data, title = 'Distribusi Data' }) {
 
   return (
     <div className="w-full space-y-2">
-      <h3 className="text-base font-semibold text-gray-800">{title}</h3>
+      <h3 className="text-base font-semibold text-fg">{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
           <XAxis 
@@ -31,9 +31,9 @@ export function HistogramChart({ data, title = 'Distribusi Data' }) {
             contentStyle={{ fontSize: 12, borderRadius: 8 }}
             formatter={(value) => [`Frekuensi: ${value}`, '']}
           />
-          <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]}>
+          <Bar dataKey="count" fill="#9A6721" radius={[4, 4, 0, 0]}>
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={`hsl(243, ${70 - index * 2}%, ${50 + index}%)`} />
+              <Cell key={`cell-${index}`} fill={`hsl(35, ${50 - index * 2}%, ${42 + index * 0.5}%)`} />
             ))}
           </Bar>
         </BarChart>

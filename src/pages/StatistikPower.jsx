@@ -9,6 +9,7 @@ import {
   powerANOVA, powerChiSquare, COHEN_CONVENTIONS,
 } from '../lib/stats'
 import PageHeader from '../components/PageHeader'
+import { STATISTIK_SUBNAV } from '../lib/statistikNav'
 
 const TESTS = [
   { id: 'indep_t',    name: 'Independent t-test',     esLabel: "Cohen's d", esKey: 'd', conv: 'd' },
@@ -69,6 +70,7 @@ export default function StatistikPower() {
           { path: '/statistik', label: 'Statistik' },
           { label: 'Power Analysis' },
         ]}
+        subNav={STATISTIK_SUBNAV}
       />
 
       <main className="max-w-5xl mx-auto px-5 py-6 grid lg:grid-cols-2 gap-5">
@@ -82,7 +84,7 @@ export default function StatistikPower() {
                 <button key={t.id} onClick={() => setTestId(t.id)}
                         className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
                           testId === t.id
-                            ? 'bg-fg text-white border-fg'
+                            ? 'bg-accent text-accent-fg border-accent'
                             : 'bg-card text-fg border-border hover:border-border'
                         }`}>
                   {t.name}
@@ -99,7 +101,7 @@ export default function StatistikPower() {
                 <button key={s.id} onClick={() => setSolve(s.id)}
                         className={`text-xs px-3 py-2 rounded-lg border transition-colors ${
                           solve === s.id
-                            ? 'bg-fg text-white border-fg'
+                            ? 'bg-accent text-accent-fg border-accent'
                             : 'bg-card text-fg border-border hover:border-border'
                         }`}>
                   {s.label}
@@ -158,11 +160,11 @@ export default function StatistikPower() {
                 <Label>Hipotesis</Label>
                 <div className="flex gap-2">
                   <button onClick={() => setTwoTailed(true)}
-                          className={`text-xs px-3 py-1.5 rounded-lg border ${twoTailed ? 'bg-fg text-white border-fg' : 'border-border text-fg'}`}>
+                          className={`text-xs px-3 py-1.5 rounded-lg border ${twoTailed ? 'bg-accent text-accent-fg border-accent' : 'border-border text-fg'}`}>
                     Two-tailed
                   </button>
                   <button onClick={() => setTwoTailed(false)}
-                          className={`text-xs px-3 py-1.5 rounded-lg border ${!twoTailed ? 'bg-fg text-white border-fg' : 'border-border text-fg'}`}>
+                          className={`text-xs px-3 py-1.5 rounded-lg border ${!twoTailed ? 'bg-accent text-accent-fg border-accent' : 'border-border text-fg'}`}>
                     One-tailed
                   </button>
                 </div>
@@ -195,7 +197,7 @@ export default function StatistikPower() {
             <div className="text-base font-semibold text-fg mb-4">{test.name}</div>
 
             {result?.error ? (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+              <div className="bg-terracotta/10 border border-terracotta/30 rounded-lg p-3 text-sm text-terracotta">
                 {result.error}
               </div>
             ) : result ? (

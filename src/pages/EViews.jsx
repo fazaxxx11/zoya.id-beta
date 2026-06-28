@@ -6,7 +6,7 @@ import { useState, useMemo, useCallback } from 'react'
 import {
   TrendingUp, Upload, Play, FileSpreadsheet,
   AlertTriangle, CheckCircle, Settings2,
-  ArrowRightLeft, Link2, Trash2, BarChart3,
+  ArrowRightLeft, Link2, Trash2,
   LayoutGrid, Activity,
 } from 'lucide-react'
 import Papa from 'papaparse'

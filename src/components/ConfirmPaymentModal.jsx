@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Loader2, Wallet, AlertCircle, X, Sparkles } from 'lucide-react'
+import { Loader2, Wallet, AlertCircle, X, BadgeCheck } from 'lucide-react'
 import { formatIDR } from '../lib/pricing'
 import { isDiscountActive, DISCOUNT_PERCENT } from '../lib/discount'
 import Modal from './Modal'
@@ -45,7 +45,7 @@ export default function ConfirmPaymentModal({
       panelClassName="bg-card rounded-lg shadow-xl max-w-md w-full p-6 relative animate-in fade-in">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-muted hover:text-gray-600 dark:text-gray-400"
+          className="absolute top-3 right-3 text-muted hover:text-accent"
           disabled={loading}
         >
           <X className="w-5 h-5" />
@@ -53,24 +53,21 @@ export default function ConfirmPaymentModal({
 
         <div className="text-center mb-5">
           <div className="w-14 h-14 bg-gradient-to-br from-accent/20 via-card to-accent-2/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-            <Sparkles className="w-7 h-7 text-accent" />
+            <BadgeCheck className="w-7 h-7 text-accent" />
           </div>
-          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">{displayTitle}</h3>
+          <h3 className="text-xl font-bold text-fg">{displayTitle}</h3>
           {description && <p className="text-sm text-muted mt-1">{description}</p>}
         </div>
 
         {/* Price */}
         <div className="bg-teal-50 dark:bg-teal-950/30 rounded-lg p-3 mb-3">
           <div className="flex justify-between items-baseline">
-            <span className="text-sm text-gray-600 dark:text-gray-400">{betaFree ? 'Status beta' : 'Total bayar'}</span>
+            <span className="text-sm text-muted">{betaFree ? 'Status beta' : 'Total bayar'}</span>
             <div className="text-right">
               {!betaFree && isDiscountActive() && originalPrice && originalPrice > price && (
                 <div className="flex items-center justify-end gap-2 mb-0.5">
                   <span className="text-sm text-muted line-through">{formatIDR(originalPrice)}</span>
-                  <span
-                    className="text-[10px] font-semibold text-white px-1.5 py-0.5 rounded-full"
-                    style={{ background: 'linear-gradient(135deg, #ec4899, #a855f7)' }}
-                  >
+                  <span className="text-[10px] font-semibold text-accent-fg bg-accent px-1.5 py-0.5 rounded-full">
                     Diskon {DISCOUNT_PERCENT}%
                   </span>
                 </div>
@@ -93,14 +90,14 @@ export default function ConfirmPaymentModal({
             </span>
           </div>
           {betaFree ? (
-            <div className="text-xs text-gray-600 dark:text-gray-400">
+            <div className="text-xs text-muted">
               Pricing dan paywall sedang disiapkan. Selama beta, fitur ini bisa dipakai tanpa top-up.
             </div>
           ) : sufficient ? (
-            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
+            <div className="text-xs text-muted space-y-0.5">
               {useBonus > 0 && <div>• Bonus: {formatIDR(useBonus)}</div>}
               {useBalance > 0 && <div>• Saldo utama: {formatIDR(useBalance)}</div>}
-              <div className="font-medium text-gray-700 dark:text-gray-300 pt-1">
+              <div className="font-medium text-fg/80 pt-1">
                 Sisa setelah bayar: {formatIDR(total - price)}
               </div>
             </div>
@@ -117,7 +114,7 @@ export default function ConfirmPaymentModal({
             <button
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-3 rounded-lg border-2 border-border text-gray-600 dark:text-gray-400 hover:bg-surface font-medium"
+              className="flex-1 px-4 py-3 rounded-lg border-2 border-border text-muted hover:bg-surface font-medium"
             >
               Batal
             </button>
@@ -133,13 +130,13 @@ export default function ConfirmPaymentModal({
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-3 rounded-lg border-2 border-border text-gray-600 dark:text-gray-400 hover:bg-surface font-medium"
+              className="flex-1 px-4 py-3 rounded-lg border-2 border-border text-muted hover:bg-surface font-medium"
             >
               Tutup
             </button>
             <button
               onClick={() => navigate('/auth?mode=topup')}
-              className="flex-1 px-4 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-medium"
+              className="flex-1 px-4 py-3 rounded-lg bg-terracotta hover:bg-terracotta/90 text-white font-medium"
             >
               Top-up Sekarang
             </button>

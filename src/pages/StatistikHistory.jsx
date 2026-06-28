@@ -6,6 +6,7 @@ import { toast } from '../lib/toast'
 import { supabase } from '../lib/supabase'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
+import { STATISTIK_SUBNAV } from '../lib/statistikNav'
 
 export default function StatistikHistory() {
   const navigate = useNavigate()
@@ -86,7 +87,7 @@ export default function StatistikHistory() {
           <h2 className="text-xl font-bold text-fg mb-2">Login dulu</h2>
           <p className="text-sm text-muted mb-5">Riwayat analisis tersimpan per akun. Silakan login untuk akses fitur ini.</p>
           <button onClick={() => navigate('/login?next=/statistik/history')}
-            className="px-5 py-2.5 bg-fg hover:bg-fg text-white text-sm font-medium rounded-lg">
+            className="px-5 py-2.5 bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium rounded-lg">
             Login
           </button>
         </div>
@@ -105,11 +106,12 @@ export default function StatistikHistory() {
           { path: '/statistik', label: 'Statistik' },
           { label: 'Riwayat' },
         ]}
+        subNav={STATISTIK_SUBNAV}
         actions={items.length >= 2 ? (
           <button onClick={() => { setSelectMode(s => !s); setSelected(new Set()) }}
             className={`text-xs font-medium px-3 py-1.5 rounded-lg border flex items-center gap-1.5 ${
               selectMode
-                ? 'bg-fg text-white border-fg'
+                ? 'bg-accent text-accent-fg border-accent'
                 : 'bg-card text-fg border-border hover:bg-surface'
             }`}>
             <GitCompare className="w-3.5 h-3.5" />
@@ -117,12 +119,12 @@ export default function StatistikHistory() {
           </button>
         ) : null}
       />
-      <div className="max-w-6xl mx-auto p-4 sm:p-6 md:p-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-5 py-5 sm:py-6">
         <p className="text-sm text-muted mb-5">{items.length} analisis tersimpan di akun Anda.</p>
 
         {/* Compare action bar (sticky when in select mode) */}
         {selectMode && (
-          <div className="bg-fg text-white rounded-xl p-3 mb-5 flex items-center justify-between gap-3 sticky top-2 z-10 shadow-lg">
+          <div className="bg-accent text-accent-fg rounded-xl p-3 mb-5 flex items-center justify-between gap-3 sticky top-2 z-10 shadow-lg">
             <div className="text-sm">
               {selected.size === 0 && 'Pilih 2 analisis untuk dibandingkan'}
               {selected.size === 1 && 'Pilih 1 lagi untuk membandingkan'}
@@ -178,7 +180,7 @@ export default function StatistikHistory() {
             </p>
             {items.length === 0 && (
               <button onClick={() => navigate('/statistik')}
-                className="px-4 py-2 bg-fg hover:bg-fg text-white text-sm font-medium rounded-lg">
+                className="px-4 py-2 bg-accent hover:bg-accent/90 text-accent-fg text-sm font-medium rounded-lg">
                 Mulai Analisis
               </button>
             )}
@@ -241,7 +243,7 @@ export default function StatistikHistory() {
                           <Eye className="w-3.5 h-3.5" /> Lihat
                         </button>
                         <button onClick={() => handleDelete(it.id, it.title)}
-                          className="inline-flex items-center gap-1 text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded ml-1">
+                          className="inline-flex items-center gap-1 text-xs text-terracotta hover:text-terracotta/80 px-2 py-1 rounded ml-1">
                           <Trash2 className="w-3.5 h-3.5" /> Hapus
                         </button>
                       </td>

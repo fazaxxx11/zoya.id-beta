@@ -3,11 +3,11 @@ import { Slot } from '@radix-ui/react-slot'
 import { cn } from '../../lib/cn'
 
 const variants = {
-  default: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow',
+  default: 'bg-accent text-white hover:bg-accent/90 shadow',
   destructive: 'bg-red-600 text-white hover:bg-red-700 shadow',
-  outline: 'border border-border bg-card hover:bg-surface text-gray-700 dark:text-gray-300',
-  ghost: 'hover:bg-surface text-gray-700 dark:text-gray-300',
-  link: 'text-indigo-600 underline-offset-4 hover:underline',
+  outline: 'border border-border bg-card hover:bg-surface text-fg/80',
+  ghost: 'hover:bg-surface text-fg/80',
+  link: 'text-accent underline-offset-4 hover:underline',
 }
 
 const sizes = {
@@ -21,7 +21,7 @@ const Button = React.forwardRef(({ className, variant = 'default', size = 'md', 
   const Comp = asChild ? Slot : 'button'
   return React.createElement(Comp, {
     className: cn(
-      'inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:pointer-events-none disabled:opacity-50',
+      'inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:pointer-events-none disabled:opacity-50',
       variants[variant],
       sizes[size],
       className

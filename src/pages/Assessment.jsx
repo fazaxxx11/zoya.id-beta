@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { 
-  ChevronLeft, Plus, Trash2, FileText, Users, Sparkles, Award,
+  ChevronLeft, Plus, Trash2, FileText, Users, ClipboardCheck, Award,
   Upload, CheckCircle, AlertCircle, Loader2, ArrowRight, RotateCcw, Download,
   FileSpreadsheet, Pencil, FileCheck, Wand2, RefreshCw, Save, FolderOpen,
-  TrendingUp, ArrowUpDown, Filter, Edit3, X, ClipboardList,
+  TrendingUp, ArrowUpDown, Filter, Edit3, X, ListChecks,
 } from 'lucide-react'
 import { parseStudentFile, getSupportedFormats } from '../lib/fileParser'
 import { saveOrder, getOrders, generateOrderId } from '../lib/orders'
@@ -279,18 +279,18 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
     <div className="space-y-6">
       <div className="bg-card rounded-2xl shadow-sm p-6 border border-border hover:shadow-md transition-shadow">
         <div className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center shrink-0">
-            <Sparkles className="w-5 h-5 text-sky-600" />
+          <div className="w-10 h-10 bg-accent/15 rounded-xl flex items-center justify-center shrink-0">
+            <ClipboardCheck className="w-5 h-5 text-accent" />
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Buat Rubrik Penilaian</h2>
+            <h2 className="text-lg font-bold text-fg/85">Buat Rubrik Penilaian</h2>
             <p className="text-sm text-muted">Tentukan kriteria dan bobot penilaian</p>
           </div>
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setTplOpen(true)}
-              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-sky-50 hover:border-sky-300 transition-colors flex items-center gap-1.5 text-gray-700 dark:text-gray-300"
+              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-accent/10 hover:border-accent/50 transition-colors flex items-center gap-1.5 text-fg/80"
               title="Buka library template"
             >
               <FolderOpen className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Template</span>
@@ -299,7 +299,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
               type="button"
               onClick={handleSaveTemplate}
               disabled={!hasExistingRubrik}
-              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-emerald-50 hover:border-emerald-300 transition-colors flex items-center gap-1.5 text-gray-700 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border hover:bg-emerald-500/10 hover:border-emerald-400 transition-colors flex items-center gap-1.5 text-fg/80 disabled:opacity-40 disabled:cursor-not-allowed"
               title="Simpan rubrik ini sebagai template"
             >
               <Save className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Simpan</span>
@@ -309,13 +309,13 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Judul / Nama Tugas</label>
+            <label className="block text-sm font-medium text-muted mb-2">Judul / Nama Tugas</label>
             <input type="text" value={title} onChange={e => setTitle(e.target.value)}
               placeholder="cth: Penilaian Proposal Skripsi" className="input-field" />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Konteks Penilaian</label>
+            <label className="block text-sm font-medium text-muted mb-2">Konteks Penilaian</label>
             <textarea value={context} onChange={e => setContext(e.target.value)}
               placeholder="Jelaskan konteks..." rows={2} className="input-field resize-none" />
           </div>
@@ -325,7 +325,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
       <div className="bg-card rounded-2xl shadow-sm p-6 border border-border hover:shadow-md transition-shadow">
         <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
           <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200">Kriteria Penilaian</h3>
+            <h3 className="font-semibold text-fg/85">Kriteria Penilaian</h3>
             <p className="text-xs text-muted mt-0.5">Total bobot harus 100%</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -357,7 +357,7 @@ function RubrikBuilder({ rubrik, setRubrik, onNext, title, setTitle, context, se
           {rubrik.map((kr, i) => (
             <div key={kr.id} className="bg-surface rounded-xl p-4">
               <div className="flex justify-between mb-2">
-                <span className="text-xs font-bold text-sky-600">Kriteria #{i+1}</span>
+                <span className="text-xs font-bold text-accent">Kriteria #{i+1}</span>
                 <button onClick={() => del(kr.id)} className="text-red-500"><Trash2 className="w-4 h-4"/></button>
               </div>
               <div className="grid grid-cols-4 gap-2">
@@ -475,15 +475,15 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
 
   return (
     <div className="space-y-6">
-      <div className="bg-sky-50 rounded-xl p-4 border border-sky-100">
-        <span className="font-medium text-sky-800">Rubrik: {title}</span>
+      <div className="bg-accent/10 rounded-xl p-4 border border-accent/20">
+        <span className="font-medium text-accent">Rubrik: {title}</span>
         <div className="flex gap-2 mt-2">
           {rubrik.map(k => <span key={k.id} className="bg-card px-2 py-1 rounded text-xs">{k.nama} ({k.bobot}%)</span>)}
         </div>
       </div>
 
       <div className="bg-card rounded-2xl shadow-sm p-5 sm:p-6 border border-border">
-        <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">Input Jawaban Murid</h3>
+        <h3 className="font-semibold text-fg/85 mb-1">Input Jawaban Murid</h3>
         <p className="text-xs text-muted mb-4">Pilih cara input yang paling cocok. Bisa ganti kapan saja.</p>
 
         {/* === Mode picker: 2 card besar === */}
@@ -493,18 +493,18 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             onClick={() => handleModeChange('file')}
             className={`group relative text-left rounded-xl p-3 sm:p-4 border-2 transition-all ${
               inputMode === 'file'
-                ? 'border-sky-500 bg-sky-50 shadow-sm'
+                ? 'border-accent bg-accent/10 shadow-sm'
                 : 'border-border bg-card hover:border-border hover:bg-surface'
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
-              inputMode === 'file' ? 'bg-sky-500 text-white' : 'bg-surface text-muted'
+              inputMode === 'file' ? 'bg-accent/100 text-white' : 'bg-surface text-muted'
             }`}>
               <FileSpreadsheet className="w-5 h-5" />
             </div>
-            <div className="font-semibold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+            <div className="font-semibold text-sm text-fg/85 flex items-center gap-1.5">
               Upload File
-              {inputMode === 'file' && <span className="text-[10px] uppercase tracking-wide bg-sky-500 text-white px-1.5 py-0.5 rounded">aktif</span>}
+              {inputMode === 'file' && <span className="text-[10px] uppercase tracking-wide bg-accent/100 text-white px-1.5 py-0.5 rounded">aktif</span>}
             </div>
             <div className="text-[11px] text-muted mt-0.5 leading-snug">Excel, CSV, PDF, Word — banyak siswa sekaligus</div>
           </button>
@@ -514,18 +514,18 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
             onClick={() => handleModeChange('manual')}
             className={`group relative text-left rounded-xl p-3 sm:p-4 border-2 transition-all ${
               inputMode === 'manual'
-                ? 'border-sky-500 bg-sky-50 shadow-sm'
+                ? 'border-accent bg-accent/10 shadow-sm'
                 : 'border-border bg-card hover:border-border hover:bg-surface'
             }`}
           >
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 transition-colors ${
-              inputMode === 'manual' ? 'bg-sky-500 text-white' : 'bg-surface text-muted'
+              inputMode === 'manual' ? 'bg-accent/100 text-white' : 'bg-surface text-muted'
             }`}>
               <Pencil className="w-5 h-5" />
             </div>
-            <div className="font-semibold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+            <div className="font-semibold text-sm text-fg/85 flex items-center gap-1.5">
               Ketik Manual
-              {inputMode === 'manual' && <span className="text-[10px] uppercase tracking-wide bg-sky-500 text-white px-1.5 py-0.5 rounded">aktif</span>}
+              {inputMode === 'manual' && <span className="text-[10px] uppercase tracking-wide bg-accent/100 text-white px-1.5 py-0.5 rounded">aktif</span>}
             </div>
             <div className="text-[11px] text-muted mt-0.5 leading-snug">Quick demo, tugas tulis tangan, 1-3 siswa</div>
           </button>
@@ -540,16 +540,16 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
               onDrop={handleDrop}
               className={`block border-2 border-dashed rounded-xl p-8 flex flex-col items-center cursor-pointer transition-all ${
                 dragOver
-                  ? 'border-sky-500 bg-sky-50 scale-[1.01]'
-                  : 'border-border hover:border-sky-300 hover:bg-sky-50/30'
+                  ? 'border-accent bg-accent/10 scale-[1.01]'
+                  : 'border-border hover:border-accent/50 hover:bg-accent/10/30'
               }`}
             >
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3 transition-all ${
-                dragOver ? 'bg-sky-500 text-white scale-110' : 'bg-sky-100 text-sky-600'
+                dragOver ? 'bg-accent/100 text-white scale-110' : 'bg-accent/15 text-accent'
               }`}>
                 <Upload className="w-7 h-7" />
               </div>
-              <p className="font-medium text-gray-800 dark:text-gray-200 mb-1">
+              <p className="font-medium text-fg/85 mb-1">
                 {dragOver ? 'Lepas untuk upload' : 'Drop file di sini atau klik'}
               </p>
               <p className="text-xs text-muted mb-3">
@@ -564,7 +564,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
           )}
 
           {inputMode === 'file' && fileData && !showPreview && (
-            <div className="border-2 border-emerald-200 bg-emerald-50 rounded-xl p-4 flex items-center gap-3 flex-wrap">
+            <div className="border-2 border-emerald-300 bg-emerald-500/10 rounded-xl p-4 flex items-center gap-3 flex-wrap">
               <FileCheck className="w-6 h-6 text-emerald-600 shrink-0"/>
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-sm text-emerald-900 truncate">{fileData.filename}</div>
@@ -575,7 +575,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                   onClick={() => setShowPreview(true)}
                   className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
                 >
-                  <Sparkles className="w-3.5 h-3.5" /> Preview Data
+                  <ClipboardCheck className="w-3.5 h-3.5" /> Preview Data
                 </button>
               ) : (
                 <span className="text-xs text-emerald-700 flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5"/> Diverifikasi</span>
@@ -627,7 +627,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                           value={s.name}
                           onChange={e => upd(s.id, 'name', e.target.value)}
                           placeholder="Nama"
-                          className="w-full px-2 py-1.5 text-sm bg-transparent border-0 focus:bg-card focus:ring-2 focus:ring-sky-300 focus:outline-none rounded"
+                          className="w-full px-2 py-1.5 text-sm bg-transparent border-0 focus:bg-card focus:ring-2 focus:ring-accent/40 focus:outline-none rounded"
                         />
                       </td>
                       <td className="border-b border-r border-amber-100 p-0 align-top">
@@ -636,7 +636,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                           onChange={e => upd(s.id, 'answer', e.target.value)}
                           placeholder="Jawaban..."
                           rows={2}
-                          className="w-full px-2 py-1.5 text-xs bg-transparent border-0 focus:bg-card focus:ring-2 focus:ring-sky-300 focus:outline-none rounded resize-y min-h-[2.5rem] leading-snug"
+                          className="w-full px-2 py-1.5 text-xs bg-transparent border-0 focus:bg-card focus:ring-2 focus:ring-accent/40 focus:outline-none rounded resize-y min-h-[2.5rem] leading-snug"
                         />
                       </td>
                       {students.some(st => st.confidence) && (
@@ -700,7 +700,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
         {inputMode === 'manual' && (
           <div className="space-y-3">
             {/* Hint card untuk manual mode */}
-            <div className="bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-100 rounded-lg px-3 py-2 flex items-start gap-2 text-xs text-sky-800">
+            <div className="bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 rounded-lg px-3 py-2 flex items-start gap-2 text-xs text-accent">
               <Pencil className="w-3.5 h-3.5 mt-0.5 shrink-0" />
               <span>Ketik nama & jawaban tiap siswa. Tekan <kbd className="bg-card px-1 py-0.5 rounded text-[10px] border">+ Tambah Murid</kbd> untuk row baru.</span>
             </div>
@@ -711,7 +711,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
                 value={studentSearch}
                 onChange={e => setStudentSearch(e.target.value)}
                 placeholder="Cari siswa... (nama atau jawaban)"
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-card text-gray-700 dark:text-gray-300 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-300"
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-card text-fg/80 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
               />
             )}
             {filteredStudents.map((s,i) => (
@@ -735,7 +735,7 @@ function InputJawaban({ rubrik, title, onBack, onAssess, onPayment, students, se
       <div className="flex gap-3">
         <button onClick={onBack} className="btn-secondary flex-1">← Edit Rubrik</button>
         <button onClick={onPayment} disabled={!canAssess} className="btn-primary flex-1">
-          <Sparkles className="w-5 h-5 inline mr-2"/>
+          <ClipboardCheck className="w-5 h-5 inline mr-2"/>
           {isAdmin()
             ? 'Mulai Penilaian (Admin Gratis)'
             : pricing && pricing.price > 0
@@ -774,7 +774,7 @@ function calcTotal(scores, rubrik) {
 // Status badge classes harus static string supaya Tailwind purge include-nya.
 const statusFromScore = (s) => {
   if (s >= 8) return { label: 'Sangat Baik', cls: 'bg-green-100 text-green-700' }
-  if (s >= 7) return { label: 'Baik',        cls: 'bg-sky-100 text-sky-700' }
+  if (s >= 7) return { label: 'Baik',        cls: 'bg-accent/15 text-accent' }
   if (s >= 6) return { label: 'Cukup',       cls: 'bg-amber-100 text-amber-700' }
   if (s >= 5) return { label: 'Perbaikan',   cls: 'bg-orange-100 text-orange-700' }
   return            { label: 'Tidak Lulus',  cls: 'bg-red-100 text-red-700' }
@@ -811,15 +811,15 @@ function ClassSummary({ results, rubrik }) {
   return (
     <div className="bg-card rounded-2xl shadow-sm border border-border p-5">
       <div className="flex items-center gap-2 mb-4">
-        <TrendingUp className="w-5 h-5 text-sky-600" />
-        <h3 className="font-bold text-gray-800 dark:text-gray-200">Ringkasan Kelas</h3>
+        <TrendingUp className="w-5 h-5 text-accent" />
+        <h3 className="font-bold text-fg/85">Ringkasan Kelas</h3>
         <span className="text-xs text-muted">({total} siswa dinilai)</span>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-sky-50 rounded-xl p-3 text-center border border-sky-100">
-          <div className="text-[10px] uppercase tracking-wide text-sky-600 font-medium">Rata-rata</div>
-          <div className="text-2xl font-bold text-sky-700">{stats.avg}</div>
+        <div className="bg-accent/10 rounded-xl p-3 text-center border border-accent/20">
+          <div className="text-[10px] uppercase tracking-wide text-accent font-medium">Rata-rata</div>
+          <div className="text-2xl font-bold text-accent">{stats.avg}</div>
         </div>
         <div className="bg-green-50 rounded-xl p-3 text-center border border-green-100">
           <div className="text-[10px] uppercase tracking-wide text-green-600 font-medium">Tertinggi</div>
@@ -833,14 +833,14 @@ function ClassSummary({ results, rubrik }) {
 
       {/* Distribusi bar */}
       <div className="mb-4">
-        <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Distribusi</div>
+        <div className="text-xs font-medium text-muted mb-2">Distribusi</div>
         <div className="flex h-6 rounded-lg overflow-hidden bg-surface">
           {Object.entries(stats.buckets).map(([label, n]) => {
             const pct = (n / total) * 100
             if (pct === 0) return null
             const colorMap = {
               'Sangat Baik': 'bg-green-500',
-              'Baik':        'bg-sky-500',
+              'Baik':        'bg-accent/100',
               'Cukup':       'bg-amber-500',
               'Perbaikan':   'bg-orange-500',
               'Tidak Lulus': 'bg-red-500',
@@ -859,7 +859,7 @@ function ClassSummary({ results, rubrik }) {
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-[11px]">
           {Object.entries(stats.buckets).filter(([, n]) => n > 0).map(([label, n]) => (
-            <span key={label} className="text-gray-600 dark:text-gray-400">
+            <span key={label} className="text-muted">
               <span className="inline-block w-2 h-2 rounded-full mr-1 align-middle" style={{
                 backgroundColor: { 'Sangat Baik': '#22c55e', 'Baik': '#0ea5e9', 'Cukup': '#f59e0b', 'Perbaikan': '#f97316', 'Tidak Lulus': '#ef4444' }[label],
               }}/>
@@ -875,7 +875,7 @@ function ClassSummary({ results, rubrik }) {
           <div className="font-medium text-green-700 mb-1">🏆 Top 3</div>
           {stats.top.map((s, i) => (
             <div key={i} className="flex justify-between truncate">
-              <span className="text-gray-700 dark:text-gray-300 truncate">{i + 1}. {s.name}</span>
+              <span className="text-fg/80 truncate">{i + 1}. {s.name}</span>
               <span className="font-bold text-green-600 ml-2">{s.total}</span>
             </div>
           ))}
@@ -884,7 +884,7 @@ function ClassSummary({ results, rubrik }) {
           <div className="font-medium text-red-700 mb-1">⚠️ Perlu Perhatian</div>
           {stats.bottom.map((s, i) => (
             <div key={i} className="flex justify-between truncate">
-              <span className="text-gray-700 dark:text-gray-300 truncate">{i + 1}. {s.name}</span>
+              <span className="text-fg/80 truncate">{i + 1}. {s.name}</span>
               <span className="font-bold text-red-600 ml-2">{s.total}</span>
             </div>
           ))}
@@ -925,7 +925,7 @@ function CriterionRow({ k, s, onUpdate }) {
           onChange={e => setTmpScore(e.target.value)}
           onBlur={commitScore}
           onKeyDown={e => { if (e.key === 'Enter') commitScore(); if (e.key === 'Escape') setEditingScore(false) }}
-          className="w-10 h-10 rounded-full border-2 border-sky-400 text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
+          className="w-10 h-10 rounded-full border-2 border-accent text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
         />
       ) : (
         <button
@@ -941,7 +941,7 @@ function CriterionRow({ k, s, onUpdate }) {
           <span className="font-medium">{k.nama}</span>
           <span className="text-muted">{k.bobot}%</span>
         </div>
-        <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
+        <div className="h-1.5 bg-border rounded-full">
           <div className={`h-1.5 rounded-full transition-all ${s.skor>=8?'bg-green-500':s.skor>=5?'bg-amber-500':'bg-red-500'}`} style={{width:(s.skor/10)*100+'%'}}/>
         </div>
         {editingKomentar ? (
@@ -951,11 +951,11 @@ function CriterionRow({ k, s, onUpdate }) {
             onChange={e => setTmpKom(e.target.value)}
             onBlur={commitKom}
             rows={2}
-            className="w-full text-xs mt-1 p-1.5 border border-sky-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-sky-200"
+            className="w-full text-xs mt-1 p-1.5 border border-accent/50 rounded resize-none focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
         ) : (
           <p
-            className="text-xs text-gray-600 dark:text-gray-400 mt-1 cursor-text hover:bg-surface rounded px-1 py-0.5 -mx-1 group flex items-start gap-1"
+            className="text-xs text-muted mt-1 cursor-text hover:bg-surface rounded px-1 py-0.5 -mx-1 group flex items-start gap-1"
             onClick={() => { setTmpKom(s.komentar || ''); setEditingKomentar(true) }}
             title="Klik untuk edit komentar"
           >
@@ -1012,20 +1012,20 @@ function HasilPenilaian({
 
       {/* Batch progress saat AI loop */}
       {loading && batchProgress.total > 0 && (
-        <div className="bg-sky-50 border border-sky-100 p-4 rounded-xl">
+        <div className="bg-accent/10 border border-accent/20 p-4 rounded-xl">
           <div className="flex items-center gap-2 mb-2">
-            <Loader2 className="w-5 h-5 animate-spin text-sky-600"/>
-            <span className="text-sky-800 font-medium text-sm">
+            <Loader2 className="w-5 h-5 animate-spin text-accent"/>
+            <span className="text-accent font-medium text-sm">
               Memproses {batchProgress.done} dari {batchProgress.total} siswa…
             </span>
           </div>
-          <div className="h-2 bg-sky-100 rounded-full overflow-hidden">
+          <div className="h-2 bg-accent/15 rounded-full overflow-hidden">
             <div
-              className="h-2 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full transition-all active:scale-95"
+              className="h-2 bg-gradient-to-r from-accent to-accent/70 rounded-full transition-all active:scale-95"
               style={{ width: `${(batchProgress.done / batchProgress.total) * 100}%` }}
             />
           </div>
-          <p className="text-[11px] text-sky-600 mt-1.5">
+          <p className="text-[11px] text-accent mt-1.5">
             {batchProgress.done === batchProgress.total ? 'Selesai!' : 'Hasil muncul satu per satu di bawah.'}
           </p>
         </div>
@@ -1043,20 +1043,20 @@ function HasilPenilaian({
               value={studentSearch}
               onChange={e => setStudentSearch(e.target.value)}
               placeholder="Cari siswa..."
-              className="w-full px-2.5 py-1 text-xs border border-border rounded-lg bg-card text-gray-700 dark:text-gray-300 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-300"
+              className="w-full px-2.5 py-1 text-xs border border-border rounded-lg bg-card text-fg/80 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
             />
           </div>
-          <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-1.5 text-muted">
             <ArrowUpDown className="w-4 h-4"/>
             <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-                    className="bg-card border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-sky-200">
+                    className="bg-card border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-accent/30">
               <option value="default">Urutan asli</option>
               <option value="high">Skor tertinggi</option>
               <option value="low">Skor terendah</option>
               <option value="name">Nama A-Z</option>
             </select>
           </div>
-          <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-1.5 text-muted">
             <Filter className="w-4 h-4"/>
             <div className="flex gap-1">
               {[
@@ -1067,8 +1067,8 @@ function HasilPenilaian({
                 <button key={f.id} onClick={() => setFilterBy(f.id)}
                   className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors ${
                     filterBy === f.id
-                      ? 'bg-sky-500 text-white'
-                      : 'bg-card border border-border text-gray-600 dark:text-gray-400 hover:bg-surface'
+                      ? 'bg-accent/100 text-white'
+                      : 'bg-card border border-border text-muted hover:bg-surface'
                   }`}>
                   {f.label}
                 </button>
@@ -1090,7 +1090,7 @@ function HasilPenilaian({
           <div key={r.id} className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
             <div className="bg-surface px-4 py-2.5 flex justify-between items-center gap-2 flex-wrap">
               <span className="font-medium flex items-center gap-2 min-w-0">
-                {isProcessing && <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-500 shrink-0"/>}
+                {isProcessing && <Loader2 className="w-3.5 h-3.5 animate-spin text-accent0 shrink-0"/>}
                 <span className="truncate">{r.name}</span>
                 {r._edited && (
                   <span className="text-[10px] uppercase tracking-wide bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded shrink-0" title="Skor sudah diedit manual">
@@ -1104,14 +1104,14 @@ function HasilPenilaian({
                     {status.label}
                   </span>
                 )}
-                <span className="font-bold text-sky-600 text-sm">
+                <span className="font-bold text-accent text-sm">
                   {total !== null ? `${total}/10` : <span className="text-muted">—/10</span>}
                 </span>
                 {r.scores && !loading && (
                   <button
                     onClick={() => onRegrade(r.id)}
                     disabled={r._regrading}
-                    className="text-xs text-muted hover:text-sky-600 px-2 py-1 rounded hover:bg-sky-50 transition-colors flex items-center gap-1 disabled:opacity-50"
+                    className="text-xs text-muted hover:text-accent px-2 py-1 rounded hover:bg-accent/10 transition-colors flex items-center gap-1 disabled:opacity-50"
                     title="Nilai ulang siswa ini dengan AI"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${r._regrading ? 'animate-spin' : ''}`}/>
@@ -1142,13 +1142,13 @@ function HasilPenilaian({
               <div className="p-4 space-y-3 animate-pulse">
                 {rubrik.map(k => (
                   <div key={k.id} className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0"/>
+                    <div className="w-10 h-10 rounded-full bg-border flex-shrink-0"/>
                     <div className="flex-1 space-y-2">
                       <div className="flex justify-between">
-                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3"/>
-                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8"/>
+                        <div className="h-3 bg-border rounded w-1/3"/>
+                        <div className="h-3 bg-border rounded w-8"/>
                       </div>
-                      <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full"/>
+                      <div className="h-1.5 bg-border rounded-full"/>
                       <div className="h-2 bg-surface rounded w-5/6"/>
                     </div>
                   </div>
@@ -1199,7 +1199,7 @@ function KesimpulanEditable({ value, onSave }) {
     return (
       <button
         onClick={() => setEditing(true)}
-        className="mt-3 pt-3 border-t border-border w-full text-left text-xs text-muted italic hover:text-sky-600 transition-colors active:scale-95"
+        className="mt-3 pt-3 border-t border-border w-full text-left text-xs text-muted italic hover:text-accent transition-colors active:scale-95"
       >
         + Tambah kesimpulan
       </button>
@@ -1212,10 +1212,10 @@ function KesimpulanEditable({ value, onSave }) {
           value={tmp} autoFocus
           onChange={e => setTmp(e.target.value)}
           rows={3}
-          className="w-full text-sm p-2 border border-sky-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-sky-200"
+          className="w-full text-sm p-2 border border-accent/50 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-accent/30"
         />
         <div className="flex gap-2 mt-2">
-          <button onClick={() => { onSave(tmp); setEditing(false) }} className="text-xs px-3 py-1 bg-sky-600 text-white rounded-lg hover:bg-sky-700">Simpan</button>
+          <button onClick={() => { onSave(tmp); setEditing(false) }} className="text-xs px-3 py-1 bg-accent text-accent-fg rounded-lg hover:bg-accent/90">Simpan</button>
           <button onClick={() => { setTmp(value); setEditing(false) }} className="text-xs px-3 py-1 text-muted hover:bg-surface rounded-lg">Batal</button>
         </div>
       </div>
@@ -1223,7 +1223,7 @@ function KesimpulanEditable({ value, onSave }) {
   }
   return (
     <div
-      className="mt-3 pt-3 border-t border-border text-sm text-gray-700 dark:text-gray-300 cursor-text hover:bg-surface rounded px-1 -mx-1 group flex items-start gap-2"
+      className="mt-3 pt-3 border-t border-border text-sm text-fg/80 cursor-text hover:bg-surface rounded px-1 -mx-1 group flex items-start gap-2"
       onClick={() => setEditing(true)}
       title="Klik untuk edit"
     >
@@ -1491,7 +1491,7 @@ function Assessment() {
         return (
           <div key={s.key} className="flex items-center gap-1.5">
             <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-medium transition-colors ${
-              active ? 'bg-sky-500 text-white' :
+              active ? 'bg-accent/100 text-white' :
               done   ? 'bg-green-500 text-white' :
                        'bg-surface text-muted'
             }`}>
@@ -1501,7 +1501,7 @@ function Assessment() {
               <span className="hidden sm:inline">{s.label}</span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`w-3 h-0.5 ${done ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
+              <div className={`w-3 h-0.5 ${done ? 'bg-green-500' : 'bg-border'}`} />
             )}
           </div>
         )
@@ -1519,10 +1519,10 @@ function Assessment() {
         actions={
           <Link
             to="/kuesioner"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-card hover:bg-sky-50 text-sky-700 border-border transition-colors active:scale-95"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-card hover:bg-accent/10 text-accent border-border transition-colors active:scale-95"
             title="Buka Kuesioner Builder"
           >
-            <ClipboardList className="w-3.5 h-3.5" /> Kuesioner
+            <ListChecks className="w-3.5 h-3.5" /> Kuesioner
           </Link>
         }
       />
@@ -1535,16 +1535,16 @@ function Assessment() {
               className="block mb-4 bg-gradient-to-r from-surface border border-border rounded-xl p-3 hover:shadow-sm transition-shadow group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-sky-500 text-white flex items-center justify-center flex-shrink-0">
-                  <ClipboardList className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-lg bg-accent/100 text-white flex items-center justify-center flex-shrink-0">
+                  <ListChecks className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-sky-900">Kuesioner Builder</div>
-                  <div className="text-xs text-sky-700">
+                  <div className="text-sm font-semibold text-accent">Kuesioner Builder</div>
+                  <div className="text-xs text-accent">
                     Bikin angket/kuesioner online, kumpulkan respons, lalu analisis (Cronbach α, validitas).
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-sky-600 group-hover:translate-x-0.5 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-accent group-hover:translate-x-0.5 transition-transform" />
               </div>
             </Link>
             <RubrikBuilder rubrik={rubrik} setRubrik={setRubrik} title={title} setTitle={setTitle} context={context} setContext={setContext} onNext={()=>setStep("jawaban")}/>
@@ -1604,8 +1604,8 @@ function Assessment() {
                 <AlertCircle className="w-5 h-5 text-red-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-gray-900 dark:text-gray-100">Yakin reset semua?</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <h3 className="font-bold text-fg">Yakin reset semua?</h3>
+                <p className="text-sm text-muted mt-1">
                   Rubrik, daftar siswa, dan hasil penilaian akan hilang.
                   {results.length > 0 && ' Pastikan kamu sudah Export Excel dulu.'}
                 </p>

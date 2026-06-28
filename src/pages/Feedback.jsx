@@ -142,7 +142,7 @@ export default function FeedbackPage() {
                 value={message}
                 onChange={e => setMessage(e.target.value)}
                 placeholder="Ceritakan dengan detail. Contoh: 'Saat saya unggah file CSV di halaman regresi, kolom angka terbaca sebagai teks. Browser: Chrome 120.'"
-                className="w-full px-3 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="w-full px-3 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-accent/40"
                 style={{ backgroundColor: 'rgb(var(--bg))', borderColor: 'rgb(var(--border))', color: 'rgb(var(--fg))' }}
               />
               <div className="text-xs mt-1 flex justify-between" style={{ color: 'rgb(var(--muted))' }}>
@@ -161,7 +161,7 @@ export default function FeedbackPage() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="email@anda.com — kosongkan jika tidak ingin dibalas"
-                className="w-full px-3 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="w-full px-3 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-accent/40"
                 style={{ backgroundColor: 'rgb(var(--bg))', borderColor: 'rgb(var(--border))', color: 'rgb(var(--fg))' }}
               />
             </div>

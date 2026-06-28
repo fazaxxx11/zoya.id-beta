@@ -1,12 +1,13 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
-  Activity, Upload, FileSpreadsheet, CheckCircle,
-  Sparkles, Download, FileType, File as FileIcon, AlertCircle,
-  Layers, Sigma, Clock, FileText, BookOpen, X, LayoutGrid,
-  ArrowRight, RotateCcw, AlertTriangle, Compass,
+  Upload, FileSpreadsheet, CheckCircle,
+  Download, FileType, File as FileIcon, AlertCircle,
+  BookOpen, X,
+  ArrowRight, RotateCcw, AlertTriangle,
   Filter, Check, HelpCircle,
 } from 'lucide-react'
+import { STATISTIK_SUBNAV } from '../lib/statistikNav'
 import { parseExcelFile, getColumnNames } from '../utils/excelHelper'
 
 import { getCurrentUser } from '../lib/auth'
@@ -28,6 +29,8 @@ import PageHeader from '../components/PageHeader'
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
 import { datasetToParsed } from '../lib/exampleDatasets'
 import StatistikFlow from '../components/statistik/StatistikFlow'
+// NOTE: GuidedWizardModal & floating "Pandu" button removed — tab "Panduan"
+// (/statistik/start) now is the single entry point for the analysis picker.
 import {
   DescriptiveResult, NormalityResult, CorrelationResult, TTestResult,
   ValidityResult, ANOVAResult, SimpleRegressionResult, MultipleRegressionResult,
@@ -35,7 +38,6 @@ import {
   NGainResult, TwoWayANOVAResult
 } from '../components/statistik/ResultCards'
 import ExportActions from '../components/statistik/ExportActions'
-import GuidedWizardModal from '../components/statistik/GuidedWizardModal'
 import ContextualWriter from '../components/statistik/ContextualWriter'
 import StatEducation from '../components/statistik/StatEducation'
 import MessyDataBanner from '../components/statistik/MessyDataBanner'
@@ -64,7 +66,6 @@ import { wilcoxonSignedRank as wilcoxonBackend, mannWhitneyU as mannWhitneyBacke
   chiSquareBackend, validityBackend, reliabilityBackend,
   kruskalWallisBackend, regressionBackend, regressionMultipleBackend
 } from '../lib/stats/backend.js'
-import { useStatsBackend } from '../lib/hooks/useStatsBackend'
 
 // ============================================================
 // Tools registry — single source of truth
@@ -130,13 +131,7 @@ function Statistik() {
   const [cleanerOpen, setCleanerOpen] = useState(false)
   const [cleaningReport, setCleaningReport] = useState(null)
   const [examplePickerOpen, setExamplePickerOpen] = useState(false)
-  const [showWizard, setShowWizard] = useState(
-    !localStorage.getItem('azezmen_wizard_dismissed')
-  )
   const [rawRows, setRawRows] = useState(null) // for messy data detection
-
-  // Backend status
-  const { status: backendStatus, loading: backendLoading } = useStatsBackend()
 
   // Reset params/result/error when tool changes
   useEffect(() => {
@@ -783,24 +778,16 @@ function Statistik() {
   // Render
   // ============================================================
   return (
-    <div className="min-h-screen bg-bg text-fg pb-bottomnav">
+    <div className="min-h-screen bg-bg text-fg pb-bottomnav paper-texture">
       <PageHeader
-        title={currentTool?.name || 'Analisis Statistik'}
+        title="Analisis Statistik"
         subtitle="Modul Statistik"
         parentPath="/"
         parentLabel="Beranda"
-        subNav={[
-          { path: '/statistik',         label: 'Analisis', icon: Activity },
-          { path: '/statistik/batch',   label: 'Batch',    icon: Layers },
-          { path: '/statistik/power',   label: 'Power',    icon: Sigma },
-          { path: '/statistik/history', label: 'Riwayat',  icon: Clock },
-          { path: '/statistik/report',  label: 'Bab IV',   icon: FileText },
-          { path: '/statistik/start',   label: 'Panduan',  icon: BookOpen },
-          { path: '/eviews',            label: 'EViews',   icon: LayoutGrid },
-        ]}
+        subNav={STATISTIK_SUBNAV}
       />
 
-      <div className="max-w-5xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-5 py-5 sm:py-6">
         {/* Messy Data Banner — appears after upload if issues detected */}
         {rawRows && (
           <div className="mb-4">
@@ -829,20 +816,6 @@ function Statistik() {
           </div>
         )}
 
-        {/* Backend Status Indicator — only surfaces in prod when NOT on SciPy (worth user knowing) */}
-        {!backendLoading && backendStatus && (import.meta.env.DEV || backendStatus.backend !== 'scipy') && (
-          <div className="flex items-center gap-2 mb-3 text-[11px]">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-heading font-medium ${
-              backendStatus.backend === 'scipy'
-                ? 'bg-teal/8 text-teal border-teal/20'
-                : 'bg-terracotta/8 text-terracotta border-terracotta/20'
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${backendStatus.backend === 'scipy' ? 'bg-teal' : 'bg-terracotta'}`} />
-              {backendStatus.backend === 'scipy' ? 'Backend: SciPy (SPSS-verified)' : 'Backend: JavaScript fallback — hasil kurang presisi'}
-            </span>
-          </div>
-        )}
-
         <StatistikFlow
           file={file}
           data={data}
@@ -859,6 +832,7 @@ function Statistik() {
           onOpenGuide={() => setShowGuide(true)}
           onAnalyze={handlePayClick}
           onClearFile={handleReset}
+          onDataChange={setData}
           analyzing={analyzing}
           result={result}
           priceLabel={
@@ -937,46 +911,7 @@ function Statistik() {
         </StatistikFlow>
       </div>
 
-      {/* ── Floating wizard trigger — right-side, mobile-safe ── */}
-      <button
-        onClick={() => setShowWizard(true)}
-        className="
-          fixed right-0 top-1/3 z-40
-          flex items-center gap-1.5 pl-3 pr-3 py-2.5
-          bg-card border border-r-0 border-border
-          shadow-md rounded-l-md
-          font-heading font-semibold text-xs text-fg
-          hover:pr-4 hover:border-accent
-          active:scale-[0.97]
-          transition-all duration-200
-          sm:right-4 sm:top-28 sm:border-r sm:rounded-md sm:px-4 sm:py-2 sm:text-sm
-        "
-        aria-label="Buka panduan analisis"
-      >
-        <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
-        <span className="hidden sm:inline">Pandu</span>
-      </button>
-
-      <GuidedWizardModal
-        open={showWizard}
-        onClose={() => setShowWizard(false)}
-        onComplete={(intent) => {
-          // Map wizard intent to tool route
-          const intentMap = {
-            'compare-two': 'mannwhitney',
-            'compare-many': 'anova',
-            relationship: 'korelasi',
-            influence: 'regresi',
-            'data-quality': 'normalitas',
-            auto: activeTool,
-          }
-          const tool = intentMap[intent] || activeTool
-          if (tool !== activeTool) {
-            navigate('/statistik?tool=' + tool)
-          }
-        }}
-        onSkip={() => setShowWizard(false)}
-      />
+      {/* ── Floating wizard trigger removed — "Panduan" tab is the single entry point ── */}
 
       <ConfirmPaymentModal
         open={showConfirm}
@@ -1585,6 +1520,19 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
   const [saveModalOpen, setSaveModalOpen] = useState(false)
   const [savedId, setSavedId] = useState(null)
 
+  // Measure tinggi PageHeader supaya sticky TOC & scroll target tidak overlap.
+  // Tinggi header beda di mobile/desktop & saat ada subnav — measure saat mount + resize.
+  const [headerH, setHeaderH] = useState(88)
+  useEffect(() => {
+    const measure = () => {
+      const hdr = document.querySelector('header')
+      if (hdr) setHeaderH(Math.round(hdr.getBoundingClientRect().height))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
   // Build TOC dynamically — only sections that actually render for this result type
   const hasAssumptions =
     (result.type === 'ttest' && result.mode === 'independent') ||
@@ -1599,9 +1547,16 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
     { id: 'methodology', label: 'Untuk Skripsi' },
   ]
 
+  // TOC bar sticky di bawah header (top = headerH), jadi total offset buat scroll target =
+  // header + TOC bar (~40px). +8px breathing room.
+  const tocBarH = 40
+  const scrollOffset = headerH + tocBarH + 8
+
   const scrollToSection = (id) => {
     const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (!el) return
+    const y = el.getBoundingClientRect().top + window.scrollY - scrollOffset
+    window.scrollTo({ top: y, behavior: 'smooth' })
   }
 
   return (
@@ -1641,8 +1596,9 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
         onSaved={(id) => { setSavedId(id); setSaveModalOpen(false) }}
       />
 
-      {/* Sticky section nav — quick jump across the long result page */}
-      <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border">
+      {/* Sticky section nav — diposisikan tepat di bawah PageHeader (top = headerH),
+          tidak overlap header (z-30). bg solid (no glass) sesuai anti-AI-vibe. */}
+      <div className="sticky z-20 bg-card border-b border-border" style={{ top: `${headerH}px` }}>
         <div className="flex items-center gap-1 px-3 py-2 overflow-x-auto no-scrollbar">
           {toc.map(item => (
             <button
@@ -1657,7 +1613,7 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
       </div>
 
       <div className="p-5" ref={contentRef}>
-        <section id="result-summary" className="scroll-mt-20">
+        <section id="result-summary" style={{ scrollMarginTop: `${scrollOffset}px` }}>
           {result.type === 'descriptive' && <DescriptiveResult r={result} />}
           {result.type === 'normality' && <NormalityResult r={result} />}
           {result.type === 'correlation' && <CorrelationResult r={result} />}
@@ -1676,7 +1632,7 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
 
         {/* Tier 1: Assumption checks panel — auto-render untuk t-test/ANOVA/regression */}
         {hasAssumptions && (
-          <section id="assumptions" className="scroll-mt-20">
+          <section id="assumptions" style={{ scrollMarginTop: `${scrollOffset}px` }}>
             {result.type === 'ttest' && result.mode === 'independent' && (
               <AssumptionsPanel result={result} type="ttest_independent" />
             )}
@@ -1686,21 +1642,21 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
           </section>
         )}
 
-        <section id="ai-interpretation" className="scroll-mt-20">
+        <section id="ai-interpretation" style={{ scrollMarginTop: `${scrollOffset}px` }}>
           <AIInterpretationPanel result={result} value={aiInterpretation} onChange={setAiInterpretation} />
         </section>
 
-        <section id="contextual-writer" className="scroll-mt-20">
+        <section id="contextual-writer" style={{ scrollMarginTop: `${scrollOffset}px` }}>
           <ContextualWriter result={result} />
         </section>
 
-        <section id="stat-education" className="scroll-mt-20">
+        <section id="stat-education" style={{ scrollMarginTop: `${scrollOffset}px` }}>
           <StatEducation />
         </section>
 
         <ExplainChatPanel result={result} aiInterpretation={aiInterpretation} />
 
-        <section id="methodology" className="scroll-mt-20">
+        <section id="methodology" style={{ scrollMarginTop: `${scrollOffset}px` }}>
           <MethodologyPanel result={result} />
         </section>
       </div>
@@ -1837,7 +1793,7 @@ function AIInterpretationPanel({ result, value = '', onChange }) {
         {!text && !loading && (
           <button onClick={handleGenerate}
                   className="bg-accent hover:bg-accent/90 text-accent-fg text-xs font-heading font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap transition-colors">
-            <Sparkles className="w-3.5 h-3.5" /> Generate
+            <BookOpen className="w-3.5 h-3.5" /> Generate
           </button>
         )}
         {text && (

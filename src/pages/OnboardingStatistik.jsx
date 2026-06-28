@@ -158,7 +158,7 @@ export default function OnboardingStatistik() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <header className="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-border bg-bg">
         <div className="max-w-2xl mx-auto px-5 h-12 flex items-center gap-3">
           <button onClick={() => navigate('/')} className="flex items-center gap-1 text-xs text-muted hover:text-fg transition-colors">
             <ChevronLeft className="w-3.5 h-3.5" />Kembali

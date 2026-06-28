@@ -10,7 +10,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Settings, Download, Upload, Trash2, AlertTriangle, CheckCircle2,
-  HardDrive, Database, FileText, MessageSquare, Tag, ClipboardList, Award,
+  HardDrive, Database, FileText, MessageSquare, Tag, ClipboardCheck, Award,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import {
@@ -121,8 +121,8 @@ export default function SettingsPage() {
             <Database className="w-4 h-4" style={{ color: 'rgb(var(--muted))' }} /> Isi Workspace ({totalItems} item)
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <StatBox icon={ClipboardList} label="Survei"     value={stats.surveys}      to="/kuesioner" />
-            <StatBox icon={ClipboardList} label="Respons"    value={stats.responses}    to="/kuesioner" />
+            <StatBox icon={ClipboardCheck} label="Survei"     value={stats.surveys}      to="/kuesioner" />
+            <StatBox icon={ClipboardCheck} label="Respons"    value={stats.responses}    to="/kuesioner" />
             <StatBox icon={FileText}      label="Referensi"  value={stats.references}   to="/referensi" />
             <StatBox icon={MessageSquare} label="Dokumen Q"  value={stats.qualDocs}     to="/kualitatif" />
             <StatBox icon={Tag}           label="Kode Q"     value={stats.qualCodes}    to="/kualitatif" />

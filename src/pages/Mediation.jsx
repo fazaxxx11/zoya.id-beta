@@ -7,7 +7,7 @@ import { useState, useMemo, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   GitBranch, Play, Upload, Info, Check, X, AlertTriangle,
-  TrendingUp, Layers, Sparkles, Download, ChevronRight,
+  TrendingUp, Layers, Wand2, Download, ChevronRight,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import SaveAnalysisButton from '../components/SaveAnalysisButton'
@@ -116,14 +116,14 @@ export default function MediationPage() {
 
       <div className="max-w-5xl mx-auto px-3 sm:px-5 py-4 space-y-4">
         {/* Hero */}
-        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-4">
+        <div className="bg-accent/10 border border-accent/30 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-indigo-500 text-white flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-accent/100 text-white flex items-center justify-center flex-shrink-0">
               <GitBranch className="w-5 h-5" />
             </div>
             <div className="flex-1">
-              <h2 className="font-semibold text-indigo-900 mb-1">Mediation & Moderation</h2>
-              <p className="text-xs text-indigo-800">
+              <h2 className="font-semibold text-fg mb-1">Mediation & Moderation</h2>
+              <p className="text-xs text-accent">
                 Analisis path penelitian: apakah variabel M memediasi efek X→Y, atau apakah W memoderasi (memperkuat/melemahkan) efek X→Y?
                 Bootstrap percentile CI untuk indirect effect (5000 resamples) + Sobel test.
               </p>
@@ -157,7 +157,7 @@ export default function MediationPage() {
             <span className="text-sm font-medium">Data (CSV dengan header)</span>
             <button
               onClick={() => fileRef.current?.click()}
-              className="text-xs text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+              className="text-xs text-accent hover:text-accent flex items-center gap-1"
             >
               <Upload className="w-3.5 h-3.5" /> Upload CSV
             </button>
@@ -187,7 +187,7 @@ export default function MediationPage() {
             )}
             <ColumnPicker label="Y (outcome)" value={colY} setValue={setColY} options={parsed.headers} />
             <div>
-              <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">α</label>
+              <label className="block text-[11px] font-medium text-fg/80 mb-0.5">α</label>
               <select value={alpha} onChange={e => setAlpha(e.target.value)} className="w-full border border-border rounded-lg px-2 py-1.5 text-xs">
                 <option value={0.10}>0.10</option>
                 <option value={0.05}>0.05</option>
@@ -198,8 +198,8 @@ export default function MediationPage() {
 
           {model === 'mediation' && (
             <div className="mt-2">
-              <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">
-                Bootstrap resamples: <span className="text-indigo-600">{bootstrap.toLocaleString()}</span>
+              <label className="block text-[11px] font-medium text-fg/80 mb-0.5">
+                Bootstrap resamples: <span className="text-accent">{bootstrap.toLocaleString()}</span>
               </label>
               <input
                 type="range" min={500} max={10000} step={500}
@@ -268,15 +268,15 @@ function ModelCard({ active, onClick, icon: Icon, title, desc, example }) {
       onClick={onClick}
       className={`text-left p-4 rounded-xl border-2 transition-all ${
         active
-          ? 'border-indigo-500 bg-indigo-50 shadow-md'
-          : 'border-border bg-card hover:border-indigo-300'
+          ? 'border-accent bg-accent/10 shadow-md'
+          : 'border-border bg-card hover:border-accent/50'
       }`}
     >
       <div className="flex items-center gap-2 mb-1">
-        <Icon className={`w-4 h-4 ${active ? 'text-indigo-600' : 'text-muted'}`} />
+        <Icon className={`w-4 h-4 ${active ? 'text-accent' : 'text-muted'}`} />
         <span className="font-semibold text-sm">{title}</span>
       </div>
-      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{desc}</p>
+      <p className="text-xs text-muted mb-1">{desc}</p>
       <p className="text-[11px] italic text-muted">{example}</p>
     </button>
   )
@@ -285,7 +285,7 @@ function ModelCard({ active, onClick, icon: Icon, title, desc, example }) {
 function ColumnPicker({ label, value, setValue, options }) {
   return (
     <div>
-      <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">{label}</label>
+      <label className="block text-[11px] font-medium text-fg/80 mb-0.5">{label}</label>
       <select value={value} onChange={e => setValue(e.target.value)} className="w-full border border-border rounded-lg px-2 py-1.5 text-xs">
         {(options || []).map(o => <option key={o} value={o}>{o}</option>)}
       </select>
@@ -301,7 +301,7 @@ function MediationResult({ r }) {
     <>
       <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-indigo-600" /> Hasil Mediasi (Model 4)
+          <Wand2 className="w-4 h-4 text-accent" /> Hasil Mediasi (Model 4)
         </h3>
 
         {/* Path diagram */}
@@ -319,7 +319,7 @@ function MediationResult({ r }) {
               <th className="px-2 py-1.5 text-center">Sig</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             <PathRow name="a (X→M)" data={r.paths.a} />
             <PathRow name="b (M→Y | X)" data={r.paths.b} />
             <PathRow name="c (X→Y total)" data={r.paths.c} />
@@ -328,11 +328,11 @@ function MediationResult({ r }) {
         </table>
 
         {/* Indirect effect */}
-        <div className="mt-3 bg-indigo-50 border border-indigo-200 rounded-lg p-3">
-          <div className="text-xs font-semibold text-indigo-900 mb-1">Indirect Effect (a · b)</div>
+        <div className="mt-3 bg-accent/10 border border-accent/30 rounded-lg p-3">
+          <div className="text-xs font-semibold text-fg mb-1">Indirect Effect (a · b)</div>
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <div className="text-gray-600 dark:text-gray-400">Estimate</div>
+              <div className="text-muted">Estimate</div>
               <div className="font-mono text-base font-bold">{r.indirect.ab.toFixed(4)}</div>
               {r.indirect.standardized !== null && (
                 <div className="text-[10px] text-muted">
@@ -341,7 +341,7 @@ function MediationResult({ r }) {
               )}
             </div>
             <div>
-              <div className="text-gray-600 dark:text-gray-400">
+              <div className="text-muted">
                 Bootstrap {((1 - r.indirect.bootstrap.alpha) * 100).toFixed(0)}% CI
               </div>
               <div className="font-mono text-base">
@@ -351,21 +351,21 @@ function MediationResult({ r }) {
                 {r.indirect.bootstrap.significant ? (
                   <span className="text-green-700">✓ Signifikan (CI tidak melewati 0)</span>
                 ) : (
-                  <span className="text-gray-600 dark:text-gray-400">CI mencakup 0 → tidak signifikan</span>
+                  <span className="text-muted">CI mencakup 0 → tidak signifikan</span>
                 )}
               </div>
             </div>
           </div>
-          <div className="mt-2 pt-2 border-t border-indigo-200 text-[11px] text-indigo-900">
+          <div className="mt-2 pt-2 border-t border-accent/30 text-[11px] text-fg">
             <strong>Sobel test:</strong> z = {r.indirect.sobel.z.toFixed(3)}, p = {r.indirect.sobel.p.toFixed(4)}
           </div>
         </div>
 
         {/* Mediation type */}
-        <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+        <div className="mt-3 bg-accent-soft border border-accent/20 rounded-lg p-3">
           <div className="flex items-start gap-2">
-            <Info className="w-4 h-4 text-amber-700 mt-0.5 flex-shrink-0" />
-            <div className="text-xs text-amber-900">
+            <Info className="w-4 h-4 text-muted mt-0.5 flex-shrink-0" />
+            <div className="text-xs text-fg">
               <div className="font-semibold mb-1">Interpretasi: {r.mediationType}</div>
               <div className="leading-relaxed">
                 {r.mediationType.includes('penuh') && 'Efek X terhadap Y sepenuhnya melalui M. Setelah M dikontrol, X tidak lagi berpengaruh signifikan terhadap Y.'}
@@ -397,7 +397,7 @@ function PathRow({ name, data }) {
       <td className="px-2 py-1.5 text-right font-mono">{data.se.toFixed(4)}</td>
       <td className="px-2 py-1.5 text-right font-mono">{data.t.toFixed(2)}</td>
       <td className="px-2 py-1.5 text-right font-mono">{data.p.toFixed(4)}</td>
-      <td className="px-2 py-1.5 text-center text-indigo-600 font-bold">{sig}</td>
+      <td className="px-2 py-1.5 text-center text-accent font-bold">{sig}</td>
     </tr>
   )
 }
@@ -412,14 +412,14 @@ function PathDiagram({ paths, indirect }) {
         <PathArrow label={`b = ${paths.b.coef.toFixed(2)}`} sig={paths.b.p < 0.05} />
         <Box label="Y" />
       </div>
-      <div className="text-center mt-2 text-xs text-gray-600 dark:text-gray-400">
+      <div className="text-center mt-2 text-xs text-muted">
         <span>c' (direct) = </span>
         <span className={`font-mono font-bold ${paths.cp.p < 0.05 ? 'text-green-700' : ''}`}>
           {paths.cp.coef.toFixed(3)}
         </span>
         <span className="mx-2">·</span>
         <span>indirect (a·b) = </span>
-        <span className="font-mono font-bold text-indigo-700">{indirect.toFixed(3)}</span>
+        <span className="font-mono font-bold text-accent">{indirect.toFixed(3)}</span>
       </div>
     </div>
   )
@@ -428,7 +428,7 @@ function PathDiagram({ paths, indirect }) {
 function Box({ label, highlight }) {
   return (
     <div className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold text-lg ${
-      highlight ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-700' : 'bg-card border-2 border-border'
+      highlight ? 'bg-accent/15 border-2 border-accent text-accent' : 'bg-card border-2 border-border'
     }`}>
       {label}
     </div>
@@ -453,11 +453,11 @@ function ReportTextMediation({ r }) {
     <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
-        <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }} className="text-xs text-indigo-600 hover:text-indigo-700">
+        <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }} className="text-xs text-accent hover:text-accent">
           Salin
         </button>
       </div>
-      <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{text}</p>
+      <p className="text-xs leading-relaxed text-fg/80 whitespace-pre-wrap">{text}</p>
     </div>
   )
 }
@@ -470,7 +470,7 @@ function ModerationResult({ r }) {
     <>
       <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
         <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-indigo-600" /> Hasil Moderasi (Model 1)
+          <Wand2 className="w-4 h-4 text-accent" /> Hasil Moderasi (Model 1)
         </h3>
 
         <div className="text-xs text-muted mb-3">
@@ -488,7 +488,7 @@ function ModerationResult({ r }) {
               <th className="px-2 py-1.5 text-center">Sig</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             <PathRow name="(Intercept)" data={r.coefficients.intercept} />
             <PathRow name="X" data={r.coefficients.X} />
             <PathRow name="W" data={r.coefficients.W} />
@@ -500,7 +500,7 @@ function ModerationResult({ r }) {
         <div className={`mt-3 rounded-lg p-3 text-xs ${
           r.interactionSignificant
             ? 'bg-green-50 border border-green-200 text-green-900'
-            : 'bg-surface border border-border text-gray-700 dark:text-gray-300'
+            : 'bg-surface border border-border text-fg/80'
         }`}>
           <div className="font-semibold mb-1">
             {r.interactionSignificant
@@ -536,7 +536,7 @@ function ModerationResult({ r }) {
                 <th className="px-2 py-1.5 text-right">p</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               <CondRow label={`Low (M − 1SD = ${r.conditionalEffects.atLow.wValue.toFixed(2)})`} data={r.conditionalEffects.atLow} />
               <CondRow label={`Mean (${r.conditionalEffects.atMean.wValue.toFixed(2)})`} data={r.conditionalEffects.atMean} />
               <CondRow label={`High (M + 1SD = ${r.conditionalEffects.atHigh.wValue.toFixed(2)})`} data={r.conditionalEffects.atHigh} />
@@ -545,9 +545,9 @@ function ModerationResult({ r }) {
         </div>
 
         {/* Johnson-Neyman */}
-        <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs">
-          <div className="font-semibold text-amber-900 mb-1">Johnson-Neyman</div>
-          <p className="text-amber-900">{r.johnsonNeyman.note}</p>
+        <div className="mt-3 bg-accent-soft border border-accent/20 rounded-lg p-3 text-xs">
+          <div className="font-semibold text-fg mb-1">Johnson-Neyman</div>
+          <p className="text-fg">{r.johnsonNeyman.note}</p>
         </div>
 
         <div className="mt-3 text-[11px] text-muted">
@@ -726,7 +726,7 @@ function CondRow({ label, data }) {
       <td className="px-2 py-1.5 text-right font-mono">{data.se.toFixed(4)}</td>
       <td className="px-2 py-1.5 text-right font-mono">{data.t.toFixed(2)}</td>
       <td className="px-2 py-1.5 text-right font-mono">
-        <span className={data.p < 0.05 ? 'font-bold text-indigo-700' : ''}>{data.p.toFixed(4)}</span>
+        <span className={data.p < 0.05 ? 'font-bold text-accent' : ''}>{data.p.toFixed(4)}</span>
       </td>
     </tr>
   )
@@ -739,11 +739,11 @@ function ReportTextModeration({ r }) {
     <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">Teks untuk Bab IV</h3>
-        <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }} className="text-xs text-indigo-600 hover:text-indigo-700">
+        <button onClick={() => { navigator.clipboard.writeText(text); toast.success('Disalin') }} className="text-xs text-accent hover:text-accent">
           Salin
         </button>
       </div>
-      <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{text}</p>
+      <p className="text-xs leading-relaxed text-fg/80 whitespace-pre-wrap">{text}</p>
     </div>
   )
 }

@@ -52,7 +52,7 @@ export default function StatTooltip({ term, children, className = '' }) {
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         aria-label={`Info ${data.title}`}
-        className="inline-flex items-center justify-center text-muted hover:text-gray-600 dark:text-gray-400 focus:text-gray-700 dark:text-gray-300 focus:outline-none"
+        className="inline-flex items-center justify-center text-muted hover:text-accent focus:text-accent focus:outline-none"
       >
         <HelpCircle className="w-3.5 h-3.5" />
       </button>
@@ -60,19 +60,19 @@ export default function StatTooltip({ term, children, className = '' }) {
       {open && (
         <span
           role="tooltip"
-          className="absolute z-30 left-1/2 -translate-x-1/2 top-full mt-1.5 w-72 max-w-[calc(100vw-2rem)] bg-gray-900 text-white text-[12px] rounded-lg shadow-xl px-3.5 py-3 leading-relaxed pointer-events-none"
+          className="absolute z-30 left-1/2 -translate-x-1/2 top-full mt-1.5 w-72 max-w-[calc(100vw-2rem)] bg-fg text-surface text-[12px] rounded-lg shadow-xl px-3.5 py-3 leading-relaxed pointer-events-none"
           // pointer-events-none agar hover di tooltip tidak men-trigger close-on-mouseleave dari icon
           // (kalau perlu interaksi di dalam tooltip, hapus class ini)
         >
           <div className="font-semibold text-emerald-300 mb-1">{data.title}</div>
-          <div className="text-gray-100">{data.description}</div>
+          <div className="text-white/90">{data.description}</div>
           {data.formula && (
-            <div className="mt-1.5 pt-1.5 border-t border-gray-700 text-muted font-mono text-[11px]">
+            <div className="mt-1.5 pt-1.5 border-t border-white/15 text-white/70 font-mono text-[11px]">
               {data.formula}
             </div>
           )}
           {data.threshold && (
-            <div className="mt-1.5 pt-1.5 border-t border-gray-700 text-muted">
+            <div className="mt-1.5 pt-1.5 border-t border-white/15 text-white/70">
               <span className="text-amber-300 font-medium">Panduan: </span>
               {data.threshold}
             </div>

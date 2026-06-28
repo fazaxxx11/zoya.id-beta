@@ -4,12 +4,12 @@
 // Pakai: render <BottomNav /> sekali di App.jsx.
 
 import { Link, useLocation } from 'react-router-dom'
-import { Home, BarChart3, Clock, FileText, Sigma, LayoutGrid } from 'lucide-react'
+import { Home, Activity, Clock, FileText, Sigma, LayoutGrid } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
 const ITEMS = [
   { path: '/', label: 'Home', icon: Home, exact: true },
-  { path: '/statistik', label: 'Analisis', icon: BarChart3, match: ['/statistik'] },
+  { path: '/statistik', label: 'Analisis', icon: Activity, match: ['/statistik'] },
   { path: '/eviews', label: 'EViews', icon: LayoutGrid },
   { path: '/statistik/history', label: 'Riwayat', icon: Clock },
   { path: '/statistik/report', label: 'Bab IV', icon: FileText },

@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Compass, CheckCircle2, Circle, ChevronRight, ChevronDown,
-  ClipboardList, Users, Beaker, Activity, Layers, MessageSquare,
+  ClipboardCheck, Users, Beaker, Activity, Layers, MessageSquare,
   FileText, BookOpen, Sparkles, Award, Target,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
@@ -40,7 +40,7 @@ const QUANT_STEPS = [
   },
   {
     id: 'q2', title: 'Susun Kuesioner / Instrumen',
-    icon: ClipboardList, color: 'bg-cyan-500',
+    icon: ClipboardCheck, color: 'bg-cyan-500',
     desc: 'Buat butir-butir pertanyaan (Likert biasanya). Idealnya per variabel ≥ 4 item.',
     tools: [{ label: 'Buat Kuesioner', href: '/kuesioner' }],
   },
@@ -55,7 +55,7 @@ const QUANT_STEPS = [
   },
   {
     id: 'q4', title: 'Validitas & Reliabilitas Instrumen',
-    icon: Beaker, color: 'bg-purple-500',
+    icon: Beaker, color: 'bg-terracotta',
     desc: 'Sebelum analisis utama: cek apakah item-item kuesioner valid (Pearson/EFA) & reliabel (Cronbach α).',
     tools: [
       { label: 'Validitas & Reliabilitas', href: '/statistik?tool=validitas' },
@@ -88,7 +88,7 @@ const QUANT_STEPS = [
   },
   {
     id: 'q8', title: 'Generate Bab IV',
-    icon: FileText, color: 'bg-muted',
+    icon: FileText, color: 'bg-accent',
     desc: 'Setelah semua analisis selesai dan disimpan, compile ke draft Bab IV otomatis.',
     tools: [
       { label: 'Generator Bab IV', href: '/statistik/report' },
@@ -98,7 +98,7 @@ const QUANT_STEPS = [
   },
   {
     id: 'q9', title: 'Backup Workspace',
-    icon: BookOpen, color: 'bg-slate-700',
+    icon: BookOpen, color: 'bg-teal',
     desc: 'Sebelum sidang, backup semua data riset Anda ke file .json.',
     tools: [{ label: 'Pengaturan & Backup', href: '/pengaturan' }],
   },
@@ -117,7 +117,7 @@ const QUAL_STEPS = [
   },
   {
     id: 'k3', title: 'Coding Tematik',
-    icon: Layers, color: 'bg-purple-500',
+    icon: Layers, color: 'bg-teal-500',
     desc: 'Buat codebook → tag segmen teks → identifikasi tema. Output: hierarki kode + kutipan.',
     tools: [{ label: 'Qualitative Coder', href: '/kualitatif' }],
     tips: [
@@ -132,7 +132,7 @@ const QUAL_STEPS = [
   },
   {
     id: 'k5', title: 'Backup Workspace',
-    icon: BookOpen, color: 'bg-slate-700',
+    icon: BookOpen, color: 'bg-teal',
     desc: 'Backup codebook, dokumen, dan codings ke file .json.',
     tools: [{ label: 'Pengaturan & Backup', href: '/pengaturan' }],
   },

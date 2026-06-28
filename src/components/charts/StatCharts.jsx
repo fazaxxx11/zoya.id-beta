@@ -6,17 +6,19 @@ import jstat from 'jstat'
 // ============================================================
 // Shared constants
 // ============================================================
+// Scholarly editorial palette — sinkron dengan CSS variables di index.css
+// (lihat --accent / --deep-teal / --warm-rose / --fg / --muted / --border)
 const COLORS = {
-  primary: '#0ea5e9',   // sky-500
-  secondary: '#6366f1', // indigo-500
-  axis: '#374151',      // gray-700
-  grid: '#e5e7eb',      // gray-200
-  text: '#6b7280',      // gray-500
-  fill: '#bae6fd',      // sky-200
-  accent: '#f59e0b',    // amber-500
+  primary: '#166C66',   // deep-teal — main data color
+  secondary: '#9A6721', // accent gold
+  axis: '#1C1E26',      // fg/ink
+  grid: '#DAD6CD',      // border
+  text: '#76736C',      // muted
+  fill: '#9A6721',      // accent gold (bar fill)
+  accent: '#B25F58',    // warm-rose / terracotta (reference lines)
 }
 
-const PALETTE = ['#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316']
+const PALETTE = ['#9A6721', '#166C66', '#B25F58', '#73665A', '#5C8B6F', '#A78A4F', '#8A5A5A', '#4A6B6E']
 
 // ============================================================
 // ChartFrame — wrapper dengan title, axes, padding
@@ -26,7 +28,7 @@ function ChartFrame({ title, width = 480, height = 280, padding = { t: 30, r: 20
   const innerH = height - padding.t - padding.b
   return (
     <div className="bg-card rounded-lg border border-border p-3">
-      {title && <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1 text-center">{title}</div>}
+      {title && <div className="text-xs font-semibold text-fg/70 mb-1 text-center">{title}</div>}
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto" style={{ maxHeight: 320 }}>
         <g transform={`translate(${padding.l}, ${padding.t})`}>
           {typeof children === 'function' ? children({ innerW, innerH }) : children}

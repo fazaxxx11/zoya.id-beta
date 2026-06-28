@@ -6,13 +6,14 @@
 // Ditujukan sebagai *draft awal* — user tetap perlu polish substantif.
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { Copy, Download, CheckSquare, Square, RefreshCw, AlertCircle, FileText, Printer, Sparkles, Loader2 } from 'lucide-react'
+import { Copy, Download, CheckSquare, Square, RefreshCw, AlertCircle, FileText, Printer, BookOpen, Loader2 } from 'lucide-react'
 import { listAnalyses, getAnalysis } from '../lib/savedAnalyses'
 import { buildReport, buildAIReport, reportToText, reportToHTML } from '../lib/reportBuilder'
 import { reportToDocx, downloadDocx } from '../lib/docxExporter'
 import { generateAllSections } from '../lib/babIVClient'
 import { toast } from '../lib/toast'
 import PageHeader from '../components/PageHeader'
+import { STATISTIK_SUBNAV } from '../lib/statistikNav'
 import ResultSummary from '../components/design/ResultSummary'
 
 export default function StatistikReport() {
@@ -257,6 +258,7 @@ export default function StatistikReport() {
           { path: '/statistik', label: 'Statistik' },
           { label: 'Bab IV Generator' },
         ]}
+        subNav={STATISTIK_SUBNAV}
       />
 
       <main className="max-w-6xl mx-auto px-5 py-6 grid lg:grid-cols-[320px_1fr] gap-5 print:block print:max-w-none print:p-0">
@@ -325,18 +327,18 @@ export default function StatistikReport() {
               {/* AI Generate */}
               <button onClick={generateAI}
                       disabled={generatingAI || selected.size === 0}
-                      className="text-xs font-heading font-semibold bg-[rgb(var(--accent))] text-[rgb(var(--accent-fg))] hover:brightness-110 disabled:opacity-40 px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all">
+                      className="text-xs font-heading font-semibold bg-accent text-accent-fg hover:bg-accent/90 disabled:opacity-40 px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all">
                 {generatingAI ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <BookOpen className="w-3.5 h-3.5" />
                 )}
                 {generatingAI ? 'Generating…' : 'Generate AI'}
               </button>
 
               {aiMode && (
                 <button onClick={() => { setAiMode(false); setAiReport(null) }}
-                        className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] px-3 py-2 rounded-lg">
+                        className="text-xs text-muted hover:text-fg px-3 py-2 rounded-lg">
                   Kembali ke template
                 </button>
               )}
@@ -345,18 +347,18 @@ export default function StatistikReport() {
                 <>
                   <span className="w-px h-5 bg-border" />
                   <button onClick={() => window.print()}
-                          className="text-xs text-[rgb(var(--muted))] border border-[rgb(var(--border))] hover:bg-[rgb(var(--surface))] px-3 py-2 rounded-lg flex items-center gap-1.5">
+                          className="text-xs text-muted border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5">
                     <Printer className="w-3.5 h-3.5" />
                     Cetak
                   </button>
                   <button onClick={copyHTML}
-                          className="text-xs text-[rgb(var(--muted))] border border-[rgb(var(--border))] hover:bg-[rgb(var(--surface))] px-3 py-2 rounded-lg flex items-center gap-1.5">
+                          className="text-xs text-muted border border-border hover:bg-surface px-3 py-2 rounded-lg flex items-center gap-1.5">
                     <Copy className="w-3.5 h-3.5" />
                     Salin
                   </button>
                   <button onClick={downloadDOCX}
                           disabled={downloadingDocx}
-                          className="text-xs bg-[rgb(var(--accent))] text-[rgb(var(--accent-fg))] hover:brightness-110 px-3 py-2 rounded-lg flex items-center gap-1.5 disabled:opacity-60 transition-all">
+                          className="text-xs bg-accent text-accent-fg hover:bg-accent/90 px-3 py-2 rounded-lg flex items-center gap-1.5 disabled:opacity-60 transition-all">
                     <FileText className="w-3.5 h-3.5" />
                     {downloadingDocx ? '...' : 'Download DOCX'}
                   </button>
@@ -368,7 +370,7 @@ export default function StatistikReport() {
           {/* Preview body */}
           {!displayReport ? (
             <div className="bg-card rounded-xl border border-border p-12 text-center">
-              <FileText className="w-10 h-10 text-[rgb(var(--muted))]/30 mx-auto mb-3" />
+              <FileText className="w-10 h-10 text-muted/30 mx-auto mb-3" />
               <div className="text-sm text-muted">Pilih analisis di sidebar & klik <strong>Generate AI</strong></div>
             </div>
           ) : (

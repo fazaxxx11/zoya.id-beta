@@ -7,3 +7,9 @@ dist/
 .env.local
 .env.*.local
 api/__pycache__/
+
+# Local tooling state (brainstorm previews, server pids) — not project source
+.superpowers/
+
+# Windows reserved-name redirect artifact (created by accidental `> nul`)
+nul

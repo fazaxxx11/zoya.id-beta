@@ -167,7 +167,7 @@ function Admin() {
         <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <ShieldAlert className="w-8 h-8 text-red-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">Akses Ditolak</h1>
+        <h1 className="text-2xl font-bold text-fg mb-2">Akses Ditolak</h1>
         <p className="text-muted text-sm mb-6">
           Akun kamu <strong>{currentUser?.email}</strong> tidak memiliki role admin.
           Hubungi administrator jika kamu yakin ini adalah kesalahan.
@@ -193,7 +193,7 @@ function Admin() {
           <div className="w-16 h-16 bg-sky-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Lock className="w-8 h-8 text-sky-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Admin Login</h1>
+          <h1 className="text-2xl font-bold text-fg">Admin Login</h1>
           <p className="text-muted text-sm">{BRAND_NAME} — Akses terbatas</p>
           <p className="text-amber-600 text-xs mt-4 mb-6">
             ⚠️ Kamu belum login. Login dengan akun admin untuk akses dashboard.
@@ -220,7 +220,7 @@ function Admin() {
   // Admin dashboard
   return (
     <div className="min-h-screen bg-pattern">
-      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+      <header className="bg-bg border-b border-border shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2 text-muted hover:text-sky-600">
@@ -229,7 +229,7 @@ function Admin() {
             <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-xl flex items-center justify-center">
               <Settings className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-gray-800 dark:text-gray-200">Admin Dashboard</span>
+            <span className="font-bold text-fg">Admin Dashboard</span>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={goToUserMode} className="flex items-center gap-2 text-sky-600 hover:text-sky-700 text-sm">
@@ -266,28 +266,28 @@ function Admin() {
               <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center"><DollarSign className="w-5 h-5 text-green-600"/></div>
               <span className="text-sm text-muted">Hari Ini</span>
             </div>
-            <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{formatCurrency(stats.todayRevenue)}</p>
+            <p className="text-2xl font-bold text-fg">{formatCurrency(stats.todayRevenue)}</p>
           </div>
           <div className="bg-card rounded-2xl p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center"><TrendingUp className="w-5 h-5 text-blue-600"/></div>
               <span className="text-sm text-muted">Total Revenue</span>
             </div>
-            <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{formatCurrency(stats.totalRevenue)}</p>
+            <p className="text-2xl font-bold text-fg">{formatCurrency(stats.totalRevenue)}</p>
           </div>
           <div className="bg-card rounded-2xl p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center"><CreditCard className="w-5 h-5 text-purple-600"/></div>
+              <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center"><CreditCard className="w-5 h-5 text-accent"/></div>
               <span className="text-sm text-muted">Transaksi Hari Ini</span>
             </div>
-            <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{stats.todayTransactions}</p>
+            <p className="text-2xl font-bold text-fg">{stats.todayTransactions}</p>
           </div>
           <div className="bg-card rounded-2xl p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center"><Users className="w-5 h-5 text-orange-600"/></div>
               <span className="text-sm text-muted">Total Users</span>
             </div>
-            <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{stats.activeUsers}</p>
+            <p className="text-2xl font-bold text-fg">{stats.activeUsers}</p>
           </div>
         </div>
 
@@ -296,7 +296,7 @@ function Admin() {
           <div className="p-4 border-b flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-amber-600" />
-              <h2 className="font-bold text-gray-800 dark:text-gray-200">Verifikasi Top-up Manual</h2>
+              <h2 className="font-bold text-fg">Verifikasi Top-up Manual</h2>
               {pendingTopups.filter(p => p.status === 'pending').length > 0 && (
                 <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full">
                   {pendingTopups.filter(p => p.status === 'pending').length} menunggu
@@ -328,7 +328,7 @@ function Admin() {
                   {pendingTopups.slice(0, 30).map(p => (
                     <tr key={p.id} className="hover:bg-surface">
                       <td className="px-4 py-3 text-sm font-medium text-sky-600">{p.id}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{p.userEmail}</td>
+                      <td className="px-4 py-3 text-sm text-fg/80">{p.userEmail}</td>
                       <td className="px-4 py-3 text-sm font-semibold">{formatIDR(p.amount)}</td>
                       <td className="px-4 py-3 text-sm text-emerald-600">+{formatIDR(p.bonus)}</td>
                       <td className="px-4 py-3 text-sm capitalize">{p.method}</td>
@@ -375,7 +375,7 @@ function Admin() {
         {/* Table */}
         <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
           <div className="p-4 border-b flex flex-wrap gap-4 justify-between">
-            <h2 className="font-bold text-gray-800 dark:text-gray-200">Transaction History</h2>
+            <h2 className="font-bold text-fg">Transaction History</h2>
             <div className="flex gap-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted"/>
@@ -407,7 +407,7 @@ function Admin() {
                 {filteredTransactions.map(t => (
                   <tr key={t.id} className="hover:bg-surface">
                     <td className="px-4 py-3 text-sm font-medium text-sky-600">{t.id}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{t.user}</td>
+                    <td className="px-4 py-3 text-sm text-fg/80">{t.user}</td>
                     <td className="px-4 py-3 text-sm"><span className="font-medium">{t.service}</span><span className="text-muted text-xs block">{t.tier}</span></td>
                     <td className="px-4 py-3 text-sm font-semibold">{formatCurrency(t.amount)}</td>
                     <td className="px-4 py-3 text-sm capitalize">{t.method}</td>

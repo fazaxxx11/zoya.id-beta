@@ -18,6 +18,7 @@ import {
   Languages,
   Compass,
 } from "lucide-react";
+import { AmbientBlobs, Flourish } from "../components/design";
 import ThemeToggle from "../components/ThemeToggle";
 import Logo from "../components/Logo";
 import { useCurrentUser } from "../lib/useCurrentUser";
@@ -27,29 +28,6 @@ import GuidedWizardModal from "../components/statistik/GuidedWizardModal";
 /* =====================================================
    COMPONENTS
 ===================================================== */
-
-/** Gold flourish SVG */
-function Flourish({ className = "" }) {
-  return (
-    <svg
-      viewBox="0 0 240 20"
-      fill="none"
-      className={`w-36 md:w-56 h-auto ${className}`}
-      aria-hidden="true"
-    >
-      <path
-        d="M0 10h80c0 0 20-6 40 0s20-6 40 0h80"
-        stroke="currentColor"
-        strokeWidth="0.8"
-        strokeOpacity="0.3"
-        className="text-accent"
-      />
-      <circle cx="120" cy="10" r="2.5" className="fill-accent" fillOpacity="0.35" />
-      <circle cx="114" cy="10" r="0.8" className="fill-accent" fillOpacity="0.2" />
-      <circle cx="126" cy="10" r="0.8" className="fill-accent" fillOpacity="0.2" />
-    </svg>
-  );
-}
 
 /** Animated counter — counts from 0 to target */
 function CountUp({ target, suffix = "", duration = 1500 }) {
@@ -115,39 +93,6 @@ function TypingText({ text, speed = 35, delay = 0 }) {
         <span className="inline-block w-px h-3 bg-accent/70 align-middle ml-0.5 animate-pulse" />
       )}
     </span>
-  );
-}
-
-/** Ambient gradient blobs — soft, breathing, fills space */
-function AmbientBlobs({ variant = "default" }) {
-  const sets = {
-    default: [
-      { c: "accent", top: "5%", left: "60%", size: "w-72 h-72", a: "animate-blob" },
-      { c: "teal", top: "40%", left: "5%", size: "w-64 h-64", a: "animate-blob-slow" },
-      { c: "terracotta", top: "55%", left: "75%", size: "w-56 h-56", a: "animate-blob-fast" },
-    ],
-    hero: [
-      { c: "accent", top: "-5%", left: "65%", size: "w-80 h-80", a: "animate-blob" },
-      { c: "teal", top: "30%", left: "-5%", size: "w-72 h-72", a: "animate-blob-slow" },
-      { c: "terracotta", top: "60%", left: "80%", size: "w-56 h-56", a: "animate-blob-fast" },
-    ],
-  };
-  const colorMap = {
-    accent: "rgb(var(--accent))",
-    teal: "rgb(var(--deep-teal))",
-    terracotta: "rgb(var(--warm-rose))",
-  };
-  const blobs = sets[variant] || sets.default;
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-      {blobs.map((b, i) => (
-        <div
-          key={i}
-          className={`absolute ${b.size} ${b.a} rounded-full blur-3xl opacity-[0.08] dark:opacity-[0.12]`}
-          style={{ top: b.top, left: b.left, background: colorMap[b.c] }}
-        />
-      ))}
-    </div>
   );
 }
 
@@ -280,14 +225,6 @@ export default function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pricingOpen, setPricingOpen] = useState(false);
   const [wizardOpen, setWizardOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
@@ -298,11 +235,7 @@ export default function Home() {
     <div className="min-h-screen bg-bg text-fg font-body">
       {/* ===== HEADER ===== */}
       <header
-        className={`sticky top-0 z-50 border-b border-border transition-all duration-300 ${
-          scrolled
-            ? "bg-bg/85 backdrop-blur-md"
-            : "bg-bg"
-        }`}
+        className={`sticky top-0 z-50 border-b border-border transition-all duration-300 bg-bg`}
       >
         <div className="max-w-5xl mx-auto px-5">
           <div className="flex items-center justify-between h-14">

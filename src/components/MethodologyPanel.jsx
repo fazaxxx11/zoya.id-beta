@@ -89,8 +89,8 @@ function TabButton({ active, onClick, icon: Icon, children }) {
     <button onClick={onClick}
       className={`px-5 py-3 text-sm font-medium flex items-center gap-2 border-b-2 transition-colors ${
         active
-          ? 'border-gray-900 text-gray-900 dark:text-gray-100 bg-card'
-          : 'border-transparent text-muted hover:text-gray-800 dark:text-gray-200'
+          ? 'border-fg text-fg bg-card'
+          : 'border-transparent text-muted hover:text-fg'
       }`}>
       <Icon className="w-4 h-4" />
       {children}
@@ -108,12 +108,12 @@ function CitationTab({ methodsParagraph, apaCitation, onCopy }) {
             <div className="text-[12px] text-muted mt-0.5">Salin paragraf ini ke bagian metode penelitian skripsi.</div>
           </div>
           <button onClick={() => onCopy(methodsParagraph, 'Paragraf metode')}
-            className="text-xs text-gray-700 dark:text-gray-300 border border-border hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+            className="text-xs text-fg/70 border border-border hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
             <Copy className="w-3.5 h-3.5" />
             Salin
           </button>
         </div>
-        <div className="bg-surface border border-border rounded-lg p-4 text-[13px] text-gray-800 dark:text-gray-200 leading-relaxed">
+        <div className="bg-surface border border-border rounded-lg p-4 text-[13px] text-fg leading-relaxed">
           {methodsParagraph}
         </div>
       </div>
@@ -125,12 +125,12 @@ function CitationTab({ methodsParagraph, apaCitation, onCopy }) {
             <div className="text-[12px] text-muted mt-0.5">Referensi R untuk daftar pustaka.</div>
           </div>
           <button onClick={() => onCopy(apaCitation, 'Citation')}
-            className="text-xs text-gray-700 dark:text-gray-300 border border-border hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+            className="text-xs text-fg/70 border border-border hover:bg-surface px-3 py-1.5 rounded-lg flex items-center gap-1.5">
             <Copy className="w-3.5 h-3.5" />
             Salin
           </button>
         </div>
-        <div className="bg-surface border border-border rounded-lg p-4 text-[13px] text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
+        <div className="bg-surface border border-border rounded-lg p-4 text-[13px] text-fg font-mono leading-relaxed">
           {apaCitation}
         </div>
       </div>
@@ -150,13 +150,13 @@ function RScriptTab({ rScript, showFull, onToggle, onCopy, onDownload }) {
 
   return (
     <div className="space-y-4">
-      <div className="text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed">
+      <div className="text-[12px] text-muted leading-relaxed">
         Kode R reproducible — data sudah ter-embed sebagai vector, jadi bisa langsung di-Run di RStudio
         tanpa perlu file eksternal. Output Console akan persis seperti analisis R native.
       </div>
 
       <div className="bg-gray-900 rounded-lg overflow-hidden">
-        <div className="px-3 sm:px-4 py-2 bg-gray-800 border-b border-gray-700 flex items-center justify-between gap-2 flex-wrap">
+        <div className="px-3 sm:px-4 py-2 bg-gray-800 border-b border-border flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2 text-xs text-muted font-mono">
             <FileCode className="w-3.5 h-3.5" />
             analysis.R
@@ -179,13 +179,13 @@ function RScriptTab({ rScript, showFull, onToggle, onCopy, onDownload }) {
         </pre>
         {!showFull && (
           <button onClick={onToggle}
-            className="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-xs text-muted border-t border-gray-700">
+            className="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-xs text-muted border-t border-border">
             Tampilkan kode lengkap
           </button>
         )}
         {showFull && (
           <button onClick={onToggle}
-            className="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-xs text-muted border-t border-gray-700">
+            className="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-xs text-muted border-t border-border">
             Ringkas
           </button>
         )}

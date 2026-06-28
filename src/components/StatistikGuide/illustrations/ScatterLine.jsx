@@ -24,26 +24,26 @@ const ScatterLine = ({ className }) => {
       xmlns="http://www.w3.org/2000/svg"
     >
       {/* Axes */}
-      <line x1="35" y1="170" x2="285" y2="170" stroke="#cbd5e1" strokeWidth="1" />
-      <line x1="40" y1="10" x2="40" y2="175" stroke="#cbd5e1" strokeWidth="1" />
+      <line x1="35" y1="170" x2="285" y2="170" stroke="rgb(var(--border))" strokeWidth="1" />
+      <line x1="40" y1="10" x2="40" y2="175" stroke="rgb(var(--border))" strokeWidth="1" />
 
       {/* X-axis tick labels */}
       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((v) => (
-        <text key={v} x={toSvgX(v)} y="185" textAnchor="middle" fontSize="8" fill="#94a3b8">
+        <text key={v} x={toSvgX(v)} y="185" textAnchor="middle" fontSize="8" fill="rgb(var(--muted))">
           {v}
         </text>
       ))}
 
       {/* Y-axis tick labels */}
       {[0, 2, 4, 6, 8, 10].map((v) => (
-        <text key={v} x="30" y={toSvgY(v) + 3} textAnchor="end" fontSize="8" fill="#94a3b8">
+        <text key={v} x="30" y={toSvgY(v) + 3} textAnchor="end" fontSize="8" fill="rgb(var(--muted))">
           {v}
         </text>
       ))}
 
       {/* Data points */}
       {data.map((d, i) => (
-        <circle key={i} cx={toSvgX(d.x)} cy={toSvgY(d.y)} r="4" fill="#3b82f6" />
+        <circle key={i} cx={toSvgX(d.x)} cy={toSvgY(d.y)} r="4" fill="rgb(var(--accent))" />
       ))}
 
       {/* Regression line: (1, 2.1) → (10, 8.9) */}
@@ -52,17 +52,17 @@ const ScatterLine = ({ className }) => {
         y1={toSvgY(2.1)}
         x2={toSvgX(10)}
         y2={toSvgY(8.9)}
-        stroke="#ef4444"
+        stroke="rgb(var(--warm-rose))"
         strokeWidth="2"
       />
 
       {/* Beta label */}
-      <text x={toSvgX(7)} y={toSvgY(6.5) - 8} fontSize="10" fill="#ef4444" fontWeight="600">
+      <text x={toSvgX(7)} y={toSvgY(6.5) - 8} fontSize="10" fill="rgb(var(--warm-rose))" fontWeight="600">
         β = 0.75
       </text>
 
       {/* R² label */}
-      <text x="260" y="22" textAnchor="end" fontSize="10" fill="#1e293b" fontWeight="600">
+      <text x="260" y="22" textAnchor="end" fontSize="10" fill="rgb(var(--fg))" fontWeight="600">
         R² = 0.94
       </text>
     </svg>

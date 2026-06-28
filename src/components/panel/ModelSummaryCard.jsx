@@ -1,5 +1,5 @@
 import { Panel, MetricCard } from '../design';
-import { BarChart3, TrendingUp, Users, Clock, Scale } from 'lucide-react';
+import { Activity, TrendingUp, Users, Clock, Scale } from 'lucide-react';
 
 export default function ModelSummaryCard({ result, modelType }) {
   if (!result) return null;
@@ -20,7 +20,7 @@ export default function ModelSummaryCard({ result, modelType }) {
   return (
     <Panel variant="emphasized" className="p-5 space-y-4">
       <div className="flex items-center gap-2 mb-3">
-        <BarChart3 className="w-5 h-5 text-primary" />
+        <Activity className="w-5 h-5 text-primary" />
         <h3 className="text-lg font-heading font-semibold">Ringkasan Model</h3>
         <span className="ml-auto text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">
           {modelLabel}
