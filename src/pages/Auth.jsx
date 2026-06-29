@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   ChevronLeft, Mail, Lock, User, Phone, Eye, EyeOff,
-  Loader2, CheckCircle, XCircle, Gift, Zap, Sparkles, Clock,
+  Loader2, CheckCircle, XCircle, Gift, Zap, Clock,
   KeyRound, ArrowLeft,
 } from 'lucide-react'
 import {
@@ -296,7 +296,7 @@ function Auth() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-fg">Paket Top-up</h3>
                 <span className={`text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 ${BETA_FREE ? 'text-accent-fg bg-accent-soft' : 'text-emerald-600 bg-emerald-50'}`}>
-                  <Sparkles className="w-3 h-3" /> {BETA_FREE ? 'Coming Soon' : 'Bonus 2× untuk semua paket'}
+                  <Gift className="w-3 h-3" /> {BETA_FREE ? 'Coming Soon' : 'Bonus 2× untuk semua paket'}
                 </span>
               </div>
               {BETA_FREE && (

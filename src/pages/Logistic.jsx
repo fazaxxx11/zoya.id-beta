@@ -6,7 +6,7 @@
 import { useState, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Activity, Play, Upload, AlertTriangle, Info, Sparkles,
+  Activity, Play, Upload, AlertTriangle, Info,
   TrendingUp, Target, BarChart2,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
@@ -245,7 +245,7 @@ function CoefficientsTable({ fit }) {
   return (
     <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-        <Sparkles className="w-4 h-4 text-amber-600" /> Koefisien & Odds Ratio
+        <Activity className="w-4 h-4 text-amber-600" /> Koefisien & Odds Ratio
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">

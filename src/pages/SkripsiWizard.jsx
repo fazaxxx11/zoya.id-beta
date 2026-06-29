@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 import {
   Compass, CheckCircle2, Circle, ChevronRight, ChevronDown,
   ClipboardCheck, Users, Beaker, Activity, Layers, MessageSquare,
-  FileText, BookOpen, Sparkles, Award, Target,
+  FileText, BookOpen, Award, Target,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 
@@ -76,7 +76,7 @@ const QUANT_STEPS = [
   },
   {
     id: 'q6', title: 'Uji Asumsi (Normalitas, dll)',
-    icon: Sparkles, color: 'bg-rose-500',
+    icon: ClipboardCheck, color: 'bg-rose-500',
     desc: 'Uji normalitas (Shapiro-Wilk), homogenitas, multikolinearitas — sesuai analisis yang dipilih.',
     tools: [{ label: 'Uji Asumsi', href: '/statistik?tool=normalitas' }],
   },

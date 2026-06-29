@@ -11,7 +11,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   HelpCircle, Search, ChevronDown, BookOpen, Compass, Calculator,
-  FileText, ClipboardCheck, Award, Mail, ExternalLink, Sparkles,
+  FileText, ClipboardCheck, Award, Mail, ExternalLink,
   AlertCircle, CheckCircle2,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
@@ -396,7 +396,7 @@ export default function Help() {
         {/* Category filter */}
         <div className="flex flex-wrap gap-2">
           <CatPill active={activeCat === 'all'} onClick={() => setActiveCat('all')}>
-            <Sparkles className="w-3.5 h-3.5" /> Semua ({FAQ.length})
+            <BookOpen className="w-3.5 h-3.5" /> Semua ({FAQ.length})
           </CatPill>
           {CATEGORIES.map(c => {
             const count = FAQ.filter(f => f.cat === c.id).length

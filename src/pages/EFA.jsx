@@ -6,7 +6,7 @@
 import { useState, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Layers, Play, Upload, AlertTriangle, Sparkles,
+  Layers, Play, Upload, AlertTriangle,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import SaveAnalysisButton from '../components/SaveAnalysisButton'
@@ -413,7 +413,7 @@ function LoadingsSection({ result }) {
     <div className="bg-card border border-border hover:border-accent/50 rounded-lg p-4 transition-colors active:scale-95">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <h3 className="font-semibold text-sm flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-accent" />
+          <Layers className="w-4 h-4 text-accent" />
           {showRotated ? 'Rotated Component Matrix (Varimax)' : 'Component Matrix (Unrotated)'}
         </h3>
         <label className="text-xs flex items-center gap-2">

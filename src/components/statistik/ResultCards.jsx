@@ -2,7 +2,7 @@
 // Result display components for all statistical tests — Scholarly Editorial redesign.
 
 import React, { useRef } from 'react';
-import { Sparkles } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { Histogram, QQPlot, ScatterPlot, BoxPlot, ChartGrid } from '../charts/StatCharts'
 import { HistogramChart, QQPlotChart } from '../charts'
 import { ExportChartButton } from '../charts/ExportChartButton'
@@ -33,7 +33,7 @@ export const Stat = ({ label, value, accent, term }) => (
 export const InterpBox = ({ children }) => (
   <div className="mt-5 p-4 bg-accent/5 border-l-2 border-accent rounded-r-lg">
     <div className="flex items-center gap-1.5 mb-1.5">
-      <Sparkles className="w-3 h-3 text-accent" />
+      <BookOpen className="w-3 h-3 text-accent" />
       <p className="text-[10px] font-heading font-semibold text-accent tracking-wider uppercase">Interpretasi</p>
     </div>
     <p className="text-sm text-fg leading-relaxed">{children}</p>
