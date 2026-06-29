@@ -19,7 +19,7 @@
 - Scholarly/academic design — NOT SaaS-template
 - Primary gold: `#B58B45` (accent)
 - Background: warm ivory `#F7F3EA` (light) / deep navy `#172033` (dark)
-- Font headings: Source Serif 4 (serif)
+- Font headings: EB Garamond (serif)
 - Font body: IBM Plex Sans (sans-serif)
 - NO purple, gradients, glassmorphism, sparkles, chatbot bubbles
 - NO Inter/Roboto fonts

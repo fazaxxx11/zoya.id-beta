@@ -1,17 +1,12 @@
 /**
  * docxExporter — konversi report object ({ title, intro, sections[] }) ke file .docx
- * menggunakan npm package 'docx'.
+ * menggunakan npm package 'docx' (dynamic import — lazy-loaded saat export dipicu).
  *
  * Usage:
  *   import { reportToDocx, downloadDocx } from '../lib/docxExporter'
  *   const blob = await reportToDocx(report)
  *   downloadDocx(blob, 'Bab4-Hasil-Penelitian.docx')
  */
-
-import {
-  Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-  WidthType, AlignmentType, BorderStyle, HeadingLevel, TableLayoutType
-} from 'docx'
 
 const FONT = 'Times New Roman'
 const SIZE_BODY = 24  // half-points → 12pt
@@ -20,30 +15,16 @@ const SIZE_H2 = 26     // 13pt
 const SIZE_CAPTION = 22 // 11pt
 const SIZE_TABLE = 22   // 11pt
 
-/** Border style konsisten untuk tabel */
-const thinBorder = {
-  style: BorderStyle.SINGLE,
-  size: 1,
-  color: '000000',
-}
-
-const cellBorders = {
-  top: thinBorder,
-  bottom: thinBorder,
-  left: thinBorder,
-  right: thinBorder,
-}
-
 /**
  * Build a single justified paragraph with optional first-line indent.
  */
-function para(text, { indent = true, bold = false, size = SIZE_BODY, spacing = 150 } = {}) {
-  return new Paragraph({
-    alignment: AlignmentType.JUSTIFIED,
+function para(docx, text, { indent = true, bold = false, size = SIZE_BODY, spacing = 150 } = {}) {
+  return new docx.Paragraph({
+    alignment: docx.AlignmentType.JUSTIFIED,
     indent: indent ? { firstLine: 720 } : undefined, // ~1.27cm = 720 twips
     spacing: { after: spacing },
     children: [
-      new TextRun({
+      new docx.TextRun({
         text,
         font: FONT,
         size,
@@ -56,15 +37,15 @@ function para(text, { indent = true, bold = false, size = SIZE_BODY, spacing = 1
 /**
  * Build heading paragraph.
  */
-function heading(text, level = HeadingLevel.HEADING_2) {
-  return new Paragraph({
+function heading(docx, text, level = docx.HeadingLevel.HEADING_2) {
+  return new docx.Paragraph({
     heading: level,
     spacing: { before: 240, after: 120 },
     children: [
-      new TextRun({
+      new docx.TextRun({
         text,
         font: FONT,
-        size: level === HeadingLevel.HEADING_1 ? SIZE_H1 : SIZE_H2,
+        size: level === docx.HeadingLevel.HEADING_1 ? SIZE_H1 : SIZE_H2,
         bold: true,
       }),
     ],
@@ -74,12 +55,12 @@ function heading(text, level = HeadingLevel.HEADING_2) {
 /**
  * Build table caption paragraph (centered, italic feel via smaller size).
  */
-function caption(text) {
-  return new Paragraph({
-    alignment: AlignmentType.CENTER,
+function caption(docx, text) {
+  return new docx.Paragraph({
+    alignment: docx.AlignmentType.CENTER,
     spacing: { before: 200, after: 80 },
     children: [
-      new TextRun({
+      new docx.TextRun({
         text,
         font: FONT,
         size: SIZE_CAPTION,
@@ -92,17 +73,29 @@ function caption(text) {
 /**
  * Build a docx Table from { headers, rows }.
  */
-function buildTable({ headers, rows }) {
-  const headerRow = new TableRow({
+function buildTable(docx, { headers, rows }) {
+  const thinBorder = {
+    style: docx.BorderStyle.SINGLE,
+    size: 1,
+    color: '000000',
+  }
+  const cellBorders = {
+    top: thinBorder,
+    bottom: thinBorder,
+    left: thinBorder,
+    right: thinBorder,
+  }
+
+  const headerRow = new docx.TableRow({
     tableHeader: true,
     children: headers.map(h =>
-      new TableCell({
+      new docx.TableCell({
         borders: cellBorders,
-        width: { size: Math.max(1500, 9000 / headers.length), type: WidthType.DXA },
+        width: { size: Math.max(1500, 9000 / headers.length), type: docx.WidthType.DXA },
         children: [
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            children: [new TextRun({ text: h, font: FONT, size: SIZE_TABLE, bold: true })],
+          new docx.Paragraph({
+            alignment: docx.AlignmentType.CENTER,
+            children: [new docx.TextRun({ text: h, font: FONT, size: SIZE_TABLE, bold: true })],
           }),
         ],
       })
@@ -110,14 +103,14 @@ function buildTable({ headers, rows }) {
   })
 
   const dataRows = rows.map(row =>
-    new TableRow({
+    new docx.TableRow({
       children: row.map((cell, ci) =>
-        new TableCell({
+        new docx.TableCell({
           borders: cellBorders,
           children: [
-            new Paragraph({
-              alignment: ci === 0 ? AlignmentType.LEFT : AlignmentType.CENTER,
-              children: [new TextRun({ text: String(cell), font: FONT, size: SIZE_TABLE })],
+            new docx.Paragraph({
+              alignment: ci === 0 ? docx.AlignmentType.LEFT : docx.AlignmentType.CENTER,
+              children: [new docx.TextRun({ text: String(cell), font: FONT, size: SIZE_TABLE })],
             }),
           ],
         })
@@ -125,10 +118,10 @@ function buildTable({ headers, rows }) {
     })
   )
 
-  return new Table({
+  return new docx.Table({
     rows: [headerRow, ...dataRows],
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    layout: TableLayoutType.AUTOFIT,
+    width: { size: 100, type: docx.WidthType.PERCENTAGE },
+    layout: docx.TableLayoutType.AUTOFIT,
   })
 }
 
@@ -138,33 +131,34 @@ function buildTable({ headers, rows }) {
  * @returns {Promise<Blob>}
  */
 export async function reportToDocx(report) {
+  const docx = await import('docx')
   const children = []
 
   // Title page heading
-  children.push(heading(report.title, HeadingLevel.HEADING_1))
+  children.push(heading(docx, report.title, docx.HeadingLevel.HEADING_1))
 
   // Intro paragraph
   if (report.intro) {
-    children.push(para(report.intro))
+    children.push(para(docx, report.intro))
   }
 
   // Sections
   report.sections.forEach((sec, secIdx) => {
-    children.push(heading(sec.title, HeadingLevel.HEADING_2))
+    children.push(heading(docx, sec.title, docx.HeadingLevel.HEADING_2))
 
     sec.paragraphs.forEach(p => {
-      children.push(para(p))
+      children.push(para(docx, p))
     })
 
     sec.tables.forEach(t => {
-      children.push(caption(t.caption))
-      children.push(buildTable(t))
+      children.push(caption(docx, t.caption))
+      children.push(buildTable(docx, t))
       // white space after table
-      children.push(new Paragraph({ spacing: { after: 120 }, children: [] }))
+      children.push(new docx.Paragraph({ spacing: { after: 120 }, children: [] }))
     })
   })
 
-  const doc = new Document({
+  const doc = new docx.Document({
     styles: {
       default: {
         document: {
@@ -182,7 +176,7 @@ export async function reportToDocx(report) {
     }],
   })
 
-  return await Packer.toBlob(doc)
+  return await docx.Packer.toBlob(doc)
 }
 
 /**

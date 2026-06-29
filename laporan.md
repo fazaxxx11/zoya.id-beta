@@ -13,7 +13,7 @@ tidak terdefinisi di tailwind config), warna inkonsisten (oranye `#f99f1e` clash
 token gold), efek dekoratif menumpuk tanpa hierarki (aurora, glow-pulse, glassmorphism).
 
 User minta **re-build total Home**: gaya, warna, spacing, tempat — semua boleh dirombak.
-Arah estetik: **Scholarly Editorial** (gold + serif Source Serif 4).
+Arah estetik: **Scholarly Editorial** (gold + serif EB Garamond).
 
 ---
 
@@ -22,7 +22,7 @@ Arah estetik: **Scholarly Editorial** (gold + serif Source Serif 4).
 ### ✅ Selesai (Fase 1 — Foundation + Home)
 
 1. **`tailwind.config.js`**
-   - Tambah `fontHeading`/`serif`/`body`/`mono` aliases (Source Serif 4, IBM Plex Sans/Mono)
+   - Tambah `fontHeading`/`serif`/`body`/`mono` aliases (EB Garamond, IBM Plex Sans/Mono)
    - `primary` value diubah dari oranye `#f99f1e` → `rgb(var(--accent))` (gold). **Jangan balik ke oranye** — dipakai di panel components (PanelConfig, HausmanCard, dll).
    - Expose token baru sebagai utility: `surface`, `muted`, `accent-soft`, `accent-fg`, `teal`, `terracotta`
    - Buang animasi glow/aurora (0 usage): `aurora-1/2/3`, `glow-pulse`
@@ -112,7 +112,7 @@ Design-system cleanup pass menyeluruh di seluruh frontend (di atas Fase 1):
 ### Prinsip design (ranah frontend, AGENTS.md design system di-override)
 - **Scholarly Editorial** — bukan SaaS template.
 - Palette terbatas: gold + teal + terracotta (bukan 4+ warna ramai).
-- Serif Source Serif 4 untuk heading, italic untuk aksen kata.
+- Serif EB Garamond untuk heading, italic untuk aksen kata.
 - **Section backgrounds VARIATIF & ada gradasi transisi** — JANGAN buat semua section warna sama (monoton). Bergantian antara `bg` ↔ `surface`, dan gunakan `linear-gradient` di section transisi supaya gak hard-cut. Header WAJIB punya border bawah.
 - Border frames (`border border-border rounded-xl`) di container penting.
 - Efek dekoratif: floating shapes + ruled lines + dot grid + warm gradient. **Tanpa glow, aurora, glassmorphism, gradient text.**

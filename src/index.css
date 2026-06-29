@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -625,29 +625,6 @@ body::before { display: none; }
   100% { transform: scale(1); }
 }
 .animate-bounce-in { animation: bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-/* Smooth float (idle animation) */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
-}
-.animate-float { animation: float 3s ease-in-out infinite; }
-
-/* Shimmer skeleton loader (lebih ciamik dari plain pulse) */
-@keyframes shimmer-bg {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    rgb(var(--card) / 0.4) 0%,
-    rgb(var(--card) / 0.7) 50%,
-    rgb(var(--card) / 0.4) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer-bg 1.5s linear infinite;
-}
 
 /* Stagger helper — child akan ter-animasi dengan delay bertahap */
 .stagger > * { animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards; }

@@ -1,14 +1,16 @@
 // src/components/statistik/ExportActions.jsx
-// Export buttons (Excel + PDF) — lazy-loads export libs
+// Export buttons (Excel + PDF + DOCX + R) — export libs lazy-loaded on demand.
+// DOCX wrapper (docxExport.js) + AI-narrative modal are module-level lazy so the
+// `docx` vendor chunk only fetches when the user actually clicks those buttons.
 
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { Download, FileText } from 'lucide-react'
 import { exportToPDF } from '../../lib/export/pdfExport'
-import { exportToDOCX } from '../../lib/export/docxExport'
 import { exportToExcel } from '../../lib/export/excelExport'
 import { generateRSyntax } from '../../lib/export/rSyntaxGenerator'
 import { toast } from '../../lib/toast'
-import ReportPreviewModal from './ReportPreviewModal'
+
+const ReportPreviewModal = lazy(() => import('./ReportPreviewModal'))
 
 export default function ExportActions({ result, containerRef }) {
   const [exportingPdf, setExportingPdf] = useState(false)
@@ -40,6 +42,7 @@ export default function ExportActions({ result, containerRef }) {
   const handleExportDocx = async () => {
     try {
       setExportingDocx(true)
+      const { exportToDOCX } = await import('../../lib/export/docxExport')
       await exportToDOCX(result)
       toast.success('DOCX berhasil di-download!')
     } catch (err) {
@@ -84,7 +87,9 @@ export default function ExportActions({ result, containerRef }) {
         <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 📝 Laporan AI
       </button>
       {showReportModal && (
-        <ReportPreviewModal result={result} onClose={() => setShowReportModal(false)} />
+        <Suspense fallback={null}>
+          <ReportPreviewModal result={result} onClose={() => setShowReportModal(false)} />
+        </Suspense>
       )}
     </>
   )

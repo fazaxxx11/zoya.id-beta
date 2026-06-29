@@ -1,20 +1,19 @@
 // src/lib/export/docxExport.js
 // DOCX export utility — dynamic import docx (lazy-loaded, ~359KB)
 
-import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
-  Table,
-  TableRow,
-  TableCell,
-  WidthType,
-  AlignmentType,
-  BorderStyle,
-} from 'docx'
-
 export async function exportToDOCX(result) {
+  const {
+    Document,
+    Packer,
+    Paragraph,
+    TextRun,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType,
+    AlignmentType,
+    BorderStyle,
+  } = await import('docx')
 
 
 

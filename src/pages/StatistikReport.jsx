@@ -9,7 +9,6 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { Copy, Download, CheckSquare, Square, RefreshCw, AlertCircle, FileText, Printer, BookOpen, Loader2 } from 'lucide-react'
 import { listAnalyses, getAnalysis } from '../lib/savedAnalyses'
 import { buildReport, buildAIReport, reportToText, reportToHTML } from '../lib/reportBuilder'
-import { reportToDocx, downloadDocx } from '../lib/docxExporter'
 import { generateAllSections } from '../lib/babIVClient'
 import { toast } from '../lib/toast'
 import PageHeader from '../components/PageHeader'
@@ -237,6 +236,7 @@ export default function StatistikReport() {
     if (!displayReport) return
     setDownloadingDocx(true)
     try {
+      const { reportToDocx, downloadDocx } = await import('../lib/docxExporter')
       const blob = await reportToDocx(displayReport)
       downloadDocx(blob, `Bab_IV_Hasil_Pembahasan_${Date.now()}.docx`)
     } catch (e) {
