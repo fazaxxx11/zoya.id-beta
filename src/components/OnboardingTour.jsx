@@ -116,7 +116,7 @@ export default function OnboardingTour() {
       className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto animate-in"
       onClick={(e) => { if (e.target === e.currentTarget) handleSkip() }}
     >
-      <div className="bg-card/60 backdrop-blur-md border border-border/30 rounded-lg shadow-2xl max-w-md w-full overflow-hidden animate-scale-in p-4">
+      <div className="bg-card border border-border rounded-lg shadow-2xl max-w-md w-full overflow-hidden animate-scale-in p-4">
         {/* Skip button */}
         <button
           onClick={handleSkip}
@@ -129,7 +129,7 @@ export default function OnboardingTour() {
 
         {/* Hero Icon */}
         <div className={`bg-gradient-to-br ${current.iconBg} px-8 pt-10 pb-6 text-center relative`}>
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-lg bg-white/20 backdrop-blur-md mb-2">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-lg bg-white/25 mb-2">
             <Icon className="w-10 h-10 text-white" strokeWidth={1.8} />
           </div>
         </div>
