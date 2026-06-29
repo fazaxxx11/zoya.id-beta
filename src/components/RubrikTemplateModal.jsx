@@ -80,7 +80,7 @@ export default function RubrikTemplateModal({ open, onClose, onApply, hasExistin
             <FileText className="w-5 h-5 text-accent" />
             <h3 className="font-bold text-fg">Pilih Template Rubrik</h3>
           </div>
-          <button onClick={onClose} className="text-muted hover:text-accent p-1 rounded-lg hover:bg-surface">
+          <button onClick={onClose} aria-label="Tutup" className="text-muted hover:text-accent p-1 rounded-lg hover:bg-surface">
             <X className="w-5 h-5" />
           </button>
         </div>

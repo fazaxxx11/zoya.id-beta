@@ -111,6 +111,7 @@ function PricingModal({ open, onClose }) {
       >
         <button
           onClick={onClose}
+          aria-label="Tutup"
           className="absolute top-3 right-3 p-1.5 text-muted hover:text-fg transition-colors"
         >
           <X className="w-4 h-4" />

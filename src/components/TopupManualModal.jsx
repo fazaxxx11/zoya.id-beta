@@ -50,7 +50,7 @@ export default function TopupManualModal({ open, onClose, onSubmit, pkg, userEma
   return (
     <Modal open={open} onClose={onClose}
       panelClassName="bg-card rounded-2xl shadow-xl max-w-lg w-full p-6 relative animate-in fade-in max-h-[90vh] overflow-y-auto">
-      <button onClick={onClose} className="absolute top-3 right-3 text-muted hover:text-fg">
+      <button onClick={onClose} aria-label="Tutup" className="absolute top-3 right-3 text-muted hover:text-fg">
         <X className="w-5 h-5" />
       </button>
 

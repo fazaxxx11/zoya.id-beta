@@ -285,7 +285,7 @@ function DocEditor({ initial, onSave, onCancel }) {
       <div className="bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">{initial.title ? 'Edit Dokumen' : 'Tambah Dokumen'}</h3>
-          <button onClick={onCancel} className="text-muted hover:text-fg/80"><X className="w-5 h-5" /></button>
+          <button onClick={onCancel} aria-label="Tutup" className="text-muted hover:text-fg/80"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
           <input
@@ -385,7 +385,7 @@ function CodeEditor({ initial, onSave, onCancel }) {
       <div className="bg-card rounded-2xl max-w-md w-full">
         <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">{initial.label ? 'Edit Kode' : 'Tambah Kode'}</h3>
-          <button onClick={onCancel} className="text-muted hover:text-fg/80"><X className="w-5 h-5" /></button>
+          <button onClick={onCancel} aria-label="Tutup" className="text-muted hover:text-fg/80"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-3">
           <div>

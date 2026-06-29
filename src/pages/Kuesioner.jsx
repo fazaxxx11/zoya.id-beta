@@ -669,7 +669,7 @@ function OptionsEditor({ options, onChange }) {
             onChange={e => update(i, e.target.value)}
             className="flex-1 text-xs border border-border rounded px-2 py-1"
           />
-          <button onClick={() => remove(i)} className="text-muted hover:text-red-600 p-0.5">
+          <button onClick={() => remove(i)} aria-label="Hapus item" className="text-muted hover:text-red-600 p-0.5">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -1330,6 +1330,7 @@ function AIGenerateModal({ open, onClose, onResult }) {
         </div>
         <button
           onClick={handleClose}
+          aria-label="Tutup"
           disabled={loading}
           className="p-1.5 rounded hover:bg-surface text-muted disabled:opacity-50"
         >
@@ -1639,6 +1640,7 @@ function RegenerateSection({ surveyTitle, section, onApply, onAppend }) {
         </div>
         <button
           onClick={() => setOpen(false)}
+          aria-label="Tutup"
           disabled={loading}
           className="text-muted hover:text-fg/80 disabled:opacity-50"
         >

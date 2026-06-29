@@ -65,7 +65,7 @@ export default function SaveAnalysisButton({ result, defaultTitle = '', toolName
                   Butuh login.
                 </p>
               </div>
-              <button onClick={() => setOpen(false)} className="text-muted hover:text-accent">
+              <button onClick={() => setOpen(false)} aria-label="Tutup" className="text-muted hover:text-accent">
                 <X className="w-4 h-4" />
               </button>
             </div>

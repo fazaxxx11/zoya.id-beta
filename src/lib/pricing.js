@@ -4,6 +4,9 @@
 
 import { applyDiscount } from './discount'
 
+// Beta free mode: aktif kecuali VITE_BETA_FREE secara eksplisit di-set 'false'.
+// Default (env kosong/missing) = true supaya dev local tidak terkena paywall.
+// SAAT LAUNCH: set VITE_BETA_FREE=false eksplisit di Vercel, jangan andalkan default.
 export const BETA_FREE = import.meta.env.VITE_BETA_FREE !== 'false'
 
 /** Pricing per jumlah siswa untuk service Assessment */

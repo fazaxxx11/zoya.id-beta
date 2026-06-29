@@ -8,7 +8,7 @@ import {
 
 // Import order & auth helpers from lib (no longer from pages)
 import { saveOrder, getOrders } from '../lib/orders'
-import { getWallet, deductWallet } from '../lib/wallet'
+import { getWallet } from '../lib/wallet'
 import { getCurrentUser, isAdminLogged } from '../lib/auth'
 import { ADMIN_EMAIL } from '../lib/brand'
 import { toast } from '../lib/toast'
@@ -179,16 +179,18 @@ function Payment() {
     
     setProcessing(true)
     
-    // Deduct from wallet
-    const result = deductWallet(tier.price)
-    
+    // Wallet deduction sekarang lewat inline paywall di halaman tool
+    // (deductWalletAndCreateOrder). Halaman Payment generic ini di-bypass
+    // saat BETA_FREE; flow post-beta akan dirakit ulang.
+    const result = { success: false, error: 'Pembayaran via halaman ini nonaktif. Gunakan tombol bayar di halaman tool.' }
+
     if (!result.success) {
       setInsufficientBalance(true)
       setProcessing(false)
       return
     }
-    
-    // Update wallet state
+
+    // (unreachable) Update wallet state
     setWallet(result.wallet)
     
     // Create and save order

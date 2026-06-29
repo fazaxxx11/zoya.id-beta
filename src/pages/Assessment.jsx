@@ -9,7 +9,7 @@ import {
 import { parseStudentFile, getSupportedFormats } from '../lib/fileParser'
 import { saveOrder, getOrders, generateOrderId } from '../lib/orders'
 import { getCurrentUser, isAdmin } from '../lib/auth'
-import { getWallet, deductWallet } from '../lib/wallet'
+import { getWallet, deductWalletAndCreateOrder } from '../lib/wallet'
 import { trackEvent } from '../lib/analytics'
 import { getAssessmentPriceWithDiscount, formatIDR } from '../lib/pricing'
 import PriceDisplay from '../components/PriceDisplay'
@@ -1323,7 +1323,7 @@ function Assessment() {
       assess({ paidAmount: 0, paymentMethod: pricing.betaFree ? 'beta_free' : 'free' })
       return
     }
-    const result = deductWallet(pricing.price)
+    const result = await deductWalletAndCreateOrder('assessment', validStudents.length)
     if (!result.success) {
       toast.error(result.error || 'Gagal memotong saldo')
       setConfirmLoading(false)
@@ -1332,9 +1332,9 @@ function Assessment() {
     }
     setShowConfirm(false)
     setConfirmLoading(false)
-    toast.success(`Pembayaran ${formatIDR(pricing.price)} berhasil. AI sedang menilai...`)
+    toast.success(`Pembayaran ${formatIDR(result.paid ?? pricing.price)} berhasil. AI sedang menilai...`)
     // Run AI assessment dengan info pembayaran
-    assess({ paidAmount: pricing.price, paymentMethod: 'wallet' })
+    assess({ paidAmount: result.paid ?? pricing.price, paymentMethod: 'wallet' })
   }
 
   const assess = async ({ paidAmount = 0, paymentMethod = 'free' } = {}) => {

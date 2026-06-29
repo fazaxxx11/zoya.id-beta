@@ -11,7 +11,7 @@ import { STATISTIK_SUBNAV } from '../lib/statistikNav'
 import { parseExcelFile, getColumnNames } from '../utils/excelHelper'
 
 import { getCurrentUser } from '../lib/auth'
-import { getWallet, deductWallet } from '../lib/wallet'
+import { getWallet, deductWalletAndCreateOrder } from '../lib/wallet'
 import { trackEvent } from '../lib/analytics'
 import { calculateStatisticsPrice, getStatisticsPriceWithDiscount, formatIDR } from '../lib/pricing'
 import PriceDisplay from '../components/PriceDisplay'
@@ -734,7 +734,7 @@ function Statistik() {
     setShowConfirm(true)
   }
 
-  const handleConfirmPay = () => {
+  const handleConfirmPay = async () => {
     setConfirmLoading(true)
     if (pricing.price === 0) {
       setShowConfirm(false)
@@ -743,7 +743,7 @@ function Statistik() {
       runAnalysis({ paidAmount: 0, paymentMethod: pricing.betaFree ? 'beta_free' : 'free' })
       return
     }
-    const r = deductWallet(pricing.price)
+    const r = await deductWalletAndCreateOrder(activeTool, sampleSize)
     if (!r.success) {
       toast.error(r.error || 'Gagal memotong saldo')
       setConfirmLoading(false)
@@ -752,8 +752,8 @@ function Statistik() {
     }
     setShowConfirm(false)
     setConfirmLoading(false)
-    toast.success(`Pembayaran ${formatIDR(pricing.price)} berhasil. Menganalisis...`)
-    runAnalysis({ paidAmount: pricing.price, paymentMethod: 'wallet' })
+    toast.success(`Pembayaran ${formatIDR(r.paid ?? pricing.price)} berhasil. Menganalisis...`)
+    runAnalysis({ paidAmount: r.paid ?? pricing.price, paymentMethod: 'wallet' })
   }
 
   // Handle "Analisis Lain" — reset result but keep data
@@ -1948,7 +1948,7 @@ function ExplainChatPanel({ result, aiInterpretation }) {
               <div className="text-xs text-muted">{result.toolName} · sisa {remaining}/{MAX_TURNS} pertanyaan</div>
             </div>
           </div>
-          <button onClick={() => setOpen(false)} className="p-1.5 rounded hover:bg-surface text-muted">
+          <button onClick={() => setOpen(false)} aria-label="Tutup" className="p-1.5 rounded hover:bg-surface text-muted">
             <X className="w-5 h-5" />
           </button>
         </div>

@@ -4,8 +4,8 @@
 //   1. main.jsx → initWallet() (subscribe ke auth changes)
 //   2. Login/Logout → auto-refresh _wallet dari Supabase
 //   3. getWallet() sync return cache
-//   4. Mutations (topUp/deductWallet) — deferred ke post-beta (saat ini BETA_FREE,
-//      jadi paywall short-circuit sebelum panggil deductWallet).
+//   4. Mutations (topUp/deduct) — async via RPC Supabase / backend API.
+//      Selama BETA_FREE paywall short-circuit sebelum panggil deduct.
 //
 // Pending top-ups + manual TF flow tetap localStorage selama beta
 // karena belum ada tabel pending_topups di schema.
@@ -117,20 +117,8 @@ export async function topUp(amount, code = 'DIRECT', userId = null) {
 }
 
 /**
- * Potong saldo. Selama BETA_FREE, paywall short-circuit sebelum panggil ini
- * (semua tool gratis). Untuk post-beta, paywall.chargeForTool perlu di-async-kan
- * supaya bisa await RPC `deduct_wallet_and_create_order` di Supabase (atomic).
- *
- * Saat ini sync (untuk kompat dengan paywall sync). Mengembalikan stub error
- * supaya kalau dipanggil tidak hang.
- */
-export const deductWallet = (amount) => {
-  console.warn('[wallet] deductWallet (sync) dipanggil saat BETA_FREE seharusnya tidak terjadi. Gunakan deductWalletAndCreateOrder (async) untuk post-beta.')
-  return { success: false, error: 'Wallet operations disabled during beta. (BETA_FREE=true)' }
-}
-
-/**
- * Async version of deductWallet that calls the backend API.
+ * Potong saldo via backend `/api/billing-check` (atomic RPC di Supabase).
+ * Selama BETA_FREE, paywall short-circuit sebelum panggil ini (semua tool gratis).
  */
 export async function deductWalletAndCreateOrder(toolId, sampleSize = 0) {
   const user = getCurrentUser()

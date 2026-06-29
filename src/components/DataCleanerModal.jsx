@@ -129,7 +129,7 @@ function ModalBody({ data, columns, onClose, onApply }) {
                 : 'Dataset bersih — tidak ada missing, outlier, atau duplikat terdeteksi.'}
             </p>
           </div>
-          <button onClick={onClose} className="text-muted hover:text-fg p-1">
+          <button onClick={onClose} aria-label="Tutup" className="text-muted hover:text-fg p-1">
             <X className="w-5 h-5" />
           </button>
         </div>

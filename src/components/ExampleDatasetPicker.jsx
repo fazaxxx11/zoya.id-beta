@@ -27,7 +27,7 @@ export default function ExampleDatasetPicker({ open, onClose, onPick }) {
               <h3 className="text-base font-semibold text-fg">Pilih Contoh Dataset</h3>
             </div>
           </div>
-          <button onClick={onClose} className="text-muted hover:text-accent p-1">
+          <button onClick={onClose} aria-label="Tutup" className="text-muted hover:text-accent p-1">
             <X className="w-5 h-5" />
           </button>
         </div>

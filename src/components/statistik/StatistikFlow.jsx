@@ -171,6 +171,7 @@ function StepUpload({ file, data, error, onFileUpload, onExampleLoad, onOpenGuid
                 <button
                   onClick={onClearFile}
                   title="Hapus data"
+                  aria-label="Hapus data"
                   className="w-7 h-7 flex items-center justify-center rounded-md text-muted hover:text-terracotta hover:bg-terracotta/8 transition-colors"
                 >
                   <X className="w-3.5 h-3.5" />

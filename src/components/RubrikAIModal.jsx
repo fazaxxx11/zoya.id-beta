@@ -87,7 +87,7 @@ export default function RubrikAIModal({ open, onClose, onApply }) {
             <h2 className="text-lg font-bold text-fg">Auto-Buatkan Rubrik</h2>
             <p className="text-sm text-muted">AI akan generate kriteria penilaian sesuai topik & level</p>
           </div>
-          <button onClick={handleClose} disabled={loading}
+          <button onClick={handleClose} disabled={loading} aria-label="Tutup"
             className="text-muted hover:text-accent p-1 rounded disabled:opacity-30">
             <X className="w-5 h-5" />
           </button>

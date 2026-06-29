@@ -45,6 +45,7 @@ export default function ConfirmPaymentModal({
       panelClassName="bg-card rounded-lg shadow-xl max-w-md w-full p-6 relative animate-in fade-in">
         <button
           onClick={onClose}
+          aria-label="Tutup"
           className="absolute top-3 right-3 text-muted hover:text-accent"
           disabled={loading}
         >

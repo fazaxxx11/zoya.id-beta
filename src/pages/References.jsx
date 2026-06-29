@@ -411,7 +411,7 @@ function RefEditor({ initial, onSave, onCancel }) {
       <div className="bg-card rounded-2xl max-w-2xl w-full my-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-card border-b border-border px-5 py-3 flex items-center justify-between rounded-t-2xl">
           <h3 className="font-semibold">{initial.title ? 'Edit Referensi' : 'Tambah Referensi'}</h3>
-          <button onClick={onCancel} className="text-muted hover:text-fg/80">
+          <button onClick={onCancel} aria-label="Tutup" className="text-muted hover:text-fg/80">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -644,7 +644,7 @@ function ImportModal({ onImport, onCancel }) {
       <div className="bg-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">Import Referensi</h3>
-          <button onClick={onCancel} className="text-muted hover:text-fg/80">
+          <button onClick={onCancel} aria-label="Tutup" className="text-muted hover:text-fg/80">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -716,7 +716,7 @@ function BibliographyModal({ refs, style, onStyleChange, onCancel }) {
       <div className="bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="border-b border-border px-5 py-3 flex items-center justify-between">
           <h3 className="font-semibold">Daftar Pustaka ({refs.length} referensi)</h3>
-          <button onClick={onCancel} className="text-muted hover:text-fg/80">
+          <button onClick={onCancel} aria-label="Tutup" className="text-muted hover:text-fg/80">
             <X className="w-5 h-5" />
           </button>
         </div>

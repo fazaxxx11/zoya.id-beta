@@ -4,7 +4,12 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 
 export default defineConfig({
-  esbuild: { drop: ['console', 'debugger'] },
+  esbuild: {
+    drop: ['debugger'],
+    // Hanya drop console.log/debug/info di production; PERTAHANKAN
+    // console.error & console.warn — diperlukan untuk debugging production.
+    pure: ['console.log', 'console.debug', 'console.info'],
+  },
   optimizeDeps: {
     include: ['recharts'],
   },

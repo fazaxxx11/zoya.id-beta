@@ -82,7 +82,7 @@ export default function FeedbackButton() {
                 <h3 className="font-bold">Kritik & Saran</h3>
                 <p className="text-xs opacity-90">Bantu kami jadi lebih baik 💜</p>
               </div>
-              <button onClick={() => setOpen(false)} className="p-1 hover:bg-white/10 rounded-lg">
+              <button onClick={() => setOpen(false)} aria-label="Tutup" className="p-1 hover:bg-white/10 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>

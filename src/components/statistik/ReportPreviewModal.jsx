@@ -43,7 +43,7 @@ export default function ReportPreviewModal({ result, onClose }) {
             <h2 className="text-xl font-heading font-bold text-fg">📝 Laporan AI</h2>
             <p className="text-sm text-muted mt-0.5">{title}</p>
           </div>
-          <button onClick={onClose}
+          <button onClick={onClose} aria-label="Tutup"
                   className="p-2 hover:bg-muted/10 rounded-lg transition-colors">
             <X className="w-5 h-5 text-muted" />
           </button>
