@@ -1,7 +1,7 @@
 # Laporan Progress — Frontend Redesign
 
 > **WAJIB BACA DULU** sebelum lanjut kerja frontend. Lihat bagian "Status Saat Ini" & "Yang Dilarang".
-> Terakhir diperbarui: 2026-06-23
+> Terakhir diperbarui: 2026-06-28
 
 ---
 
@@ -57,15 +57,20 @@ Arah estetik: **Scholarly Editorial** (gold + serif Source Serif 4).
      - Closing CTA: `linear-gradient(bg → surface)`
      - Footer: `bg` solid
 
-### 🔄 Berjalan
+### ✅ Selesai (Cleanup Pass — 2026-06-28)
 
-- **Iterasi visual Home**: user masih kritisi. Cek preview di `http://localhost:5173/`.
-- Dev server berjalan di background (Vite, port 5173).
+Design-system cleanup pass menyeluruh di seluruh frontend (di atas Fase 1):
+- `ui/Button.jsx` indigo → accent; palet chart (BoxPlot/Histogram/QQ/Scatter/StatCharts) purple → gold/teal
+- Glassmorphism dihapus dari 8 sticky header + OnboardingTour card/icon-chip
+- Ikon AI-vibe `Sparkles` dihapus total (6 file) → scholarly icons (BookOpen/Gift/Layers/Activity/ClipboardCheck)
+- Dead CSS: `.glass-solid` + semua legacy purple dark-remap block dihapus dari `index.css`
+- Audit 0 sisa di JSX: `text-gray-300/400`, `bg-gray-50/100`, `Sparkles`, `BarChart3`, `ClipboardList`, `aurora`, `glow`, gradient-text, `purple-*`, `indigo-*`
+- Primitif baru (diekstrak dari Home.jsx): `AmbientBlobs` (blur orbs), `Flourish` (gold motif), `statistikNav` (SSoT sub-nav Statistik)
 
 ### ⏳ Berikutnya
 
-- Fase 2: Redesign halaman inti lain (Statistik, Dashboard) pakai pola yang sama
-- Spec doc belum ditulis (user prefer "coba dulu, kritisi" — skip ceremony)
+- **Menunggu review user** atas cleanup pass + Home redesign
+- Fase 2 (opsional): deep redesign Statistik & Dashboard pakai pola scholarly (saat ini sudah restyle via cleanup, belum re-build total)
 
 ---
 
@@ -121,3 +126,4 @@ Arah estetik: **Scholarly Editorial** (gold + serif Source Serif 4).
 - **2026-06-23 (iterasi 3)**: Capabilities section baru (fills empty space), inline feature checklist di demo, hapus "Dibuat dengan hati...", nav Pricing + modal.
 - **2026-06-23 (iterasi 2)**: Compact sizing (semua dikecilkan), ruled lines ganti kawung, FloatingShapes, pricing modal.
 - **2026-06-23 (iterasi 1)**: Fase 1 selesai. Foundation + Home re-build. 9 test pre-existing diidentifikasi.
+- **2026-06-28 (cleanup pass)**: Cross-cutting design-system cleanup — indigo→accent, glassmorphism removal, Sparkles purge, dead CSS. 0 anti-AI-vibe pattern tersisa di JSX. Build OK, 354/363 test (9 pre-existing, 0 regresi).
