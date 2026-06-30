@@ -9,11 +9,17 @@
 
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { ChevronLeft, Home } from 'lucide-react'
+import { getAccentColor } from './hero/accent-tokens'
 
 /**
  * @param {object} props
  * @param {string} props.title - judul halaman
- * @param {string} [props.subtitle] - subtitle / kategori
+ * @param {string} [props.subtitle] - subtitle / kategori (compact default)
+ * @param {string} [props.eyebrow] - label modul uppercase (hero variant)
+ * @param {string} [props.tagline] - tagline action-oriented (hero variant)
+ * @param {string} [props.accent] - 'gold' | 'teal' | 'terracotta' (default 'gold', hero variant)
+ * @param {string} [props.variant] - 'compact' (default) | 'hero'
+ * @param {React.ReactNode} [props.heroExtra] - konten ekstra hero (HeroFlow/HeroStepper/HeroPreview)
  * @param {string} [props.parentPath] - fallback back path bila history kosong (default: '/')
  * @param {string} [props.parentLabel] - label parent (default: 'Beranda')
  * @param {Array<{path: string, label: string, icon?: any}>} [props.breadcrumbs] - hierarchy
@@ -24,6 +30,11 @@ import { ChevronLeft, Home } from 'lucide-react'
 export default function PageHeader({
   title,
   subtitle,
+  eyebrow,
+  tagline,
+  accent = 'gold',
+  variant = 'compact',
+  heroExtra,
   parentPath = '/',
   parentLabel = 'Beranda',
   breadcrumbs,
@@ -107,8 +118,8 @@ export default function PageHeader({
           )}
         </div>
 
-        {/* Title row */}
-        {(title || subtitle) && (
+        {/* Title row — compact (default) */}
+        {variant === 'compact' && (title || subtitle) && (
           <div className="mt-2">
             {subtitle && (
               <div
@@ -125,6 +136,40 @@ export default function PageHeader({
               >
                 {title}
               </h1>
+            )}
+          </div>
+        )}
+
+        {/* Title row — hero (opt-in via variant="hero") */}
+        {variant === 'hero' && (eyebrow || title || tagline) && (
+          <div className="mt-3">
+            {eyebrow && (
+              <div
+                data-testid="hero-eyebrow"
+                className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-semibold mb-1"
+                style={{ color: getAccentColor(accent) }}
+              >
+                {eyebrow}
+              </div>
+            )}
+            {title && (
+              <h1
+                className="font-heading text-2xl sm:text-3xl font-bold leading-tight"
+                style={{ color: 'rgb(var(--fg))' }}
+              >
+                {title}
+              </h1>
+            )}
+            {tagline && (
+              <p
+                className="text-sm mt-1"
+                style={{ color: 'rgb(var(--muted))' }}
+              >
+                {tagline}
+              </p>
+            )}
+            {heroExtra && (
+              <div className="mt-3">{heroExtra}</div>
             )}
           </div>
         )}
