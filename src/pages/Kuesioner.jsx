@@ -16,6 +16,7 @@ import {
   ArrowRight, Check, BookOpen, Wand2, Library, Loader2, ClipboardCheck,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
+import HeroPreview from '../components/hero/HeroPreview'
 import Modal from '../components/Modal'
 import { trackEvent } from '../lib/analytics'
 import {
@@ -195,8 +196,19 @@ export default function Kuesioner() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
-        title="Kuesioner"
-        subtitle="Builder & Pengumpulan Respons (Lokal)"
+        title="Susun instrumen survei"
+        eyebrow="KUESIONER"
+        tagline="Buat butir → generate pakai AI → kumpulkan respons langsung."
+        variant="hero"
+        accent="terracotta"
+        parentPath="/"
+        parentLabel="Beranda"
+        heroExtra={
+          <HeroPreview sections={[
+            { title: 'Bagian 1 · Demografi', items: 3 },
+            { title: 'Bagian 2 · Likert', items: 5 },
+          ]} />
+        }
         breadcrumbs={[{ path: '/', label: 'Beranda' }, { path: '/kuesioner', label: 'Kuesioner' }]}
       />
 
