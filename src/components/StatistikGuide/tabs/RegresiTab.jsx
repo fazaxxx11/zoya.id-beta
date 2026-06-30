@@ -2,22 +2,47 @@ import { useState } from 'react';
 import ScatterLine from '../illustrations/ScatterLine';
 import RegresiTutorial from './tutorials/RegresiTutorial';
 import styles from '../StatistikGuide.module.css';
+import useTabsKeyboard from '../useTabsKeyboard';
 
 const RegresiTab = () => {
   const [showSpss, setShowSpss] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState('materi');
+  const subTabs = ['materi', 'tutorial'];
+  const subIdx = subTabs.indexOf(activeSubTab);
+  const { tabRefs, onKeyDown, getTabIndex } = useTabsKeyboard({
+    count: subTabs.length,
+    activeIndex: subIdx,
+    onChange: (i) => setActiveSubTab(subTabs[i]),
+  });
 
   return (
     <div>
       {/* Sub-tab toggle */}
-      <div className={styles.subTabRow}>
+      <div
+        role="tablist"
+        aria-orientation="horizontal"
+        className={styles.subTabRow}
+        onKeyDown={onKeyDown}
+      >
         <button
+          role="tab"
+          id="subtab-reg-materi"
+          aria-selected={activeSubTab === 'materi'}
+          aria-controls="subpanel-reg"
+          tabIndex={getTabIndex(0)}
+          ref={(el) => (tabRefs.current[0] = el)}
           onClick={() => setActiveSubTab('materi')}
           className={activeSubTab === 'materi' ? styles.subTabActive : styles.subTab}
         >
           📖 Materi
         </button>
         <button
+          role="tab"
+          id="subtab-reg-tutorial"
+          aria-selected={activeSubTab === 'tutorial'}
+          aria-controls="subpanel-reg"
+          tabIndex={getTabIndex(1)}
+          ref={(el) => (tabRefs.current[1] = el)}
           onClick={() => setActiveSubTab('tutorial')}
           className={activeSubTab === 'tutorial' ? styles.subTabActive : styles.subTab}
         >
@@ -25,7 +50,13 @@ const RegresiTab = () => {
         </button>
       </div>
 
-      {activeSubTab === 'materi' && (
+      <div
+        role="tabpanel"
+        id="subpanel-reg"
+        aria-labelledby={`subtab-reg-${activeSubTab}`}
+        tabIndex={0}
+      >
+        {activeSubTab === 'materi' && (
         <>
           {/* Section 1: Penjelasan + Rumus */}
           <div className={styles.section}>
@@ -147,7 +178,8 @@ const RegresiTab = () => {
         </>
       )}
 
-      {activeSubTab === 'tutorial' && <RegresiTutorial />}
+        {activeSubTab === 'tutorial' && <RegresiTutorial />}
+      </div>
     </div>
   );
 };

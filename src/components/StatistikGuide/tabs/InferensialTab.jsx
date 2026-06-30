@@ -2,22 +2,47 @@ import { useState } from 'react';
 import PValueViz from '../illustrations/PValueViz';
 import InferensialTutorial from './tutorials/InferensialTutorial';
 import styles from '../StatistikGuide.module.css';
+import useTabsKeyboard from '../useTabsKeyboard';
 
 const InferensialTab = () => {
   const [showSpss, setShowSpss] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState('materi');
+  const subTabs = ['materi', 'tutorial'];
+  const subIdx = subTabs.indexOf(activeSubTab);
+  const { tabRefs, onKeyDown, getTabIndex } = useTabsKeyboard({
+    count: subTabs.length,
+    activeIndex: subIdx,
+    onChange: (i) => setActiveSubTab(subTabs[i]),
+  });
 
   return (
     <div>
       {/* Sub-tab toggle */}
-      <div className={styles.subTabRow}>
+      <div
+        role="tablist"
+        aria-orientation="horizontal"
+        className={styles.subTabRow}
+        onKeyDown={onKeyDown}
+      >
         <button
+          role="tab"
+          id="subtab-inf-materi"
+          aria-selected={activeSubTab === 'materi'}
+          aria-controls="subpanel-inf"
+          tabIndex={getTabIndex(0)}
+          ref={(el) => (tabRefs.current[0] = el)}
           onClick={() => setActiveSubTab('materi')}
           className={activeSubTab === 'materi' ? styles.subTabActive : styles.subTab}
         >
           📖 Materi
         </button>
         <button
+          role="tab"
+          id="subtab-inf-tutorial"
+          aria-selected={activeSubTab === 'tutorial'}
+          aria-controls="subpanel-inf"
+          tabIndex={getTabIndex(1)}
+          ref={(el) => (tabRefs.current[1] = el)}
           onClick={() => setActiveSubTab('tutorial')}
           className={activeSubTab === 'tutorial' ? styles.subTabActive : styles.subTab}
         >
@@ -25,7 +50,13 @@ const InferensialTab = () => {
         </button>
       </div>
 
-      {activeSubTab === 'materi' && (
+      <div
+        role="tabpanel"
+        id="subpanel-inf"
+        aria-labelledby={`subtab-inf-${activeSubTab}`}
+        tabIndex={0}
+      >
+        {activeSubTab === 'materi' && (
         <>
           {/* Section 1: H0 vs H1 */}
           <div className={styles.section}>
@@ -141,7 +172,8 @@ const InferensialTab = () => {
         </>
       )}
 
-      {activeSubTab === 'tutorial' && <InferensialTutorial />}
+        {activeSubTab === 'tutorial' && <InferensialTutorial />}
+      </div>
     </div>
   );
 };

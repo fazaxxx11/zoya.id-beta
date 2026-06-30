@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PageHeader from '../PageHeader';
 import { STATISTIK_SUBNAV } from '../../lib/statistikNav';
 import styles from './StatistikGuide.module.css';
+import useTabsKeyboard from './useTabsKeyboard';
 
 import OverviewTab from './tabs/OverviewTab';
 import DeskriptifTab from './tabs/DeskriptifTab';
@@ -19,7 +20,13 @@ const tabs = [
 
 const StatistikGuide = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const ActiveComponent = tabs.find((t) => t.id === activeTab)?.component || OverviewTab;
+  const activeIdx = tabs.findIndex((t) => t.id === activeTab);
+  const ActiveComponent = tabs[activeIdx]?.component || OverviewTab;
+  const { tabRefs, onKeyDown, getTabIndex } = useTabsKeyboard({
+    count: tabs.length,
+    activeIndex: activeIdx,
+    onChange: (i) => setActiveTab(tabs[i].id),
+  });
 
   return (
     <div className="min-h-screen bg-bg text-fg pb-bottomnav">
@@ -37,10 +44,21 @@ const StatistikGuide = () => {
       <div className={styles.container}>
         <p className={styles.subtitle}>Referensi lengkap analisis data untuk penelitian</p>
 
-        <nav className={styles.tabNav}>
-          {tabs.map((tab) => (
+        <nav
+          role="tablist"
+          aria-orientation="horizontal"
+          className={styles.tabNav}
+          onKeyDown={onKeyDown}
+        >
+          {tabs.map((tab, i) => (
             <button
               key={tab.id}
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-selected={activeTab === tab.id}
+              aria-controls={`panel-${tab.id}`}
+              tabIndex={getTabIndex(i)}
+              ref={(el) => (tabRefs.current[i] = el)}
               className={`${styles.tabButton} ${activeTab === tab.id ? styles.tabActive : ''}`}
               onClick={() => setActiveTab(tab.id)}
             >
@@ -49,7 +67,14 @@ const StatistikGuide = () => {
           ))}
         </nav>
 
-        <ActiveComponent />
+        <div
+          role="tabpanel"
+          id={`panel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
+          tabIndex={0}
+        >
+          <ActiveComponent />
+        </div>
       </div>
     </div>
   );
