@@ -1,7 +1,7 @@
 # Laporan Progress — Frontend Redesign
 
 > **WAJIB BACA DULU** sebelum lanjut kerja frontend. Lihat bagian "Status Saat Ini" & "Yang Dilarang".
-> Terakhir diperbarui: 2026-06-28
+> Terakhir diperbarui: 2026-06-30
 
 ---
 
@@ -67,10 +67,42 @@ Design-system cleanup pass menyeluruh di seluruh frontend (di atas Fase 1):
 - Audit 0 sisa di JSX: `text-gray-300/400`, `bg-gray-50/100`, `Sparkles`, `BarChart3`, `ClipboardList`, `aurora`, `glow`, gradient-text, `purple-*`, `indigo-*`
 - Primitif baru (diekstrak dari Home.jsx): `AmbientBlobs` (blur orbs), `Flourish` (gold motif), `statistikNav` (SSoT sub-nav Statistik)
 
+### ✅ Selesai (Sub-proyek A — Audit Quick Wins, 2026-06-30)
+
+Quick wins dari audit frontend (commit `9322ffb`):
+- **#6** Font loading: `@import` CSS → `<link rel=preconnect>` di `index.html` (lebih cepat)
+- **#19** `aria-label` di icon-only buttons (a11y)
+- **#16** Hapus `deductWallet` sync dead code (wallet.js + Assessment/Statistik/Payment)
+- **#3-clean** Hapus baris mati `VITE_AI_API_KEY` di `.env.example`
+- **#20** `VITE_BETA_FREE` default → keep free + bersihkan `.env.example`
+- **#14** `vite.config` console drop → pure (keep error/warn, bukan drop semua)
+- **#10** Hapus dead CSS (float anims + noise-texture)
+
+Verifikasi 2026-06-30: build OK (2.81s, PWA precache 19), 354/363 test (9 pre-existing di `ttest.js`, 0 regresi).
+
+### ✅ Status Statistik & Dashboard (dipastikan 2026-06-30)
+
+> **Koreksi penting:** sebelumnya bagian ini ditulis "sudah restyle, **belum re-build total**".
+> Framing itu menyesatkan. Setelah dicek langsung ke file, **kedua halaman SUDAH berada
+> penuh di design system scholarly** — bukan "belum diapa-apain".
+
+- `Statistik.jsx` (2118 baris): 132 pemakaian token scholarly, **0 anti-AI-vibe** (1 "hit" cuma kata `glass` di dalam komentar, bukan class). Pakai `PageHeader` bersama (solid `bg-card`, border-b, breadcrumb, subtitle `uppercase tracking-[0.18em]`, subNav pill), body `bg-bg paper-texture`, sticky TOC.
+- `UserDashboard.jsx` (396 baris): fully token-based, status badge teal/accent/terracotta per-status, lucide bersih, layout app fungsional.
+- Yang tidak mereka punya vs Home: ornamen editorial marketing (FloatingShapes, ruled-lines, Flourish, gradasi transisi). **Tapi itu ornamen halaman marketing** — naruh ke halaman tool/dashboard yang padat justru anti-pattern (noisy, ganggu readability data).
+
+### ⏸️ Fase 2 — DIBATALKAN (2026-06-30)
+
+Keputusan user: **Fase 2 (deep redesign Statistik & Dashboard) dibatalkan.** Kedua halaman sudah cukup scholarly; re-build total hanya churn berlebihan di halaman app yang stabil & bekerja. Jangan ditawarkan lagi kecuali user explicit minta.
+
 ### ⏳ Berikutnya
 
-- **Menunggu review user** atas cleanup pass + Home redesign
-- Fase 2 (opsional): deep redesign Statistik & Dashboard pakai pola scholarly (saat ini sudah restyle via cleanup, belum re-build total)
+- **Sub-proyek A v2 selesai** di branch `feat/copy-variasi-desain` (belum merge ke main — tunggu user review/merge).
+- **Ide tersisa dari brainstorming 2026-06-30** (belum dikerjakan, butuh spec terpisah):
+  - #3 Output SPSS real di Panduan (screenshot tabel SPSS)
+  - #4 Gambaran/animasi real saat AI interpretasi hasil
+  - #5 Video panduan (embed)
+  - #7 AI chat room skripsi interaktif — ⚠️ butuh endpoint backend baru (di luar batas frontend-only; mundur sampai backend siap)
+- Kandidat lain: code-split chunk `Statistik.jsx` 1.15 MB (warning build). Tapi tunggu user yang putuskan arah berikutnya.
 
 ---
 
@@ -127,3 +159,6 @@ Design-system cleanup pass menyeluruh di seluruh frontend (di atas Fase 1):
 - **2026-06-23 (iterasi 2)**: Compact sizing (semua dikecilkan), ruled lines ganti kawung, FloatingShapes, pricing modal.
 - **2026-06-23 (iterasi 1)**: Fase 1 selesai. Foundation + Home re-build. 9 test pre-existing diidentifikasi.
 - **2026-06-28 (cleanup pass)**: Cross-cutting design-system cleanup — indigo→accent, glassmorphism removal, Sparkles purge, dead CSS. 0 anti-AI-vibe pattern tersisa di JSX. Build OK, 354/363 test (9 pre-existing, 0 regresi).
+- **2026-06-30 (sub-proyek A)**: Audit quick wins (#6,#19,#16,#3,#20,#14,#10), commit `9322ffb`. Build OK, 354/363 test.
+- **2026-06-30 (assessment)**: Dicek langsung — Statistik & Dashboard ternyata sudah penuh di design system scholarly (0 anti-AI-vibe). Fase 2 re-build total **dibatalkan** oleh user (churn berlebihan, halaman sudah stabil).
+- **2026-06-30 (sub-proyek A v2 — copy & variasi desain)**: Hero Editorial header (3 DNA layout berbeda: Statistik=HeroFlow flow horizontal, Assessment=HeroStepper vertikal, Kuesioner=HeroPreview struktur) di 9 halaman scope via `PageHeader variant="hero"` opt-in (halaman luar scope tetap compact). Copy action-oriented, hapus subtitle generik "Modul Statistik" + tagline marketing "Dari data mentah...". Wizard skripsi jadi popup tombol top bar Home "Ingin dibantu skripsi?" (reuse GuidedWizardModal + CTA header), hapus nav/card/footer/trigger wizard lama di Home, keep fallback Help.jsx (5 link) + route `/wizard`. Branch `feat/copy-variasi-desain`. Build OK, 357/366 test (+3 accent-tokens test, 9 pre-existing, 0 regresi). Spec: `docs/superpowers/specs/2026-06-30-copy-variasi-desain-design.md`. Plan: `docs/superpowers/plans/2026-06-30-copy-variasi-desain.md`.
