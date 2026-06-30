@@ -98,8 +98,11 @@ export default function StatistikHistory() {
   return (
     <div className="min-h-screen bg-surface pb-bottomnav">
       <PageHeader
-        title="Riwayat Analisis"
-        subtitle="Modul Statistik"
+        title="Riwayat analisis"
+        eyebrow="STATISTIK · RIWAYAT"
+        tagline="Buka ulang, bandingkan, atau lanjutkan analisis tersimpan."
+        variant="hero"
+        accent="gold"
         parentPath="/statistik"
         parentLabel="Statistik"
         breadcrumbs={[

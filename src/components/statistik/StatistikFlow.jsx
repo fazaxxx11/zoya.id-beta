@@ -771,23 +771,6 @@ function StatistikHero() {
       <AmbientBlobs variant="hero" />
 
       <div className="relative max-w-3xl px-5 pt-8 sm:pt-10 pb-6 sm:pb-8">
-        <ScrollReveal>
-          <div className="flex items-center gap-2.5 mb-4">
-            <span className="w-6 h-px bg-accent" />
-            <span className="text-[10px] font-semibold text-accent tracking-[0.18em] uppercase">
-              Modul Statistik
-            </span>
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal delay={0.04}>
-          <h2 className="font-heading text-xl sm:text-3xl font-bold text-fg leading-[1.1] tracking-tight">
-            Dari data mentah menjadi{' '}
-            <span className="italic text-accent">kesimpulan</span>{' '}
-            yang siap ditulis.
-          </h2>
-        </ScrollReveal>
-
         <ScrollReveal delay={0.1}>
           <div className="mt-4"><Flourish /></div>
         </ScrollReveal>

@@ -292,8 +292,11 @@ export default function StatistikBatch() {
   return (
     <div className="min-h-screen bg-surface pb-bottomnav">
       <PageHeader
-        title="Bandingkan Banyak File Sekaligus"
-        subtitle="Batch Analysis"
+        title="Batch banyak file"
+        eyebrow="STATISTIK · BATCH"
+        tagline="Jalankan uji yang sama untuk banyak file sekaligus."
+        variant="hero"
+        accent="gold"
         parentPath="/statistik"
         parentLabel="Statistik"
         breadcrumbs={[

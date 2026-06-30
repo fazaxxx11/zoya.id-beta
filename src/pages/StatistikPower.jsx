@@ -62,8 +62,11 @@ export default function StatistikPower() {
   return (
     <div className="min-h-screen bg-surface pb-bottomnav">
       <PageHeader
-        title="Kalkulator Sampel & Power"
-        subtitle="Power Analysis"
+        title="Hitung ukuran sampel"
+        eyebrow="STATISTIK · POWER"
+        tagline="Estimasi daya & jumlah responden minimal sebelum survei."
+        variant="hero"
+        accent="gold"
         parentPath="/statistik"
         parentLabel="Statistik"
         breadcrumbs={[

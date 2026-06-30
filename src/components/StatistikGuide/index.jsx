@@ -24,8 +24,11 @@ const StatistikGuide = () => {
   return (
     <div className="min-h-screen bg-bg text-fg pb-bottomnav">
       <PageHeader
-        title="Panduan Statistika"
-        subtitle="Modul Statistik"
+        title="Pelajari tiap uji"
+        eyebrow="STATISTIK · PANDUAN"
+        tagline="Referensi: kapan pakai, rumus, & bacaan output."
+        variant="hero"
+        accent="gold"
         parentPath="/statistik"
         parentLabel="Statistik"
         subNav={STATISTIK_SUBNAV}

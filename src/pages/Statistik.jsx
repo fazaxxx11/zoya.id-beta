@@ -26,6 +26,7 @@ import MethodologyPanel from '../components/MethodologyPanel'
 import Modal from '../components/Modal'
 import AssumptionsPanel from '../components/AssumptionsPanel'
 import PageHeader from '../components/PageHeader'
+import HeroFlow from '../components/hero/HeroFlow'
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
 import { datasetToParsed } from '../lib/exampleDatasets'
 import StatistikFlow from '../components/statistik/StatistikFlow'
@@ -780,11 +781,15 @@ function Statistik() {
   return (
     <div className="min-h-screen bg-bg text-fg pb-bottomnav paper-texture">
       <PageHeader
-        title="Analisis Statistik"
-        subtitle="Modul Statistik"
+        title="Uji data kamu"
+        eyebrow="STATISTIK"
+        tagline="Upload Excel → pilih uji → dapat angka + interpretasi siap kutip."
+        variant="hero"
+        accent="gold"
         parentPath="/"
         parentLabel="Beranda"
         subNav={STATISTIK_SUBNAV}
+        heroExtra={<HeroFlow steps={['Upload', 'Pilih uji', 'Hasil + interpretasi']} />}
       />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-5 py-5 sm:py-6">

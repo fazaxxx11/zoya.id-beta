@@ -87,8 +87,11 @@ export default function StatistikCompare() {
     <div className="min-h-screen bg-surface">
       <div className="max-w-6xl mx-auto px-4 sm:px-5 py-5 sm:py-6">
         <PageHeader
-          title="Bandingkan Analisis"
-          subtitle="Modul Statistik"
+          title="Bandingkan analisis"
+          eyebrow="STATISTIK · BANDING"
+          tagline="Tarik dua analisis berdampingan — lihat bedanya."
+          variant="hero"
+          accent="gold"
           parentPath="/statistik/history"
           parentLabel="Riwayat"
           breadcrumbs={[

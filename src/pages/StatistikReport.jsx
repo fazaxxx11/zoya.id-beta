@@ -250,8 +250,11 @@ export default function StatistikReport() {
   return (
     <div className="min-h-screen bg-surface pb-bottomnav">
       <PageHeader
-        title="Generator Laporan Bab IV"
-        subtitle="Bab IV Auto-Draft"
+        title="Draft Bab IV"
+        eyebrow="STATISTIK · BAB IV"
+        tagline="Pilih analisis tersimpan → generate narasi siap tempel."
+        variant="hero"
+        accent="gold"
         parentPath="/statistik"
         parentLabel="Statistik"
         breadcrumbs={[
