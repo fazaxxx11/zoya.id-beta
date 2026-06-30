@@ -17,6 +17,7 @@ import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
 import RubrikAIModal from '../components/RubrikAIModal'
 import RubrikTemplateModal from '../components/RubrikTemplateModal'
 import PageHeader from '../components/PageHeader'
+import HeroStepper from '../components/hero/HeroStepper'
 import { saveTemplate as saveRubrikTemplate } from '../lib/rubrikTemplates'
 import { toast } from '../lib/toast'
 import { createFuzzySearch } from '../lib/fuzzySearch'
@@ -1512,9 +1513,13 @@ function Assessment() {
   return (
     <div className="min-h-screen bg-pattern pb-24 md:pb-6">
       <PageHeader
-        title="AI Assessment"
-        subtitle={title || 'Penilaian tugas dengan AI'}
+        title="Nilai tugas pakai AI"
+        eyebrow="ASSESSMENT"
+        tagline="Buat rubrik → upload jawaban siswa → dapat skor + komentar otomatis."
+        variant="hero"
+        accent="teal"
         parentPath="/"
+        heroExtra={<HeroStepper steps={['Rubrik', 'Jawaban siswa', 'Skor + komentar']} />}
         right={stepIndicator}
         actions={
           <Link
