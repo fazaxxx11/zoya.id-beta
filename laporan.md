@@ -96,7 +96,11 @@ Keputusan user: **Fase 2 (deep redesign Statistik & Dashboard) dibatalkan.** Ked
 
 ### ⏳ Berikutnya
 
-- **Sub-proyek A v2 selesai** di branch `feat/copy-variasi-desain` (belum merge ke main — tunggu user review/merge).
+- **Sub-proyek A v2 sudah di-merge ke `main` & di-push** (commit `42feb8f`, 2026-06-30). Branch `feat/copy-variasi-desain` lokal sudah dihapus. Vercel auto-deploy ter-trigger.
+- **Repo cleanup 2026-06-30**: 5 remote branch stale dihapus — `feat/statistik-guide-polish` (regresi: warna terlarang `#3b82f6`/`#6366f1` + struktur header lama, di-DISCARD), `capy/fix-quick-win-issues` (PR #1 merged), `capy/remove-redundant-auth-helper` (PR #2 merged), `feat/exceljs-migration` (exceljs sudah di main), `feat/visualisasi-export` (ExportChartButton sudah di main). Sekarang hanya `main` di remote.
+- **Ide bagus dari review `feat/statistik-guide-polish` (simpan, re-implementasi bersih pakai theme tokens, BUKAN cherry-pick)**:
+  - a11y tab nav: `role="tablist"` + `role="tab"` + `aria-selected` di `StatistikGuide/index.jsx` — terverifikasi **masih hilang** di main (gap asli)
+  - Stepper indicator: dots + "Step X / Y" + progress bar di tutorial `Deskriptif`/`Inferensial`/`RegresiTutorial.jsx` — main masih stepper polos
 - **Ide tersisa dari brainstorming 2026-06-30** (belum dikerjakan, butuh spec terpisah):
   - #3 Output SPSS real di Panduan (screenshot tabel SPSS)
   - #4 Gambaran/animasi real saat AI interpretasi hasil
@@ -162,3 +166,4 @@ Keputusan user: **Fase 2 (deep redesign Statistik & Dashboard) dibatalkan.** Ked
 - **2026-06-30 (sub-proyek A)**: Audit quick wins (#6,#19,#16,#3,#20,#14,#10), commit `9322ffb`. Build OK, 354/363 test.
 - **2026-06-30 (assessment)**: Dicek langsung — Statistik & Dashboard ternyata sudah penuh di design system scholarly (0 anti-AI-vibe). Fase 2 re-build total **dibatalkan** oleh user (churn berlebihan, halaman sudah stabil).
 - **2026-06-30 (sub-proyek A v2 — copy & variasi desain)**: Hero Editorial header (3 DNA layout berbeda: Statistik=HeroFlow flow horizontal, Assessment=HeroStepper vertikal, Kuesioner=HeroPreview struktur) di 9 halaman scope via `PageHeader variant="hero"` opt-in (halaman luar scope tetap compact). Copy action-oriented, hapus subtitle generik "Modul Statistik" + tagline marketing "Dari data mentah...". Wizard skripsi jadi popup tombol top bar Home "Ingin dibantu skripsi?" (reuse GuidedWizardModal + CTA header), hapus nav/card/footer/trigger wizard lama di Home, keep fallback Help.jsx (5 link) + route `/wizard`. Branch `feat/copy-variasi-desain`. Build OK, 357/366 test (+3 accent-tokens test, 9 pre-existing, 0 regresi). Spec: `docs/superpowers/specs/2026-06-30-copy-variasi-desain-design.md`. Plan: `docs/superpowers/plans/2026-06-30-copy-variasi-desain.md`.
+- **2026-06-30 (merge + repo cleanup)**: Sub-proyek A v2 di-merge ke `main` (fast-forward) & di-push — commit `42feb8f`, branch feat dihapus. Review `feat/statistik-guide-polish`: DISCARD (regresi — pakai warna terlarang `#3b82f6`/`#6366f1` + struktur header lama pra-redesign; tapi 2 ide bagus disimpan: a11y tab nav + stepper indicator, re-implementasi pakai theme tokens). 5 remote branch stale dihapus total. Sekarang hanya `main` di remote.
