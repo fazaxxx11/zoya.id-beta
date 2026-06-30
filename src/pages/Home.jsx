@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   Activity,
   ClipboardCheck,
-  BookOpen,
   Award,
   FileUp,
   FileDown,
@@ -175,16 +174,6 @@ const SERVICES = [
   },
   {
     no: "03",
-    title: "Panduan Skripsi",
-    desc: "Dampingan dari topik sampai laporan. Metode, instrumen, analisis — step by step.",
-    hint: "Bingung mulai dari mana? Checklist ini nganterin dari Bab 1 sampai Bab 5.",
-    icon: BookOpen,
-    path: "/wizard",
-    tags: ["Bab 1–5", "Template", "Rujukan"],
-    accent: "terracotta",
-  },
-  {
-    no: "04",
     title: "Assessment & Rubrik",
     desc: "Rubrik penilaian, skoring otomatis, dan laporan hasil assessment langsung bisa dipakai.",
     hint: "Buat dosen, peneliti, atau asisten yang mau nilai karya secara terstruktur.",
@@ -269,6 +258,13 @@ export default function Home() {
 
             <div className="flex items-center gap-2">
               <ThemeToggle />
+              <button
+                onClick={() => setWizardOpen(true)}
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-accent/40 text-accent bg-accent/5 hover:bg-accent/10 text-xs font-semibold transition-all"
+              >
+                <Compass className="w-3.5 h-3.5" />
+                Ingin dibantu skripsi?
+              </button>
               {user ? (
                 <Link
                   to="/dashboard"
@@ -320,6 +316,13 @@ export default function Home() {
                 className="text-left py-2 text-sm text-muted hover:text-fg"
               >
                 Harga
+              </button>
+              <button
+                onClick={() => { setWizardOpen(true); setMobileOpen(false); }}
+                className="flex items-center gap-1.5 py-2 text-sm font-semibold text-accent"
+              >
+                <Compass className="w-3.5 h-3.5" />
+                Ingin dibantu skripsi?
               </button>
               <Link
                 to={user ? "/dashboard" : "/auth"}
@@ -377,13 +380,6 @@ export default function Home() {
                   Mulai analisis
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
-                <button
-                  onClick={() => setWizardOpen(true)}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-border hover:border-teal/50 hover:text-teal rounded-lg font-medium text-sm transition-all"
-                >
-                  <Compass className="w-3.5 h-3.5" />
-                  Bingung? Pilihkan untuk saya
-                </button>
                 <button
                   onClick={() => scrollTo("layanan")}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-border hover:border-accent/50 hover:text-accent rounded-lg font-medium text-sm transition-all"
@@ -704,7 +700,6 @@ export default function Home() {
                 <div className="text-[10px] uppercase tracking-wider text-muted/70 mb-1.5">Produk</div>
                 <Link to="/statistik" className="block text-fg hover:text-accent transition-colors">Statistik</Link>
                 <Link to="/kuesioner" className="block text-fg hover:text-accent transition-colors">Kuesioner</Link>
-                <Link to="/wizard" className="block text-fg hover:text-accent transition-colors">Panduan</Link>
                 <Link to="/assessment" className="block text-fg hover:text-accent transition-colors">Assessment</Link>
               </div>
               <div className="space-y-1.5 text-xs">
