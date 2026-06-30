@@ -118,6 +118,16 @@ export default function GuidedWizardModal({ open, onClose, onComplete, onSkip })
             </button>
           </div>
 
+          {/* ── CTA INTRO ── */}
+          <div className="px-4 pt-1 pb-2">
+            <h2 className="font-heading text-lg font-bold text-[rgb(var(--fg))] leading-tight">
+              Ingin dibantu skripsi?
+            </h2>
+            <p className="text-xs text-[rgb(var(--muted))] mt-0.5 leading-relaxed">
+              Checklist terstruktur dari Bab 1 sampai sidang — pilih jenis penelitian, ikuti langkahnya.
+            </p>
+          </div>
+
           {/* ── BODY ── */}
           <div className="px-4 py-3">
             {/* STEP 1: Pick analysis intent — 2-column grid */}
