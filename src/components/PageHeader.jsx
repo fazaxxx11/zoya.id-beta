@@ -169,7 +169,11 @@ export default function PageHeader({
               </p>
             )}
             {heroExtra && (
-              <div className="mt-3">{heroExtra}</div>
+              // heroExtra (HeroPreview/HeroFlow/HeroStepper) disembunyikan di mobile.
+              // Header hero sticky top-0 → kalau box tinggi ini tetap di mobile, ia
+              // menempel & memakan viewport + border-b menutupi konten (overlap).
+              // Di desktop (sm+) space cukup → tampilkan seperti biasa.
+              <div className="mt-3 hidden sm:block">{heroExtra}</div>
             )}
           </div>
         )}
