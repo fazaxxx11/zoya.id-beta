@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import styles from '../../StatistikGuide.module.css';
+import Stepper from '../../Stepper';
 
 const steps = [
   { title: "1. Kumpulkan Data", desc: "Susun data mentah ke dalam tabel atau daftar nilai." },
@@ -10,24 +9,5 @@ const steps = [
 ];
 
 export default function DeskriptifTutorial() {
-  const [step, setStep] = useState(0);
-  const total = steps.length;
-  return (
-    <div className={styles.tutorialStepper}>
-      <div className={styles.stepProgress}>
-        <div style={{ width: `${((step + 1) / total) * 100}%` }} />
-      </div>
-      <div className={styles.stepCard} key={step}>
-        <h3>{steps[step].title}</h3>
-        <p>{steps[step].desc}</p>
-      </div>
-      <div className={styles.stepBtnRow}>
-        <button className={styles.stepBtn} onClick={() => setStep(s => s - 1)} disabled={step === 0}>← Back</button>
-        {step < total - 1
-          ? <button className={styles.stepBtn} onClick={() => setStep(s => s + 1)}>Next →</button>
-          : <span className={styles.stepDone}>✅ Selesai!</span>
-        }
-      </div>
-    </div>
-  );
+  return <Stepper steps={steps} />;
 }
