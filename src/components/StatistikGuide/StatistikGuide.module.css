@@ -19,6 +19,25 @@
   margin-bottom: 32px;
 }
 
+.walkthroughCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgb(var(--accent));
+  background: rgba(var(--accent), 0.08);
+  color: rgb(var(--accent));
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: background 0.2s;
+}
+.walkthroughCta:hover {
+  background: rgba(var(--accent), 0.15);
+}
+
 /* Tab navigation */
 .tabNav {
   display: flex;

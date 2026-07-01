@@ -12,9 +12,10 @@ import { Link } from 'react-router-dom'
 import {
   HelpCircle, Search, ChevronDown, BookOpen, Compass, Calculator,
   FileText, ClipboardCheck, Award, Mail, ExternalLink,
-  AlertCircle, CheckCircle2,
+  AlertCircle, CheckCircle2, Play,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
+import WalkthroughPlayer from '../components/WalkthroughPlayer'
 import { ADMIN_EMAIL, BRAND_NAME } from '../lib/brand'
 
 // ============================================================
@@ -304,6 +305,7 @@ export default function Help() {
   const [search, setSearch] = useState('')
   const [activeCat, setActiveCat] = useState('all')
   const [openIds, setOpenIds] = useState(() => new Set())
+  const [showWalkthrough, setShowWalkthrough] = useState(false)
 
   useEffect(() => { window.scrollTo(0, 0) }, [])
 
@@ -360,6 +362,13 @@ export default function Help() {
                 Cari di FAQ di bawah, atau mulai dari panduan terstruktur Panduan Skripsi.
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
+                <button
+                  onClick={() => setShowWalkthrough(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+                  style={{ background: 'rgb(var(--accent))' }}
+                >
+                  <Play className="w-3.5 h-3.5" /> Tonton Panduan Cepat
+                </button>
                 <Link to="/wizard"
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white"
                       style={{ background: 'linear-gradient(135deg, rgb(99 102 241), rgb(168 85 247))' }}>
@@ -488,6 +497,9 @@ export default function Help() {
           <FooterLink to="/feedback" icon={CheckCircle2}>Kritik &amp; Saran</FooterLink>
         </div>
       </div>
+      {showWalkthrough && (
+        <WalkthroughPlayer onClose={() => setShowWalkthrough(false)} />
+      )}
     </div>
   )
 }

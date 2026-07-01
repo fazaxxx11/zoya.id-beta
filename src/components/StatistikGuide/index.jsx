@@ -9,6 +9,8 @@ import DeskriptifTab from './tabs/DeskriptifTab';
 import InferensialTab from './tabs/InferensialTab';
 import RegresiTab from './tabs/RegresiTab';
 import FAQTab from './tabs/FAQTab';
+import WalkthroughPlayer from '../WalkthroughPlayer';
+import { Play } from 'lucide-react';
 
 const tabs = [
   { id: 'overview', label: 'Ringkasan', component: OverviewTab },
@@ -20,6 +22,7 @@ const tabs = [
 
 const StatistikGuide = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
   const activeIdx = tabs.findIndex((t) => t.id === activeTab);
   const ActiveComponent = tabs[activeIdx]?.component || OverviewTab;
   const { tabRefs, onKeyDown, getTabIndex } = useTabsKeyboard({
@@ -43,6 +46,13 @@ const StatistikGuide = () => {
 
       <div className={styles.container}>
         <p className={styles.subtitle}>Referensi lengkap analisis data untuk penelitian</p>
+
+        <button
+          className={styles.walkthroughCta}
+          onClick={() => setShowWalkthrough(true)}
+        >
+          <Play style={{ width: 14, height: 14 }} /> Lihat video panduan
+        </button>
 
         <nav
           role="tablist"
@@ -76,6 +86,9 @@ const StatistikGuide = () => {
           <ActiveComponent />
         </div>
       </div>
+      {showWalkthrough && (
+        <WalkthroughPlayer onClose={() => setShowWalkthrough(false)} />
+      )}
     </div>
   );
 };
