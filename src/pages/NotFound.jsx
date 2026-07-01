@@ -3,7 +3,7 @@ import { Home, ArrowLeft } from 'lucide-react'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 pb-bottomnav">
       <div className="text-center max-w-md">
         <div className="text-8xl font-serif font-bold mb-4" style={{ color: 'var(--gold, #B58B45)' }}>404</div>
         <h1 className="text-xl font-semibold mb-2" style={{ color: 'rgb(var(--fg))' }}>Halaman tidak ditemukan</h1>

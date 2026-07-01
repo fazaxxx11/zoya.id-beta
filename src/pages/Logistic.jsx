@@ -103,7 +103,7 @@ export default function LogisticPage() {
   }, [result, threshold])
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
+    <div className="min-h-screen pb-bottomnav" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title="Regresi Logistik"
         subtitle="Prediksi outcome biner (0/1) dari predictor numerik"

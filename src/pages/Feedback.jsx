@@ -41,7 +41,7 @@ export default function FeedbackPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
+    <div className="min-h-screen pb-bottomnav" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title="Kritik & Saran"
         subtitle="Suara Anda menentukan arah pengembangan platform"

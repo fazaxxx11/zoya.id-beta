@@ -88,7 +88,7 @@ export default function Qualitative() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
+    <div className="min-h-screen pb-bottomnav" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title="Analisis Kualitatif"
         subtitle="Coding, codebook, word frequency, & reliabilitas inter-rater"

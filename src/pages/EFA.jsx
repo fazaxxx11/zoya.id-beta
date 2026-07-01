@@ -85,7 +85,7 @@ export default function EFAPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
+    <div className="min-h-screen pb-bottomnav" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title="Exploratory Factor Analysis"
         subtitle="Validasi konstruk kuesioner — KMO, Bartlett, Scree, Loading"

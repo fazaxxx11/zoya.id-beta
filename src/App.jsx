@@ -69,7 +69,11 @@ function PageLoader() {
 
 function RouteTracker() {
   const location = useLocation()
-  useEffect(() => { trackPageview() }, [location.pathname])
+  useEffect(() => {
+    // Scroll ke atas saat pindah page — React Router v6 gak auto-scroll.
+    window.scrollTo(0, 0)
+    trackPageview()
+  }, [location.pathname])
   return null
 }
 

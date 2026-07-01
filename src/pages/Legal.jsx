@@ -16,7 +16,7 @@ export default function LegalPage({ kind }) {
   const updated = '1 Mei 2026'
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
+    <div className="min-h-screen pb-bottomnav" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title={title}
         subtitle={isPrivacy ? 'Bagaimana kami menangani data Anda' : 'Aturan main pemakaian platform'}

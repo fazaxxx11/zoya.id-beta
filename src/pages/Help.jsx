@@ -329,7 +329,7 @@ export default function Help() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
+    <div className="min-h-screen pb-bottomnav" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title="Bantuan & FAQ"
         subtitle="Pertanyaan umum tentang penggunaan platform"

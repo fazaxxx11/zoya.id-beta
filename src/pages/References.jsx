@@ -100,7 +100,7 @@ export default function References() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
+    <div className="min-h-screen pb-bottomnav" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title="Manajemen Referensi"
         subtitle="Daftar pustaka & sitasi untuk skripsi/tesis"

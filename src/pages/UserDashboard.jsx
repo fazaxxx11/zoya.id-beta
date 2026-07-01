@@ -126,7 +126,7 @@ function UserDashboard() {
 
   return (
     <div
-      className="min-h-screen bg-pattern"
+      className="min-h-screen bg-pattern pb-bottomnav"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >

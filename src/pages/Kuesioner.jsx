@@ -194,7 +194,7 @@ export default function Kuesioner() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
+    <div className="min-h-screen pb-bottomnav" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title="Susun instrumen survei"
         eyebrow="KUESIONER"

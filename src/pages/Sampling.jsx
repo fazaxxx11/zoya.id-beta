@@ -20,7 +20,7 @@ export default function Sampling() {
   const [tab, setTab] = useState('size')
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
+    <div className="min-h-screen pb-bottomnav" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title="Penentuan Sampel"
         subtitle="Kalkulator metodologi penelitian"

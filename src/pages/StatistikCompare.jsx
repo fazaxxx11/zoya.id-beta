@@ -84,7 +84,7 @@ export default function StatistikCompare() {
   const sameTool = a && b && a.tool === b.tool
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-surface pb-bottomnav">
       <div className="max-w-6xl mx-auto px-4 sm:px-5 py-5 sm:py-6">
         <PageHeader
           title="Bandingkan analisis"
