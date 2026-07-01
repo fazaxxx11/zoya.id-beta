@@ -19,6 +19,7 @@ import './index.css'
 // Lazy-loaded routes — split heavy pages into separate chunks so the initial
 // bundle (Home + shell) stays small. Each page is code-split on demand.
 const Statistik           = lazy(() => import('./pages/Statistik'))
+const StatistikHasil      = lazy(() => import('./pages/StatistikHasil'))
 const StatistikHistory    = lazy(() => import('./pages/StatistikHistory'))
 const StatistikCompare    = lazy(() => import('./pages/StatistikCompare'))
 const StatistikBatch      = lazy(() => import('./pages/StatistikBatch'))
@@ -93,6 +94,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/statistik" element={<Statistik />} />
+          <Route path="/statistik/hasil" element={<StatistikHasil />} />
           <Route path="/statistik/start" element={<OnboardingStatistik />} />
           <Route path="/statistik/history" element={<StatistikHistory />} />
           <Route path="/statistik/compare" element={<StatistikCompare />} />

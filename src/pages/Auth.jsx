@@ -60,7 +60,7 @@ function Auth() {
   const isOAuthReturn = !!searchParams.get('redirect')
   useEffect(() => {
     if (currentUser && isOAuthReturn) {
-      const target = redirectTo && redirectTo !== '/' ? redirectTo : '/dashboard'
+      const target = redirectTo && redirectTo !== '/' ? redirectTo : '/'
       navigate(target, { replace: true })
     }
   }, [currentUser, redirectTo, navigate, isOAuthReturn])
@@ -71,7 +71,7 @@ function Auth() {
       <div className="min-h-screen bg-pattern flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-muted">
           <Loader2 className="w-8 h-8 animate-spin text-accent-fg" />
-          <p className="text-sm">Mengarahkan ke {redirectTo === '/dashboard' ? 'dashboard' : 'tujuan'}…</p>
+          <p className="text-sm">Mengarahkan ke tujuan…</p>
         </div>
       </div>
     )
@@ -86,7 +86,7 @@ function Auth() {
     if (result.success) {
       setSuccess('Login berhasil!')
       setTimeout(() => {
-        navigate(redirectTo && redirectTo !== '/' ? redirectTo : '/dashboard')
+        navigate(redirectTo && redirectTo !== '/' ? redirectTo : '/')
       }, 800)
     } else {
       setError(result.error)
@@ -117,8 +117,8 @@ function Auth() {
 
     setSuccess(BETA_FREE ? 'Registrasi berhasil! Semua fitur beta bisa digunakan gratis.' : 'Registrasi berhasil! Silakan top-up untuk mulai gunakan layanan.')
     setTimeout(() => {
-      navigate(redirectTo && redirectTo !== '/' ? redirectTo : '/dashboard')
-    }, 1500)
+        navigate(redirectTo && redirectTo !== '/' ? redirectTo : '/')
+      }, 1500)
     setLoading(false)
   }
 
@@ -149,14 +149,14 @@ function Auth() {
     }
     setSuccess('Login berhasil!')
     setTimeout(() => {
-      navigate(redirectTo && redirectTo !== '/' ? redirectTo : '/dashboard')
-    }, 600)
+        navigate(redirectTo && redirectTo !== '/' ? redirectTo : '/')
+      }, 600)
   }
 
   const handleGoogleLogin = async () => {
     setError('')
     setLoading(true)
-    const result = await loginWithGoogle(`${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo || '/dashboard')}`)
+    const result = await loginWithGoogle(`${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo || '/')}`)
     if (!result.success) {
       setError(result.error)
       setLoading(false)

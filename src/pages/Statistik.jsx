@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, useRef, lazy, Suspense } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
   BookOpen, CheckCircle, AlertTriangle,
@@ -49,9 +49,9 @@ import { wilcoxonSignedRank as wilcoxonBackend, mannWhitneyU as mannWhitneyBacke
   kruskalWallisBackend, regressionBackend, regressionMultipleBackend
 } from '../lib/stats/backend.js'
 
-// ResultDisplay (recharts + 14 ResultCards + panel-panel hasil) di-lazy-load
-// supaya chunk awal Statistik kecil — hanya dimuat setelah analisis selesai.
-const ResultDisplay = lazy(() => import('../components/statistik/ResultDisplay'))
+// ResultDisplay sekarang di-render di page terpisah (StatistikHasil.jsx,
+// route /statistik/hasil). Statistik.jsx cukup persist result ke localStorage
+// + navigate. Lihat handler runAnalysis di bawah.
 
 // ============================================================
 // Tools registry — single source of truth
@@ -671,6 +671,13 @@ function Statistik() {
         }
         setResult(finalResult)
 
+        // Persist result ke localStorage + navigate ke page hasil terpisah
+        // (/statistik/hasil). Sync write di sini (bukan via usePersist effect)
+        // karena component unmount setelah navigate — effect gak ke-fire.
+        // StatistikHasil baca via usePersist('statistik_result').
+        try { localStorage.setItem('statistik_result', JSON.stringify(finalResult)) } catch {}
+        navigate('/statistik/hasil')
+
         // Save order (kalau bukan free / admin)
         if (paidAmount > 0) {
           saveOrder({
@@ -741,11 +748,6 @@ function Statistik() {
     toast.success(`Pembayaran ${formatIDR(r.paid ?? pricing.price)} berhasil. Menganalisis...`)
     runAnalysis({ paidAmount: r.paid ?? pricing.price, paymentMethod: 'wallet' })
   }
-
-  // Handle "Analisis Lain" — reset result but keep data
-  const handleBackToAnalysis = useCallback(() => {
-    setResult(null)
-  }, [])
 
   // Handle "Upload Ulang" — reset everything
   const handleReset = useCallback(() => {
@@ -890,21 +892,8 @@ function Statistik() {
               </div>
             )}
 
-            {/* Result */}
-            {result && (
-              <Suspense fallback={
-                <div className="border border-border bg-card rounded-xl p-8 flex items-center justify-center gap-3 text-sm text-muted">
-                  <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                  Memuat hasil…
-                </div>
-              }>
-                <ResultDisplay
-                  result={result}
-                  onReset={handleReset}
-                  onBackToAnalysis={handleBackToAnalysis}
-                />
-              </Suspense>
-            )}
+            {/* Result — sekarang render di page terpisah /statistik/hasil.
+                Lihat StatistikHasil.jsx (route di App.jsx). */}
         </StatistikFlow>
       </div>
 
