@@ -1,0 +1,330 @@
+/* WalkthroughPlayer — animated walkthrough modal player.
+   Theme tokens only: rgb(var(--accent)), rgb(var(--border)), var(--muted),
+   rgb(var(--bg)), rgb(var(--card)), rgb(var(--surface)), rgb(var(--fg)). */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: rgb(var(--card));
+  border: 1px solid rgb(var(--border));
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  max-width: 640px;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgb(var(--border));
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+}
+
+.closeBtn {
+  padding: 4px;
+  border-radius: 6px;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+}
+.closeBtn:hover {
+  background: rgb(var(--surface));
+  color: rgb(var(--fg));
+}
+
+/* ── Player area (16:10 mockup stage) ── */
+.playerArea {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: rgb(var(--surface));
+  overflow: hidden;
+}
+
+.sceneLabel {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 5;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgb(var(--card));
+  border: 1px solid rgb(var(--border));
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+/* ── Simulated cursor ── */
+.cursor {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  z-index: 10;
+  top: 0;
+  left: 0;
+  transform: translate(0, 0);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.cursorClick {
+  animation: cursorRipple 0.6s ease-out;
+}
+
+@keyframes cursorRipple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--accent), 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 16px rgba(var(--accent), 0);
+  }
+}
+
+/* ── Caption ── */
+.caption {
+  padding: 10px 16px;
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: var(--muted);
+  text-align: center;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Progress bar ── */
+.progressBar {
+  height: 3px;
+  background: rgb(var(--border));
+  position: relative;
+  cursor: pointer;
+}
+
+.progressFill {
+  height: 100%;
+  background: rgb(var(--accent));
+  transition: width 0.1s linear;
+}
+
+/* ── Controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px 14px;
+}
+
+.ctrlBtn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgb(var(--border));
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.ctrlBtn:hover {
+  background: rgb(var(--surface));
+  color: rgb(var(--fg));
+}
+.ctrlBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ctrlPrimary {
+  background: rgb(var(--accent));
+  color: rgb(var(--accent-fg, #fff));
+  border-color: rgb(var(--accent));
+}
+.ctrlPrimary:hover {
+  background: rgb(var(--accent));
+  opacity: 0.9;
+}
+
+/* ── Mockup shared ── */
+.mockup {
+  position: absolute;
+  inset: 0;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mockupCard {
+  background: rgb(var(--card));
+  border: 1px solid rgb(var(--border));
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* ── Scene 1: upload ── */
+.uploadZone {
+  border: 2px dashed rgb(var(--border));
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+  transition: border-color 0.3s;
+}
+.uploadZoneActive {
+  border-color: rgb(var(--accent));
+}
+.fileName {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: rgb(var(--fg));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+}
+
+/* ── Scene 2: pilihan analisis ── */
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.option {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgb(var(--border));
+  font-size: 0.75rem;
+  color: rgb(var(--fg));
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.optionSelected {
+  border-color: rgb(var(--accent));
+  background: rgba(var(--accent), 0.08);
+}
+
+/* ── Scene 3: results table ── */
+.resultTable {
+  width: 100%;
+  font-size: 0.6875rem;
+  border-collapse: collapse;
+}
+.resultTable th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 4px 8px;
+  border-bottom: 1px solid rgb(var(--border));
+}
+.resultTable td {
+  padding: 4px 8px;
+  border-bottom: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+}
+.resultRow {
+  animation: fadeInRow 0.4s ease-out;
+}
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Scene 4: AI panel ── */
+.aiPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.aiText {
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: rgb(var(--fg));
+  min-height: 32px;
+}
+.typingCursor {
+  display: inline-block;
+  width: 4px;
+  height: 10px;
+  background: rgb(var(--accent));
+  margin-left: 1px;
+  vertical-align: middle;
+  animation: blink 0.8s step-end infinite;
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* ── Scene 5: export ── */
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgb(var(--accent));
+  color: rgb(var(--accent-fg, #fff));
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+}
+.downloadNotice {
+  margin-top: 8px;
+  font-size: 0.6875rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+  animation: fadeInRow 0.4s ease-out;
+}
+
+/* ── Finished state ── */
+.finished {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px;
+  text-align: center;
+}
+.finishedTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgb(var(--fg));
+}
+.finishedDesc {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
