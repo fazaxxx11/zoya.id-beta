@@ -2,6 +2,8 @@ import { useState } from 'react';
 import BellCurve from '../illustrations/BellCurve';
 import SkewnessChart from '../illustrations/SkewnessChart';
 import DeskriptifTutorial from './tutorials/DeskriptifTutorial';
+import SpssTable from '../SpssTable';
+import { DESCRIPTIVE_STATS, TESTS_OF_NORMALITY } from '../spssTableData';
 import styles from '../StatistikGuide.module.css';
 import useTabsKeyboard from '../useTabsKeyboard';
 
@@ -100,7 +102,8 @@ const DeskriptifTab = () => {
 
             {showSpss && (
               <div className={styles.spssPanel}>
-                <div className={styles.spssPlaceholder}>Output SPSS — Tabel Frequencies</div>
+                <SpssTable data={DESCRIPTIVE_STATS} />
+                <SpssTable data={TESTS_OF_NORMALITY} />
                 <p><strong>Cara di SPSS:</strong></p>
                 <ol className={styles.spssSteps}>
                   <li>Klik menu <strong>Analyze</strong></li>

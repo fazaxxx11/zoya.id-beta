@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import ScatterLine from '../illustrations/ScatterLine';
 import RegresiTutorial from './tutorials/RegresiTutorial';
+import SpssTable from '../SpssTable';
+import { MODEL_SUMMARY, COEFFICIENTS } from '../spssTableData';
 import styles from '../StatistikGuide.module.css';
 import useTabsKeyboard from '../useTabsKeyboard';
 
@@ -88,7 +90,8 @@ const RegresiTab = () => {
 
             {showSpss && (
               <div className={styles.spssPanel}>
-                <div className={styles.spssPlaceholder}>Output SPSS — Regresi Linear</div>
+                <SpssTable data={MODEL_SUMMARY} />
+                <SpssTable data={COEFFICIENTS} />
                 <p><strong>Cara di SPSS:</strong></p>
                 <ol className={styles.spssSteps}>
                   <li>Klik menu <strong>Analyze</strong></li>

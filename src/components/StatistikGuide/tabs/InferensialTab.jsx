@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import PValueViz from '../illustrations/PValueViz';
 import InferensialTutorial from './tutorials/InferensialTutorial';
+import SpssTable from '../SpssTable';
+import { INDEPENDENT_SAMPLES_TEST, ANOVA_TABLE } from '../spssTableData';
 import styles from '../StatistikGuide.module.css';
 import useTabsKeyboard from '../useTabsKeyboard';
 
@@ -131,7 +133,8 @@ const InferensialTab = () => {
 
             {showSpss && (
               <div className={styles.spssPanel}>
-                <div className={styles.spssPlaceholder}>Output SPSS — Uji Hipotesis</div>
+                <SpssTable data={INDEPENDENT_SAMPLES_TEST} />
+                <SpssTable data={ANOVA_TABLE} />
 
                 <p><strong>Langkah-langkah t-test (Independent Samples):</strong></p>
                 <ol className={styles.spssSteps}>

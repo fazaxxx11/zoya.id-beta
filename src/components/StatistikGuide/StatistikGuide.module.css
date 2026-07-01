@@ -245,17 +245,95 @@
   margin-top: 12px;
 }
 
-.spssPlaceholder {
-  background: rgb(var(--surface));
-  border: 2px dashed rgb(var(--border));
-  border-radius: 6px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--muted);
+/* ── Mockup tabel output SPSS ──
+   Struktur SPSS dipertahankan: horizontal rules only (no vertical
+   borders), header shaded, title bold-left, footnotes italic, angka
+   right-aligned + tabular-nums. Warna theme tokens — scholarly ivory. */
+.spssTableWrap {
+  margin-bottom: 14px;
+  overflow-x: auto;
+}
+
+.spssTable {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12.5px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--fg);
+  border-top: 3px double rgb(var(--border));
+  border-bottom: 2px solid rgb(var(--border));
+}
+
+.spssTableTitle {
+  text-align: left;
+  font-weight: 700;
   font-size: 13px;
-  margin-bottom: 12px;
+  padding: 6px 0;
+  color: var(--fg);
+  caption-side: top;
+}
+
+.spssTableGroupHead th,
+.spssTableColHead th {
+  border-bottom: 1px solid rgb(var(--border));
+}
+
+.spssTableGroupHead th {
+  background: rgb(var(--surface));
+  font-weight: 600;
+  text-align: center;
+  font-size: 11.5px;
+  padding: 5px 8px;
+  color: var(--muted);
+}
+
+.spssTableColHead th {
+  background: rgb(var(--surface));
+  font-weight: 600;
+  font-size: 11.5px;
+  padding: 5px 8px;
+  color: var(--fg);
+}
+
+.spssThNum,
+.spssTableColHead th:last-child {
+  text-align: left;
+}
+
+.spssTh,
+.spssThNum {
+  vertical-align: bottom;
+}
+
+.spssThNum {
+  text-align: right;
+}
+
+.spssTd,
+.spssTdNum {
+  padding: 5px 8px;
+  border: none;
+  line-height: 1.5;
+}
+
+.spssTd {
+  text-align: left;
+  color: var(--fg);
+}
+
+.spssTdNum {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  color: var(--fg);
+}
+
+.spssTableNotes {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--muted);
+  padding: 4px 0 0;
+  line-height: 1.5;
 }
 
 .spssSteps {
