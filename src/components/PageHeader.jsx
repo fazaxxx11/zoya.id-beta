@@ -19,7 +19,7 @@ import { getAccentColor } from './hero/accent-tokens'
  * @param {string} [props.tagline] - tagline action-oriented (hero variant)
  * @param {string} [props.accent] - 'gold' | 'teal' | 'terracotta' (default 'gold', hero variant)
  * @param {string} [props.variant] - 'compact' (default) | 'hero'
- * @param {React.ReactNode} [props.heroExtra] - konten ekstra hero (HeroFlow/HeroStepper/HeroPreview)
+ * @param {React.ReactNode} [props.heroExtra] - konten ekstra hero (HeroFlow/HeroStepper)
  * @param {string} [props.parentPath] - fallback back path bila history kosong (default: '/')
  * @param {string} [props.parentLabel] - label parent (default: 'Beranda')
  * @param {Array<{path: string, label: string, icon?: any}>} [props.breadcrumbs] - hierarchy
@@ -169,7 +169,7 @@ export default function PageHeader({
               </p>
             )}
             {heroExtra && (
-              // heroExtra (HeroPreview/HeroFlow/HeroStepper) disembunyikan di mobile.
+              // heroExtra (HeroFlow/HeroStepper) disembunyikan di mobile.
               // Header hero sticky top-0 → kalau box tinggi ini tetap di mobile, ia
               // menempel & memakan viewport + border-b menutupi konten (overlap).
               // Di desktop (sm+) space cukup → tampilkan seperti biasa.
