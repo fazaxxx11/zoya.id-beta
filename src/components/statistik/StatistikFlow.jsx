@@ -8,8 +8,6 @@ import {
   ChevronRight, AlertCircle, FileSpreadsheet, ArrowRight, ClipboardCheck, X,
 } from 'lucide-react'
 import Fuse from 'fuse.js'
-import ScrollReveal from '../ScrollReveal'
-import { AmbientBlobs, Flourish } from '../design'
 
 // Step order — dot indicator + watermark angka di kartu masing-masing.
 const STEPS = [
@@ -747,64 +745,6 @@ function ToolCard({ item, selected, onClick, disabled }) {
   )
 }
 
-// ============================================================
-// Hero — editorial empty state (hanya saat belum upload).
-// Ruled-lines pattern (notebook) + floating shape samar.
-// ============================================================
-function StatistikHero() {
-  const FLOW = [
-    { icon: FileSpreadsheet, label: 'Upload', tint: 'text-accent' },
-    { icon: Activity, label: 'Analisis', tint: 'text-teal' },
-    { icon: ClipboardCheck, label: 'Interpretasi', tint: 'text-terracotta' },
-    { icon: ArrowRight, label: 'Export DOCX', tint: 'text-accent', strong: true },
-  ]
-  return (
-    <section
-      className="relative overflow-hidden border-b border-border"
-      style={{
-        background: 'rgb(var(--surface))',
-        backgroundImage:
-          'repeating-linear-gradient(0deg, transparent, transparent 22px, rgb(var(--border) / 0.12) 22px, rgb(var(--border) / 0.12) 23px)',
-      }}
-    >
-      {/* Ambient gradient blobs — shared component, hero variant */}
-      <AmbientBlobs variant="hero" />
-
-      <div className="relative max-w-3xl px-5 pt-8 sm:pt-10 pb-6 sm:pb-8">
-        <ScrollReveal delay={0.1}>
-          <div className="mt-4"><Flourish /></div>
-        </ScrollReveal>
-
-        {/* Flow hint — compact pill row, sama motif dengan Home hero */}
-        <ScrollReveal delay={0.2}>
-          <div className="mt-6 flex flex-wrap items-center gap-2 text-[13px]">
-            {FLOW.map((f, i) => (
-              <div key={f.label} className="flex items-center gap-2">
-                <div
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border bg-card ${
-                    f.strong ? 'border-accent/30 bg-accent/5' : 'border-border'
-                  }`}
-                >
-                  <f.icon className={`w-3.5 h-3.5 ${f.tint}`} />
-                  <span className={f.strong ? 'text-accent font-medium' : 'text-muted'}>
-                    {f.label}
-                  </span>
-                </div>
-                {i < FLOW.length - 1 && (
-                  <span className="text-accent/30 hidden sm:block">→</span>
-                )}
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 text-[12px] text-muted/70">
-            Mulai dari upload file Excel/CSV, lalu pilih uji statistik yang sesuai.
-          </p>
-        </ScrollReveal>
-      </div>
-    </section>
-  )
-}
-
 export default function StatistikFlow({
   file, data: propData, columns, numericColumns, categoricalColumns, error,
   activeTool, selectedTool, onSelectTool,
@@ -904,9 +844,6 @@ export default function StatistikFlow({
 
   return (
     <div>
-      {/* Hero hanya saat belum upload — kasih konteks editorial, hilang setelah data masuk */}
-      {!file && <StatistikHero />}
-
       <StepIndicator current={currentStep} completed={completed} />
 
       {/* Step 1: Upload */}

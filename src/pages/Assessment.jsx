@@ -17,7 +17,6 @@ import ConfirmPaymentModal from '../components/ConfirmPaymentModal'
 import RubrikAIModal from '../components/RubrikAIModal'
 import RubrikTemplateModal from '../components/RubrikTemplateModal'
 import PageHeader from '../components/PageHeader'
-import HeroStepper from '../components/hero/HeroStepper'
 import { saveTemplate as saveRubrikTemplate } from '../lib/rubrikTemplates'
 import { toast } from '../lib/toast'
 import { createFuzzySearch } from '../lib/fuzzySearch'
@@ -1519,7 +1518,6 @@ function Assessment() {
         variant="hero"
         accent="teal"
         parentPath="/"
-        heroExtra={<HeroStepper steps={['Rubrik', 'Jawaban siswa', 'Skor + komentar']} />}
         right={stepIndicator}
         actions={
           <Link
