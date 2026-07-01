@@ -1,6 +1,16 @@
 import { useState } from 'react'
 import { toast } from '../lib/toast'
 import { generateInterpretation } from '../lib/ai/interpretStats'
+import useTypingEffect from './AIInterpretationPanel/useTypingEffect'
+import useProgressStage from './AIInterpretationPanel/useProgressStage'
+
+// Staged progress thresholds (ms): 3 langkah simulasi proses AI
+const STAGE_THRESHOLDS = [0, 2500, 5000]
+const STAGE_LABELS = [
+  'Menganalisis hasil uji...',
+  'Menyusun interpretasi akademik...',
+  'Finalisasi paragraf...',
+]
 
 /**
  * AIInterpretationPanel - Reusable AI interpretation component
@@ -18,6 +28,16 @@ export default function AIInterpretationPanel({ result, value = '', onChange }) 
   const [isFallback, setIsFallback] = useState(false)
   const text = value
   const setText = (v) => onChange?.(v)
+
+  const { stageIndex, stageStates } = useProgressStage({
+    thresholds: STAGE_THRESHOLDS,
+    active: loading,
+  })
+  const { visibleText, done: typingDone, skip } = useTypingEffect({
+    text,
+    playing: !loading && !!text,
+  })
+  const displayText = typingDone ? text : visibleText
 
   const handleGenerate = async () => {
     setLoading(true)
@@ -71,9 +91,26 @@ export default function AIInterpretationPanel({ result, value = '', onChange }) 
       </div>
 
       {loading && (
-        <div className="bg-card/50 border border-border/80 rounded-lg p-4 text-sm text-muted flex items-center gap-2">
-          <span className="w-2 h-2 bg-muted rounded-full animate-pulse" />
-          Menulis interpretasi… (biasanya 5-15 detik)
+        <div className="bg-card/50 border border-border/80 rounded-lg p-4 space-y-2.5">
+          {STAGE_LABELS.map((label, i) => {
+            const state = stageStates[i] || 'pending'
+            return (
+              <div key={i} className="flex items-center gap-2 text-sm">
+                {state === 'done' ? (
+                  <span className="w-4 h-4 rounded-full bg-teal-600/15 flex items-center justify-center flex-shrink-0">
+                    <span className="w-1.5 h-1.5 bg-teal-600 rounded-full" />
+                  </span>
+                ) : state === 'active' ? (
+                  <span className="w-4 h-4 rounded-full border-2 border-accent border-t-transparent animate-spin flex-shrink-0" />
+                ) : (
+                  <span className="w-4 h-4 rounded-full border border-border flex-shrink-0" />
+                )}
+                <span className={state === 'active' ? 'text-fg font-medium' : 'text-muted'}>
+                  {label}
+                </span>
+              </div>
+            )
+          })}
         </div>
       )}
 
@@ -91,8 +128,19 @@ export default function AIInterpretationPanel({ result, value = '', onChange }) 
             </div>
           )}
           <div className="prose prose-sm max-w-none text-fg whitespace-pre-wrap leading-relaxed text-[13.5px]">
-            {text}
+            {displayText}
+            {!typingDone && text && (
+              <span className="inline-block w-1.5 h-4 bg-accent ml-0.5 align-middle animate-pulse" />
+            )}
           </div>
+          {!typingDone && text && (
+            <button
+              onClick={skip}
+              className="text-[11px] text-muted hover:text-fg border border-border hover:bg-card/50 px-2 py-1 rounded mt-2"
+            >
+              Tampilkan sekaligus
+            </button>
+          )}
           {provider && (
             <div className="text-[10px] uppercase tracking-[0.18em] text-muted mt-3 pt-3 border-t border-border/70">
               {isFallback ? `Template lokal (${provider})` : `Disusun oleh AI (${provider})`} · Periksa kembali sebelum digunakan
