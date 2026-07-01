@@ -1,5 +1,9 @@
 // Floating "Kritik & Saran" button — global, bottom-right.
 // Opens compact modal with type, rating, message → saves locally + opens mailto.
+//
+// Posisi FAB di mobile di atas BottomNav (72px + safe-area) supaya gak overlap;
+// desktop (lg) BottomNav hidden → kembali ke bottom-5.
+// Warna pakai theme token terracotta (warm-rose) — bukan gradient ungu/pink.
 
 import { useState, useEffect } from 'react'
 import { MessageCircle, X, Send, Star, CheckCircle2, ExternalLink } from 'lucide-react'
@@ -48,14 +52,14 @@ export default function FeedbackButton() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — di atas BottomNav di mobile, bottom-5 di desktop */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Kirim Kritik & Saran"
-        className="fixed bottom-5 right-5 z-40 w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-white transition-transform hover:scale-110"
+        className="fixed right-5 z-40 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] lg:bottom-5 w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-white transition-transform hover:scale-110"
         style={{
-          background: 'linear-gradient(135deg, #3b82f6, #a855f7, #ec4899)',
-          boxShadow: '0 8px 24px -6px rgb(168 85 247 / 0.5)',
+          background: 'rgb(var(--warm-rose))',
+          boxShadow: '0 8px 24px -6px rgb(var(--warm-rose) / 0.45)',
         }}
       >
         <MessageCircle className="w-5 h-5" />
@@ -76,11 +80,11 @@ export default function FeedbackButton() {
             {/* Header */}
             <div
               className="px-5 py-4 flex items-center justify-between text-white"
-              style={{ background: 'linear-gradient(135deg, #3b82f6, #a855f7, #ec4899)' }}
+              style={{ background: 'rgb(var(--warm-rose))' }}
             >
               <div>
                 <h3 className="font-bold">Kritik & Saran</h3>
-                <p className="text-xs opacity-90">Bantu kami jadi lebih baik 💜</p>
+                <p className="text-xs opacity-90">Bantu kami jadi lebih baik</p>
               </div>
               <button onClick={() => setOpen(false)} aria-label="Tutup" className="p-1 hover:bg-white/10 rounded-lg">
                 <X className="w-5 h-5" />
@@ -103,7 +107,7 @@ export default function FeedbackButton() {
                         className="px-2 py-2 rounded-lg border text-xs font-medium transition-colors active:scale-95"
                         style={
                           type === cat.id
-                            ? { background: 'linear-gradient(135deg, #a855f7, #ec4899)', color: 'white', borderColor: 'transparent' }
+                            ? { background: 'rgb(var(--warm-rose))', color: 'white', borderColor: 'transparent' }
                             : { backgroundColor: 'rgb(var(--bg))', borderColor: 'rgb(var(--border))', color: 'rgb(var(--fg))' }
                         }
                       >
@@ -148,7 +152,7 @@ export default function FeedbackButton() {
                     value={message}
                     onChange={e => setMessage(e.target.value)}
                     placeholder="Ceritakan apa yang menurut Anda perlu diperbaiki, ditambahkan, atau yang Anda suka…"
-                    className="w-full px-3 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-violet-300"
+                    className="w-full px-3 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-accent/40"
                     style={{ backgroundColor: 'rgb(var(--bg))', borderColor: 'rgb(var(--border))', color: 'rgb(var(--fg))' }}
                   />
                   <div className="text-[10px] mt-1 text-right" style={{ color: 'rgb(var(--muted))' }}>
@@ -166,7 +170,7 @@ export default function FeedbackButton() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     placeholder="email@anda.com"
-                    className="w-full px-3 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-violet-300"
+                    className="w-full px-3 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-accent/40"
                     style={{ backgroundColor: 'rgb(var(--bg))', borderColor: 'rgb(var(--border))', color: 'rgb(var(--fg))' }}
                   />
                 </div>
@@ -176,7 +180,7 @@ export default function FeedbackButton() {
                   type="submit"
                   disabled={message.trim().length < 5}
                   className="w-full py-2.5 rounded-lg text-sm font-medium text-white inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: 'linear-gradient(135deg, #3b82f6, #a855f7, #ec4899)' }}
+                  style={{ background: 'rgb(var(--warm-rose))' }}
                 >
                   <Send className="w-4 h-4" /> Kirim
                 </button>
@@ -190,7 +194,7 @@ export default function FeedbackButton() {
                 </div>
                 <div>
                   <h4 className="font-bold mb-1" style={{ color: 'rgb(var(--fg))' }}>
-                    Terima kasih! 💜
+                    Terima kasih!
                   </h4>
                   <p className="text-sm" style={{ color: 'rgb(var(--muted))' }}>
                     Pesan Anda sudah tersimpan. Untuk memastikan kami terima,
@@ -200,7 +204,7 @@ export default function FeedbackButton() {
                 <button
                   onClick={sendEmail}
                   className="w-full py-2.5 rounded-lg text-sm font-medium text-white inline-flex items-center justify-center gap-2"
-                  style={{ background: 'linear-gradient(135deg, #3b82f6, #a855f7, #ec4899)' }}
+                  style={{ background: 'rgb(var(--warm-rose))' }}
                 >
                   <ExternalLink className="w-4 h-4" /> Kirim ke {ADMIN_EMAIL}
                 </button>

@@ -54,6 +54,20 @@ export default function StatistikHistory() {
     return () => clearTimeout(t)
   }, [search])
 
+  // Measure PageHeader height supaya sticky compare bar nempel di bawah header
+  // (bar z-10 di bawah header z-30), bukan top-2 yang ketutup header saat scroll.
+  // Pola sama dengan ResultDisplay.jsx.
+  const [headerH, setHeaderH] = useState(88)
+  useEffect(() => {
+    const measure = () => {
+      const hdr = document.querySelector('header')
+      if (hdr) setHeaderH(Math.round(hdr.getBoundingClientRect().height))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
   const filtered = useMemo(() => {
     if (filterTool === 'all') return items
     return items.filter(it => it.tool === filterTool)
@@ -127,7 +141,7 @@ export default function StatistikHistory() {
 
         {/* Compare action bar (sticky when in select mode) */}
         {selectMode && (
-          <div className="bg-accent text-accent-fg rounded-xl p-3 mb-5 flex items-center justify-between gap-3 sticky top-2 z-10 shadow-lg">
+          <div className="bg-accent text-accent-fg rounded-xl p-3 mb-5 flex items-center justify-between gap-3 sticky z-10 shadow-lg" style={{ top: `${headerH + 8}px` }}>
             <div className="text-sm">
               {selected.size === 0 && 'Pilih 2 analisis untuk dibandingkan'}
               {selected.size === 1 && 'Pilih 1 lagi untuk membandingkan'}
