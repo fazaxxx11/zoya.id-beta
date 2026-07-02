@@ -91,42 +91,6 @@ export function validateBody(req, res, schema) {
   }
 }
 
-// Rate limiting by IP
-const rateLimitStore = new Map();
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const RATE_LIMIT_MAX = 100; // 100 requests per window
-
-export function rateLimitByIP(req, res) {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  const now = Date.now();
-  
-  if (!rateLimitStore.has(ip)) {
-    rateLimitStore.set(ip, {
-      count: 1,
-      startTime: now
-    });
-    return true;
-  }
-  
-  const entry = rateLimitStore.get(ip);
-  
-  if (now - entry.startTime > RATE_LIMIT_WINDOW) {
-    entry.count = 1;
-    entry.startTime = now;
-    return true;
-  }
-  
-  if (entry.count >= RATE_LIMIT_MAX) {
-    res.status(429).json({
-      error: 'Too many requests'
-    });
-    return false;
-  }
-  
-  entry.count++;
-  return true;
-}
-
 // Backward compatibility exports
 export const CORS_ALLOWLIST = DEFAULT_CORS_ALLOWLIST;
 export const CORS_REGEXES = DEFAULT_CORS_REGEXES;
