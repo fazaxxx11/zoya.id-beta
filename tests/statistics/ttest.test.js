@@ -9,8 +9,10 @@ function loadFixture(name) {
 
 function parseCSV(path) {
   const csv = loadFixture(path);
-  const lines = csv.trim().split('\n');
-  const headers = lines[0].split(',');
+  // split on /\r?\n/ to handle CRLF (Windows checkout) fixtures — plain \n
+  // leaves a trailing \r on each value (e.g. 'score\r' → r.score is undefined).
+  const lines = csv.trim().split(/\r?\n/);
+  const headers = lines[0].split(',').map(h => h.trim());
   return lines.slice(1).map(line => {
     const vals = line.split(',').map(v => v.trim());
     const obj = {};
