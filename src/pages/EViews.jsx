@@ -1,31 +1,22 @@
-// EViews.jsx — Consolidated EViews Analysis Page (Phase 5C)
-// 3 tabs: Estimasi Panel | Diagnostik | Time Series
+// EViews.jsx — Consolidated EViews Analysis Page (Phase 3)
+// 2 tabs: Estimasi Panel | Time Series
 // One shared CSV upload across all tabs.
+// Results display on /eviews/hasil (separate page).
 
 import { useState, useMemo, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   TrendingUp, Upload, Play, FileSpreadsheet,
-  AlertTriangle, CheckCircle, Settings2,
+  AlertTriangle, CheckCircle,
   ArrowRightLeft, Link2, Trash2,
-  LayoutGrid, Activity,
+  LayoutGrid,
 } from 'lucide-react'
 import Papa from 'papaparse'
 import PageHeader from '../components/PageHeader'
 import { Button } from '../components/ui/Button'
 import PanelConfig from '../components/panel/PanelConfig'
-import ModelSummaryCard from '../components/panel/ModelSummaryCard'
-import CoefficientsTable from '../components/panel/CoefficientsTable'
-import HausmanCard from '../components/panel/HausmanCard'
-import DiagnosticsCard from '../components/panel/DiagnosticsCard'
-import {
-  ADFResultCard,
-  GrangerResultCard,
-  CointegrationResultCard,
-  LagInfoCard,
-} from '../components/timeseries'
 import {
   pooledOLSAdapter, fixedEffectsAdapter, randomEffectsAdapter,
-  hausmanTestAdapter, breuschPaganAdapter, whiteTestAdapter, wooldridgeTestAdapter,
 } from '../lib/statistics'
 import {
   adfTestAdapter,
@@ -83,28 +74,34 @@ const SAMPLE_CSV = `Date,GDP,Inflation,Interest_Rate
 2022-12,131,2.3,4.2`
 
 // ============================================================
+// Helpers
+// ============================================================
+const stamp = () => new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
+
+// ============================================================
 // Main Component
 // ============================================================
 export default function EViewsPage() {
+  const navigate = useNavigate()
+
+  // ─── Restore from last result (user can run another test without re-uploading) ───
+  const saved = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('eviews_result')
+      return raw ? JSON.parse(raw) : null
+    } catch { return null }
+  }, [])
+
   // ─── Shared State ───
-  const [data, setData] = useState(null)
-  const [columns, setColumns] = useState([])
-  const [fileName, setFileName] = useState('')
-  const [activeTab, setActiveTab] = useState('estimasi')
+  const [data, setData] = useState(saved?.data ?? null)
+  const [columns, setColumns] = useState(saved?.columns ?? [])
+  const [fileName, setFileName] = useState(saved?.fileName ?? '')
+  const [activeTab, setActiveTab] = useState(saved?._type === 'timeseries' ? 'timeseries' : 'estimasi')
 
   // ─── Tab 1: Estimasi ───
-  const [panelConfig, setPanelConfig] = useState(null)
   const [estLoading, setEstLoading] = useState(false)
-  const [estimationResults, setEstimationResults] = useState({
-    pooledOLS: null, FE: null, RE: null,
-  })
 
-  // ─── Tab 2: Diagnostik ───
-  const [diagnosticResults, setDiagnosticResults] = useState({
-    hausman: null, bp: null, white: null, wooldridge: null,
-  })
-
-  // ─── Tab 3: Time Series ───
+  // ─── Tab 2: Time Series ───
   const [tsConfig, setTsConfig] = useState({
     dateColumn: '',
     frequency: 'Bulanan',
@@ -119,12 +116,25 @@ export default function EViewsPage() {
     cointY: '',
     cointX: '',
     tsTest: 'adf',
-  })
-  const [tsResults, setTsResults] = useState({
-    adf: [], granger: null, cointegration: null,
+    ...saved?.tsConfig,
   })
   const [tsRunning, setTsRunning] = useState(false)
   const [tsError, setTsError] = useState(null)
+
+  // ─── Persist + navigate helper ───
+  const persistAndNavigate = useCallback((payload) => {
+    try {
+      localStorage.setItem('eviews_result', JSON.stringify(payload))
+    } catch (e) {
+      if (e.name === 'QuotaExceededError') {
+        toast.error('Dataset terlalu besar untuk disimpan. Coba dataset yang lebih kecil.')
+        return false
+      }
+      throw e
+    }
+    navigate('/eviews/hasil')
+    return true
+  }, [navigate])
 
   // ─── Derived: numeric columns ───
   const numericColumns = useMemo(() => {
@@ -133,16 +143,6 @@ export default function EViewsPage() {
       const vals = data.slice(0, 50).map(r => Number(r[h]))
       const numeric = vals.filter(v => !isNaN(v) && v !== 0)
       return numeric.length / Math.max(vals.length, 1) > 0.5
-    })
-  }, [data, columns])
-
-  // ─── Derived: numeric rows for time series ───
-  const tsRows = useMemo(() => {
-    if (!data) return []
-    return data.map(row => {
-      const obj = {}
-      columns.forEach(c => { obj[c] = Number(row[c]) })
-      return obj
     })
   }, [data, columns])
 
@@ -169,10 +169,8 @@ export default function EViewsPage() {
         setData(results.data)
         setColumns(cols)
         setFileName(file.name)
-        // Reset all results
-        setEstimationResults({ pooledOLS: null, FE: null, RE: null })
-        setDiagnosticResults({ hausman: null, bp: null, white: null, wooldridge: null })
-        setTsResults({ adf: [], granger: null, cointegration: null })
+        // Clear old results — new data invalidates them
+        try { localStorage.removeItem('eviews_result') } catch {}
         toast.info(`File "${file.name}" dimuat`)
       },
     })
@@ -182,21 +180,14 @@ export default function EViewsPage() {
     setData(null)
     setColumns([])
     setFileName('')
-    setPanelConfig(null)
-    setEstimationResults({ pooledOLS: null, FE: null, RE: null })
-    setDiagnosticResults({ hausman: null, bp: null, white: null, wooldridge: null })
-    setTsResults({ adf: [], granger: null, cointegration: null })
+    try { localStorage.removeItem('eviews_result') } catch {}
   }, [])
 
   // ============================================================
   // Tab 1: Estimasi
   // ============================================================
   const handleEstimate = useCallback(async (cfg) => {
-    setPanelConfig(cfg)
     setEstLoading(true)
-    setEstimationResults({ pooledOLS: null, FE: null, RE: null })
-    setDiagnosticResults({ hausman: null, bp: null, white: null, wooldridge: null })
-
     await new Promise(r => setTimeout(r, 50))
 
     try {
@@ -212,63 +203,40 @@ export default function EViewsPage() {
         result = randomEffectsAdapter(data, yCol, xCols, options)
       }
 
-      setEstimationResults(prev => ({ ...prev, [modelType === 'fixedEffects' ? 'FE' : modelType === 'randomEffects' ? 'RE' : 'pooledOLS']: result }))
-
-      // Auto-estimate FE and RE for Hausman
-      if (modelType === 'fixedEffects') {
-        setEstimationResults(prev => ({ ...prev, FE: result }))
-        try {
-          const re = randomEffectsAdapter(data, yCol, xCols, options)
-          setEstimationResults(prev => ({ ...prev, RE: re }))
-        } catch {}
-      } else if (modelType === 'randomEffects') {
-        setEstimationResults(prev => ({ ...prev, RE: result }))
-        try {
-          const fe = fixedEffectsAdapter(data, yCol, xCols, options)
-          setEstimationResults(prev => ({ ...prev, FE: fe }))
-        } catch {}
+      // If the main result has an error, show it and don't navigate
+      if (result?.error) {
+        toast.error(result.error)
+        return
       }
+
+      const est = { pooledOLS: null, FE: null, RE: null }
+      const key = modelType === 'fixedEffects' ? 'FE' : modelType === 'randomEffects' ? 'RE' : 'pooledOLS'
+      est[key] = result
+
+      // Auto-estimate counterpart for Hausman
+      if (modelType === 'fixedEffects') {
+        try { est.RE = randomEffectsAdapter(data, yCol, xCols, options) } catch {}
+      } else if (modelType === 'randomEffects') {
+        try { est.FE = fixedEffectsAdapter(data, yCol, xCols, options) } catch {}
+      }
+
+      persistAndNavigate({
+        _type: 'estimasi',
+        data, columns, fileName,
+        estimationResults: est,
+        panelConfig: cfg,
+        diagnosticResults: { hausman: null, bp: null, white: null, wooldridge: null },
+        analyzedAt: stamp(),
+      })
     } catch (err) {
       toast.error(err.message)
     } finally {
       setEstLoading(false)
     }
-  }, [data])
-
-  const runHausman = useCallback(() => {
-    const { FE, RE } = estimationResults
-    if (!FE || !RE) return
-    try {
-      const h = hausmanTestAdapter(FE, RE)
-      setDiagnosticResults(prev => ({ ...prev, hausman: h }))
-    } catch (err) {
-      toast.error(err.message)
-    }
-  }, [estimationResults])
+  }, [data, columns, fileName, persistAndNavigate])
 
   // ============================================================
-  // Tab 2: Diagnostik
-  // ============================================================
-  const runDiagnostic = useCallback((type) => {
-    const mainResult = estimationResults.pooledOLS || estimationResults.FE || estimationResults.RE
-    if (!mainResult || !data || !panelConfig) return
-    try {
-      let result
-      if (type === 'bp') {
-        result = breuschPaganAdapter(mainResult, data, panelConfig.xCols)
-      } else if (type === 'white') {
-        result = whiteTestAdapter(mainResult, data, panelConfig.xCols)
-      } else if (type === 'wooldridge') {
-        result = wooldridgeTestAdapter(data, panelConfig.yCol, panelConfig.xCols, panelConfig.entityCol, panelConfig.timeCol)
-      }
-      if (result) setDiagnosticResults(prev => ({ ...prev, [type]: result }))
-    } catch (err) {
-      toast.error(err.message)
-    }
-  }, [estimationResults, data, panelConfig])
-
-  // ============================================================
-  // Tab 3: Time Series
+  // Tab 2: Time Series
   // ============================================================
   const updateTsConfig = useCallback((patch) => {
     setTsConfig(prev => ({ ...prev, ...patch }))
@@ -315,7 +283,6 @@ export default function EViewsPage() {
   const runADF = useCallback(() => {
     setTsError(null)
     setTsRunning(true)
-    setTsResults(prev => ({ ...prev, adf: [] }))
     try {
       const cols = tsConfig.adfColumns.length > 0 ? tsConfig.adfColumns : tsConfig.selectedCols
       if (cols.length === 0) throw new Error('Pilih minimal satu kolom')
@@ -324,26 +291,41 @@ export default function EViewsPage() {
         const r = adfTestAdapter(series, tsOpts)
         return { variable: col, ...r }
       })
-      setTsResults(prev => ({ ...prev, adf: results }))
       toast.success(`ADF selesai — ${results.length} variabel`)
+      persistAndNavigate({
+        _type: 'timeseries',
+        data, columns, fileName, tsConfig,
+        tsResults: { adf: results, granger: null, cointegration: null },
+        analyzedAt: stamp(),
+      })
     } catch (err) {
       setTsError(err.message)
       toast.error(err.message)
     } finally {
       setTsRunning(false)
     }
-  }, [tsConfig.adfColumns, tsConfig.selectedCols, getColumnData, tsOpts])
+  }, [tsConfig, getColumnData, tsOpts, data, columns, fileName, persistAndNavigate])
 
   // Granger
   const runGranger = useCallback(() => {
     setTsError(null)
     setTsRunning(true)
-    setTsResults(prev => ({ ...prev, granger: null }))
     try {
       const grangerOpts = { maxLags: tsOpts.maxLags, method: 'AIC' }
 
+      // Read last ADF results from localStorage for stationarity check
+      let adfResults = []
+      try {
+        const raw = localStorage.getItem('eviews_result')
+        if (raw) {
+          const s = JSON.parse(raw)
+          if (s._type === 'timeseries' && s.tsResults?.adf) {
+            adfResults = s.tsResults.adf
+          }
+        }
+      } catch {}
+
       // Stationarity warning
-      const adfResults = tsResults.adf
       const nonStationaryVars = []
       if (tsConfig.runAllPairs) {
         const cols = tsConfig.selectedCols.length > 0 ? tsConfig.selectedCols : numericColumns
@@ -360,7 +342,6 @@ export default function EViewsPage() {
       }
       if (nonStationaryVars.length > 0) {
         toast.error(`Variabel tidak stasioner: ${nonStationaryVars.join(', ')}. Gunakan first differencing.`)
-        setTsRunning(false)
         return
       }
 
@@ -382,16 +363,26 @@ export default function EViewsPage() {
         const warnings = nPairs > 1
           ? [`Multiple testing: ${nPairs} pairs. Bonferroni-adjusted α = ${adjustedAlpha.toFixed(4)}`]
           : []
-        setTsResults(prev => ({ ...prev, granger: { pairs, warnings, nPairs, adjustedAlpha } }))
         toast.success(`Granger selesai — ${pairs.length} pasangan`)
+        persistAndNavigate({
+          _type: 'timeseries',
+          data, columns, fileName, tsConfig,
+          tsResults: { adf: adfResults, granger: { pairs, warnings, nPairs, adjustedAlpha }, cointegration: null },
+          analyzedAt: stamp(),
+        })
       } else {
         if (!tsConfig.grangerX || !tsConfig.grangerY) throw new Error('Pilih kolom X dan Y')
         if (tsConfig.grangerX === tsConfig.grangerY) throw new Error('X dan Y harus berbeda')
         const x = getColumnData(tsConfig.grangerX)
         const y = getColumnData(tsConfig.grangerY)
         const r = grangerCausalityAdapter(y, x, grangerOpts)
-        setTsResults(prev => ({ ...prev, granger: { pairs: [{ x: tsConfig.grangerX, y: tsConfig.grangerY, ...r }], warnings: [] } }))
         toast.success('Granger selesai')
+        persistAndNavigate({
+          _type: 'timeseries',
+          data, columns, fileName, tsConfig,
+          tsResults: { adf: adfResults, granger: { pairs: [{ x: tsConfig.grangerX, y: tsConfig.grangerY, ...r }], warnings: [] }, cointegration: null },
+          analyzedAt: stamp(),
+        })
       }
     } catch (err) {
       setTsError(err.message)
@@ -399,28 +390,32 @@ export default function EViewsPage() {
     } finally {
       setTsRunning(false)
     }
-  }, [tsConfig, tsOpts, tsResults.adf, numericColumns, getColumnData])
+  }, [tsConfig, tsOpts, numericColumns, getColumnData, data, columns, fileName, persistAndNavigate])
 
   // Cointegration
   const runCoint = useCallback(() => {
     setTsError(null)
     setTsRunning(true)
-    setTsResults(prev => ({ ...prev, cointegration: null }))
     try {
       if (!tsConfig.cointY || !tsConfig.cointX) throw new Error('Pilih kolom Y dan X')
       if (tsConfig.cointY === tsConfig.cointX) throw new Error('Y dan X harus berbeda')
       const y = getColumnData(tsConfig.cointY)
       const x = getColumnData(tsConfig.cointX)
       const r = engleGrangerCointegrationAdapter(y, x, tsOpts)
-      setTsResults(prev => ({ ...prev, cointegration: { pair: { y: tsConfig.cointY, x: tsConfig.cointX }, ...r } }))
       toast.success('Cointegration selesai')
+      persistAndNavigate({
+        _type: 'timeseries',
+        data, columns, fileName, tsConfig,
+        tsResults: { adf: [], granger: null, cointegration: { pair: { y: tsConfig.cointY, x: tsConfig.cointX }, ...r } },
+        analyzedAt: stamp(),
+      })
     } catch (err) {
       setTsError(err.message)
       toast.error(err.message)
     } finally {
       setTsRunning(false)
     }
-  }, [tsConfig, tsOpts, getColumnData])
+  }, [tsConfig, tsOpts, getColumnData, data, columns, fileName, persistAndNavigate])
 
   const handleTsRun = useCallback(() => {
     if (tsConfig.tsTest === 'adf') runADF()
@@ -432,13 +427,12 @@ export default function EViewsPage() {
   // Render
   // ============================================================
   const hasData = !!data
-  const { pooledOLS, FE, RE } = estimationResults
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'rgb(var(--bg))' }}>
       <PageHeader
         title="Analisis EViews"
-        subtitle="Panel Estimation · Diagnostics · Time Series"
+        subtitle="Panel Estimation · Time Series"
         breadcrumbs={[
           { path: '/', label: 'Beranda' },
           { path: '/eviews', label: 'EViews' },
@@ -533,7 +527,6 @@ export default function EViewsPage() {
             <div className="flex border-b" style={{ borderColor: 'rgb(var(--border))' }}>
               {[
                 { id: 'estimasi', label: 'Estimasi Panel', icon: LayoutGrid },
-                { id: 'diagnostik', label: 'Diagnostik', icon: Activity },
                 { id: 'timeseries', label: 'Time Series', icon: TrendingUp },
               ].map(tab => {
                 const Icon = tab.icon
@@ -563,18 +556,7 @@ export default function EViewsPage() {
                 <p className="text-xs text-muted leading-relaxed">
                   Cocok untuk data dengan struktur cross-section + time (misal: 30 provinsi × 10 tahun).
                   Pilih entitas (ID), waktu, variabel Y dan X, lalu pilih metode estimasi.
-                  Hausman test otomatis tersedia setelah Fixed Effects & Random Effects dijalankan.
-                </p>
-              </div>
-            )}
-            {activeTab === 'diagnostik' && (
-              <div className="px-1 pt-3 pb-1">
-                <h4 className="text-sm font-semibold text-fg mb-1">Diagnostik Model</h4>
-                <p className="text-xs text-muted leading-relaxed">
-                  Jalankan estimasi panel terlebih dahulu, lalu cek asumsi model di sini:
-                  <strong> Breusch-Pagan</strong> (heteroskedastisitas),
-                  <strong> White</strong> (heteroskedastisitas umum),
-                  <strong> Wooldridge</strong> (autokorelasi panel).
+                  Hasil — termasuk uji Hausman & diagnostik (Breusch-Pagan, White, Wooldridge) — tampil di halaman hasil.
                 </p>
               </div>
             )}
@@ -586,6 +568,7 @@ export default function EViewsPage() {
                   <strong> ADF</strong> — uji stasioneritas (unit root),
                   <strong> Granger</strong> — uji kausalitas antar variabel,
                   <strong> Cointegration</strong> — uji hubungan jangka panjang.
+                  Hasil tampil di halaman hasil.
                 </p>
               </div>
             )}
@@ -595,92 +578,10 @@ export default function EViewsPage() {
               {activeTab === 'estimasi' && (
                 <div className="space-y-4">
                   <PanelConfig columns={columns} onEstimate={handleEstimate} loading={estLoading} />
-
-                  {(pooledOLS || FE || RE) && !pooledOLS?.error && !FE?.error && !RE?.error && (
-                    <>
-                      <ModelSummaryCard result={pooledOLS || FE || RE} modelType={panelConfig?.modelType} />
-                      <CoefficientsTable result={pooledOLS || FE || RE} />
-
-                      {/* Hausman */}
-                      {FE && RE && (
-                        <div className="space-y-3">
-                          {!diagnosticResults.hausman && (
-                            <button
-                              onClick={runHausman}
-                              className="px-4 py-2 rounded-lg border text-sm font-medium transition-colors active:scale-95"
-                              style={{ borderColor: 'rgb(var(--border))', backgroundColor: 'rgb(var(--surface))', color: 'rgb(var(--fg))' }}
-                            >
-                              Jalankan Uji Hausman (FE vs RE)
-                            </button>
-                          )}
-                          {diagnosticResults.hausman && <HausmanCard result={diagnosticResults.hausman} />}
-                        </div>
-                      )}
-                    </>
-                  )}
-
-                  {(pooledOLS?.error || FE?.error || RE?.error) && (
-                    <div
-                      className="p-3 rounded-lg border text-sm"
-                      style={{ borderColor: 'rgb(239 68 68 / 0.3)', backgroundColor: 'rgb(239 68 68 / 0.05)', color: 'rgb(239 68 68)' }}
-                    >
-                      <strong>Error:</strong> {pooledOLS?.error || FE?.error || RE?.error}
-                    </div>
-                  )}
                 </div>
               )}
 
-              {/* ═══════════ TAB 2: DIAGNOSTIK ═══════════ */}
-              {activeTab === 'diagnostik' && (
-                <div className="space-y-4">
-                  {!panelConfig ? (
-                    <div className="text-center py-8" style={{ color: 'rgb(var(--muted))' }}>
-                      <Activity className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                      <p className="text-sm">Jalankan estimasi panel terlebih dahulu di tab Estimasi.</p>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Hausman */}
-                      {FE && RE && !diagnosticResults.hausman && (
-                        <button
-                          onClick={runHausman}
-                          className="px-4 py-2 rounded-lg border text-sm font-medium transition-colors active:scale-95"
-                          style={{ borderColor: 'rgb(var(--border))', backgroundColor: 'rgb(var(--surface))', color: 'rgb(var(--fg))' }}
-                        >
-                          Jalankan Uji Hausman (FE vs RE)
-                        </button>
-                      )}
-                      {diagnosticResults.hausman && <HausmanCard result={diagnosticResults.hausman} />}
-
-                      {/* BP, White, Wooldridge */}
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { key: 'bp', label: 'Breusch-Pagan', desc: 'Uji heteroskedastisitas — apakah varians error konstan?' },
-                          { key: 'white', label: "White's Test", desc: 'Uji heteroskedastisitas umum — tanpa asumsi distribusi tertentu' },
-                          { key: 'wooldridge', label: 'Wooldridge', desc: 'Uji autokorelasi pada data panel — apakah error berkorelasi lintas waktu?' },
-                        ].map(d => (
-                          <button
-                            key={d.key}
-                            onClick={() => runDiagnostic(d.key)}
-                            disabled={!!diagnosticResults[d.key]}
-                            className="px-4 py-2 rounded-lg border text-sm font-medium transition-colors disabled:opacity-50"
-                            style={{ borderColor: 'rgb(var(--border))', backgroundColor: 'rgb(var(--surface))', color: 'rgb(var(--fg))' }}
-                          >
-                            {diagnosticResults[d.key] ? '✓ ' : ''}{d.label}
-                            <span className="ml-1 opacity-60 cursor-help" title={d.desc}>ⓘ</span>
-                          </button>
-                        ))}
-                      </div>
-
-                      {Object.entries(diagnosticResults).filter(([k, v]) => v && k !== 'hausman').map(([type, result]) => (
-                        <DiagnosticsCard key={type} type={type} result={result} />
-                      ))}
-                    </>
-                  )}
-                </div>
-              )}
-
-              {/* ═══════════ TAB 3: TIME SERIES ═══════════ */}
+              {/* ═══════════ TAB 2: TIME SERIES ═══════════ */}
               {activeTab === 'timeseries' && (
                 <div className="space-y-4">
                   {/* TS Config */}
@@ -918,56 +819,6 @@ export default function EViewsPage() {
                     <div className="p-3 rounded-lg border flex items-center gap-2 text-sm" style={{ borderColor: 'rgb(239 68 68 / 0.3)', backgroundColor: 'rgb(239 68 68 / 0.05)', color: 'rgb(239 68 68)' }}>
                       <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                       {tsError}
-                    </div>
-                  )}
-
-                  {/* TS Results: ADF */}
-                  {tsConfig.tsTest === 'adf' && tsResults.adf.length > 0 && (
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-semibold flex items-center gap-2" style={{ color: 'rgb(var(--fg))' }}>
-                        <TrendingUp className="w-4 h-4" style={{ color: 'rgb(var(--accent))' }} />
-                        ADF Results ({tsResults.adf.length} variabel)
-                      </h3>
-                      {tsResults.adf.map((r, i) => (
-                        r.error ? (
-                          <div key={i} className="p-3 rounded-lg border text-xs" style={{ borderColor: 'rgb(239 68 68 / 0.3)', backgroundColor: 'rgb(239 68 68 / 0.05)', color: 'rgb(239 68 68)' }}>
-                            {r.variable}: {r.error}
-                          </div>
-                        ) : (
-                          <ADFResultCard key={i} result={r} />
-                        )
-                      ))}
-                      <LagInfoCard lagInfo={{ lags: tsResults.adf[0]?.lags, method: 'AIC' }} title="Lag Selection Info" />
-                    </div>
-                  )}
-
-                  {/* TS Results: Granger */}
-                  {tsConfig.tsTest === 'granger' && tsResults.granger && (
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-semibold flex items-center gap-2" style={{ color: 'rgb(var(--fg))' }}>
-                        <ArrowRightLeft className="w-4 h-4" style={{ color: 'rgb(var(--accent))' }} />
-                        Granger Results ({tsResults.granger.pairs.length} pasangan)
-                      </h3>
-                      {tsResults.granger.warnings?.map((w, i) => (
-                        <div key={i} className="p-3 rounded-lg border flex items-center gap-2 text-xs" style={{ borderColor: 'rgb(251 191 36 / 0.3)', backgroundColor: 'rgb(251 191 36 / 0.05)', color: 'rgb(180 83 9)' }}>
-                          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                          {w}
-                        </div>
-                      ))}
-                      {tsResults.granger.pairs.map((r, i) => (
-                        <GrangerResultCard key={i} result={{ ...r, xLabel: r.x, yLabel: r.y }} />
-                      ))}
-                    </div>
-                  )}
-
-                  {/* TS Results: Cointegration */}
-                  {tsConfig.tsTest === 'cointegration' && tsResults.cointegration && (
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-semibold flex items-center gap-2" style={{ color: 'rgb(var(--fg))' }}>
-                        <Link2 className="w-4 h-4" style={{ color: 'rgb(var(--accent))' }} />
-                        Cointegration Result
-                      </h3>
-                      <CointegrationResultCard result={{ ...tsResults.cointegration, yLabel: tsResults.cointegration.pair?.y, xLabel: tsResults.cointegration.pair?.x }} />
                     </div>
                   )}
                 </div>

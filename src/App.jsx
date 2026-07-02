@@ -52,6 +52,7 @@ const Legal               = lazy(() => import('./pages/Legal'))
 const Help                = lazy(() => import('./pages/Help'))
 const Feedback            = lazy(() => import('./pages/Feedback'))
 const EViews              = lazy(() => import('./pages/EViews'))
+const EViewsHasil         = lazy(() => import('./pages/EViewsHasil'))
 const NotFound            = lazy(() => import('./pages/NotFound'))
 
 function PageLoader() {
@@ -128,6 +129,9 @@ function App() {
           <Route path="/eviews" element={<EViews />} />
           <Route path="/panel-data" element={<EViews />} />
           <Route path="/time-series" element={<EViews />} />
+          <Route path="/eviews/hasil" element={<EViewsHasil />} />
+          <Route path="/panel-data/hasil" element={<EViewsHasil />} />
+          <Route path="/time-series/hasil" element={<EViewsHasil />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/saran" element={<Feedback />} />
           <Route path="/assessment" element={<Assessment />} />
