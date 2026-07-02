@@ -37,12 +37,16 @@ const UserDashboard       = lazy(() => import('./pages/UserDashboard'))
 const Kuesioner           = lazy(() => import('./pages/Kuesioner'))
 const Sampling            = lazy(() => import('./pages/Sampling'))
 const ItemAnalysis        = lazy(() => import('./pages/ItemAnalysis'))
+const ItemAnalysisHasil   = lazy(() => import('./pages/ItemAnalysisHasil'))
 const References          = lazy(() => import('./pages/References'))
 const Mediation           = lazy(() => import('./pages/Mediation'))
+const MediationHasil      = lazy(() => import('./pages/MediationHasil'))
 const Qualitative         = lazy(() => import('./pages/Qualitative'))
 const SettingsPage        = lazy(() => import('./pages/Settings'))
 const Logistic            = lazy(() => import('./pages/Logistic'))
+const LogisticHasil       = lazy(() => import('./pages/LogisticHasil'))
 const EFA                 = lazy(() => import('./pages/EFA'))
+const EFAHasil            = lazy(() => import('./pages/EFAHasil'))
 const SkripsiWizard       = lazy(() => import('./pages/SkripsiWizard'))
 const Legal               = lazy(() => import('./pages/Legal'))
 const Help                = lazy(() => import('./pages/Help'))
@@ -105,12 +109,16 @@ function App() {
           <Route path="/kuesioner" element={<Kuesioner />} />
           <Route path="/sampling" element={<Sampling />} />
           <Route path="/butir-soal" element={<ItemAnalysis />} />
+          <Route path="/butir-soal/hasil" element={<ItemAnalysisHasil />} />
           <Route path="/referensi" element={<References />} />
           <Route path="/mediasi" element={<Mediation />} />
+          <Route path="/mediasi/hasil" element={<MediationHasil />} />
           <Route path="/kualitatif" element={<Qualitative />} />
           <Route path="/pengaturan" element={<SettingsPage />} />
           <Route path="/logistik" element={<Logistic />} />
+          <Route path="/logistik/hasil" element={<LogisticHasil />} />
           <Route path="/efa" element={<EFA />} />
+          <Route path="/efa/hasil" element={<EFAHasil />} />
           <Route path="/wizard" element={<SkripsiWizard />} />
           <Route path="/skripsi" element={<SkripsiWizard />} />
           <Route path="/privasi" element={<Legal kind="privacy" />} />
