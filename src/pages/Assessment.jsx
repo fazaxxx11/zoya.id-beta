@@ -21,6 +21,7 @@ import { saveTemplate as saveRubrikTemplate } from '../lib/rubrikTemplates'
 import { toast } from '../lib/toast'
 import { createFuzzySearch } from '../lib/fuzzySearch'
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
+import { supabase } from '../lib/supabase'
 // XLSX lazy-loaded on export
 
 // Endpoints sama untuk dev & prod (server.js delegate ke api/assess.js)
@@ -31,12 +32,17 @@ const API_ENDPOINTS = ['/api/assess', 'http://localhost:3000/api/assess']
  * Pemakaian: re-grade per siswa di HasilPenilaian, dan batch loop di assess().
  */
 async function assessOneStudent({ student, rubrik, title, context }) {
+  // /api/assess butuh Authorization: Bearer <JWT> (aiMiddleware → requireAuth).
+  const { data: { session } } = await supabase.auth.getSession()
   let lastErr = null
   for (const API of API_ENDPOINTS) {
     try {
       const res = await fetch(API, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+        },
         body: JSON.stringify({
           rubrik: rubrik.map(k => ({ id: k.id, nama: k.nama, deskripsi: k.deskripsi, bobot: Number(k.bobot) || 0 })),
           jawaban: student.answer,

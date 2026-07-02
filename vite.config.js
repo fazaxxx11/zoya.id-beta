@@ -11,7 +11,7 @@ export default defineConfig({
     pure: ['console.log', 'console.debug', 'console.info'],
   },
   optimizeDeps: {
-    include: ['recharts'],
+    include: ['recharts', 'simple-statistics', 'jstat', 'papaparse', 'exceljs'],
   },
   plugins: [
     react(),

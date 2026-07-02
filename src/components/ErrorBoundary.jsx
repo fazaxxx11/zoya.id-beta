@@ -58,7 +58,9 @@ export default class ErrorBoundary extends Component {
                 Detail teknis (untuk developer)
               </summary>
               <pre className="mt-2 text-xs text-red-500 overflow-auto whitespace-pre-wrap break-words">
-                {String(this.state.error?.stack || this.state.error?.message || this.state.error)}
+                {import.meta.env.DEV
+                  ? String(this.state.error?.stack || this.state.error?.message || this.state.error)
+                  : String(this.state.error?.message || this.state.error)}
               </pre>
             </details>
           )}
@@ -74,7 +76,7 @@ export default class ErrorBoundary extends Component {
             <button
               onClick={this.handleReload}
               className="flex-1 px-4 py-3 rounded-xl text-white font-medium flex items-center justify-center gap-2 hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg, rgb(99 102 241), rgb(168 85 247))' }}
+              style={{ background: 'rgb(var(--accent))' }}
             >
               <RefreshCw className="w-4 h-4" /> Reload
             </button>

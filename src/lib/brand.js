@@ -14,13 +14,16 @@ export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'zoya.id1432@gmai
 
 export const PAYMENT_INFO = {
   bankName: import.meta.env.VITE_BANK_NAME || 'BCA',
-  bankAccount: import.meta.env.VITE_BANK_ACCOUNT || '1234567890',
+  // No hardcoded fallback for account/e-wallet/WhatsApp numbers — if env vars
+  // are missing, fields stay empty rather than leaking dummy values into the
+  // client bundle. Set VITE_BANK_ACCOUNT etc. in Vercel/env.local.
+  bankAccount: import.meta.env.VITE_BANK_ACCOUNT || '',
   bankHolder: import.meta.env.VITE_BANK_HOLDER || 'Azezmen Research',
   ewallet: {
     name: import.meta.env.VITE_EWALLET_NAME || 'DANA',
-    number: import.meta.env.VITE_EWALLET_NUMBER || '081234567890',
+    number: import.meta.env.VITE_EWALLET_NUMBER || '',
   },
-  whatsapp: import.meta.env.VITE_WHATSAPP || '6281234567890', // format internasional, tanpa +
+  whatsapp: import.meta.env.VITE_WHATSAPP || '', // format internasional, tanpa +
 }
 
 /** Generate WhatsApp deep-link untuk konfirmasi top-up */

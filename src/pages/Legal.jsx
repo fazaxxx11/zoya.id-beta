@@ -35,7 +35,7 @@ export default function LegalPage({ kind }) {
                style={{ borderColor: 'rgb(var(--border))' }}>
             <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                  style={{
-                   background: 'linear-gradient(135deg, rgb(99 102 241), rgb(168 85 247))',
+                   background: 'rgb(var(--accent))',
                    color: 'white',
                  }}>
               <Icon className="w-6 h-6" />

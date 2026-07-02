@@ -351,7 +351,7 @@ export default function Help() {
         >
           <div className="flex items-start gap-3">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                 style={{ background: 'linear-gradient(135deg, rgb(99 102 241), rgb(168 85 247))', color: 'white' }}>
+                 style={{ background: 'rgb(var(--accent))', color: 'white' }}>
               <HelpCircle className="w-6 h-6" />
             </div>
             <div className="flex-1">
@@ -371,7 +371,7 @@ export default function Help() {
                 </button>
                 <Link to="/wizard"
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white"
-                      style={{ background: 'linear-gradient(135deg, rgb(99 102 241), rgb(168 85 247))' }}>
+                      style={{ background: 'rgb(var(--accent))' }}>
                   <Compass className="w-3.5 h-3.5" /> Panduan Skripsi
                 </Link>
                 <a href={`mailto:${ADMIN_EMAIL}`}
@@ -483,7 +483,7 @@ export default function Help() {
           </p>
           <a href={`mailto:${ADMIN_EMAIL}`}
              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white"
-             style={{ background: 'linear-gradient(135deg, rgb(99 102 241), rgb(168 85 247))' }}>
+             style={{ background: 'rgb(var(--accent))' }}>
             <Mail className="w-4 h-4" /> {ADMIN_EMAIL}
           </a>
         </div>
@@ -512,7 +512,7 @@ function CatPill({ active, onClick, children }) {
       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors hover:opacity-80"
       style={
         active
-          ? { background: 'linear-gradient(135deg, rgb(99 102 241), rgb(168 85 247))', color: 'white', borderColor: 'transparent' }
+          ? { background: 'rgb(var(--accent))', color: 'white', borderColor: 'transparent' }
           : { backgroundColor: 'rgb(var(--card))', borderColor: 'rgb(var(--border))', color: 'rgb(var(--fg))' }
       }
     >

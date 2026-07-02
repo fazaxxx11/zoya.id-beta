@@ -96,10 +96,10 @@ async function isPythonBackendAvailable() {
 
 /**
  * Wait for Python backend to warm up (Vercel cold start).
- * Retries with exponential backoff — total ~15s max.
+ * Retries with exponential backoff — total ~5s max.
  * Caller shows loading/buffering UI during this wait naturally.
  */
-async function waitForPythonBackend(maxRetries = 6, baseDelay = 1000) {
+async function waitForPythonBackend(maxRetries = 3, baseDelay = 1000) {
   for (let i = 0; i < maxRetries; i++) {
     // Force fresh check (ignore cache) on retries
     if (i > 0) {

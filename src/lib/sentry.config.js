@@ -20,7 +20,7 @@ export function initSentry() {
       }),
     ],
     tracesSampleRate: 0.1,
-    replaysSessionSampleRate: 0.01,
+    replaysSessionSampleRate: 0.05,
     replaysOnErrorSampleRate: 1.0,
     environment: import.meta.env.MODE || "development",
     beforeSend(event) {
