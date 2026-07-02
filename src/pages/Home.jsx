@@ -69,21 +69,22 @@ function CountUp({ target, suffix = "", duration = 1500 }) {
 function TypingText({ text, speed = 35, delay = 0 }) {
   const words = text.split(" ");
   const [visible, setVisible] = useState(0);
-  const started = useRef(false);
+  // started must be STATE (not a ref): flipping it after `delay` must trigger
+  // a re-render so the typing effect below re-runs. A ref mutation doesn't,
+  // so with delay > 0 the effect never re-ran and visible stayed 0 (empty).
+  const [started, setStarted] = useState(delay === 0);
 
   useEffect(() => {
-    if (delay) {
-      const t = setTimeout(() => { started.current = true; }, delay);
-      return () => clearTimeout(t);
-    }
-    started.current = true;
+    if (!delay) return;
+    const t = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(t);
   }, [delay]);
 
   useEffect(() => {
-    if (!started.current || visible >= words.length) return;
+    if (!started || visible >= words.length) return;
     const t = setTimeout(() => setVisible((v) => v + 1), speed);
     return () => clearTimeout(t);
-  }, [visible, words.length, speed]);
+  }, [visible, words.length, speed, started]);
 
   return (
     <span>
