@@ -71,32 +71,30 @@ function ResultDisplay({ result, onReset, onBackToAnalysis }) {
   }
 
   return (
-    <div className="border border-border bg-card rounded-xl overflow-hidden animate-fade-in-up">
-      <div className="p-5 border-b border-border flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h3 className="font-bold text-fg text-lg">Hasil: {result.toolName}</h3>
-          <p className="text-sm text-muted">{result.sampleSize} sampel · {result.analyzedAt}</p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <button onClick={() => setSaveModalOpen(true)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border transition-colors ${
-              savedId
-                ? 'bg-teal/8 border-teal/20 text-teal'
-                : 'bg-card border-border text-fg hover:bg-surface'
-            }`}>
-            <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3.5L3 18V4z" /></svg>
-            {savedId ? 'Tersimpan' : 'Simpan'}
-          </button>
-          <ExportActions result={result} containerRef={contentRef} />
-          <button onClick={onBackToAnalysis}
-            className="px-4 py-2 rounded-lg text-sm font-heading font-semibold bg-accent text-accent-fg hover:bg-accent/90 transition-colors flex items-center gap-2">
-            <ArrowRight className="w-4 h-4" /> Analisis Lain
-          </button>
-          <button onClick={onReset}
-            className="px-4 py-2 rounded-lg text-sm text-muted hover:text-fg border border-border hover:bg-surface transition-colors flex items-center gap-2">
-            <RotateCcw className="w-4 h-4" /> Upload Ulang
-          </button>
-        </div>
+    <div className="border border-border bg-card rounded-xl animate-fade-in-up">
+      {/* Action toolbar — judul hasil sudah ada di tagline PageHeader (toolName ·
+          sampleSize · analyzedAt), jadi di sini cukup baris aksi rata kanan.
+          4 tombol seragam (Simpan | Export ▾ | Analisis Lain | Upload Ulang)
+          biar gak wrap berantakan di mobile. */}
+      <div className="p-4 border-b border-border flex items-center justify-end gap-2 flex-wrap">
+        <button onClick={() => setSaveModalOpen(true)}
+          className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 border transition-colors whitespace-nowrap ${
+            savedId
+              ? 'bg-teal/8 border-teal/20 text-teal'
+              : 'bg-card border-border text-fg hover:bg-surface'
+          }`}>
+          <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 012-2h10a2 2 0 012 2v14l-7-3.5L3 18V4z" /></svg>
+          {savedId ? 'Tersimpan' : 'Simpan'}
+        </button>
+        <ExportActions result={result} containerRef={contentRef} />
+        <button onClick={onBackToAnalysis}
+          className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-heading font-semibold bg-accent text-accent-fg hover:bg-accent/90 transition-colors flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Analisis Lain
+        </button>
+        <button onClick={onReset}
+          className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm text-muted hover:text-fg border border-border hover:bg-surface transition-colors flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+          <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Upload Ulang
+        </button>
       </div>
 
       <SaveAnalysisModal
