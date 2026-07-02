@@ -22,7 +22,7 @@ export default defineConfig({
         name: 'Z-Research Tools',
         short_name: 'Z-Research',
         description: 'Alat bantu riset dan analisis statistik lengkap',
-        theme_color: '#4f46e5',
+        theme_color: '#A8782A',
         background_color: '#fafafa',
         display: 'standalone',
         orientation: 'portrait',
