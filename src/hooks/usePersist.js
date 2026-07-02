@@ -22,7 +22,9 @@ export function usePersist(key, defaultValue) {
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(state))
-    } catch {}
+    } catch (e) {
+      console.warn('[usePersist] write failed:', e.message)
+    }
   }, [key, state])
 
   return [state, setState]
